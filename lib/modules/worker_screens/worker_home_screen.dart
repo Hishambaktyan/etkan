@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,9 +10,17 @@ import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
 import '../../shared/cubit/states.dart';
 import '../../shared/styles/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class WorkerHomeScreen extends StatelessWidget {
+
+class WorkerHomeScreen extends StatefulWidget {
    WorkerHomeScreen({super.key});
+
+  @override
+  State<WorkerHomeScreen> createState() => _WorkerHomeScreenState();
+}
+
+class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
   final List<Map<String, dynamic>> info = [
     {
       'title': 'كل الحجوزات',
@@ -34,6 +43,7 @@ class WorkerHomeScreen extends StatelessWidget {
       'icon': 'assets/star.svg',
     },
   ];
+
      List<Map<String, dynamic>> services = [
        {
          'name': 'تركيب حوض حمام',
@@ -60,13 +70,43 @@ class WorkerHomeScreen extends StatelessWidget {
          'image': 'https://i.pinimg.com/1200x/9b/9c/93/9b9c93ac5db55031a32139e972ee6da6.jpg',
        },
      ];
-   @override
+
+     String? name;
+     String? dept;
+
+     bool isLoading = true;
+
+  Future<void> getUserName() async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    if (snapshot.exists && snapshot.data() != null) {
+      setState(() {
+        setState(() {
+          name = snapshot.data()!['name'];
+          dept = snapshot.data()!['specialization'];
+          isLoading=false;
+        });
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getUserName();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<MyCubit,States>(
       listener: (context, state) {},
       builder: (context, state) {
         MyCubit cubit = MyCubit.get(context);
-        return Directionality(
+        return isLoading?const Center(child: CircularProgressIndicator(),)
+            :Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
             body: SingleChildScrollView(
@@ -132,15 +172,15 @@ class WorkerHomeScreen extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          'عبد الرحمن محمد',
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp, color: Colors.white, height: 1.2),
+                                          name!,
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: Colors.white, height: 1.2),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         Text(
-                                          'سباك',
+                                          dept!,
                                           style: TextStyle(
-                                            color: Colors.white
+                                              color: Colors.white
                                           ),
                                         ),
                                       ],
@@ -172,7 +212,7 @@ class WorkerHomeScreen extends StatelessWidget {
                                     height: 180.h,
                                     width: 300.w,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(150.r)),
+                                        borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(150.r)),
                                         gradient: LinearGradient(
                                           colors: [
                                             Colors.white.withOpacity(0.2),
@@ -193,7 +233,7 @@ class WorkerHomeScreen extends StatelessWidget {
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '2300000 \uFDFC',
+                                          '0 \uFDFC',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -242,12 +282,12 @@ class WorkerHomeScreen extends StatelessWidget {
                                       Positioned(
                                         bottom: -10,
                                         left: -10,
-                                          child: SvgPicture.asset(
-                                              data['icon'],
-                                            color: mainColor.withOpacity(0.2),
-                                            width: 53.w,
-                                            height: 53.h,
-                                          ),
+                                        child: SvgPicture.asset(
+                                          data['icon'],
+                                          color: mainColor.withOpacity(0.2),
+                                          width: 53.w,
+                                          height: 53.h,
+                                        ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsetsDirectional.all(10),
@@ -258,7 +298,7 @@ class WorkerHomeScreen extends StatelessWidget {
                                             Row(
                                               children: [
                                                 Text(
-                                                  '${data['value']}',
+                                                  '0',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       color: Colors.black,
@@ -424,10 +464,10 @@ class WorkerHomeScreen extends StatelessWidget {
                     shrinkWrap: true,
                     padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 10.h),
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200.w,
-                      mainAxisExtent: 240.h,
-                      crossAxisSpacing: 10.w,
-                      mainAxisSpacing: 10.h
+                        maxCrossAxisExtent: 200.w,
+                        mainAxisExtent: 240.h,
+                        crossAxisSpacing: 10.w,
+                        mainAxisSpacing: 10.h
                     ),
                     itemBuilder: (context, index) {
                       var service = services[index];
@@ -546,7 +586,7 @@ class WorkerHomeScreen extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           fontSize: 10.sp,
-                                        color: Colors.grey
+                                          color: Colors.grey
                                       ),
                                     ),
                                   ],

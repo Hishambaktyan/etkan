@@ -47,6 +47,21 @@ Widget dashedDivider() {
     ),
   );
 }
+void showSnackBar(Color background,String message,context){
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    backgroundColor: background,
+    duration: const Duration(seconds: 2),
+    content: Text(message,textAlign: TextAlign.center,style: const TextStyle(fontSize: 13),),
+    elevation: 2,
+    behavior: SnackBarBehavior.floating,
+    width: MediaQuery.of(context).size.width * 0.50,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(50),
+    ),
+  )
+  );
+}
+
 /////////////////////////////////////////////
 Widget defualtButton({
   double height = 50,

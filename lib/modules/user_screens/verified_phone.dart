@@ -20,6 +20,7 @@ class _State extends State<Verified_phone> {
   late List<TextEditingController> controllers;
   late List<FocusNode> focusNodes;
   String phone = '770770858';
+
   @override
   void initState() {
     super.initState();
@@ -154,7 +155,7 @@ class _State extends State<Verified_phone> {
                       defualtButton(
                         onPressed: (){
                           //if(formKey.currentState!.validate()){
-                          move(context, const UserMainScreen());
+
                           //}
                         },
                         text: 'التالي',
