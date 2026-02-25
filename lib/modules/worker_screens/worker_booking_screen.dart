@@ -260,8 +260,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
           ),
           Expanded(
             child: ListView.builder(
-                padding:  EdgeInsetsDirectional.only(start: 20.w,end: 20.w,top: 5.h),
-                physics: const BouncingScrollPhysics(),
+                padding:  EdgeInsetsDirectional.only(start: 20.w,end: 20.w,top: 5.h,bottom: 20.h),
                 itemCount: filteredList.length,
                 itemBuilder: (context, index) {
                   var booking = filteredList[index];

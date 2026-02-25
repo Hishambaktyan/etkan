@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
 import '../../modules/worker_screens/worker_account_screeen.dart';
 import '../../modules/worker_screens/worker_booking_screen.dart';
@@ -103,16 +104,21 @@ class MyCubit extends Cubit<States>{
   Future<void> loginUser(String email, String password) async {
     try {
       emit(LoginLoadingState());
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential=  await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password
       );
+      await userCredential.user?.reload();
         currentIndex=0;
       emit(LoginSuccessState());
 
     } on FirebaseAuthException catch (e) {
+      String error = 'حدث خطأ ما';
+      if (e.code == 'user-not-found') error = 'المستخدم غير موجود';
+      if (e.code == 'wrong-password') error = 'كلمة المرور خاطئة';
+      if (e.code == 'invalid-email') error = 'البريد الإلكتروني غير صحيح';
 
-      emit(LoginErrorState(error: e.message.toString()));
+      emit(LoginErrorState(error: error.toString()));
 
     } catch (e) {
       emit(LoginErrorState(error: e.toString()));
@@ -141,16 +147,115 @@ class MyCubit extends Cubit<States>{
     }
   }
 
-  Future<void> deleteUser()async{
-    try{
-      emit(DeleteUserAccLoadingState());
-      await FirebaseAuth.instance.currentUser!.delete();
-      emit(DeleteUserAccSuccessState());
-    }catch(e){
-      emit(DeleteUserAccErrorState(error: e.toString()));
-      print(e.toString());
+  TextEditingController message = TextEditingController();
+
+  Widget buildMessageStatus(String status, bool isSeen, bool isMe) {
+    if (!isMe) return const SizedBox.shrink();
+    if (status == 'seen') {
+      return SvgPicture.asset(
+        'assets/checks.svg',
+        width: 12.w,
+        height: 12.h,
+        color: Colors.green.shade100,
+      );
+    }
+    if (status == 'sent') {
+      return SvgPicture.asset(
+        'assets/check.svg',
+        width: 12.w,
+        height: 12.h,
+        color: Colors.green.shade100,
+      );
+    }
+    return SvgPicture.asset(
+      'assets/timer.svg',
+      width: 12.w,
+      height: 12.h,
+      color: Colors.grey.shade300,
+    );
+  }
+  Future<void> resetUnreadCount(String chatId, String myId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .update({
+        'unreadCount.$myId': 0,
+      });
+    } catch (e) {
+      print('خطأ أثناء تصفير العداد: $e');
     }
   }
+  Future<void> sendMessage(String chatId, String receiverId, String senderId) async {
+    try{
+      if (message.text.trim().isEmpty) return;
+
+      String text = message.text.trim();
+      message.clear();
+      emit(SendMessageLoadingState());
+      DocumentReference messageRef = FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .doc();
+      await messageRef.set({
+        'messageId': messageRef.id,
+        'chatId': chatId,
+        'text': text,
+        'messageStatus': 'sent',
+        'receiverId': receiverId,
+        'senderId': senderId,
+        'timestamp': FieldValue.serverTimestamp(),
+        'type': 'text',
+        'isSeen': false,
+      });
+
+      await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .update({
+        'lastMessage': text,
+        'lastUpdate': FieldValue.serverTimestamp(),
+        'lastSenderId': senderId,
+        'unreadCount.$receiverId': FieldValue.increment(1),
+        'lastSenderId': senderId,
+      });
+      emit(SendMessageSuccessState());
+      message.clear();
+    }catch(e){
+      emit(SendMessageErrorState(error: e.toString()));
+    }
+  }
+  Future<void> markAsSeen(String chatId, String myId) async {
+    var query = await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .where('receiverId', isEqualTo: myId)
+        .where('isSeen', isEqualTo: false)
+        .get();
+
+    for (var doc in query.docs) {
+      await doc.reference.update({
+        'isSeen': true,
+        'messageStatus': 'seen',
+      });
+    }
+
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .update({
+      'unreadCount.$myId': 0,
+      'isLastMessagesRead': true,
+    });
+  }
+  bool isTyping=false;
+
+
+
+
+
 
 
 }

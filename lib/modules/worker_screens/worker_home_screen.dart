@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +11,6 @@ import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
 import '../../shared/cubit/states.dart';
 import '../../shared/styles/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 
 class WorkerHomeScreen extends StatefulWidget {
@@ -71,42 +71,54 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
        },
      ];
 
-     String? name;
-     String? dept;
+   String? workerName;
 
-     bool isLoading = true;
+   String? workerDept;
 
-  Future<void> getUserName() async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+   bool isLoading = true;
 
-    if (snapshot.exists && snapshot.data() != null) {
-      setState(() {
-        setState(() {
-          name = snapshot.data()!['name'];
-          dept = snapshot.data()!['specialization'];
-          isLoading=false;
-        });
-      });
-    }
-  }
+   Future<void> getWorkerData() async  {
+     final uid = FirebaseAuth.instance.currentUser!.uid;
+     try{
+       DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+           .collection('users')
+           .doc(uid)
+           .get();
 
-  @override
+       if (snapshot.exists && snapshot.data() != null) {
+         workerName = snapshot.data()!['name'];
+         workerDept = snapshot.data()!['specialization'];
+         setState(() {
+           isLoading=false;
+         });
+         print(workerName);
+         print(workerDept);
+       }
+
+     }catch(e){
+       setState(() {
+         isLoading=false;
+       });
+       print(e.toString());
+     }
+   }
+
+   @override
   void initState() {
-    getUserName();
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+       getWorkerData();
+     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    MyCubit cubit = MyCubit.get(context);
     return BlocConsumer<MyCubit,States>(
       listener: (context, state) {},
       builder: (context, state) {
-        MyCubit cubit = MyCubit.get(context);
-        return isLoading?const Center(child: CircularProgressIndicator(),)
-            :Directionality(
+        return isLoading? const Center(child: CircularProgressIndicator())
+        : Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
             body: SingleChildScrollView(
@@ -172,14 +184,14 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          name!,
+                                          workerName ?? '',
                                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: Colors.white, height: 1.2),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         Text(
-                                          dept!,
-                                          style: TextStyle(
+                                          workerDept ?? '',
+                                          style: const TextStyle(
                                               color: Colors.white
                                           ),
                                         ),

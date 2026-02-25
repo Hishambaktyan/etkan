@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
-import '../../main.dart';
-import '../../shared/compenents/components.dart';
-import '../user_screens/the_chat.dart';
+import 'package:intl/intl.dart' show DateFormat;
+import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/user_screens/the_chat.dart';
+import 'package:trying_homy/shared/cubit/cubit.dart';
 
 class WorkerChat extends StatefulWidget {
   const WorkerChat({super.key});
@@ -14,96 +16,11 @@ class WorkerChat extends StatefulWidget {
 }
 
 class _WorkerChatState extends State<WorkerChat> {
-  final List<Map<String, dynamic>> chatData = [
-    {
-      'name': 'محمد علي اليوسفي',
-      'message': 'السلام عليكم، لو سمحت اشتي اركب حوض',
-      'time': '١٠:٣٠ ص',
-      'image': 'https://randomuser.me/api/portraits/men/1.jpg',
-      'isRead': true,
-      'unreadCount': 0,
-    },
-    {
-      'name': 'أحمد عبدالله',
-      'message': 'تم إرسال الموقع، بانتظارك في الموقع الجديد',
-      'time': '٠٩:١٥ ص',
-      'image': 'https://randomuser.me/api/portraits/men/32.jpg',
-      'isRead': false,
-      'unreadCount': 3,
-    },
-    {
-      'name': 'خالد جابر',
-      'message': 'شكراً جزيلاً على الخدمة الممتازة يا هندسة',
-      'time': 'أمس',
-      'image': 'https://randomuser.me/api/portraits/men/45.jpg',
-      'isRead': true,
-      'unreadCount': 0,
-    },
-    {
-      'name': 'عمر الشريف',
-      'message': 'بكم تكلفة إصلاح تسريب الحمام؟',
-      'time': '٢٠٢٦/١/٢١',
-      'image': 'https://randomuser.me/api/portraits/men/22.jpg',
-      'isRead': false,
-      'unreadCount': 1,
-    },
-    {
-      'name': 'ياسين المقطري',
-      'message': 'اتصلت بك ولم ترد، يرجى التواصل للضرورة',
-      'time': '٢٠٢٦/١/٢٠',
-      'image': 'https://randomuser.me/api/portraits/men/55.jpg',
-      'isRead': true,
-      'unreadCount': 0,
-    },
-    {
-      'name': 'عبدالرحمن قاسم',
-      'message': 'ارسل لي الفاتورة لو سمحت على الواتساب',
-      'time': '٢٠٢٦/١/١٩',
-      'image': 'https://randomuser.me/api/portraits/men/60.jpg',
-      'isRead': false,
-      'unreadCount': 5,
-    },
-    {
-      'name': 'إبراهيم الصبري',
-      'message': 'أحتاج صيانة دورية للمجمع السكني',
-      'time': '٢٠٢٦/١/١٨',
-      'image': 'https://randomuser.me/api/portraits/men/75.jpg',
-      'isRead': true,
-      'unreadCount': 0,
-    },
-    {
-      'name': 'فؤاد حسن',
-      'message': 'متى تقدر تجي البيت؟ الوالد ينتظرك',
-      'time': '٢٠٢٦/١/١٥',
-      'image': 'https://randomuser.me/api/portraits/men/80.jpg',
-      'isRead': true,
-      'unreadCount': 0,
-    },
-    {
-      'name': 'هشام الخولاني',
-      'message': 'تمام، اتفقنا على السعر المذكور',
-      'time': '٢٠٢٦/١/١٠',
-      'image': 'https://randomuser.me/api/portraits/men/90.jpg',
-      'isRead': true,
-      'unreadCount': 0,
-    },
-    {
-      'name': 'صالح المحمدي',
-      'message': 'تم تحويل المبلغ لحسابك البنكي الآن',
-      'time': '٢٠٢٦/١/٠١',
-      'image': 'https://randomuser.me/api/portraits/men/12.jpg',
-      'isRead': false,
-      'unreadCount': 2,
-    },
-    {
-      'name': 'ماجد الضبيبي',
-      'message': 'يا باشا القطع اللي ركبناها ممتازة جداً',
-      'time': '٢٠٢٦/١/٠١',
-      'image': 'https://randomuser.me/api/portraits/men/18.jpg',
-      'isRead': true,
-      'unreadCount': 0,
-    },
-  ];
+  String myUserId = FirebaseAuth.instance.currentUser!.uid;
+  final Stream<QuerySnapshot> chatStreamBuilder = FirebaseFirestore.instance
+      .collection('chats')
+      .where('users', arrayContains: FirebaseAuth.instance.currentUser!.uid )
+      .snapshots();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,83 +86,117 @@ class _WorkerChatState extends State<WorkerChat> {
           ),
         ],
       ),
-      body: Directionality(
-          textDirection: TextDirection.rtl,
-          child: ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(start:10.w,top: 20.h,bottom: 20.h,end:10.w),
-              itemBuilder: (context, index) {
-                var chat = chatData[index];
-                return InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onTap: ()=>move(context, TheChat(pfp: chat['image'], name: chat['name'])),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                          backgroundColor: Colors.grey.shade400,
-                          radius: 27.r,
-                          backgroundImage:NetworkImage(
-                              chat['image']
-                          )
-                      ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 190.w,
-                                  child: Text(
-                                    chat['name'],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Container(
-                                  alignment: AlignmentDirectional.centerEnd,
-                                  child: Text(
-                                    chat['time'],
-                                    style: TextStyle(
-                                        color: chat['unreadCount']!=0?Colors.green:Colors.grey,
-                                        fontSize: 11.sp
+      body: StreamBuilder(
+        stream: chatStreamBuilder,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return const Center(child: Text('حدث خطأ ما...:('));
+          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          var docs = snapshot.data!.docs;
+          return Directionality(
+              textDirection: TextDirection.rtl,
+              child: ListView.separated(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsetsDirectional.only(start:10.w,top: 20.h,bottom: 20.h,end:10.w),
+                itemCount: docs.length,
+                itemBuilder: (context, index) {
+
+                  var doc = docs[index];
+                  var chatData = doc.data() as Map<String, dynamic>;
+                  
+                  Timestamp lastUpdate = chatData['lastUpdate'];
+                  DateTime date = lastUpdate.toDate();
+                  String time = DateFormat('hh:mm a').format(date).replaceAll('AM', 'ص').replaceAll('PM', 'م');
+
+                  String lastMessage = chatData['lastMessage'] ?? '';
+                  var unReadCount = (chatData['unreadCount'] ?? {})[myUserId] ?? 0;
+
+                  List users = chatData['users'] ?? [];
+                  String otherUser =
+                  users.firstWhere((id) => id != myUserId, orElse: () => '');
+
+                  Map<String,dynamic> usersInfo = chatData['userInfo'] ?? {};
+                  var otherUsername = usersInfo[otherUser]['name'] ?? 'مستخدم';
+                  var otherUserImage = usersInfo[otherUser]['image'] ?? '';
+
+                  bool isMe = chatData['lastSenderId'] == myUserId;
+                  return InkWell(
+                    onLongPress: ()=>print(lastMessage),
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: ()=>move(context, TheChat(otherUsername: otherUsername, otherUserImage: otherUserImage,
+                        otherUserId: otherUser, myId: myUserId,chatId: doc.id,)),
+                    child:  Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: otherUserImage != null && otherUserImage != ''
+                              ? NetworkImage(otherUserImage)
+                              : null,
+                          radius: 23.r,
+                          child: otherUserImage == null || otherUserImage == ''
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 190.w,
+                                    child: Text(
+                                      otherUsername,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                if(chat['unreadCount']==0)
-                                  SvgPicture.asset(
-                                    chat['isRead']?'assets/checks.svg':'assets/check.svg',
-                                    color: chat['isRead']?Colors.blue:Colors.grey,
+                                  const Spacer(),
+                                  Container(
+                                    alignment: AlignmentDirectional.centerEnd,
+                                    child: Text(
+                                      time,
+                                      style: TextStyle(
+                                          color:Colors.grey,
+                                          fontSize: 10.sp
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  isMe && unReadCount == 0
+                                      ? SvgPicture.asset(
+                                    chatData['isLastMessagesRead']
+                                        ? 'assets/checks.svg'
+                                        : 'assets/check.svg',
+                                    color: chatData['isLastMessagesRead']
+                                        ? Colors.blue
+                                        : Colors.grey,
                                     width: 15.w,
                                     height: 15.w,
+                                  ) : const SizedBox(),
+                                  SizedBox(
+                                    width: 5.w,
                                   ),
-                                SizedBox(
-                                  width: 3.w,
-                                ),
-                                SizedBox(
-                                  width: chat['unreadCount']!=0?240.w:250.w,
-                                  child: Text(
-                                    chat['message'],
-                                    style: TextStyle(
-                                        color:Colors.grey,
-                                        fontSize: 11.sp
+                                    Expanded(
+                                      child: Text(
+                                        lastMessage,
+                                        style: TextStyle(
+                                            color:Colors.grey,
+                                            fontSize: 11.sp
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const Spacer(),
-                                if(chat['unreadCount']!=0)
-                                  Container(
+                                  unReadCount != 0 ? Container(
                                     height: 17.h,
                                     width: 17.w,
                                     alignment: Alignment.center,
@@ -256,7 +207,7 @@ class _WorkerChatState extends State<WorkerChat> {
                                     child: Padding(
                                       padding: EdgeInsetsDirectional.only(top: 4.h),
                                       child: Text(
-                                        '${chat['unreadCount']}',
+                                        '$unReadCount',
                                         style: TextStyle(
                                           fontSize: 9.sp,
                                           color: Colors.white,
@@ -265,19 +216,20 @@ class _WorkerChatState extends State<WorkerChat> {
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
-                            ),
-                          ],
+                                  ) : const SizedBox(),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) => SizedBox(height:17.h,),
-              itemCount: 11
-          )
+                      ],
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) => SizedBox(height:17.h,),
+              )
+          );
+        },
       ),
     );
   }

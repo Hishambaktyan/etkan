@@ -28,9 +28,10 @@ class _LoginScreenState extends State<LoginScreen> {
     MyCubit cubit = MyCubit.get(context);
     return BlocConsumer<MyCubit,States>(
       listener: (context, state) {
-        cubit.phoneController.clear();
-        cubit.passwordController.clear();
+
         if (state is LoginSuccessState) {
+          cubit.phoneController.clear();
+          cubit.passwordController.clear();
           var user = FirebaseAuth.instance.currentUser;
           if (user != null) {
             if (user.emailVerified) {

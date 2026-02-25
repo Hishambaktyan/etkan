@@ -54,12 +54,13 @@ Future<void> main() async {
     if(user.emailVerified){
         print('-----------------------------------------"تم تسجيل الدخول بنجاح، الـ UID هو: ${user.uid}');
       }
-    } else {
+    }
+    else {
       print("لا يوجد مستخدم مسجل حاليا-----------------------------ً");
     }
   });
   Bloc.observer = MyBlocObserver();
-  runApp( const MyApp());
+  runApp(const MyApp());
 
 }
 
@@ -72,13 +73,15 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(360, 800),
       builder: (context, child) =>  BlocProvider(
-          create: (context) => MyCubit(),
+        create: (context) => MyCubit(),
         child: MaterialApp(
           theme: lightTheme,
           debugShowCheckedModeBanner: false,
-          home: FirebaseAuth.instance.currentUser!=null &&FirebaseAuth.instance.currentUser!.emailVerified ?const WorkerMainScreen():const LoginScreen(),
+          home: FirebaseAuth.instance.currentUser!= null
+          && FirebaseAuth.instance.currentUser!.emailVerified ? const WorkerMainScreen()
+              : const LoginScreen() ,
         ),
-      )
+      ),
     );
   }
 }

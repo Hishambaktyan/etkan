@@ -1,407 +1,457 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:intl/intl.dart' show DateFormat;
+import 'package:trying_homy/shared/cubit/cubit.dart';
+import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import '../../shared/styles/colors.dart';
 
 class TheChat extends StatefulWidget {
-  final String pfp;
-  final String name;
-  const TheChat({super.key, required this.pfp, required this.name});
+  final String chatId;
+  final String otherUsername;
+  final String otherUserImage;
+  final String otherUserId;
+  final String myId;
+  const TheChat(
+      {super.key,
+      required this.otherUsername,
+      required this.otherUserImage,
+      required this.otherUserId,
+      required this.myId,
+      required this.chatId});
 
   @override
   State<TheChat> createState() => _TheChatState();
 }
+
 class _TheChatState extends State<TheChat> {
-  TextEditingController message = TextEditingController();
-  bool isWriting = false;
-  final List<Map<String, dynamic>> messages = [
-    {
-      'text': 'السلام عليكم، كيف حالك يا هندسة؟',
-      'isMe': true,
-      'time': '١٠:٠٠ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'وعليكم السلام يا هلا، الحمدلله بخير ونعمة. كيف أقدر أخدمك؟',
-      'isMe': false,
-      'time': '١٠:٠٢ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'لو سمحت عندي استفسار بخصوص الحوض اللي ركبناه الأسبوع الماضي',
-      'isMe': true,
-      'time': '١٠:٠٥ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'تفضل، هل في أي مشكلة ظهرت؟',
-      'isMe': false,
-      'time': '١٠:٠٦ ص',
-      'status': 'delivered',
-    },
-    // رسائل متتالية من العميل
-    {
-      'text': 'لا أبداً، التركيب ممتاز جداً ومافي أي تسريب',
-      'isMe': true,
-      'time': '١٠:٠٧ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'بس كنت اشتي أسأل عن نوع المنظفات المناسبة للرخام عشان ما يبهت لونه مع الوقت',
-      'isMe': true,
-      'time': '١٠:٠٧ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'وهل في مادة عازلة تنصحني أرشها فوقه؟',
-      'isMe': true,
-      'time': '١٠:٠٨ ص',
-      'status': 'delivered',
-    },
-    // ردود متتالية منك
-    {
-      'text': 'سؤال مهم جداً.. بالنسبة للرخام، أهم شيء تبتعد عن الأحماض والليمون والكلور المركز',
-      'isMe': false,
-      'time': '١٠:١٠ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'أفضل شيء تستخدم صابون سائل متعادل مع موية دافئة فقط',
-      'isMe': false,
-      'time': '١٠:١٠ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'وبالنسبة للعازل، نعم في مادة "نانو" ممتازة جداً تحميه من البقع والسوائل، إذا تحب أجيبها معي الزيارة الجاية',
-      'isMe': false,
-      'time': '١٠:١١ ص',
-      'status': 'delivered',
-    },
-    // رسائل جديدة لم تقرأ بعد
-    {
-      'text': 'يا ريت والله، متى تقدر تمر علي؟',
-      'isMe': true,
-      'time': '١٠:١٥ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'عشان نخلص موضوع العازل مرة واحدة قبل ما يجي الوالد',
-      'isMe': true,
-      'time': '١٠:١٥ ص',
-      'status': 'delivered',
-    },
-    {
-      'text': 'تمام، بشوف الجدول وأرد عليك الخبر بعد قليل إن شاء الله 👍',
-      'isMe': false,
-      'time': '١٠:١٧ ص',
-      'status': 'sent',
-    },
-  ];
-  Widget buildMessageStatus(String status, bool isMe) {
-    if (status == 'sent') {
-      return SvgPicture.asset(
-          'assets/check.svg',
-        width: 15.w,
-        height: 15.h,
-        color: isMe? Colors.green.shade100 :Colors.grey
-      );
-    } else if (status == 'delivered') {
-      return SvgPicture.asset(
-          'assets/checks.svg',
-          width: 15.w,
-          height: 15.h,
-          color: isMe? Colors.green.shade100 :Colors.grey
+  Stream<QuerySnapshot>? stream;
+
+  final ScrollController scrollController = ScrollController();
+
+  void scrollToBottom() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
       );
     }
-    return const SizedBox.shrink();
   }
-  final ScrollController scrollController = ScrollController();
-  void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 100),
-          curve: Curves.easeOut,
-        );
-      }
+
+  FocusNode messageFocus = FocusNode();
+
+  bool showScrollToBottomButton = false;
+
+  Timer? typingTimer;
+  bool isCurrentlyTyping = false;
+
+  void setTypingStatus(bool typing) {
+    if (isCurrentlyTyping == typing) return;
+    setState(() {
+      isCurrentlyTyping = typing;
+    });
+    FirebaseFirestore.instance.collection('chats').doc(widget.chatId).update({
+      'typingStatus.${widget.myId}': typing,
+    }).catchError((error) {
+      print("Error updating typing status: $error");
     });
   }
-  FocusNode messageFocus = FocusNode();
-  bool showScrollToBottomButton = false;
+
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.jumpTo(scrollController.position.maxScrollExtent);
-      }
-    });
-    messageFocus.addListener(() {
-      if (messageFocus.hasFocus) {
-        Future.delayed(const Duration(milliseconds: 50), () {
-          scrollToBottom();
-        });
-      }
-    });
+    MyCubit cubit = MyCubit.get(context);
+
+    cubit.resetUnreadCount(widget.chatId, widget.myId);
+
     scrollController.addListener(() {
-      if (scrollController.position.pixels < scrollController.position.maxScrollExtent - 100) {
+      if (scrollController.position.pixels > 100) {
         if (!showScrollToBottomButton) {
-          setState(() {
-            showScrollToBottomButton = true;
-          });
+          setState(() => showScrollToBottomButton = true);
         }
       } else {
         if (showScrollToBottomButton) {
-          setState(() {
-            showScrollToBottomButton = false;
-          });
+          setState(() => showScrollToBottomButton = false);
         }
       }
     });
+    stream = FirebaseFirestore.instance
+        .collection('chats')
+        .doc(widget.chatId)
+        .collection('messages')
+        .orderBy('timestamp',descending: true)
+        .snapshots();
+    cubit.markAsSeen(widget.chatId, widget.myId);
     super.initState();
   }
+
+  late MyCubit cubit;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    cubit = MyCubit.get(context);
+  }
+
+  @override
+  void dispose() {
+    cubit.markAsSeen(widget.chatId, widget.myId);
+    typingTimer?.cancel();
+    messageFocus.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    String pfp = widget.pfp;
-    String name = widget.name;
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          titleSpacing: 0,
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(CupertinoIcons.back),
-          ),
-          title: Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(pfp),
-                radius: 20.r,
+    MyCubit cubit = MyCubit.get(context);
+    String otherUserImage = widget.otherUserImage;
+    String otherUsername = widget.otherUsername;
+    String otherUserId = widget.otherUserId;
+    String myId = widget.myId;
+    return BlocConsumer<MyCubit, States>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+              titleSpacing: 0,
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(CupertinoIcons.back),
               ),
-              SizedBox(
-                width: 10.w,
-              ),
-              SizedBox(
-                width: 170.w,
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.more_vert_rounded))
-          ],
-        ),
-        body: Stack(
-          alignment: AlignmentDirectional.bottomEnd,
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                      padding: EdgeInsetsDirectional.only(bottom: 20.h),
-                      physics: const BouncingScrollPhysics(),
-                      controller: scrollController,
-                      itemBuilder: (context, index) {
-                        var message = messages[index];
-                        bool isMe = message['isMe'];
-                        return Padding(
-                          padding: EdgeInsetsDirectional.symmetric(vertical: 7.h,horizontal: 7.w),
-                          child: Align(
-                            alignment: isMe? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart ,
-                            child: Container(
-                              padding: const EdgeInsetsDirectional.all(15),
-                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-                              decoration: BoxDecoration(
-                                color: isMe?Colors.green.shade400 : Colors.green.withOpacity(0.2),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(15.r),
-                                  topRight: Radius.circular(15.r),
-                                  bottomLeft: isMe ? const Radius.circular(0) : Radius.circular(15.r) ,
-                                  bottomRight: isMe ? Radius.circular(15.r) : const Radius.circular(0),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    message['text'],
-                                    style: TextStyle(
-                                        color: isMe?Colors.white : Colors.black,
-                                        fontSize: 12.sp
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min, // ليأخذ الصف مساحة محتواه فقط
-                                    mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        message['time'],
-                                        style: TextStyle(
-                                            color: isMe?Colors.green.shade100:Colors.grey,
-                                            fontSize: 11.sp
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 3.w,
-                                      ),
-                                      isMe? buildMessageStatus(message['status'], isMe):const SizedBox(),
-
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      itemCount: messages.length
+              title: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(otherUserImage),
                   ),
-                ),
-                SizedBox(
-                  height: 5.h,
-                ),
-                Container(
-                  color: Colors.transparent,
-                  width: double.infinity,
-                  child: Padding(
-                    padding: EdgeInsetsDirectional.only(start: 13.w,end: 13.w, bottom: 13.h,top: 5.h),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 5.h),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(17.r)),
-                            child: TextFormField(
-                              controller: message,
-                              focusNode: messageFocus,
-                              style: TextStyle(
-                                fontSize: 12.sp
-                              ),
-                              minLines: 1,
-                              maxLines: 5,
-                              onChanged: (value) {
-                                setState(() {
-                                  isWriting = value.isNotEmpty;
-                                });
-                              },
-                              keyboardType: TextInputType.multiline,
-                              textAlignVertical: TextAlignVertical.center,
-                              decoration: InputDecoration(
-                                hintText: 'ارسل رسالة...',
-                                hintStyle:
-                                TextStyle(fontSize: 13.sp, color: Colors.grey),
-                                border: InputBorder.none,
-                                suffixIcon: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    !isWriting
-                                        ? InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      child: SvgPicture.asset(
-                                        'assets/camera.svg',
-                                        height: 23.h,
-                                        width: 23.h,
-                                        color: Colors.grey,
-                                      ),
-                                    )
-                                        :const SizedBox(),
-                                    SizedBox(
-                                      width: 15.w,
-                                    ),
-                                    InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      child: SvgPicture.asset(
-                                        'assets/clip.svg',
-                                        height: 23.h,
-                                        width: 23.h,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        FloatingActionButton(
-                          onPressed: (){
-                            if(message.text.isNotEmpty){
-                              final now = DateTime.now();
-                              final hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
-                              final minute = now.minute.toString().padLeft(2, '0');
-                              final period = now.hour >= 12 ? 'م' : 'ص';
-                              final timeString = '$hour:$minute $period';
-                              setState(() {
-                                messages.add({
-                                  'text': message.text,
-                                  'isMe': true,
-                                  'time': timeString,
-                                  'status': 'sent',
-                                });
-                                message.clear();
-                                scrollToBottom();
-                              });
-                            }
-                          },
-                          elevation: 0,
-                          shape: const CircleBorder(),
-                          backgroundColor: mainColor,
-                          splashColor: Colors.transparent,
-                          child: Icon(
-                            Icons.send_rounded,
-                            color: Colors.white,
-                            size: 25.h,
-                          ),
-                        )
-                      ],
-                    ),
+                  SizedBox(
+                    width: 10.w,
                   ),
-                ),
+                  Text(otherUsername,
+                      style:
+                          TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              actions: [
+                IconButton(
+                    onPressed: () {}, icon: const Icon(Icons.more_vert_rounded))
               ],
             ),
-            AnimatedScale(duration: const Duration(milliseconds: 200),
-              scale: showScrollToBottomButton ? 1.0 : 0.0,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 200),
-                opacity: showScrollToBottomButton ? 1.0 : 0.0,
-                child: Padding(
-                  padding:  EdgeInsetsDirectional.only(bottom: 100.h,end: 10.w),
-                  child: FloatingActionButton.small(
-                    heroTag: 'scroll_down',
-                    backgroundColor: Colors.white,
-                      elevation: 4,
-                      shape: const CircleBorder(),
-                      onPressed: ()=>scrollToBottom(),
-                    child: SvgPicture.asset(
-                        'assets/down.svg',
-                      width: 23.w,
-                      height: 23.h,
+            body: StreamBuilder(
+              stream: stream,
+              builder: (context, snapshot) {
+                MyCubit.get(context).markAsSeen(widget.chatId, widget.myId);
+                if (snapshot.hasError) {
+                  return const Center(child: Text('حدث خطأ ما...:('));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return const Center(child: Text('لا توجد رسائل بعد'));
+                }
+                var docs = snapshot.data!.docs;
+                for (var doc in docs) {
+                  var data = doc.data() as Map<String, dynamic>;
+                  if (data['receiverId'] == widget.myId && data['isSeen'] == false) {
+                    cubit.markAsSeen(widget.chatId, widget.myId);
+                    break;
+                  }
+                }
+                return Stack(
+                  alignment: AlignmentDirectional.bottomEnd,
+                  children: [
+                    Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            reverse: true,
+                              padding: EdgeInsetsDirectional.only(bottom: 10.h),
+                              controller: scrollController,
+                              itemBuilder: (context, index) {
+                                var doc = docs[index];
+                                var chatData =
+                                    doc.data() as Map<String, dynamic>;
+                                bool isMe =
+                                    chatData['senderId'] == myId ? true : false;
+
+                                DateTime? date = (chatData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
+                                final String time = DateFormat('hh:mm a').format(date).replaceAll('AM', 'ص').replaceAll('PM', 'م');
+
+                                return Padding(
+                                  padding: EdgeInsetsDirectional.symmetric(
+                                      vertical: 7.h, horizontal: 7.w),
+                                  child: Align(
+                                    alignment: isMe
+                                        ? AlignmentDirectional.centerEnd
+                                        : AlignmentDirectional.centerStart,
+                                    child: Container(
+                                      padding: EdgeInsetsDirectional.only(start: 10.w,end: 10.w,top: 8.h,bottom: 2.h),
+                                      constraints: BoxConstraints(
+                                          maxWidth: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.75),
+                                      decoration: BoxDecoration(
+                                        color: isMe
+                                            ? Colors.green.shade400
+                                            : Colors.green.withOpacity(0.2),
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(15.r),
+                                          topRight: Radius.circular(15.r),
+                                          bottomLeft: isMe
+                                              ? const Radius.circular(0)
+                                              : Radius.circular(15.r),
+                                          bottomRight: isMe
+                                              ? Radius.circular(15.r)
+                                              : const Radius.circular(0),
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: isMe
+                                            ? CrossAxisAlignment.end
+                                            : CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            chatData['text'],
+                                            style: TextStyle(
+                                                color: isMe
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                                fontSize: 11.sp),
+                                          ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment: isMe
+                                                ? MainAxisAlignment.end
+                                                : MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                time,
+                                                style: TextStyle(
+                                                    color: isMe
+                                                        ? Colors
+                                                            .green.shade100
+                                                        : Colors.grey,
+                                                    fontSize: 8.sp),
+                                              ),
+                                              SizedBox(
+                                                width: 3.w,
+                                              ),
+                                              isMe
+                                                  ? cubit
+                                                      .buildMessageStatus(
+                                                      chatData[
+                                                              'messageStatus'] ??
+                                                          'sent',
+                                                      chatData['isSeen'] ??
+                                                          false,
+                                                      isMe,
+                                                    )
+                                                  : const SizedBox()
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              itemCount: docs.length),
+                        ),
+                        StreamBuilder<DocumentSnapshot>(
+                          stream: FirebaseFirestore.instance.collection('chats').doc(widget.chatId).snapshots(),
+                          builder: (context, typingSnapshot) {
+                            if (typingSnapshot.hasData && typingSnapshot.data!.exists) {
+                              var data = typingSnapshot.data!.data() as Map<String, dynamic>;
+                              var typingMap = data['typingStatus'] as Map<String, dynamic>?;
+                              bool isOtherTyping = typingMap?[widget.otherUserId] ?? false;
+
+                              if (isOtherTyping) {
+                                return AnimatedOpacity(
+                                  opacity: isOtherTyping ? 1.0 : 0.0,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Align(
+                                    alignment: AlignmentDirectional.centerStart,
+                                    child: Container(
+                                      margin: EdgeInsetsDirectional.only(start: 7.w),
+                                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 8),
+                                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.15),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.withOpacity(0.2),
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(15.r),
+                                          topRight: Radius.circular(15.r),
+                                          bottomLeft: Radius.circular(15.r),
+                                          bottomRight: const Radius.circular(0),
+                                        ),
+                                      ),
+                                      child: const SpinKitThreeBounce(
+                                        color: Colors.grey,
+                                        size: 10,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                            return const SizedBox();
+                          },
+                        ),
+                        Container(
+                          color: Colors.transparent,
+                          width: double.infinity,
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.only(
+                              start: 13.w,
+                              end: 13.w,
+                              bottom: 13.h,
+                              top: 5.h,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsetsDirectional.symmetric(
+                                      horizontal: 15.w,
+                                      vertical: 5.h,
+                                    ),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(17.r),
+                                    ),
+                                    child: TextFormField(
+                                      controller: cubit.message,
+                                      focusNode: messageFocus,
+                                      style: TextStyle(fontSize: 12.sp),
+                                      minLines: 1,
+                                      maxLines: 5,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          cubit.isTyping = value.isNotEmpty;
+                                        });
+
+                                        if (value.isNotEmpty) {
+                                          setTypingStatus(true);
+
+                                          typingTimer?.cancel();
+
+                                          typingTimer = Timer(const Duration(seconds: 1), () {
+                                            setTypingStatus(false);
+                                          });
+                                        } else {
+                                          typingTimer?.cancel();
+                                          setTypingStatus(false);
+                                        }
+                                      },
+                                      keyboardType: TextInputType.multiline,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      decoration: InputDecoration(
+                                        hintText: 'ارسل رسالة...',
+                                        hintStyle: TextStyle(
+                                          fontSize: 13.sp,
+                                          color: Colors.grey,
+                                        ),
+                                        border: InputBorder.none,
+                                        suffixIcon: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            !cubit.isTyping
+                                                ? InkWell(
+                                                    splashColor:
+                                                        Colors.transparent,
+                                                    highlightColor:
+                                                        Colors.transparent,
+                                                    child: SvgPicture.asset(
+                                                      'assets/camera.svg',
+                                                      height: 23.h,
+                                                      width: 23.h,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  )
+                                                : const SizedBox(),
+                                            SizedBox(width: 15.w),
+                                            InkWell(
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              child: SvgPicture.asset(
+                                                'assets/clip.svg',
+                                                height: 23.h,
+                                                width: 23.h,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
+                                FloatingActionButton(
+                                  onPressed: () async {
+                                    await cubit.sendMessage(widget.chatId, otherUserId, myId);
+                                  },
+                                  elevation: 0,
+                                  shape: const CircleBorder(),
+                                  backgroundColor: mainColor,
+                                  splashColor: Colors.transparent,
+                                  child: Icon(
+                                    Icons.send_rounded,
+                                    color: Colors.white,
+                                    size: 25.h,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
+                    AnimatedScale(
+                      duration: const Duration(milliseconds: 200),
+                      scale: showScrollToBottomButton ? 1.0 : 0.0,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: showScrollToBottomButton ? 1.0 : 0.0,
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(
+                              bottom: 100.h, end: 10.w),
+                          child: FloatingActionButton.small(
+                            heroTag: 'scroll_down',
+                            backgroundColor: Colors.white,
+                            elevation: 4,
+                            shape: const CircleBorder(),
+                            onPressed: () => scrollToBottom(),
+                            child: SvgPicture.asset(
+                              'assets/down.svg',
+                              width: 23.w,
+                              height: 23.h,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

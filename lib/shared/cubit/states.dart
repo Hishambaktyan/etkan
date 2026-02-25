@@ -65,4 +65,24 @@ class DeleteUserAccErrorState extends States{
   DeleteUserAccErrorState({required this.error});
 }
 
+class SendMessageSuccessState extends States{}
+
+class SendMessageLoadingState extends States{}
+
+class SendMessageErrorState extends States{
+  final String error;
+
+  SendMessageErrorState({required this.error});
+}
+
+class GetWorkerDataSuccessState extends States{}
+
+class GetWorkerDataLoadingState extends States{}
+
+class GetWorkerDataErrorState extends States{
+  final String error;
+
+  GetWorkerDataErrorState({required this.error});
+}
+
 

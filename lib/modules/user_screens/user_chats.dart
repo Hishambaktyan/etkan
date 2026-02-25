@@ -179,7 +179,7 @@ class _UserChatsState extends State<UserChats> {
               return InkWell(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                onTap: ()=>move(context, TheChat(pfp: chat['image'], name: chat['name'])),
+                onTap: (){},
                 child: Row(
                   children: [
                     CircleAvatar(
