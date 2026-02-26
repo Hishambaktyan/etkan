@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +10,10 @@ import '../../modules/worker_screens/worker_account_screeen.dart';
 import '../../modules/worker_screens/worker_booking_screen.dart';
 import '../../modules/worker_screens/worker_chat.dart';
 import '../../modules/worker_screens/worker_home_screen.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class MyCubit extends Cubit<States>{
 
@@ -84,6 +89,7 @@ class MyCubit extends Cubit<States>{
         'createdAt': FieldValue.serverTimestamp(),
       });
       await verifyEmail();
+      await saveUserToken();
       emit(SignUpSuccessState());
 
     } on FirebaseAuthException catch (e) {
@@ -109,6 +115,7 @@ class MyCubit extends Cubit<States>{
           password: password
       );
       await userCredential.user?.reload();
+      await saveUserToken();
         currentIndex=0;
       emit(LoginSuccessState());
 
@@ -144,6 +151,37 @@ class MyCubit extends Cubit<States>{
     }catch(e){
       emit(LogOutErrorState(error: e.toString()));
       print(e.toString());
+    }
+  }
+
+  Future<void> saveUserToken() async {
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (token != null && user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
+          'token': token,
+        });
+        print("تم حفظ الـ Token بنجاح: $token");
+      }
+    } catch (e) {
+      print("خطأ أثناء حفظ الـ Token: ${e.toString()}");
+    }
+  }
+
+  Future<void> checkUser() async {
+    var user = FirebaseAuth.instance.currentUser;
+
+    if (user != null && user.emailVerified) {
+
+      await saveUserToken();
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+        saveUserToken();
+      });
     }
   }
 
@@ -220,6 +258,15 @@ class MyCubit extends Cubit<States>{
         'unreadCount.$receiverId': FieldValue.increment(1),
         'lastSenderId': senderId,
       });
+      var receiverDoc = await FirebaseFirestore.instance.collection('users').doc(receiverId).get();
+      String? receiverToken = receiverDoc.data()?['token'];
+      if (receiverToken != null) {
+        await sendNotificationV1(
+            receiverToken: receiverToken,
+            messageText: text,
+          chatId: chatId
+        );
+      }
       emit(SendMessageSuccessState());
       message.clear();
     }catch(e){
@@ -251,6 +298,72 @@ class MyCubit extends Cubit<States>{
     });
   }
   bool isTyping=false;
+
+  Future<String> getAccessToken() async {
+
+    final jsonString = await rootBundle.loadString('assets/service-account.json');
+    final accountCredentials = ServiceAccountCredentials.fromJson(jsonString);
+
+    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+
+    final client = await clientViaServiceAccount(accountCredentials, scopes);
+    return client.credentials.accessToken.data;
+  }
+
+
+  Future<void> sendNotificationV1({
+    required String receiverToken,
+    required String messageText,
+    required String chatId,
+  })
+  async {
+    try {
+      var uid = FirebaseAuth.instance.currentUser!.uid;
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      final String accessToken = await getAccessToken();
+      const String projectId = "homy-1de67";
+
+      final response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/v1/projects/$projectId/messages:send'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({
+          'message': {
+            'token': receiverToken,
+
+            'notification': {
+              'title': 'رسالة جديدة من ${snapshot.data()!['name']}',
+              'body': messageText,
+            },
+
+            'data': {
+              'chatId': chatId,
+              'senderId': uid,
+              'type': 'chat'
+            },
+
+            'android': {
+              'priority': 'high',
+            }
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('تم إرسال الإشعار بنجاح (V1)');
+      } else {
+        print('خطأ في الإرسال: ${response.body}');
+      }
+    } catch (e) {
+      print("حدث خطأ أثناء توليد التوكن: $e");
+    }
+  }
 
 
 

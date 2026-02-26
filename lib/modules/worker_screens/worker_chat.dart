@@ -6,7 +6,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/the_chat.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
 
 class WorkerChat extends StatefulWidget {
   const WorkerChat({super.key});
@@ -16,6 +15,46 @@ class WorkerChat extends StatefulWidget {
 }
 
 class _WorkerChatState extends State<WorkerChat> {
+  Future<void> createNewChat({
+    required String myId,
+    required String otherId,
+    required String myName,
+    required String myImage,
+    required String otherName,
+    required String otherImage,
+  }) async {
+    final chatId = FirebaseFirestore.instance.collection('chats').doc().id;
+
+    await FirebaseFirestore.instance.collection('chats').doc(chatId).set({
+      'users': [myId, otherId],
+
+      'lastMessage': '',
+      'lastSenderId': '',
+      'lastUpdate': FieldValue.serverTimestamp(),
+      'isLastMessagesRead': true,
+
+      'typingStatus': {
+        myId: false,
+        otherId: false,
+      },
+
+      'unreadCount': {
+        myId: 0,
+        otherId: 0,
+      },
+
+      'userInfo': {
+        myId: {
+          'name': myName,
+          'image': myImage,
+        },
+        otherId: {
+          'name': otherName,
+          'image': otherImage,
+        },
+      },
+    });
+  }
   String myUserId = FirebaseAuth.instance.currentUser!.uid;
   final Stream<QuerySnapshot> chatStreamBuilder = FirebaseFirestore.instance
       .collection('chats')
@@ -41,7 +80,16 @@ class _WorkerChatState extends State<WorkerChat> {
           Row(
             children: [
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  createNewChat(
+                      myId: 'zgyZCfttdmWsmKTNWneC4vbD7sX2',
+                      otherId: 'j0z415zBtFWBXb1qPiCSHLWtLop2',
+                      myName: 'هشام هاني',
+                      myImage: 'https://i.pinimg.com/736x/27/90/03/27900371354079f41e16751f2a320fdb.jpg',
+                      otherName: 'هادي محمد',
+                      otherImage: 'https://i.pinimg.com/736x/eb/76/a4/eb76a46ab920d056b02d203ca95e9a22.jpg'
+                  );
+                },
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   width: 40.w,
@@ -105,10 +153,17 @@ class _WorkerChatState extends State<WorkerChat> {
 
                   var doc = docs[index];
                   var chatData = doc.data() as Map<String, dynamic>;
-                  
-                  Timestamp lastUpdate = chatData['lastUpdate'];
-                  DateTime date = lastUpdate.toDate();
-                  String time = DateFormat('hh:mm a').format(date).replaceAll('AM', 'ص').replaceAll('PM', 'م');
+
+                  Timestamp? lastUpdate = chatData['lastUpdate'];
+
+                  DateTime date = lastUpdate != null
+                      ? lastUpdate.toDate()
+                      : DateTime.now();
+
+                  String time = DateFormat('hh:mm a')
+                      .format(date)
+                      .replaceAll('AM', 'ص')
+                      .replaceAll('PM', 'م');
 
                   String lastMessage = chatData['lastMessage'] ?? '';
                   var unReadCount = (chatData['unreadCount'] ?? {})[myUserId] ?? 0;

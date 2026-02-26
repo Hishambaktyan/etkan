@@ -77,7 +77,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
 
    bool isLoading = true;
 
-   Future<void> getWorkerData() async  {
+   Future<void> getWorkerData() async   {
      final uid = FirebaseAuth.instance.currentUser!.uid;
      try{
        DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
@@ -90,6 +90,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
          workerDept = snapshot.data()!['specialization'];
          setState(() {
            isLoading=false;
+
          });
          print(workerName);
          print(workerDept);
