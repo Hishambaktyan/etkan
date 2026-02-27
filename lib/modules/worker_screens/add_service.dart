@@ -378,6 +378,14 @@ class _AddServiceState extends State<AddService> {
                     ),
                   ),
                 ),
+                bottomNavigationBar: Padding(
+                  padding: EdgeInsetsDirectional.only(start: 20.w,end: 20.w,bottom: 15.h),
+                  child: defualtButtonWithIcon(
+                      onPressed: (){},
+                      text: 'إضافة',
+                      icon: const Icon(Icons.add_rounded,color: Colors.white,)
+                  ),
+                ),
               ),
           );
         },

@@ -925,7 +925,7 @@ class WorkerOrderDetails extends StatelessWidget {
                               return Directionality(
                                 textDirection: TextDirection.rtl,
                                 child: AlertDialog(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: cubit.isDark? lightDarkColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20.r),
                                   ),
@@ -951,6 +951,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 18.sp,
                                           fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).textTheme.bodyLarge!.color
                                         ),
                                       ),
                                       SizedBox(height: 10.h),
@@ -959,7 +960,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 13.sp,
-                                          color: Colors.grey.shade600,
+                                          color: Theme.of(context).textTheme.bodyLarge!.color,
                                           height: 1.5,
                                         ),
                                       ),
@@ -1003,7 +1004,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                               child: Text(
                                                 'تراجع',
                                                 style: TextStyle(
-                                                  color: Colors.grey.shade700,
+                                                  color: Theme.of(context).textTheme.bodyLarge!.color,
                                                   fontSize: 14.sp,
                                                 ),
                                               ),
@@ -1034,7 +1035,7 @@ class WorkerOrderDetails extends StatelessWidget {
                               return Directionality(
                                 textDirection: TextDirection.rtl,
                                 child: AlertDialog(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: cubit.isDark? lightDarkColor : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20.r),
                                   ),
@@ -1060,6 +1061,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 18.sp,
                                           fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).textTheme.bodyLarge!.color
                                         ),
                                       ),
                                       SizedBox(height: 10.h),
@@ -1068,7 +1070,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 13.sp,
-                                          color: Colors.grey.shade600,
+                                          color: Theme.of(context).textTheme.bodyLarge!.color,
                                           height: 1.5,
                                         ),
                                       ),
@@ -1112,7 +1114,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                               child: Text(
                                                 'تراجع',
                                                 style: TextStyle(
-                                                  color: Colors.grey.shade700,
+                                                  color: Theme.of(context).textTheme.bodyLarge!.color,
                                                   fontSize: 14.sp,
                                                 ),
                                               ),

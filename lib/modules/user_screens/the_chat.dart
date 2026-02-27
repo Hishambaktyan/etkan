@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/shared/cubit/cubit.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
 import '../../shared/styles/colors.dart';
 
 class TheChat extends StatefulWidget {
@@ -411,9 +409,7 @@ class _TheChatState extends State<TheChat> {
                                                 : const SizedBox(),
                                             SizedBox(width: 15.w),
                                             InkWell(
-                                              splashColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
+                                              onTap: (){},
                                               child: SvgPicture.asset(
                                                 'assets/clip.svg',
                                                 height: 23.h,
