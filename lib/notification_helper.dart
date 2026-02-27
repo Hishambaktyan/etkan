@@ -77,8 +77,8 @@ class NotificationHelper {
 
       await _notificationsPlugin.show(
         id,
-        message.notification?.title ?? "رسالة جديدة",
-        message.notification?.body ?? "",
+        message.data['title'] ?? "رسالة جديدة",
+        message.data['body'] ?? "",
         notificationDetails,
         payload: message.data['chatId'],
       );

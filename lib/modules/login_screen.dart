@@ -185,6 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Container(
                                 height: 50.h,
                                 child: defaultTextFormfeild(
+                                  cubit: cubit,
                                     text: 'البريد الألكتروني',
                                     prefixIcon: 'assets/phone.svg',
                                     errorMes: 'البريد الألكتروني يجب ان لا يكون فارغ',
@@ -198,6 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Container(
                                 height: 50.h,
                                 child: defaultTextFormfeild(
+                                    cubit: cubit,
                                     text: 'كلمة المرور',
                                     prefixIcon: 'assets/lock.svg',
                                     errorMes: 'كلمة المرور يجب ان لا تكون فارغ',

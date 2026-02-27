@@ -138,8 +138,8 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                 colors: [
                                   mainColor,
                                   mainColor.withOpacity(0.7),
-                                  Colors.green.shade300.withOpacity(0.5),
-                                  Colors.white,
+                                  mainColor.withOpacity(0.5),
+                                  cubit.isDark? mainColor.withOpacity(0.5): Colors.white,
                                 ],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
@@ -155,7 +155,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                   Colors.grey.shade500.withOpacity(0.5),
                                   Colors.grey.shade700.withOpacity(0.5),
                                   Colors.grey.shade300.withOpacity(0.5),
-                                  Colors.white,
+                                  cubit.isDark? darkBgColor: Colors.white,
                                 ],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
@@ -166,6 +166,13 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                   1.0
                                 ]
                             ),
+                            boxShadow: cubit.isDark? [
+                            BoxShadow(
+                              color: (cubit.amAvailable ? mainColor : Colors.grey).withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                              ] : []
                           ),
                           child: Column(
                             children: [
@@ -286,9 +293,9 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                   margin: EdgeInsetsDirectional.only(end: index==3?0:10.w),
                                   width: 170.w,
                                   decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: cubit.isDark? lightDarkColor: Colors.white,
                                       borderRadius: BorderRadius.circular(12.r),
-                                      boxShadow: shadow
+                                      boxShadow: cubit.isDark? []: shadow
                                   ),
                                   child: Stack(
                                     children: [
@@ -297,7 +304,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                         left: -10,
                                         child: SvgPicture.asset(
                                           data['icon'],
-                                          color: mainColor.withOpacity(0.2),
+                                          color: cubit.isDark? mainColor.withOpacity(0.1): mainColor.withOpacity(0.2),
                                           width: 53.w,
                                           height: 53.h,
                                         ),
@@ -314,13 +321,13 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                                   '0',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold,
-                                                      color: Colors.black,
+                                                       color: cubit.isDark? Colors.white: Colors.black,
                                                       fontSize: 20.sp
                                                   ),
                                                 ),
                                                 const Spacer(),
                                                 CircleAvatar(
-                                                  backgroundColor: Colors.green.withOpacity(0.1),
+                                                  backgroundColor: cubit.isDark? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
                                                   radius: 23.r,
                                                   child: SvgPicture.asset(
                                                     data['icon'],
@@ -337,7 +344,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                             Text(
                                               data['title'],
                                               style: TextStyle(
-                                                  color: Colors.black,
+                                                  color: cubit.isDark? Colors.white: Colors.black,
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 13.sp,
                                                   height: 1
@@ -460,6 +467,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18.sp,
+                            color: Theme.of(context).textTheme.bodyLarge!.color
                           ),
                         ),
                         const Spacer(),
@@ -490,7 +498,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12.r),
-                              color: Colors.white,
+                              color: cubit.isDark? lightDarkColor: Colors.white,
                               boxShadow: shadow
                           ),
                           child: Column(
@@ -587,7 +595,8 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 12.sp
+                                          fontSize: 12.sp,
+                                        color: cubit.isDark? Colors.white:Colors.black
                                       ),
                                     ),
                                     SizedBox(
@@ -599,7 +608,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           fontSize: 10.sp,
-                                          color: Colors.grey
+                                          color: cubit.isDark? darkSubTextColor: Colors.grey
                                       ),
                                     ),
                                   ],
@@ -709,6 +718,9 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 30.h,
                   ),
                 ],
               ),

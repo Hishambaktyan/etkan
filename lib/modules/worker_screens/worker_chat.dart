@@ -15,50 +15,11 @@ class WorkerChat extends StatefulWidget {
 }
 
 class _WorkerChatState extends State<WorkerChat> {
-  Future<void> createNewChat({
-    required String myId,
-    required String otherId,
-    required String myName,
-    required String myImage,
-    required String otherName,
-    required String otherImage,
-  }) async {
-    final chatId = FirebaseFirestore.instance.collection('chats').doc().id;
-
-    await FirebaseFirestore.instance.collection('chats').doc(chatId).set({
-      'users': [myId, otherId],
-
-      'lastMessage': '',
-      'lastSenderId': '',
-      'lastUpdate': FieldValue.serverTimestamp(),
-      'isLastMessagesRead': true,
-
-      'typingStatus': {
-        myId: false,
-        otherId: false,
-      },
-
-      'unreadCount': {
-        myId: 0,
-        otherId: 0,
-      },
-
-      'userInfo': {
-        myId: {
-          'name': myName,
-          'image': myImage,
-        },
-        otherId: {
-          'name': otherName,
-          'image': otherImage,
-        },
-      },
-    });
-  }
   String myUserId = FirebaseAuth.instance.currentUser!.uid;
   final Stream<QuerySnapshot> chatStreamBuilder = FirebaseFirestore.instance
       .collection('chats')
       .where('users', arrayContains: FirebaseAuth.instance.currentUser!.uid )
+      .orderBy('lastUpdate',descending: true)
       .snapshots();
   @override
   Widget build(BuildContext context) {
@@ -73,74 +34,90 @@ class _WorkerChatState extends State<WorkerChat> {
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 23.sp,
-              color: Colors.black
+              color: Theme.of(context).textTheme.bodyLarge!.color
           ),
         ),
         actions: [
-          Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  createNewChat(
-                      myId: 'zgyZCfttdmWsmKTNWneC4vbD7sX2',
-                      otherId: 'j0z415zBtFWBXb1qPiCSHLWtLop2',
-                      myName: 'هشام هاني',
-                      myImage: 'https://i.pinimg.com/736x/27/90/03/27900371354079f41e16751f2a320fdb.jpg',
-                      otherName: 'هادي محمد',
-                      otherImage: 'https://i.pinimg.com/736x/eb/76/a4/eb76a46ab920d056b02d203ca95e9a22.jpg'
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: 40.w,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey)
-                  ),
-                  child: SvgPicture.asset('assets/search.svg'),
-                ),
+          InkWell(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onTap: () {
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              width: 40.w,
+              height: 40.h,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey)
               ),
-              SizedBox(width: 10.w),
-              InkWell(
-                onTap: () {
-                  setState(() {
-
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: 40.w,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey)
-                  ),
-                  child: Stack(
-                    alignment: AlignmentDirectional.topEnd,
-                    children: [
-                      SvgPicture.asset('assets/not.svg'),
-                      if (true)
-                        CircleAvatar(
-                          radius: 4.r,
-                          backgroundColor: Colors.red,
-                        ),
-                    ],
-                  ),
-                ),
+              child: SvgPicture.asset(
+                'assets/search.svg',
+                color: Theme.of(context).iconTheme.color,
               ),
-              SizedBox(width: 10.w),
-            ],
+            ),
           ),
+          SizedBox(width: 10.w),
+          InkWell(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onTap: () {
+              setState(() {
+
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              width: 40.w,
+              height: 40.h,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey)
+              ),
+              child: Stack(
+                alignment: AlignmentDirectional.topEnd,
+                children: [
+                  SvgPicture.asset(
+                    'assets/not.svg',
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  if (true)
+                    CircleAvatar(
+                      radius: 4.r,
+                      backgroundColor: Colors.red,
+                    ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(width: 10.w),
         ],
       ),
       body: StreamBuilder(
         stream: chatStreamBuilder,
         builder: (context, snapshot) {
-          if (snapshot.hasError) return const Center(child: Text('حدث خطأ ما...:('));
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                  'حدث خطأ ما...):',
+                style: TextStyle(
+                  color: Colors.grey
+                ),
+              )
+              ,
+            );
+          }
           if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text(
+                'لا توجد دردشات...):',
+                style: TextStyle(
+                    color: Colors.grey
+                ),
+              )
+              ,
+            );
           }
           var docs = snapshot.data!.docs;
           return Directionality(
@@ -156,14 +133,13 @@ class _WorkerChatState extends State<WorkerChat> {
 
                   Timestamp? lastUpdate = chatData['lastUpdate'];
 
-                  DateTime date = lastUpdate != null
-                      ? lastUpdate.toDate()
-                      : DateTime.now();
-
-                  String time = DateFormat('hh:mm a')
+                  DateTime? date = lastUpdate?.toDate();
+                  String time = date != null
+                      ? DateFormat('hh:mm a')
                       .format(date)
                       .replaceAll('AM', 'ص')
-                      .replaceAll('PM', 'م');
+                      .replaceAll('PM', 'م')
+                      : '';
 
                   String lastMessage = chatData['lastMessage'] ?? '';
                   var unReadCount = (chatData['unreadCount'] ?? {})[myUserId] ?? 0;
@@ -172,11 +148,19 @@ class _WorkerChatState extends State<WorkerChat> {
                   String otherUser =
                   users.firstWhere((id) => id != myUserId, orElse: () => '');
 
-                  Map<String,dynamic> usersInfo = chatData['userInfo'] ?? {};
-                  var otherUsername = usersInfo[otherUser]['name'] ?? 'مستخدم';
-                  var otherUserImage = usersInfo[otherUser]['image'] ?? '';
+                  Map<String, dynamic> usersInfo = chatData['userInfo'] ?? {};
+
+                  var otherUserData = usersInfo[otherUser] ?? {};
+
+                  var otherUsername = otherUserData['name'] ?? 'مستخدم';
+                  var otherUserImage = otherUserData['image'] ?? '';
 
                   bool isMe = chatData['lastSenderId'] == myUserId;
+
+                  Map<String, dynamic> unreadMap = chatData['unreadCount'] ?? {};
+                  int otherUnread = unreadMap[otherUser] ?? 0;
+
+                  bool otherHasRead = otherUnread == 0;
                   return InkWell(
                     onLongPress: ()=>print(lastMessage),
                     splashColor: Colors.transparent,
@@ -189,6 +173,7 @@ class _WorkerChatState extends State<WorkerChat> {
                           backgroundImage: otherUserImage != null && otherUserImage != ''
                               ? NetworkImage(otherUserImage)
                               : null,
+                          backgroundColor: Colors.grey.withOpacity(0.1),
                           radius: 23.r,
                           child: otherUserImage == null || otherUserImage == ''
                               ? const Icon(Icons.person)
@@ -209,6 +194,9 @@ class _WorkerChatState extends State<WorkerChat> {
                                       otherUsername,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          color: Theme.of(context).textTheme.bodyLarge!.color
+                                      ),
                                     ),
                                   ),
                                   const Spacer(),
@@ -226,17 +214,14 @@ class _WorkerChatState extends State<WorkerChat> {
                               ),
                               Row(
                                 children: [
-                                  isMe && unReadCount == 0
+                                  isMe
                                       ? SvgPicture.asset(
-                                    chatData['isLastMessagesRead']
-                                        ? 'assets/checks.svg'
-                                        : 'assets/check.svg',
-                                    color: chatData['isLastMessagesRead']
-                                        ? Colors.blue
-                                        : Colors.grey,
+                                    otherHasRead ? 'assets/checks.svg' : 'assets/check.svg',
+                                    color: Colors.grey,
                                     width: 15.w,
                                     height: 15.w,
-                                  ) : const SizedBox(),
+                                  )
+                                      : const SizedBox(),
                                   SizedBox(
                                     width: 5.w,
                                   ),

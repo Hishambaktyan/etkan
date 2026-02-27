@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/worker_screens/add_service.dart';
 import 'package:trying_homy/modules/worker_screens/service_details.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
@@ -57,15 +58,13 @@ class WorkerServices extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(7),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.grey.withOpacity(0.1),
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: ()=>Navigator.pop(context),
-                        child: const Icon(
-                            CupertinoIcons.back
-                        ),
+                    child: InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: ()=>Navigator.pop(context),
+                      child:  Icon(
+                          CupertinoIcons.back,
+                        color: Theme.of(context).iconTheme.color
                       ),
                     ),
                   ),
@@ -77,7 +76,7 @@ class WorkerServices extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 23.sp,
-                        color: Colors.black
+                        color: Theme.of(context).textTheme.bodyLarge!.color
                     ),
                   ),
                 ],
@@ -102,7 +101,7 @@ class WorkerServices extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.r),
-                        color: Colors.white,
+                        color: cubit.isDark?  lightDarkColor: Colors.white,
                         boxShadow: shadow
                     ),
                     child: Column(
@@ -199,7 +198,8 @@ class WorkerServices extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 13.sp
+                                    fontSize: 13.sp,
+                                  color: Theme.of(context).textTheme.bodyLarge!.color
                                 ),
                               ),
                               SizedBox(
@@ -211,7 +211,7 @@ class WorkerServices extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontSize: 10.sp,
-                                    color: Colors.grey
+                                    color: cubit.isDark? darkSubTextColor: Colors.grey
                                 ),
                               ),
                             ],
@@ -224,7 +224,7 @@ class WorkerServices extends StatelessWidget {
               },
             ),
             floatingActionButton: FloatingActionButton.extended(
-                onPressed: (){},
+                onPressed: ()=>move(context,  AddService()),
               backgroundColor: mainColor,
               label: const Text(
                   'إضافة خدمة',

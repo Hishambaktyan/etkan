@@ -85,4 +85,18 @@ class GetWorkerDataErrorState extends States{
   GetWorkerDataErrorState({required this.error});
 }
 
+class ChangeThemeState extends States {}
+
+class UploadServiceImagesLoadingState extends States {}
+
+class UploadServiceImagesSuccessState extends States  {}
+
+class UploadServiceImagesErrorState extends States {
+  final String error;
+
+  UploadServiceImagesErrorState({required this.error});
+}
+
+class ClearUploadedImages extends States{}
+
 

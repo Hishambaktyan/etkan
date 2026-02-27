@@ -177,6 +177,7 @@ import '../email_verfication_screen.dart';
                                 Container(
                                   height: 50.h,
                                   child: defaultTextFormfeild(
+                                    cubit: cubit,
                                       text: 'الأسم الكامل',
                                       prefixIcon: 'assets/acc.svg',
                                       errorMes: 'يجب كتابة الأسم',
@@ -190,6 +191,7 @@ import '../email_verfication_screen.dart';
                                 Container(
                                   height: 50.h,
                                   child: defaultTextFormfeild(
+                                    cubit: cubit,
                                     text: 'العنوان',
                                     prefixIcon: 'assets/loc.svg',
                                     errorMes: 'العنوان يجب ان لا يكون فارغ',
@@ -203,6 +205,7 @@ import '../email_verfication_screen.dart';
                                 Container(
                                   height: 50.h,
                                   child: defaultTextFormfeild(
+                                    cubit: cubit,
                                     text: 'البريد الألكتروني',
                                     prefixIcon: 'assets/phone.svg',
                                     errorMes: 'البريد يجب ان لا يكون فارغ',
@@ -216,6 +219,7 @@ import '../email_verfication_screen.dart';
                                 Container(
                                   height: 50.h,
                                   child: defaultTextFormfeild(
+                                    cubit: cubit,
                                       text: 'كلمة المرور',
                                       prefixIcon: 'assets/lock.svg',
                                       errorMes: 'كلمة المرور يجب ان لا تكون فارغ',

@@ -13,22 +13,22 @@ const List<BoxShadow> shadow =  [
     offset: Offset(2, 5),
   ),
 ];
- List<BoxShadow> shadow2 =  [
-  BoxShadow(
-    color:mainColor.withOpacity(0.1),
-    blurRadius: 3,
-    spreadRadius: 2,
-  ),
-];
+ List<BoxShadow> darkModeShadow =  [
+   BoxShadow (
+     color: Colors.white.withOpacity(0.1),
+     spreadRadius: 1.0,
+     blurRadius: 7.0,
+     offset: Offset(2, 5),
+   ),
+ ];
 const String reyalSymbol = '\uFDFC';
-Widget dashedDivider() {
+Widget dashedDivider(color) {
   return Padding(
     padding: EdgeInsets.symmetric(vertical: 10.h),
     child: LayoutBuilder(
       builder: (context, constraints) {
-        // حساب عرض الشاشة المتاح للتقسيم
-        const dashWidth = 5.0; // طول الشرطة الواحدة
-        const dashSpace = 3.0; // المسافة بين الشرطات
+        const dashWidth = 5.0;
+        const dashSpace = 3.0;
         final dashCount = (constraints.constrainWidth() / (dashWidth + dashSpace)).floor();
 
         return Row(
@@ -38,7 +38,7 @@ Widget dashedDivider() {
               width: dashWidth,
               height: 1, // سمك الخط
               child: DecoratedBox(
-                decoration: BoxDecoration(color: Colors.grey.shade300),
+                decoration: BoxDecoration(color:color),
               ),
             );
           }),
@@ -219,6 +219,7 @@ Widget defaultTextFormfeild(
       Function? suffixPressed,
       required TextInputType? type,
       double? fontSize,
+      required dynamic cubit
     }
     )
 =>TextFormField(
@@ -237,20 +238,30 @@ Widget defaultTextFormfeild(
   obscureText: isPassword,
   decoration:InputDecoration(
     filled: true,
-    fillColor: Colors.grey.withOpacity(0.06),
+    fillColor: cubit.isDark? darkBgColor:Colors.white,
     labelText: text,
     labelStyle: TextStyle(
-      fontSize: 12.sp
+      fontSize: 12.sp,
+      color: cubit.isDark? darkSubTextColor: Colors.grey
     ),
     prefixIcon: Padding(
       padding: const EdgeInsets.all(12),
-      child: SvgPicture.asset(prefixIcon!,width: 12.w,height:12.h,color: Colors.grey.shade600,),
+      child: SvgPicture.asset(
+        prefixIcon!,
+        width: 12.w,
+        height:12.h,
+        color:  cubit.isDark? darkSubTextColor: Colors.grey,
+      ),
     ),
     suffixIcon: isSuffixIcon? IconButton(
           onPressed: (){
             suffixPressed!();
           },
-          icon: SvgPicture.asset(suffixIcon!,width:22.w,height:22.h,color: Colors.grey.shade600,),
+          icon: SvgPicture.asset(
+            suffixIcon!,
+            width:22.w,height:22.h,
+            color:  cubit.isDark? darkSubTextColor: Colors.grey,
+          ),
       highlightColor: Colors.transparent,
       ) : null,
     border: OutlineInputBorder(

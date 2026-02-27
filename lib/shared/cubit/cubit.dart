@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
 import '../../modules/worker_screens/worker_account_screeen.dart';
 import '../../modules/worker_screens/worker_booking_screen.dart';
@@ -15,9 +21,17 @@ import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+import '../networks/local/cache_helper.dart';
+
 class MyCubit extends Cubit<States>{
 
-  MyCubit(): super(InitState());
+  final AudioPlayer player = AudioPlayer();
+
+  MyCubit(): super(InitState()){
+    player.setSource(AssetSource('sounds/pop.mp3')).then((_) {
+      print("تم تحميل صوت الإرسال مسبقاً");
+    });
+  }
 
   static MyCubit get(context)=>BlocProvider.of(context);
 
@@ -185,32 +199,61 @@ class MyCubit extends Cubit<States>{
     }
   }
 
+  List<File?> serviceImage=[];
+  var picker = ImagePicker();
+
+  Future<void> getProfileImage({required ImageSource source,String? error}) async {
+    try{
+      emit(UploadServiceImagesLoadingState());
+      final pickedFile = await picker.pickImage(
+        source: source,
+      );
+      if (pickedFile != null) {
+        serviceImage.add(File(pickedFile.path));
+        emit(UploadServiceImagesSuccessState());
+      } else {
+        print('لم يتم اختيار صورة');
+      }
+    }catch(e){
+      emit(UploadServiceImagesErrorState(error: e.toString()));
+    }
+  }
+
+  void clearServiceImages() {
+    serviceImage=[];
+    emit(ClearUploadedImages());
+  }
+
   TextEditingController message = TextEditingController();
 
   Widget buildMessageStatus(String status, bool isSeen, bool isMe) {
     if (!isMe) return const SizedBox.shrink();
-    if (status == 'seen') {
-      return SvgPicture.asset(
-        'assets/checks.svg',
-        width: 12.w,
-        height: 12.h,
-        color: Colors.green.shade100,
-      );
+
+    switch(status) {
+      case 'sending':
+        return SvgPicture.asset(
+          'assets/timer.svg',
+          width: 12.w,
+          height: 12.h,
+          color: Colors.grey.shade300,
+        );
+      case 'sent':
+        return SvgPicture.asset(
+          'assets/check.svg',
+          width: 12.w,
+          height: 12.h,
+          color: Colors.green.shade100,
+        );
+      case 'seen':
+        return SvgPicture.asset(
+          'assets/checks.svg',
+          width: 12.w,
+          height: 12.h,
+          color: Colors.green.shade100,
+        );
+      default:
+        return const SizedBox.shrink();
     }
-    if (status == 'sent') {
-      return SvgPicture.asset(
-        'assets/check.svg',
-        width: 12.w,
-        height: 12.h,
-        color: Colors.green.shade100,
-      );
-    }
-    return SvgPicture.asset(
-      'assets/timer.svg',
-      width: 12.w,
-      height: 12.h,
-      color: Colors.grey.shade300,
-    );
   }
   Future<void> resetUnreadCount(String chatId, String myId) async {
     try {
@@ -227,8 +270,9 @@ class MyCubit extends Cubit<States>{
   Future<void> sendMessage(String chatId, String receiverId, String senderId) async {
     try{
       if (message.text.trim().isEmpty) return;
-
       String text = message.text.trim();
+
+
       message.clear();
       emit(SendMessageLoadingState());
       DocumentReference messageRef = FirebaseFirestore.instance
@@ -240,13 +284,18 @@ class MyCubit extends Cubit<States>{
         'messageId': messageRef.id,
         'chatId': chatId,
         'text': text,
-        'messageStatus': 'sent',
+        'messageStatus': 'sending',
         'receiverId': receiverId,
         'senderId': senderId,
         'timestamp': FieldValue.serverTimestamp(),
         'type': 'text',
         'isSeen': false,
       });
+
+      await messageRef.update({
+        'messageStatus': 'sent',
+      }) ;
+      playSendSound();
 
       await FirebaseFirestore.instance
           .collection('chats')
@@ -256,7 +305,6 @@ class MyCubit extends Cubit<States>{
         'lastUpdate': FieldValue.serverTimestamp(),
         'lastSenderId': senderId,
         'unreadCount.$receiverId': FieldValue.increment(1),
-        'lastSenderId': senderId,
       });
       var receiverDoc = await FirebaseFirestore.instance.collection('users').doc(receiverId).get();
       String? receiverToken = receiverDoc.data()?['token'];
@@ -268,7 +316,6 @@ class MyCubit extends Cubit<States>{
         );
       }
       emit(SendMessageSuccessState());
-      message.clear();
     }catch(e){
       emit(SendMessageErrorState(error: e.toString()));
     }
@@ -310,7 +357,6 @@ class MyCubit extends Cubit<States>{
     return client.credentials.accessToken.data;
   }
 
-
   Future<void> sendNotificationV1({
     required String receiverToken,
     required String messageText,
@@ -336,18 +382,13 @@ class MyCubit extends Cubit<States>{
         body: jsonEncode({
           'message': {
             'token': receiverToken,
-
-            'notification': {
+            'data': {
               'title': 'رسالة جديدة من ${snapshot.data()!['name']}',
               'body': messageText,
-            },
-
-            'data': {
               'chatId': chatId,
               'senderId': uid,
               'type': 'chat'
             },
-
             'android': {
               'priority': 'high',
             }
@@ -365,10 +406,33 @@ class MyCubit extends Cubit<States>{
     }
   }
 
+  bool isDark = true;
 
+  void  changeTheme({bool? fromShared}) {
+    if(fromShared != null){
+      isDark = fromShared;
+    }
+    else{
+      isDark=!isDark;
+      CacheHelper.setBoolen(key: 'isDark', value: isDark).then(
+            (value) {
+          emit(ChangeThemeState());
+        },
+      ).catchError(
+              (error){
+            print(error.toString());
+          }
+      );
+    }
+  }
 
-
-
-
-
+  Future<void> playSendSound() async {
+    try {
+      await player.stop();
+      await player.play(AssetSource('sounds/pop.mp3'), volume: 0.4);
+      print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=');
+    } catch (e) {
+      print("Error playing sound: $e");
+    }
+  }
 }

@@ -27,6 +27,8 @@ class _Worker_detailsState extends State<Worker_details> {
     "تركيب لوحات توزيع كهربائية",
   ];
   int price = 5000;
+  bool cubit = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -397,6 +399,7 @@ class _Worker_detailsState extends State<Worker_details> {
                                     height: 10.h,
                                   ),
                                   defaultTextFormfeild(
+                                    cubit: cubit,
                                       text: 'تعليق',
                                       prefixIcon: 'assets/chat2.svg',
                                       errorMes: 'حقل التعليق يجب ان لا يكون فارغ',

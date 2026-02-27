@@ -127,7 +127,10 @@ class _TheChatState extends State<TheChat> {
               titleSpacing: 0,
               leading: IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(CupertinoIcons.back),
+                icon:  Icon(
+                    CupertinoIcons.back,
+                  color: Theme.of(context).iconTheme.color,
+                ),
               ),
               title: Row(
                 children: [
@@ -137,14 +140,24 @@ class _TheChatState extends State<TheChat> {
                   SizedBox(
                     width: 10.w,
                   ),
-                  Text(otherUsername,
+                  Text(
+                      otherUsername,
                       style:
-                          TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold)),
+                          TextStyle(
+                              fontSize: 13.sp, fontWeight: FontWeight.bold,
+                            color: Theme.of(context).textTheme.bodyLarge!.color
+                          )
+                  ),
                 ],
               ),
               actions: [
                 IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.more_vert_rounded))
+                    onPressed: () {},
+                    icon:  Icon(
+                        Icons.more_vert_rounded,
+                      color: Theme.of(context).iconTheme.color,
+                    )
+                )
               ],
             ),
             body: StreamBuilder(
@@ -152,13 +165,27 @@ class _TheChatState extends State<TheChat> {
               builder: (context, snapshot) {
                 MyCubit.get(context).markAsSeen(widget.chatId, widget.myId);
                 if (snapshot.hasError) {
-                  return const Center(child: Text('حدث خطأ ما...:('));
+                  return const Center(
+                    child: Text(
+                      'حدث خطأ ما...):',
+                      style: TextStyle(
+                          color: Colors.grey
+                      ),
+                    )
+                    ,
+                  );
                 }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || snapshot.data == null) {
-                  return const Center(child: Text('لا توجد رسائل بعد'));
+                if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'لا توجد دردشات...):',
+                      style: TextStyle(
+                          color: Colors.grey
+                      ),
+                    )
+                    ,
+                  );
                 }
                 var docs = snapshot.data!.docs;
                 for (var doc in docs) {
@@ -204,8 +231,8 @@ class _TheChatState extends State<TheChat> {
                                               0.75),
                                       decoration: BoxDecoration(
                                         color: isMe
-                                            ? Colors.green.shade400
-                                            : Colors.green.withOpacity(0.2),
+                                            ? cubit.isDark? Colors.green.shade600: Colors.green.shade400
+                                            : cubit.isDark? lightDarkColor :Colors.green.withOpacity(0.2),
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(15.r),
                                           topRight: Radius.circular(15.r),
@@ -227,8 +254,9 @@ class _TheChatState extends State<TheChat> {
                                             style: TextStyle(
                                                 color: isMe
                                                     ? Colors.white
-                                                    : Colors.black,
-                                                fontSize: 11.sp),
+                                                    : cubit.isDark? Colors.white.withOpacity(0.9) : Colors.black,
+                                                fontSize: 11.sp
+                                            ),
                                           ),
                                           Row(
                                             mainAxisSize: MainAxisSize.min,
@@ -240,8 +268,7 @@ class _TheChatState extends State<TheChat> {
                                                 time,
                                                 style: TextStyle(
                                                     color: isMe
-                                                        ? Colors
-                                                            .green.shade100
+                                                        ? Colors  .green.shade100
                                                         : Colors.grey,
                                                     fontSize: 8.sp),
                                               ),
@@ -288,7 +315,7 @@ class _TheChatState extends State<TheChat> {
                                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 8),
                                       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.15),
                                       decoration: BoxDecoration(
-                                        color: Colors.green.withOpacity(0.2),
+                                        color: cubit.isDark? lightDarkColor: Colors.green.withOpacity(0.2),
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(15.r),
                                           topRight: Radius.circular(15.r),
@@ -296,8 +323,8 @@ class _TheChatState extends State<TheChat> {
                                           bottomRight: const Radius.circular(0),
                                         ),
                                       ),
-                                      child: const SpinKitThreeBounce(
-                                        color: Colors.grey,
+                                      child:  SpinKitThreeBounce(
+                                        color: cubit.isDark? Colors.grey.shade300: Colors.grey,
                                         size: 10,
                                       ),
                                     ),
@@ -328,7 +355,7 @@ class _TheChatState extends State<TheChat> {
                                     ),
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.2),
+                                      color: cubit.isDark? const Color(0xFF161B22):Colors.grey.withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(17.r),
                                     ),
                                     child: TextFormField(
@@ -432,7 +459,7 @@ class _TheChatState extends State<TheChat> {
                               bottom: 100.h, end: 10.w),
                           child: FloatingActionButton.small(
                             heroTag: 'scroll_down',
-                            backgroundColor: Colors.white,
+                            backgroundColor: cubit.isDark? const Color(0xFF161B22) :Colors.white,
                             elevation: 4,
                             shape: const CircleBorder(),
                             onPressed: () => scrollToBottom(),
@@ -440,6 +467,7 @@ class _TheChatState extends State<TheChat> {
                               'assets/down.svg',
                               width: 23.w,
                               height: 23.h,
+                              color: Theme.of(context).iconTheme.color,
                             ),
                           ),
                         ),

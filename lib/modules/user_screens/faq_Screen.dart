@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubit/cubit.dart';
+import 'package:trying_homy/shared/cubit/states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class FaqScreen extends StatefulWidget {
@@ -72,104 +75,105 @@ class _FaqScreenState extends State<FaqScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(7),
-                child: CircleAvatar(
-                  backgroundColor: Colors.grey.withOpacity(0.1),
-                  child: InkWell(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: ()=>Navigator.pop(context),
-                    child: const Icon(
-                        CupertinoIcons.back
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Text(
-                'الأسئلة الشائعة',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23.sp,
-                    color: Colors.black
-                ),
-              ),
-            ],
-          ),
-          centerTitle: true,
-        ),
-        body: ListView.separated(
-          padding: EdgeInsets.all(16.r),
-          itemCount: faqData.length,
-          separatorBuilder: (context, index) => SizedBox(height: 12.h),
-          itemBuilder: (context, index) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.r),
-                boxShadow: shadow,
-              ),
-              child: Theme(
-                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                child: ExpansionTile(
-                  iconColor: mainColor,
-                  collapsedIconColor: Colors.grey,
-                  tilePadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
-                  childrenPadding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, bottom: 15.h),
-                  title: Text(
-                    faqData[index]['question'],
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  leading: Container(
-                    padding: EdgeInsets.all(8.r),
-                    decoration: BoxDecoration(
-                      color: mainColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.help_outline_rounded, color: mainColor, size: 20.r),
-                  ),
+    MyCubit cubit  = MyCubit.get(context);
+    return BlocConsumer<MyCubit,States>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                title: Row(
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(12.r),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F8F6),
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Text(
-                        faqData[index]['answer'],
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: Colors.grey.shade700,
-                          height: 1.6,
+                    IconButton(
+                        onPressed: ()=>Navigator.pop(context),
+                        icon: Icon(
+                          CupertinoIcons.back,
+                          color: Theme.of(context).iconTheme.color,
                         ),
+                    ),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    Text(
+                      'الأسئلة الشائعة',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 23.sp,
+                          color: Theme.of(context).textTheme.bodyLarge!.color
                       ),
                     ),
                   ],
                 ),
+                centerTitle: true,
               ),
-            );
-          },
-        ),
-      ),
+              body: ListView.separated(
+                padding: EdgeInsetsDirectional.all(10.r),
+                itemCount: faqData.length,
+                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: cubit.isDark? const Color(0xFF161B22): Colors.white,
+                      borderRadius: BorderRadius.circular(15.r),
+                      boxShadow: cubit.isDark?[]: shadow,
+                    ),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                          dividerColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent
+                      ),
+                      child: ExpansionTile(
+                        iconColor: mainColor,
+                        collapsedIconColor: Colors.grey,
+                        tilePadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
+                        childrenPadding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, bottom: 15.h),
+                        title: Text(
+                          faqData[index]['question'],
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).textTheme.bodyLarge!.color
+                          ),
+                        ),
+                        leading: Container(
+                          padding: EdgeInsets.all(8.r),
+                          decoration: BoxDecoration(
+                            color: mainColor.withOpacity(0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.help_outline_rounded, color: mainColor, size: 20.r),
+                        ),
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(12.r),
+                            decoration: BoxDecoration(
+                              color: cubit.isDark?const Color(0xFF161B22):Colors.white,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Text(
+                              faqData[index]['answer'],
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: cubit.isDark?Colors.white:Colors.grey.shade700,
+                                height: 1.6,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
     );
   }
 }

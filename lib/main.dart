@@ -10,6 +10,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/login_screen.dart';
 import 'package:trying_homy/shared/cubit/bloc_observer.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
+import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/styles.dart';
 import 'firebase_options.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
@@ -64,7 +66,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 
-
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -97,9 +98,7 @@ Future<void> main() async {
   await messaging.requestPermission();
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (message.notification != null) {
       NotificationHelper.display(message);
-    }
   });
 
   FirebaseMessaging.onBackgroundMessage(
@@ -123,7 +122,7 @@ Future<void> main() async {
       String otherUsername = snapshot.data()?['name'] ?? 'مستخدم';
       String otherUserImage = snapshot.data()?['image'] ?? '';
 
-      move(
+      moveAndReplace(
         navigatorKey.currentContext!,
         TheChat(
           otherUserId: senderId,
@@ -136,33 +135,43 @@ Future<void> main() async {
     }
   });
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (message.notification != null) {
-      NotificationHelper.display(message);
-    }
-  });
 
-  runApp(const MyApp());
+  await CacheHelper.init();
+  bool? isDark = CacheHelper.getBoolen(key: 'isDark');
+
+  runApp(MyApp(isDark));
 }
 
 class MyApp extends StatelessWidget {
-
-  const MyApp({super.key});
+  final bool? isDark;
+  const MyApp(this.isDark, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(360, 800),
-      builder: (context, child) =>  BlocProvider(
-        create: (context) => MyCubit()..checkUser(),
-        child: MaterialApp(
-          navigatorKey: navigatorKey,
-          theme: lightTheme,
-          debugShowCheckedModeBanner: false,
-          home: FirebaseAuth.instance.currentUser!= null
-          && FirebaseAuth.instance.currentUser!.emailVerified ? const WorkerMainScreen()
-              : const LoginScreen() ,
-        ),
+    return BlocProvider(
+      create: (context) => MyCubit()..checkUser()..changeTheme(fromShared: isDark),
+      child: ScreenUtilInit(
+        designSize: const Size(360, 800),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return BlocBuilder<MyCubit, States>(
+            builder: (context, state) {
+              var cubit = MyCubit.get(context);
+              return MaterialApp(
+                navigatorKey: navigatorKey,
+                themeMode: cubit.isDark ? ThemeMode.dark : ThemeMode.light,
+                theme: lightTheme,
+                darkTheme: darkTheme,
+                debugShowCheckedModeBanner: false,
+                home: FirebaseAuth.instance.currentUser != null &&
+                    FirebaseAuth.instance.currentUser!.emailVerified
+                    ? const WorkerMainScreen()
+                    : const LoginScreen(),
+              );
+            },
+          );
+        },
       ),
     );
   }

@@ -33,9 +33,22 @@ class WorkerMainScreen extends StatelessWidget {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
                   child: NavigationBar(
+                    labelTextStyle: WidgetStateProperty.resolveWith((states){
+                      if (states.contains(WidgetState.selected)) {
+                        return TextStyle(
+                            color: mainColor,
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.bold
+                        );
+                      }
+                      return TextStyle(
+                          color: cubit.isDark?Colors.grey:Colors.black54,
+                          fontSize: 11.sp
+                      );
+                    }),
                       backgroundColor: Colors.transparent,
                       elevation: 0,
-                      indicatorColor: mainColor.withOpacity(0.1),
+                      indicatorColor: mainColor.withOpacity(0.2),
                       selectedIndex: cubit.currentIndex,
                       onDestinationSelected: (value) {
                         cubit.changeIndex(value);
@@ -46,7 +59,8 @@ class WorkerMainScreen extends StatelessWidget {
                             'assets/home.svg',
                             width: 25.w,
                             height: 25.h,
-                            color: cubit.currentIndex == 0 ? mainColor : Colors.grey,
+                            color: Colors.grey,
+
                           ),
                           selectedIcon: SvgPicture.asset(
                             'assets/home_bold.svg',
@@ -62,7 +76,7 @@ class WorkerMainScreen extends StatelessWidget {
                             'assets/ticket.svg',
                             width: 25.w,
                             height: 25.h,
-                            color: cubit.currentIndex == 1 ? mainColor : Colors.grey,
+                            color: Colors.grey,
                           ),
                           selectedIcon: SvgPicture.asset(
                             'assets/ticket_bold.svg',
@@ -78,7 +92,7 @@ class WorkerMainScreen extends StatelessWidget {
                             'assets/chat.svg',
                             width: 25.w,
                             height: 25.h,
-                            color: cubit.currentIndex == 2 ? mainColor : Colors.grey,
+                            color: Colors.grey,
                           ),
                           selectedIcon: SvgPicture.asset(
                             'assets/chat_bold.svg',
@@ -93,7 +107,7 @@ class WorkerMainScreen extends StatelessWidget {
                             'assets/acc.svg',
                             width: 25.w,
                             height: 25.h,
-                            color: cubit.currentIndex == 3 ? mainColor : Colors.grey,
+                            color: Colors.grey,
                           ),
                           selectedIcon: SvgPicture.asset(
                             'assets/acc_bold.svg',

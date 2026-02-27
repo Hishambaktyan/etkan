@@ -221,9 +221,10 @@ class ServiceDetails extends StatelessWidget {
                                     padding: EdgeInsets.all(18.r),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: cubit.isDark? lightDarkColor: Colors.white,
                                       borderRadius: BorderRadius.circular(20.r),
                                       boxShadow: shadow,
+                                        border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                                     ),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,13 +232,13 @@ class ServiceDetails extends StatelessWidget {
                                         Container(
                                           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                           decoration: BoxDecoration(
-                                            color: Colors.grey.shade100,
+                                            color: cubit.isDark? darkBgColor: Colors.grey.shade100,
                                             borderRadius: BorderRadius.circular(6.r),
                                           ),
                                           child: Text(
                                             'سباكة  >  تركيب أدوات صحية',
                                             style: TextStyle(
-                                              color: Colors.grey.shade700,
+                                              color: cubit.isDark? Colors.white: Colors.grey.shade700,
                                               fontSize: 10.sp,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -249,24 +250,31 @@ class ServiceDetails extends StatelessWidget {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15.sp,
-                                            color: Colors.black,
+                                            color: cubit.isDark? Colors.white: Colors.black,
                                           ),
                                         ),
                                         SizedBox(height: 15.h),
-                                        Divider(color: Colors.grey.shade100, height: 1),
+                                        Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade100, height: 1),
                                         SizedBox(height: 15.h),
                                         Row(
                                           children: [
                                             Expanded(
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.payments_outlined, size: 18.r, color: Colors.grey),
+                                                  Icon(
+                                                      Icons.payments_outlined,
+                                                      size: 18.r,
+                                                     color:  cubit.isDark? darkSubTextColor: Colors.grey,                                                  ),
                                                   SizedBox(width: 8.w),
                                                   Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       Text('السعر التقديري',
-                                                          style: TextStyle(fontSize: 10.sp, color: Colors.grey)),
+                                                          style: TextStyle(
+                                                              fontSize: 10.sp,
+                                                            color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                                          ),
+                                                          ),
                                                       Text(
                                                         '15000 $reyalSymbol',
                                                         style: TextStyle(
@@ -280,22 +288,35 @@ class ServiceDetails extends StatelessWidget {
                                                 ],
                                               ),
                                             ),
-                                            Container(height: 30.h, width: 1, color: Colors.grey.shade100),
+                                            Container(
+                                                height: 30.h,
+                                                width: 1,
+                                                color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                            ),
                                             SizedBox(width: 15.w),
                                             Expanded(
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.timer_outlined, size: 18.r, color: Colors.grey),
+                                                  Icon(
+                                                      Icons.timer_outlined,
+                                                      size: 18.r,
+                                                color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                                  ),
                                                   SizedBox(width: 8.w),
                                                   Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text('المدة المتوقعة',
-                                                          style: TextStyle(fontSize: 10.sp, color: Colors.grey)),
+                                                      Text(
+                                                        'المدة المتوقعة',
+                                                          style: TextStyle(
+                                                              fontSize: 10.sp,
+                                                              color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                                          ),
+                                                      ),
                                                       Text(
                                                         '45 دقيقة',
                                                         style: TextStyle(
-                                                          color: Colors.black87,
+                                                          color: cubit.isDark? Colors.white: Colors.black87,
                                                           fontSize: 14.sp,
                                                           fontWeight: FontWeight.bold,
                                                         ),
@@ -326,22 +347,40 @@ class ServiceDetails extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(16.r),
+                            padding: EdgeInsets.all(15.r),
                             decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(16.r),
+                                color: cubit.isDark? lightDarkColor: Colors.white,
+                                borderRadius: BorderRadius.circular(20.r),
+                                boxShadow: shadow,
+                                border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+
                             ),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.description_outlined, size: 20.r, color: mainColor),
-                                    SizedBox(width: 8.w),
+                                    Container(
+                                        padding: const EdgeInsetsDirectional.all(8),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10.r),
+                                            color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
+                                        ),
+                                        child: Icon(
+                                            Icons.notes_rounded,
+                                            size: 22.r,
+                                            color: mainColor
+                                        )
+                                    ),
+                                    SizedBox(
+                                        width: 10.w
+                                    ),
                                     Text(
                                       'وصف الخدمة',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.sp,
+                                        color: cubit.isDark? Colors.white: Colors.black87,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -350,13 +389,17 @@ class ServiceDetails extends StatelessWidget {
                                 ),
                                 ReadMoreText(
                                   'خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات',
-                                  style: TextStyle(fontSize: 12.sp, color: Colors.black87, height: 1.5),
+                                  style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color:  cubit.isDark? Colors.white: Colors.black,
+                                      height: 1.5
+                                  ),
                                   trimLines: 3,
                                   colorClickableText: mainColor,
                                   trimMode: TrimMode.Line,
                                   trimCollapsedText: ' عرض المزيد',
                                   trimExpandedText: ' عرض أقل',
-                                  moreStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: mainColor),
+                                  moreStyle: TextStyle(fontSize: 12.sp,color: mainColor),
                                 ),
                               ],
                             ),
@@ -369,7 +412,7 @@ class ServiceDetails extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.all(8.r),
                                 decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
+                                  color: cubit.isDark? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8.r),
                                 ),
                                 child: Icon(
@@ -383,7 +426,11 @@ class ServiceDetails extends StatelessWidget {
                               ),
                               Text(
                                 'التقييمات والمراجعات',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.sp,
+                                  color: cubit.isDark? Colors.white:Colors.black
+                                ),
                               ),
                               const Spacer(),
                               Container(
@@ -394,7 +441,14 @@ class ServiceDetails extends StatelessWidget {
                                 ),
                                 child: Row(
                                   children: [
-                                    Text('3.3', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 13.sp)),
+                                    Text(
+                                        '3.3',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.orange,
+                                            fontSize: 12.sp
+                                        )
+                                    ),
                                     SizedBox(width: 4.w),
                                     Icon(Icons.star_rounded, color: Colors.orange, size: 16.r),
                                   ],
@@ -411,7 +465,7 @@ class ServiceDetails extends StatelessWidget {
                               return Container(
                                 padding: EdgeInsets.all(14.r),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: cubit.isDark? lightDarkColor: Colors.white,
                                   borderRadius: BorderRadius.circular(16.r),
                                   boxShadow: [
                                     BoxShadow(
@@ -420,7 +474,7 @@ class ServiceDetails extends StatelessWidget {
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
-                                  border: Border.all(color: Colors.grey.shade100),
+                                  border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): Border.all(color: Colors.grey.shade100),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,8 +483,12 @@ class ServiceDetails extends StatelessWidget {
                                       children: [
                                         CircleAvatar(
                                           radius: 20.r,
-                                          backgroundColor: Colors.blueGrey.shade50,
-                                          child: Icon(Icons.person_outline, size: 20.r, color: Colors.blueGrey),
+                                          backgroundColor: cubit.isDark? darkSubTextColor: Colors.blueGrey.shade50,
+                                          child: Icon(
+                                              Icons.person_outline,
+                                              size: 20.r,
+                                              color:cubit.isDark? Colors.white: Colors.blueGrey
+                                          ),
                                         ),
                                         SizedBox(width: 12.w),
                                         Expanded(
@@ -439,11 +497,18 @@ class ServiceDetails extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'أحمد خالد',
-                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14.sp,
+                                                  color: cubit.isDark? Colors.white: Colors.black
+                                                ),
                                               ),
                                               Text(
                                                 'منذ يومين',
-                                                style: TextStyle(color: Colors.grey, fontSize: 11.sp),
+                                                style: TextStyle(
+                                                  color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                                    fontSize: 11.sp
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -462,7 +527,7 @@ class ServiceDetails extends StatelessWidget {
                                       'شغل ممتاز وسريع جداً، التزم بالمواعيد وكان محترم جداً في التعامل. أنصح به بشدة.',
                                       style: TextStyle(
                                         fontSize: 12.sp,
-                                        color: Colors.black54,
+                                        color: cubit.isDark? Colors.white70: Colors.black54,
                                         height: 1.5,
                                       ),
                                     ),

@@ -26,6 +26,7 @@ class _UserSIgnUpState extends State<UserSIgnUp> {
     'assets/wood.jpg',
     'assets/ac.jpg',
   ];
+  bool cubit = true;
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -61,6 +62,7 @@ class _UserSIgnUpState extends State<UserSIgnUp> {
                       children: [
 
                         defaultTextFormfeild(
+                          cubit: cubit,
                           text: 'الاسم الكامل',
                           prefixIcon: 'assets/acc.svg',
                           errorMes: 'الاسم الأول يجب ان لا يكون فارغ',
@@ -71,6 +73,7 @@ class _UserSIgnUpState extends State<UserSIgnUp> {
                           height: 15.0.h,
                         ),
                         defaultTextFormfeild(
+                          cubit: cubit,
                           text: 'رقم الهاتف',
                           prefixIcon: 'assets/phone.svg',
                           errorMes: 'رقم الهاتق يجب ان لا يكون فارغ',
@@ -81,6 +84,7 @@ class _UserSIgnUpState extends State<UserSIgnUp> {
                           height: 15.0.h,
                         ),
                         defaultTextFormfeild(
+                            cubit: cubit,
                             text: 'كلمة المرور',
                             prefixIcon: 'assets/lock.svg',
                             errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
