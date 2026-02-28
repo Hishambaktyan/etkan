@@ -280,7 +280,7 @@ class MyCubit extends Cubit<States>{
       print('خطأ أثناء تصفير العداد: $e');
     }
   }
-  Future<void> sendMessage(String chatId, String receiverId, String senderId) async {
+  Future<void> sendMessage(String chatId, String receiverId, String senderId,String? replyText,String? replyName) async {
     try{
       if (message.text.trim().isEmpty) return;
       String text = message.text.trim();
@@ -303,6 +303,8 @@ class MyCubit extends Cubit<States>{
         'timestamp': FieldValue.serverTimestamp(),
         'type': 'text',
         'isSeen': false,
+        'replyText': replyText,
+        'replyName': replyName,
       });
 
       await messageRef.update({
