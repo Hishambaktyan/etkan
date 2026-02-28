@@ -17,6 +17,7 @@ class TheChat extends StatefulWidget {
   final String otherUserImage;
   final String otherUserId;
   final String myId;
+  static String? currentChatId;
   const TheChat(
       {super.key,
       required this.otherUsername,
@@ -87,6 +88,7 @@ class _TheChatState extends State<TheChat> {
         .orderBy('timestamp',descending: true)
         .snapshots();
     cubit.markAsSeen(widget.chatId, widget.myId);
+    TheChat.currentChatId = widget.chatId;
     super.initState();
   }
 
@@ -104,6 +106,7 @@ class _TheChatState extends State<TheChat> {
     typingTimer?.cancel();
     messageFocus.dispose();
     scrollController.dispose();
+    TheChat.currentChatId = null;
     super.dispose();
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/the_chat.dart';
+import 'package:trying_homy/shared/cubit/cubit.dart';
 
 class WorkerChat extends StatefulWidget {
   const WorkerChat({super.key});
@@ -15,6 +16,47 @@ class WorkerChat extends StatefulWidget {
 }
 
 class _WorkerChatState extends State<WorkerChat> {
+  Future<void> createChat({
+    required String receiverId,
+    required String receiverName,
+    required String receiverImage,
+    required String myId,
+    required String myName,
+    required String myImage,
+  })
+  async {
+    try {
+
+      List<String> ids = [myId, receiverId];
+      ids.sort();
+      String chatId = ids.join('_');
+
+      await FirebaseFirestore.instance.collection('chats').doc(chatId).set({
+        'chatId': chatId,
+        'users': ids,
+        'lastMessage': '',
+        'lastUpdate': FieldValue.serverTimestamp(),
+        'typingStatus': {
+          myId: false,
+          receiverId: false,
+        },
+        'userInfo': {
+          myId: {
+            'name': myName,
+            'image': myImage,
+          },
+          receiverId: {
+            'name': receiverName,
+            'image': receiverImage,
+          },
+        },
+      }, SetOptions(merge: true));
+
+      print('^^^^^^^^^^^^^^^^^^^^^^^^^^Done^^^^^^^^^^^^^^^^^^^^^^^^^');
+
+    } catch (e) {
+    }
+  }
   String myUserId = FirebaseAuth.instance.currentUser!.uid;
   final Stream<QuerySnapshot> chatStreamBuilder = FirebaseFirestore.instance
       .collection('chats')
@@ -62,9 +104,20 @@ class _WorkerChatState extends State<WorkerChat> {
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onTap: () {
-              setState(() {
-
-              });
+             /* createChat(
+                  receiverId: 'FeIIQoLQZuSiVK2T2q2WBcOjMsn2',
+                  receiverName: 'رهوف',
+                  receiverImage: 'https://i.pinimg.com/736x/4a/1e/04/4a1e04e7c7bc16fa60ecdbbc6ba0f132.jpg',
+                  myId: 'zgyZCfttdmWsmKTNWneC4vbD7sX2',
+                  myName: 'هشوم',
+                  myImage: 'https://i.pinimg.com/736x/3a/c2/fb/3ac2fb4b957b419d53b85a4675e8770a.jpg',
+              );*/
+              /*MyCubit.get(context).message.text='السلاااااااااااام';
+              MyCubit.get(context).sendMessage(
+                  'FeIIQoLQZuSiVK2T2q2WBcOjMsn2_zgyZCfttdmWsmKTNWneC4vbD7sX2',
+                  'FeIIQoLQZuSiVK2T2q2WBcOjMsn2',
+                'zgyZCfttdmWsmKTNWneC4vbD7sX2'
+              );*/
             },
             child: Container(
               padding: const EdgeInsets.all(10),

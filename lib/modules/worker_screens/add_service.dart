@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
@@ -33,11 +36,9 @@ class _AddServiceState extends State<AddService> {
 
   TextEditingController serviceDesc = TextEditingController();
 
+
+
    void showImageDialog(BuildContext context, MyCubit cubit) {
-     if(cubit.serviceImage.length>3) {
-         showSnackBar(Colors.red, 'لا يمكن رفع أكثر من 4 صور', context);
-         return;
-       }
      showDialog(
        context: context,
        builder: (context) => AlertDialog(
@@ -139,7 +140,13 @@ class _AddServiceState extends State<AddService> {
   Widget build(BuildContext context) {
     MyCubit cubit = MyCubit.get(context);
     return BlocConsumer<MyCubit,States>(
-        builder: (context, state) {
+      listener: (context, state) {
+        if(state is UploadService){
+          showSnackBar(Colors.green, 'تم إضافة الخدمة بنجاح', context);
+          moveAndReplace(context, const WorkerMainScreen());
+        }
+      },
+        builder: (context, state)   {
           return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
@@ -155,7 +162,7 @@ class _AddServiceState extends State<AddService> {
                         child: InkWell(
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
-                          onTap: ()=>Navigator.pop(context),
+                          onTap: ()=>moveAndReplace(context, const WorkerMainScreen()),
                           child:  Icon(
                               CupertinoIcons.back,
                               color: Theme.of(context).iconTheme.color
@@ -198,8 +205,14 @@ class _AddServiceState extends State<AddService> {
                               decoration: BoxDecoration(
                                 color: cubit.isDark? lightDarkColor : Colors.grey.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(15.r),
+                                image: cubit.serviceImage!=null? DecorationImage(
+                                  fit: BoxFit.cover,
+                                    image: FileImage(
+                                      cubit.serviceImage!
+                                    )
+                                ): null
                               ),
-                              child: Column(
+                              child: cubit.serviceImage==null?Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(
@@ -214,12 +227,12 @@ class _AddServiceState extends State<AddService> {
                                   Text(
                                     'اضف صور لخدمتك',
                                     style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: cubit.isDark? darkSubTextColor:Colors.grey.withOpacity(0.4)
+                                        fontSize: 12.sp,
+                                        color: cubit.isDark? darkSubTextColor:Colors.grey.withOpacity(0.4)
                                     ),
                                   ),
                                 ],
-                              ),
+                              ):const SizedBox(),
                             ),
                           ),
                         ),
@@ -227,42 +240,12 @@ class _AddServiceState extends State<AddService> {
                           height: 10.h,
                         ),
                         Text(
-                          'ملاحظة: يمكنكك رفع صور بصيغة"jpg."أو "png."أو "jpeg".، ويمكنك رفع أكثر من صورة إلى عدد 4 صور',
+                          'ملاحظة: يمكنكك رفع صور بصيغة"jpg."أو "png."أو "jpeg".',
                           style: TextStyle(
                             color: cubit.isDark? darkSubTextColor: Colors.grey.shade400,
                             fontSize: 9.sp
                           ),
                         ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        if(cubit.serviceImage.isNotEmpty)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              for( var imageFile in cubit.serviceImage)
-                                SizedBox(
-                                  width: 80,
-                                  child: Container(
-                                    height: 70.h,
-                                    width: 70.h,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                            color: mainColor,
-                                            width: 1
-                                        ),
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        image:  DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: FileImage(imageFile!)
-                                        )
-                                    ),
-                                  ),
-                                )
-
-                            ],
-                          ),
                         SizedBox(
                           height: 15.h,
                         ),
@@ -381,7 +364,18 @@ class _AddServiceState extends State<AddService> {
                 bottomNavigationBar: Padding(
                   padding: EdgeInsetsDirectional.only(start: 20.w,end: 20.w,bottom: 15.h),
                   child: defualtButtonWithIcon(
-                      onPressed: (){},
+                      onPressed: (){
+                        if(formKey.currentState!.validate()){
+                          cubit.uploadService(
+                              name: serviceName.text.trim(),
+                              description: serviceDesc.text.trim(),
+                              category: serviceDept.text.trim(),
+                              subCategory: 'تركيب بانيو مصري',
+                              price: '23000',
+                              period: '45'
+                          );
+                        }
+                      },
                       text: 'إضافة',
                       icon: const Icon(Icons.add_rounded,color: Colors.white,)
                   ),
@@ -389,7 +383,6 @@ class _AddServiceState extends State<AddService> {
               ),
           );
         },
-        listener: (context, state) {},
     );
   }
 }

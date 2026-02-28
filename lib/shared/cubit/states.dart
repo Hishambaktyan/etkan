@@ -99,4 +99,6 @@ class UploadServiceImagesErrorState extends States {
 
 class ClearUploadedImages extends States{}
 
+class UploadService extends States{}
+
 

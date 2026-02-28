@@ -43,7 +43,7 @@ void moveAndReplace(BuildContext context, Widget screen) {
       transitionDuration: const Duration(milliseconds: 10),
       reverseTransitionDuration: const Duration(milliseconds: 10),
     ),
-    (route) => false,
+        (route) => false,
   );
 }
 
@@ -62,9 +62,27 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   NotificationHelper.display(message);
 }
 
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+void handleNotificationClick(RemoteMessage message) {
+  String chatId = message.data['chatId'] ?? '';
+  String senderId = message.data['senderId'] ?? '';
+  String senderName = message.data['senderName'] ?? 'مستخدم';
+  String senderImage = message.data['senderImage'] ?? '';
+
+  if (chatId.isNotEmpty && senderId.isNotEmpty && FirebaseAuth.instance.currentUser != null) {
+    moveAndReplace(
+      navigatorKey.currentContext!,
+      TheChat(
+        otherUserId: senderId,
+        chatId: chatId,
+        myId: FirebaseAuth.instance.currentUser!.uid,
+        otherUsername: senderName,
+        otherUserImage: senderImage,
+      ),
+    );
+  }
+}
 
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -80,7 +98,7 @@ Future<void> main() async {
 
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user != null) {
-    if(user.emailVerified){
+      if(user.emailVerified){
         print('-----------------------------------------"تم تسجيل الدخول بنجاح، الـ UID هو: ${user.uid}');
       }
     }
@@ -98,7 +116,7 @@ Future<void> main() async {
   await messaging.requestPermission();
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      NotificationHelper.display(message);
+    NotificationHelper.display(message);
   });
 
   FirebaseMessaging.onBackgroundMessage(
@@ -110,31 +128,17 @@ Future<void> main() async {
       AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    String chatId = message.data['chatId'] ?? '';
-    String senderId = message.data['senderId'] ?? '';
-
-    if (chatId.isNotEmpty && senderId.isNotEmpty) {
-
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-      await FirebaseFirestore.instance.collection('users').doc(senderId).get();
-
-      String otherUsername = snapshot.data()?['name'] ?? 'مستخدم';
-      String otherUserImage = snapshot.data()?['image'] ?? '';
-
-      moveAndReplace(
-        navigatorKey.currentContext!,
-        TheChat(
-          otherUserId: senderId,
-          chatId: chatId,
-          myId: FirebaseAuth.instance.currentUser!.uid,
-          otherUsername: otherUsername,
-          otherUserImage: otherUserImage,
-        ),
-      );
+  FirebaseMessaging.instance.getInitialMessage().then((message) {
+    if (message != null) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        handleNotificationClick(message);
+      });
     }
   });
 
+  FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    handleNotificationClick(message);
+  });
 
   await CacheHelper.init();
   bool? isDark = CacheHelper.getBoolen(key: 'isDark');

@@ -41,6 +41,11 @@ class MyCubit extends Cubit<States>{
 
   bool amAvailable = true;
 
+
+  DocumentReference<Map<String, dynamic>> userData  =  FirebaseFirestore.instance.collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
+
+
   bool isServicesActive = true;
 
   List<Widget> screens = [
@@ -55,9 +60,16 @@ class MyCubit extends Cubit<States>{
     emit(ChangeNavBarState());
   }
 
-  void changeAvailability(value){
-    amAvailable = value;
-    emit(ChangeAvailabilityState());
+  Future<void> changeAvailability(value) async {
+    try{
+      await userData.update({
+        'isAvailable' : value
+      });
+      amAvailable =value;
+      emit(ChangeAvailabilityState());
+    }catch(e){
+      print(e.toString());
+    }
   }
 
   void changeServiceActivity(value){
@@ -199,17 +211,18 @@ class MyCubit extends Cubit<States>{
     }
   }
 
-  List<File?> serviceImage=[];
+  File? serviceImage;
   var picker = ImagePicker();
 
-  Future<void> getProfileImage({required ImageSource source,String? error}) async {
+  Future<void> getProfileImage({required ImageSource source,String? error})
+  async {
     try{
       emit(UploadServiceImagesLoadingState());
       final pickedFile = await picker.pickImage(
         source: source,
       );
       if (pickedFile != null) {
-        serviceImage.add(File(pickedFile.path));
+        serviceImage=File(pickedFile.path);
         emit(UploadServiceImagesSuccessState());
       } else {
         print('لم يتم اختيار صورة');
@@ -220,7 +233,7 @@ class MyCubit extends Cubit<States>{
   }
 
   void clearServiceImages() {
-    serviceImage=[];
+    serviceImage=null;
     emit(ClearUploadedImages());
   }
 
@@ -387,6 +400,8 @@ class MyCubit extends Cubit<States>{
               'body': messageText,
               'chatId': chatId,
               'senderId': uid,
+              'senderName': snapshot.data()!['name'],
+              'senderImage': snapshot.data()!['image'],
               'type': 'chat'
             },
             'android': {
@@ -433,6 +448,39 @@ class MyCubit extends Cubit<States>{
       print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=');
     } catch (e) {
       print("Error playing sound: $e");
+    }
+  }
+
+  Future<void> uploadService({
+    required String name,
+    required String description,
+    required String category,
+    required String subCategory,
+    required String price,
+    required String period,
+  })
+  async {
+    try {
+      Map<String, dynamic> serviceData = {
+        'name': name,
+        'description': description,
+        'category': category,
+        'price': int.parse(price),
+        'period': "$period دقيقة",
+        'serviceImage': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
+        'providerId': FirebaseAuth.instance.currentUser!.uid,
+        'isActive': true,
+        'rate': 0.0,
+        'createdAt': FieldValue.serverTimestamp(),
+        'subCategory': subCategory,
+      };
+
+      await FirebaseFirestore.instance.collection('services').add(serviceData);
+
+      emit(UploadService());
+
+    } catch (error) {
+      print(error.toString());
     }
   }
 }

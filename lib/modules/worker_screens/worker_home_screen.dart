@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/worker_screens/add_service.dart';
 import 'package:trying_homy/modules/worker_screens/service_details.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
@@ -14,32 +17,29 @@ import '../../shared/styles/colors.dart';
 
 
 class WorkerHomeScreen extends StatefulWidget {
-   WorkerHomeScreen({super.key});
+   const WorkerHomeScreen({super.key});
 
   @override
   State<WorkerHomeScreen> createState() => _WorkerHomeScreenState();
 }
 
 class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
+
   final List<Map<String, dynamic>> info = [
     {
       'title': 'كل الحجوزات',
-      'value': '53',
       'icon': 'assets/receipt.svg',
     },
     {
       'title': 'الحجوزات المكتملة',
-      'value': '13',
       'icon': 'assets/all.svg',
     },
     {
       'title': 'كل الخدمات',
-      'value': '23',
       'icon': 'assets/tool.svg',
     },
     {
       'title': 'التقييم',
-      'value': '2.7',
       'icon': 'assets/star.svg',
     },
   ];
@@ -75,26 +75,76 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
 
    String? workerDept;
 
+   int? workerTotalAmount;
+
+  int? workerRequestsCount;
+
+  int? workerServicesCount;
+
+   int? workerComplatedRequestsCount;
+
+  double? workerRating;
+
+  List<Map<String,dynamic>> workerServices=[];
+
+
    bool isLoading = true;
 
    Future<void> getWorkerData() async   {
      final uid = FirebaseAuth.instance.currentUser!.uid;
      try{
-       DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+       DocumentSnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore.instance
            .collection('users')
            .doc(uid)
            .get();
 
-       if (snapshot.exists && snapshot.data() != null) {
-         workerName = snapshot.data()!['name'];
-         workerDept = snapshot.data()!['specialization'];
+       AggregateQuerySnapshot servicesSnapshot = await FirebaseFirestore.instance
+           .collection('services')
+           .where('providerId', isEqualTo: uid)
+           .count()
+           .get();
+
+       AggregateQuerySnapshot completedRequestSnapshot = await FirebaseFirestore.instance
+           .collection('requests')
+           .where('providerId',isEqualTo: uid)
+           .where('status',isEqualTo: 'completed')
+            .count()
+           .get();
+
+       AggregateQuerySnapshot requestSnapshot = await FirebaseFirestore.instance
+           .collection('requests')
+           .where('providerId',isEqualTo: uid)
+           .count()
+           .get();
+
+       QuerySnapshot<Map<String, dynamic>> getServicesSnapshot = await FirebaseFirestore.instance
+           .collection('services')
+           .where('providerId', isEqualTo: uid)
+           .get();
+
+       if (userSnapshot.exists && userSnapshot.data() != null) {
+         workerName = userSnapshot.data()!['name'];
+         workerDept = userSnapshot.data()!['specialization'];
+         workerTotalAmount = userSnapshot.data()!['totalAmount'];
+         workerRequestsCount = requestSnapshot.count;
+         workerComplatedRequestsCount = completedRequestSnapshot.count;
+         workerServicesCount = servicesSnapshot.count;
+         workerRating = userSnapshot.data()!['avgRating'];
+         for (var doc in getServicesSnapshot.docs) {
+           Map<String, dynamic> data = doc.data();
+           data['id'] = doc.id;
+           workerServices.add(data);
+         }
          setState(() {
            isLoading=false;
 
          });
          print(workerName);
          print(workerDept);
+         print(workerTotalAmount);
+         print(workerComplatedRequestsCount);
        }
+
 
      }catch(e){
        setState(() {
@@ -253,7 +303,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '0 \uFDFC',
+                                          '$workerTotalAmount \uFDFC',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -318,7 +368,10 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                             Row(
                                               children: [
                                                 Text(
-                                                  '0',
+                                                  index==0?'$workerRequestsCount':
+                                                  index==1?'$workerComplatedRequestsCount':
+                                                  index==2?'$workerServicesCount':
+                                                  index==3?'$workerRating':'0',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                        color: cubit.isDark? Colors.white: Colors.black,
@@ -472,7 +525,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         ),
                         const Spacer(),
                         defaultTextButton(
-                            onPressed: ()=>move(context, WorkerServices()),
+                            onPressed: ()=>moveAndReplace(context, WorkerServices()),
                             text: 'عرض الكل',
                             isLined: false
                         )
@@ -480,7 +533,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                     ),
                   ),
                   GridView.builder(
-                    itemCount: 4,
+                    itemCount: workerServices.length > 4 ? 4 : workerServices.length,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 10.h),
@@ -491,7 +544,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         mainAxisSpacing: 10.h
                     ),
                     itemBuilder: (context, index) {
-                      var service = services[index];
+                      if(workerServices.isEmpty)return const Center(child: Text('لا يوجد لديك خدمات'),);
                       return InkWell(
                         borderRadius: BorderRadius.circular(12.r),
                         onTap: ()=>move(context, const ServiceDetails()),
@@ -510,7 +563,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                     ClipRRect(
                                       borderRadius:BorderRadiusDirectional.only(topStart: Radius.circular(12.r),topEnd:Radius.circular(12.r)),
                                       child: Image.network(
-                                        service['image'],
+                                        '${workerServices[index]['serviceImage']}',
                                         height: 110.h,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
@@ -546,7 +599,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                             borderRadius: BorderRadius.circular(30.r)
                                         ),
                                         child: Text(
-                                          '${service['price']} ﷼ ',
+                                          '${workerServices[index]['price']} ﷼ ',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -590,7 +643,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       height: 5.h,
                                     ),
                                     Text(
-                                      service['name'],
+                                      '${workerServices[index]['name']}',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -603,7 +656,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       height: 5.h,
                                     ),
                                     Text(
-                                      service['description'],
+                                      '${workerServices[index]['description']}',
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -623,100 +676,104 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                   SizedBox(
                     height: 20.h,
                   ),
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                    decoration: BoxDecoration(
+                  Padding(
+                    padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(20.r),
-                      gradient: LinearGradient(
-                        colors: [
-                          mainColor,
-                          mainColor.withOpacity(0.7)
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: mainColor.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          right: -20,
-                          top: -20,
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.white.withOpacity(0.1),
-                          ),
-                        ),
-                        Positioned(
-                          left: 30,
-                          bottom: -30,
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Colors.white.withOpacity(0.1),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(20.r),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'وسع نطاق عملك',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                        height: 5.h
-                                    ),
-                                    Text(
-                                      'أضف خدمات جديدة الآن وابدأ باستقبال المزيد من الطلبات',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.9),
-                                        fontSize: 12.sp,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                        height: 15.h
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: ()=>move(context, WorkerServices()),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        foregroundColor: mainColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10.r),
-                                        ),
-                                        elevation: 0,
-                                      ),
-                                      child: const Text(
-                                          'إضافة خدمة جديدة'
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.add_business_rounded,
-                                size: 70.r,
-                                color: Colors.white.withOpacity(0.3),
-                              ),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              mainColor,
+                              mainColor.withOpacity(0.7)
                             ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: mainColor.withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
-                      ],
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              right: -20,
+                              top: -20,
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.white.withOpacity(0.1),
+                              ),
+                            ),
+                            Positioned(
+                              left: 30,
+                              bottom: -30,
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundColor: Colors.white.withOpacity(0.1),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(20.r),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'وسع نطاق عملك',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18.sp,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                            height: 5.h
+                                        ),
+                                        Text(
+                                          'أضف خدمات جديدة الآن وابدأ باستقبال المزيد من الطلبات',
+                                          style: TextStyle(
+                                            color: Colors.white.withOpacity(0.9),
+                                            fontSize: 12.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                            height: 15.h
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: ()=>move(context, const AddService()),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.white,
+                                            foregroundColor: mainColor,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(10.r),
+                                            ),
+                                            elevation: 0,
+                                          ),
+                                          child: const Text(
+                                              'إضافة خدمة جديدة'
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.add_business_rounded,
+                                    size: 70.r,
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(
