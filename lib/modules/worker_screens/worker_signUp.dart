@@ -1,14 +1,8 @@
-  import 'dart:io';
   import 'dart:ui';
-  import 'package:cloud_firestore/cloud_firestore.dart';
-  import 'package:firebase_auth/firebase_auth.dart';
-  import 'package:flutter/cupertino.dart';
   import 'package:flutter/material.dart';
   import 'package:flutter_bloc/flutter_bloc.dart';
   import 'package:flutter_screenutil/flutter_screenutil.dart';
   import 'package:flutter_svg/flutter_svg.dart';
-  import 'package:image_picker/image_picker.dart';
-  import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
   import 'package:trying_homy/main.dart';
   import 'package:trying_homy/modules/login_screen.dart';
   import 'package:trying_homy/shared/cubit/cubit.dart';
@@ -25,7 +19,6 @@ import '../email_verfication_screen.dart';
   }
 
   class _WorkerSignupState extends State<WorkerSignup> {
-    var formKey_workerSignUp=  GlobalKey<FormState>();
     @override
     Widget build(BuildContext context) {
       MyCubit cubit = MyCubit.get(context);
@@ -40,6 +33,8 @@ import '../email_verfication_screen.dart';
                 cubit.workerNameController.clear();
                 cubit.workerAddController.clear();
                 cubit.selectedDept=null;
+                cubit.workerDataLoaded=false;
+                cubit.getWorkerData();
                 showSnackBar(Colors.green, 'تم إنشاء حسابك بنجاح', context);
                 cubit.currentIndex=0;
                 moveAndReplace(context, const EmailVerificationScreen());
@@ -125,7 +120,7 @@ import '../email_verfication_screen.dart';
                           Align(
                             alignment: AlignmentDirectional.topCenter,
                             child: Padding(
-                              padding: EdgeInsetsDirectional.only(top: 60.h),
+                              padding: EdgeInsetsDirectional.only(top:100.h),
                               child: Text(
                                 'إنشاء حساب\nفني جديد',
                                 textAlign: TextAlign.center,
@@ -154,7 +149,7 @@ import '../email_verfication_screen.dart';
                         width: double.infinity,
                         padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cubit.isDark? darkBgColor: Colors.white,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(40.r),
                             topRight: Radius.circular(40.r),
@@ -169,194 +164,198 @@ import '../email_verfication_screen.dart';
                         ),
                         child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
-                          child: Form(
-                            key: formKey_workerSignUp,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: cubit,
-                                      text: 'الأسم الكامل',
-                                      prefixIcon: 'assets/acc.svg',
-                                      errorMes: 'يجب كتابة الأسم',
-                                      controller: cubit.workerNameController,
-                                      type: TextInputType.text,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 15.h,
-                                ),
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: cubit,
-                                    text: 'العنوان',
-                                    prefixIcon: 'assets/loc.svg',
-                                    errorMes: 'العنوان يجب ان لا يكون فارغ',
-                                    controller: cubit.workerAddController,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                height: 50.h,
+                                child: defaultTextFormfeild(
+                                  cubit: cubit,
+                                    text: 'الأسم الكامل',
+                                    prefixIcon: 'assets/acc.svg',
+                                    errorMes: 'يجب كتابة الأسم',
+                                    controller: cubit.workerNameController,
                                     type: TextInputType.text,
-                                  ),
                                 ),
-                                SizedBox(
-                                  height: 15.0.h,
+                              ),
+                              SizedBox(
+                                height: 15.h,
+                              ),
+                              Container(
+                                height: 50.h,
+                                child: defaultTextFormfeild(
+                                  cubit: cubit,
+                                  text: 'العنوان',
+                                  prefixIcon: 'assets/loc.svg',
+                                  errorMes: 'العنوان يجب ان لا يكون فارغ',
+                                  controller: cubit.workerAddController,
+                                  type: TextInputType.text,
                                 ),
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: cubit,
-                                    text: 'البريد الألكتروني',
-                                    prefixIcon: 'assets/phone.svg',
-                                    errorMes: 'البريد يجب ان لا يكون فارغ',
-                                    controller: cubit.workerPhoneController,
-                                    type: TextInputType.emailAddress,
-                                  ),
+                              ),
+                              SizedBox(
+                                height: 15.0.h,
+                              ),
+                              Container(
+                                height: 50.h,
+                                child: defaultTextFormfeild(
+                                  cubit: cubit,
+                                  text: 'البريد الألكتروني',
+                                  prefixIcon: 'assets/phone.svg',
+                                  errorMes: 'البريد يجب ان لا يكون فارغ',
+                                  controller: cubit.workerPhoneController,
+                                  type: TextInputType.emailAddress,
                                 ),
-                                SizedBox(
-                                  height: 15.0.h,
-                                ),
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: cubit,
-                                      text: 'كلمة المرور',
-                                      prefixIcon: 'assets/lock.svg',
-                                      errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                      controller: cubit.workerPasswordController,
-                                      type: TextInputType.visiblePassword,
-                                      isPassword: cubit.isPassword,
-                                      isSuffixIcon: true,
-                                      suffixIcon: cubit.suffixIcon,
-                                      suffixPressed: ()=>cubit.changePasswordVisiability(),
+                              ),
+                              SizedBox(
+                                height: 15.0.h,
+                              ),
+                              Container(
+                                height: 50.h,
+                                child: defaultTextFormfeild(
+                                  cubit: cubit,
+                                    text: 'كلمة المرور',
+                                    prefixIcon: 'assets/lock.svg',
+                                    errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
+                                    controller: cubit.workerPasswordController,
+                                    type: TextInputType.visiblePassword,
+                                    isPassword: cubit.isPassword,
+                                    isSuffixIcon: true,
+                                    suffixIcon: cubit.suffixIcon,
+                                    suffixPressed: ()=>cubit.changePasswordVisiability(),
 
+                                ),
+                              ),
+                              SizedBox(
+                                height: 15.h,
+                              ),
+                              DropdownButtonFormField<String>(
+                                dropdownColor: cubit.isDark? darkBgColor: Colors.white,
+                                isExpanded: false,
+                                alignment: AlignmentDirectional.centerStart,
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: Colors.grey.shade600,
+                                  size: 20.sp,
+                                ),
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: SvgPicture.asset(
+                                      'assets/work.svg',
+                                      width: 12.w,
+                                      height:12.h, color: cubit.isDark? darkSubTextColor: Colors.grey.shade600                                     ),
+                                  ),
+                                  fillColor: Colors.grey.withOpacity(0.06),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 10.w),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.r), // زوايا أكثر نعومة
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  errorStyle: TextStyle(fontSize: 10.sp),
+                                ),
+                                hint:  Text(
+                                  'اختر القسم',
+                                  style: TextStyle(
+                                      fontSize: 12.sp,
+                                    color: cubit.isDark? darkSubTextColor: Colors.grey
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 15.h,
-                                ),
-                                DropdownButtonFormField<String>(
-                                  dropdownColor: Colors.white,
-                                  isExpanded: false,
-                                  alignment: AlignmentDirectional.centerStart,
-                                  icon: Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    color: Colors.grey.shade600,
-                                    size: 20.sp,
+                                borderRadius: BorderRadius.circular(12.r),
+                                value: cubit.selectedDept,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'كهرباء',
+                                    child: Align(alignment: Alignment.topRight, child: Text('كهرباء')),
                                   ),
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: SvgPicture.asset(
-                                        'assets/work.svg',
-                                        width: 12.w,
-                                        height:12.h,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                    fillColor: Colors.grey.withOpacity(0.06),
-                                    contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 10.w),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.r), // زوايا أكثر نعومة
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    errorStyle: TextStyle(fontSize: 10.sp),
+                                  DropdownMenuItem(
+                                    value: 'سباكة',
+                                    child: Align(alignment: Alignment.topRight, child: Text('سباكة')),
                                   ),
-                                  hint:  Text(
-                                    'اختر القسم',
-                                    style: TextStyle(
-                                        fontSize: 12.sp
-                                    ),
+                                  DropdownMenuItem(
+                                    value: 'الماء',
+                                    child: Align(alignment: Alignment.topRight, child: Text('الماء')),
                                   ),
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  value: cubit.selectedDept,
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'كهرباء',
-                                      child: Align(alignment: Alignment.topRight, child: Text('كهرباء')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'سباكة',
-                                      child: Align(alignment: Alignment.topRight, child: Text('سباكة')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'الماء',
-                                      child: Align(alignment: Alignment.topRight, child: Text('الماء')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'التكييف',
-                                      child: Align(alignment: Alignment.topRight, child: Text('التكييف')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'البناء',
-                                      child: Align(alignment: Alignment.topRight, child: Text('البناء')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'الحدادة',
-                                      child: Align(alignment: Alignment.topRight, child: Text('الحدادة')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'النجارة',
-                                      child: Align(alignment: Alignment.topRight, child: Text('النجارة')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'الدهان',
-                                      child: Align(alignment: Alignment.topRight, child: Text('الدهان')),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'أخرى',
-                                      child: Align(alignment: Alignment.topRight, child: Text('أخرى')),
-                                    ),
-                                  ],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      cubit.selectedDept = value;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'يرجى اختيار القسم';
+                                  DropdownMenuItem(
+                                    value: 'التكييف',
+                                    child: Align(alignment: Alignment.topRight, child: Text('التكييف')),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'البناء',
+                                    child: Align(alignment: Alignment.topRight, child: Text('البناء')),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'الحدادة',
+                                    child: Align(alignment: Alignment.topRight, child: Text('الحدادة')),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'النجارة',
+                                    child: Align(alignment: Alignment.topRight, child: Text('النجارة')),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'الدهان',
+                                    child: Align(alignment: Alignment.topRight, child: Text('الدهان')),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'أخرى',
+                                    child: Align(alignment: Alignment.topRight, child: Text('أخرى')),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    cubit.selectedDept = value;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'يرجى اختيار القسم';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(
+                                height: 20.h,
+                              ),
+                               state is SignUpLoadingState || state is SendVerficationCodeLoadingState ?const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                                  : defualtButton(
+                                  onPressed: ()  async {
+                                    if(
+                                    cubit.workerNameController.text.isNotEmpty &&
+                                        cubit.workerAddController.text.isNotEmpty &&
+                                        cubit.workerPhoneController.text.isNotEmpty &&
+                                        cubit.workerPasswordController.text.isNotEmpty &&
+                                        cubit.selectedDept!=null
+                                    ){
+                                      await cubit.signUpUser(cubit.workerPhoneController.text.trim(), cubit.workerPasswordController.text.trim());
+                                    }else{
+                                      showSnackBar(Colors.red, 'يرجى تعبئة واختيار كل الحقول', context);
                                     }
-                                    return null;
                                   },
-                                ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
-                                 state is SignUpLoadingState || state is SendVerficationCodeLoadingState ?const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                                    : defualtButton(
-                                    onPressed: ()  async {
-                                      if(formKey_workerSignUp.currentState!.validate()){
-                                        await cubit.signUpUser(cubit.workerPhoneController.text.trim(), cubit.workerPasswordController.text.trim());
-                                      }
-                                    },
-                                    text: 'التالي',
-                                    height: 50.h
-                                ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'لديك حساب بالفعل؟',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey
-                                      ),
+                                  text: 'التالي',
+                                  height: 50.h
+                              ),
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'لديك حساب بالفعل؟',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey
                                     ),
-                                    defaultTextButton(
-                                        onPressed: ()=>move(context, const LoginScreen()),
-                                        text: 'سجل دخول'
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                  defaultTextButton(
+                                      onPressed: ()=>move(context, const LoginScreen()),
+                                      text: 'سجل دخول'
+                                  )
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),

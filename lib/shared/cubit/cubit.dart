@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
@@ -41,9 +42,11 @@ class MyCubit extends Cubit<States>{
 
   bool amAvailable = true;
 
-
-  DocumentReference<Map<String, dynamic>> userData  =  FirebaseFirestore.instance.collection('users')
-      .doc(FirebaseAuth.instance.currentUser!.uid);
+  DocumentReference<Map<String, dynamic>>? get userData {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    return FirebaseFirestore.instance.collection('users').doc(user.uid);
+  }
 
 
   bool isServicesActive = true;
@@ -61,13 +64,15 @@ class MyCubit extends Cubit<States>{
   }
 
   Future<void> changeAvailability(value) async {
-    try{
-      await userData.update({
-        'isAvailable' : value
+    if (userData == null) return;
+
+    try {
+      await userData!.update({
+        'isAvailable': value
       });
-      amAvailable =value;
+      amAvailable = value;
       emit(ChangeAvailabilityState());
-    }catch(e){
+    } catch (e) {
       print(e.toString());
     }
   }
@@ -113,6 +118,7 @@ class MyCubit extends Cubit<States>{
         'avgRating':0.0,
         'isAvailable ': true,
         'createdAt': FieldValue.serverTimestamp(),
+        'totalAmount':0
       });
       await verifyEmail();
       await saveUserToken();
@@ -211,6 +217,90 @@ class MyCubit extends Cubit<States>{
     }
   }
 
+  String? workerName;
+  String? workerDept;
+  int? workerTotalAmount;
+  int? workerRequestsCount;
+  int? workerServicesCount;
+  int? workerComplatedRequestsCount;
+  double? workerRating;
+
+  List<Map<String,dynamic>> workerServices = [];
+
+  bool workerDataLoaded = false;
+
+  Future<void> getWorkerData() async {
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
+      return;
+    }
+
+    if (workerDataLoaded) return;
+
+    emit(GetWorkerDataLoadingState());
+
+    final uid = user.uid;
+
+    try {
+
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      final servicesSnapshot = await FirebaseFirestore.instance
+          .collection('services')
+          .where('providerId', isEqualTo: uid)
+          .count()
+          .get();
+
+      final completedRequestSnapshot = await FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId',isEqualTo: uid)
+          .where('status',isEqualTo: 'completed')
+          .count()
+          .get();
+
+      final requestSnapshot = await FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId',isEqualTo: uid)
+          .count()
+          .get();
+
+      final getServicesSnapshot = await FirebaseFirestore.instance
+          .collection('services')
+          .where('providerId', isEqualTo: uid)
+          .get();
+
+      workerName = userSnapshot.data()?['name'];
+      workerDept = userSnapshot.data()?['specialization'];
+      workerTotalAmount = userSnapshot.data()?['totalAmount'];
+      workerRequestsCount = requestSnapshot.count;
+      workerComplatedRequestsCount = completedRequestSnapshot.count;
+      workerServicesCount = servicesSnapshot.count;
+      workerRating = userSnapshot.data()?['avgRating'];
+
+      workerServices.clear();
+
+      for (var doc in getServicesSnapshot.docs) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        workerServices.add(data);
+      }
+
+      workerDataLoaded = true;
+
+      emit(GetWorkerDataSuccessState());
+
+    } catch (e) {
+      emit(GetWorkerDataErrorState(error: e.toString()));
+    }
+  }
+
+
   File? serviceImage;
   var picker = ImagePicker();
 
@@ -280,7 +370,8 @@ class MyCubit extends Cubit<States>{
       print('خطأ أثناء تصفير العداد: $e');
     }
   }
-  Future<void> sendMessage(String chatId, String receiverId, String senderId,String? replyText,String? replyName) async {
+  Future<void> sendMessage(String chatId, String receiverId, String senderId,String? replyText,String? replyName)
+  async {
     try{
       if (message.text.trim().isEmpty) return;
       String text = message.text.trim();
@@ -463,26 +554,171 @@ class MyCubit extends Cubit<States>{
   })
   async {
     try {
+      emit(UploadServiceLoadingState());
       Map<String, dynamic> serviceData = {
         'name': name,
         'description': description,
         'category': category,
         'price': int.parse(price),
-        'period': "$period دقيقة",
+        'period': period,
         'serviceImage': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
         'providerId': FirebaseAuth.instance.currentUser!.uid,
         'isActive': true,
         'rate': 0.0,
         'createdAt': FieldValue.serverTimestamp(),
         'subCategory': subCategory,
+        'reviews': FieldValue.arrayUnion(
+            [
+              {
+                'comment': 'شغله تمام بصراحة بس يهدر كثير',
+                'createdAt': DateTime.now(),
+                'rating': 3,
+                'userId': 'FeIIQoLQZuSiVK2T2q2WBcOjMsn2',
+                'userName': 'عمر نصر',
+              },
+              {
+                'comment': 'خدمة ممتازة جداً وانصح بالتعامل معه، فني محترف ومواعيده دقيقة.',
+                'createdAt': DateTime.now(),
+                'rating': 5,
+                'userId': 'j0z415zBtFWBXb1qPiCSHLWtLop2',
+                'userName': 'أحمد محمد',
+              }
+        ]),
       };
 
       await FirebaseFirestore.instance.collection('services').add(serviceData);
 
-      emit(UploadService());
+      emit(UploadServiceSuccessState());
 
-    } catch (error) {
-      print(error.toString());
+    } catch (e) {
+      emit(UploadServiceErrorState(error: e.toString()));
+      print(e.toString());
     }
+  }
+
+  Future<void> createRequest({
+    required String category,
+    required String customerId,
+    required String providerId,
+    required String subCategory,
+    required String address,
+    required String latitude,
+    required String clientName,
+    required String clientPhone,
+    required String title,
+    required String description,
+    required String image,
+    required String clientImage,
+    required int price,
+    required int number,
+  })
+  async {
+    try {
+      DateTime now = DateTime.now();
+
+      await FirebaseFirestore.instance.collection('requests').add({
+        "address": address,
+        "categoryId": category,
+        "clientName": clientName,
+        "clientPhone": clientPhone,
+        "clientImage": clientImage,
+        "createdAt": Timestamp.fromDate(now),
+        "customerId": customerId,
+        "description": description,
+        "duration": "53",
+        "image": image,
+        "latitude": latitude,
+        "number": number,
+        "price": price,
+        "providerId": providerId,
+        "scheduledAt": Timestamp.fromDate(
+          DateTime(2026, 2, 27, 23, 30),
+        ),
+        "status": "قيد الانتظار",
+        "statusHistory": {
+          "pendingAt": Timestamp.fromDate(now),
+        },
+        "subCategoryId": subCategory,
+        "title": title,
+      });
+
+      print("request created successfully ✅");
+    } catch (e) {
+      print("Error creating request: $e");
+    }
+  }
+
+  List<Map<String,dynamic>> workerRequests=[];
+  bool workerRequestsLoaded = false;
+
+  Future<void> getWorkerRequests() async {
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
+      return;
+    }
+
+    if (workerRequestsLoaded) return;
+
+    emit(GetWorkerRequestsLoadingState());
+
+    final uid = user.uid;
+    workerRequests.clear();
+
+    try {
+      final requestsSnapshot = await FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId', isEqualTo: uid)
+          .get();
+
+      for (var doc in requestsSnapshot.docs) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        workerRequests.add(data);
+      }
+
+      workerRequestsLoaded = true;
+
+      emit(GetWorkerRequestsSuccessState());
+
+    } catch (e) {
+      emit(GetWorkerRequestsErrorState(error: e.toString()));
+    }
+  }
+
+  int getStepFromStatus(String status) {
+    switch (status) {
+      case "قيد الانتظار": // الحالة الموجودة في صورتك
+        return 0; // تم الطلب
+      case "مقبول":
+        return 1; // تم القبول
+      case "جاري التنفيذ":
+        return 2; // جاري التنفيذ
+      case "مكتمل":
+        return 3; // تم اكمال الخدمة
+      default:
+        return 0;
+    }
+  }
+
+  String formatStatusTime(dynamic timestamp) {
+    if (timestamp == null) return "بانتظار التحديث";
+    DateTime date = timestamp.toDate();
+    return DateFormat('dd/MM/yyyy - hh:mm a').format(date) .replaceAll('AM', 'ص').replaceAll('PM', 'م');
+
+  }
+
+  String DateFormatStatusTime(dynamic timestamp) {
+    if (timestamp == null) return "بانتظار التحديث";
+    DateTime date = timestamp.toDate();
+    return DateFormat('dd/MM/yyyy').format(date);
+
+  } String timeFormatStatusTime(dynamic timestamp) {
+    if (timestamp == null) return "بانتظار التحديث";
+    DateTime date = timestamp.toDate();
+    return DateFormat('hh:mm a').format(date) .replaceAll('AM', 'ص').replaceAll('PM', 'م');
+
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/date_symbol_data_file.dart' show initializeDateFormatting;
 import 'package:trying_homy/modules/login_screen.dart';
 import 'package:trying_homy/shared/cubit/bloc_observer.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
@@ -153,7 +154,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MyCubit()..checkUser()..changeTheme(fromShared: isDark),
+      create: (context) => MyCubit()..checkUser()..changeTheme(fromShared: isDark)..getWorkerData(),
       child: ScreenUtilInit(
         designSize: const Size(360, 800),
         minTextAdapt: true,

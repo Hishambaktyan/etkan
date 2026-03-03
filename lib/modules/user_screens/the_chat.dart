@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/shared/cubit/cubit.dart';
@@ -214,7 +213,6 @@ class _TheChatState extends State<TheChat> {
                   );
                 }
                 var docs = snapshot.data!.docs;
-                var globalChatData;
                 for (var doc in docs) {
                   var data = doc.data() as Map<String, dynamic>;
                   if (data['receiverId'] == widget.myId && data['isSeen'] == false) {
@@ -235,12 +233,7 @@ class _TheChatState extends State<TheChat> {
                               itemBuilder: (context, index) {
                                 var doc = docs[index];
                                 var chatData = doc.data() as Map<String, dynamic>;
-                                globalChatData=chatData;
                                 bool isMe = chatData['senderId'] == myId ? true : false;
-
-                                DateTime? date = (chatData['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
-                                final String time = DateFormat('hh:mm a').format(date).replaceAll('AM', 'ص').replaceAll('PM', 'م');
-
                                 return SwipeableMessage(
                                     child: Padding(
                                       padding: EdgeInsetsDirectional.symmetric(
@@ -317,7 +310,7 @@ class _TheChatState extends State<TheChat> {
                                                 mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    time,
+                                                    cubit.timeFormatStatusTime(chatData['timestamp']),
                                                     style: TextStyle(
                                                         color: isMe ? Colors.green.shade100 : Colors.grey,
                                                         fontSize: 8.sp),

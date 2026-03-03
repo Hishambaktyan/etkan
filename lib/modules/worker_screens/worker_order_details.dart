@@ -12,7 +12,17 @@ import '../../shared/cubit/states.dart';
 import '../images_view.dart';
 
 class WorkerOrderDetails extends StatelessWidget {
-  const WorkerOrderDetails({super.key});
+  final Map<String,dynamic> request;
+   WorkerOrderDetails({super.key, required this.request});
+
+  final List<String> stepperSteps = [
+    "قيد الانتظار",
+    "مقبول",
+    "جاري التنفيذ",
+    "مكتمل"
+  ];
+
+  final List<String> terminalStates = ["مرفوض", "ملغي"];
 
   Widget buildHorizontalStepper({required int currentStep,required dynamic cubit}) {
 
@@ -71,7 +81,7 @@ class WorkerOrderDetails extends StatelessWidget {
     );
   }
 
-  void showFullTrackingSheet(BuildContext context , dynamic cubit) {
+  void showFullTrackingSheet(BuildContext context , MyCubit cubit,dynamic requestData) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -114,12 +124,38 @@ class WorkerOrderDetails extends StatelessWidget {
                 ),
                 Expanded(
                   child: ListView(
-                    children: [
-                      _buildVerticalStep("تم طلب الخدمة", "23 فبراير، 04:12 م", true, true,cubit),
-                      _buildVerticalStep("تم قبول الطلب", "23 فبراير، 04:30 م", true, true,cubit),
-                      _buildVerticalStep("جاري التنفيذ حالياً", "الآن", false, true, isActive: true,cubit),
-                      _buildVerticalStep("تم اكتمال الخدمة", "بانتظار إنهاء العمل", false, false,cubit),
-                    ],
+                    children: List.generate(stepperSteps.length, (index) {
+                      String currentStatusFromDb = requestData['status'];
+                      Map<int, String> statusTimesKeys = {
+                        0: 'createdAt',
+                        1: 'acceptedAt',
+                        2: 'processingAt',
+                        3: 'completedAt',
+                      };
+                      String timeKey = statusTimesKeys[index]!;
+                      String displayTime = cubit.formatStatusTime(requestData[timeKey]);
+                      bool isDone;
+                      bool isActive;
+                      Color circleColor;
+                      int currentStepIndex = stepperSteps.indexOf(currentStatusFromDb);
+                      if (terminalStates.contains(currentStatusFromDb)) {
+                        isDone = index < stepperSteps.indexOf("مقبول");
+                        isActive = false;
+                        circleColor = Colors.red;
+                      } else {
+                        isDone = index < currentStepIndex;
+                        isActive = index == currentStepIndex;
+                        circleColor = mainColor;
+                      }
+                      return _buildVerticalStep(
+                        stepperSteps[index],
+                        displayTime,
+                        isDone,
+                        index != stepperSteps.length - 1,
+                        cubit,
+                        isActive: isActive,
+                      );
+                    },)
                   ),
                 ),
               ],
@@ -181,7 +217,7 @@ class WorkerOrderDetails extends StatelessWidget {
                       color: cubit.isDark? darkSubTextColor:Colors.grey
                   ),
                 ),
-                SizedBox(height: 25.h), // مسافة بين الخطوات
+                SizedBox(height: 25.h),
               ],
             ),
           ),
@@ -207,13 +243,13 @@ class WorkerOrderDetails extends StatelessWidget {
                     child: Stack(
                       children: [
                         Image.network(
-                          'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
+                          request['image'],
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: 300.h,
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
+                          padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w),
                           child: Row(
                             children: [
                               Padding(
@@ -366,7 +402,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                               width: 10.w
                                           ),
                                           Text(
-                                            'طلب رقم #233',
+                                            'طلب رقم #${request['number']}',
                                             style: TextStyle(
                                                 fontSize: 14.sp,
                                                 fontWeight: FontWeight.bold,
@@ -381,7 +417,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                               borderRadius: BorderRadius.circular(7.r),
                                             ),
                                             child: Text(
-                                              'قيد الانتظار',
+                                              request['status'],
                                               style: TextStyle(
                                                 color: Colors.orange.shade800,
                                                 fontWeight: FontWeight.bold,
@@ -393,7 +429,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                       ),
                                       Padding(
                                         padding: EdgeInsets.symmetric(vertical: 15.h),
-                                        child: Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade100, height: 1),
+                                        child: Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
                                       ),
                                       Row(
                                         children: [
@@ -417,7 +453,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                                         )
                                                     ),
                                                     Text(
-                                                      '15000 $reyalSymbol',
+                                                      '${request['price']} $reyalSymbol',
                                                       style: TextStyle(
                                                           color: mainColor,
                                                           fontSize: 14.sp,
@@ -432,7 +468,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                           Container(
                                               height: 30.h,
                                               width: 1,
-                                              color: cubit.isDark? darkSubTextColor: Colors.grey
+                                              color: cubit.isDark? darkSubTextColor: Colors.grey.shade300
                                           ),
                                           SizedBox(width: 15.w),
                                           Expanded(
@@ -451,7 +487,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                                         )
                                                     ),
                                                     Text(
-                                                      '45 دقيقة',
+                                                      '${request['duration']} دقيقة',
                                                       style: TextStyle(
                                                           color: cubit.isDark? Colors.white: Colors.black87,
                                                           fontSize: 14.sp,
@@ -522,14 +558,14 @@ class WorkerOrderDetails extends StatelessWidget {
                               SizedBox(
                                   height: 20.h
                               ),
-                              buildHorizontalStepper(currentStep: 1,cubit: cubit),
+                              buildHorizontalStepper(currentStep: cubit.getStepFromStatus(request['status']),cubit: cubit),
                               SizedBox(
                                   height: 10.h
                               ),
                               Center(
                                 child: TextButton.icon(
                                   onPressed: () {
-                                    showFullTrackingSheet(context,cubit);
+                                    showFullTrackingSheet(context,cubit,request);
                                   },
                                   icon: SvgPicture.asset(
                                     'assets/eye.svg',
@@ -599,7 +635,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12.r),
                                     child: Image.network(
-                                      'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
+                                      request['image'],
                                       width: 100.w,
                                       height: 100.h,
                                       fit: BoxFit.cover,
@@ -620,7 +656,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'تركيب حوض حمام جداري',
+                                          request['title'],
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -630,7 +666,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          '12000 $reyalSymbol',
+                                          '${request['price']} $reyalSymbol',
                                           style: TextStyle(
                                             fontSize: 14.sp,
                                             fontWeight: FontWeight.bold,
@@ -641,7 +677,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                             height: 10.h
                                         ),
                                         Divider(
-                                            color: cubit.isDark? darkSubTextColor: Colors.grey.shade100,
+                                            color: cubit.isDark? darkSubTextColor: Colors.grey.shade300,
                                             height: 1
                                         ),
                                         SizedBox(
@@ -658,7 +694,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                                 width: 4.w
                                             ),
                                             Text(
-                                              '23/02/2026',
+                                              cubit.DateFormatStatusTime(request['scheduledAt']),
                                               style: TextStyle(
                                                   fontSize: 11.sp,
                                                   color: cubit.isDark? darkSubTextColor: Colors.grey.shade600
@@ -674,7 +710,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                                 width: 4.w
                                             ),
                                             Text(
-                                              '04:12 م',
+                                              cubit.timeFormatStatusTime(request['scheduledAt']),
                                               style: TextStyle(
                                                   fontSize: 11.sp,
                                                   color: cubit.isDark? darkSubTextColor: Colors.grey.shade600
@@ -739,7 +775,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   height: 10.h
                               ),
                               ReadMoreText(
-                                'خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات',
+                                request['description'],
                                 style: TextStyle(
                                     fontSize: 12.sp,
                                     color:  cubit.isDark? Colors.white: Colors.black,
@@ -800,20 +836,21 @@ class WorkerOrderDetails extends StatelessWidget {
                                   Container(
                                     height: 50.r,
                                     width: 50.r,
+                                    padding: const EdgeInsetsDirectional.all(10),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: cubit.isDark? Colors.white: Colors.black, width: 1),
-                                      image: const DecorationImage(
-                                        image: NetworkImage(
-                                          'https://i.pinimg.com/1200x/b8/82/83/b882836fa749f501aefa935d19e19977.jpg',
-                                        ),
+                                      border: Border.all(color: Colors.grey, width: 1),
+                                      image: DecorationImage(
                                         fit: BoxFit.cover,
-                                      ),
+                                          image: NetworkImage(
+                                              request['clientImage']
+                                          )
+                                      )
                                     ),
                                   ),
                                   SizedBox(width: 12.w),
                                   Text(
-                                    'محمد عبد الله محمد',
+                                    request['clientName'],
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
@@ -837,7 +874,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   SizedBox(width: 10.w),
                                   Expanded(
                                     child: Text(
-                                      'عدن - المنصورة - ريمي',
+                                      request['address'],
                                       style: TextStyle(
                                           color: cubit.isDark? Colors.white: Colors.black87,
                                           fontSize: 12.sp
@@ -857,10 +894,11 @@ class WorkerOrderDetails extends StatelessWidget {
                                   ),
                                   SizedBox(width: 10.w),
                                   Text(
-                                    '770770858',
+                                    request['clientPhone'],
                                     style: TextStyle(
                                         color: cubit.isDark? Colors.white: Colors.black87,
-                                        fontSize: 12.sp
+                                        fontSize: 12.sp,
+                                      letterSpacing: 7
                                     ),
                                   ),
                                 ],

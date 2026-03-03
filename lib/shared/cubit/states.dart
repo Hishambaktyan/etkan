@@ -99,6 +99,21 @@ class UploadServiceImagesErrorState extends States {
 
 class ClearUploadedImages extends States{}
 
-class UploadService extends States{}
+class UploadServiceLoadingState extends States{}
+class UploadServiceSuccessState extends States{}
+class UploadServiceErrorState extends States{
+  final String error;
+  UploadServiceErrorState({required this.error});
+}
+
+class GetWorkerRequestsSuccessState extends States{}
+
+class GetWorkerRequestsLoadingState extends States{}
+
+class GetWorkerRequestsErrorState extends States{
+  final String error;
+
+  GetWorkerRequestsErrorState({required this.error});
+}
 
 

@@ -22,70 +22,8 @@ class WorkerServices extends StatefulWidget {
 }
 
 class _WorkerServicesState extends State<WorkerServices> {
-   List<Map<String, dynamic>> services = [
-     {
-       'name': 'تركيب حوض حمام',
-       'price': '12000',
-       'description': 'خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق.',
-       'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-     },
-     {
-       'name': 'تصليح دينامو ماء',
-       'price': '8000',
-       'description': 'فحص وتصليح موتور المياه (الدينامو)، تغيير قطع الغيار التالفة بأخرى أصلية، وضمان قوة ضخ المياه وسلاسة العمل.',
-       'image': 'https://i.pinimg.com/736x/d2/89/9f/d2899f239623e6cb64f1854b469af5b5.jpg',
-     },
-     {
-       'name': 'صيانة سباكة كاملة',
-       'price': '50000',
-       'description': 'فحص شامل لجميع تمديدات السباكة في المنزل، معالجة الرطوبة، الكشف عن التسريبات، وتجديد المحابس والوصلات المتهالكة.',
-       'image': 'https://i.pinimg.com/736x/6d/66/af/6d66af4d10a9a7d19d1df880b0ce3b23.jpg',
-     },
-     {
-       'name': 'تركيب فلتر مياه 7 مراحل',
-       'price': '7000',
-       'description': 'تركيب احترافي لفلتر المياه بجميع مراحله، توصيل الصنابير، واختبار جودة المياه لضمان الحصول على مياه نقية وصحية.',
-       'image': 'https://i.pinimg.com/1200x/9b/9c/93/9b9c93ac5db55031a32139e972ee6da6.jpg',
-     },
-   ];
-
-   List<Map<String,dynamic>> workerServices=[];
-
-   bool isLoading = true;
-
-
-   Future<void> getWorkerData() async   {
-     final uid = FirebaseAuth.instance.currentUser!.uid;
-     try{
-       QuerySnapshot<Map<String, dynamic>> getServicesSnapshot = await FirebaseFirestore.instance
-           .collection('services')
-           .where('providerId', isEqualTo: uid)
-           .get();
-
-       if (getServicesSnapshot.docs.isNotEmpty) {
-         for (var doc in getServicesSnapshot.docs) {
-           Map<String, dynamic> data = doc.data();
-           data['id'] = doc.id;
-           workerServices.add(data);
-         }
-       }
-
-       setState(() {
-         isLoading=false;
-
-       });
-
-     }catch(e){
-       setState(() {
-         isLoading=false;
-       });
-       print(e.toString());
-     }
-   }
-
    @override
   void initState() {
-     getWorkerData();
     super.initState();
   }
 
@@ -95,8 +33,7 @@ class _WorkerServicesState extends State<WorkerServices> {
         listener: (context, state) {},
       builder: (context, state) {
         MyCubit cubit = MyCubit.get(context);
-        return isLoading? const Center(child: CircularProgressIndicator())
-            : PopScope(
+        return PopScope(
               canPop: false,
           onPopInvokedWithResult: (didPop, result) {
             if(didPop) result;
@@ -139,7 +76,7 @@ class _WorkerServicesState extends State<WorkerServices> {
                 ),
               ),
               body: GridView.builder(
-                itemCount: workerServices.length,
+                itemCount: cubit.workerServices.length,
                 physics: const BouncingScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200.w,
@@ -150,10 +87,9 @@ class _WorkerServicesState extends State<WorkerServices> {
                 shrinkWrap: true,
                 padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 10.h),
                 itemBuilder: (context, index) {
-                  var service = services[index];
                   return InkWell(
                     borderRadius: BorderRadius.circular(12.r),
-                    onTap: ()=>move(context,  const ServiceDetails()),
+                    onTap: ()=>move(context,   ServiceDetails(serviceId: cubit.workerServices[index]['id'],)),
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12.r),
@@ -169,7 +105,7 @@ class _WorkerServicesState extends State<WorkerServices> {
                                 ClipRRect(
                                   borderRadius:BorderRadiusDirectional.only(topStart: Radius.circular(12.r),topEnd:Radius.circular(12.r)),
                                   child: Image.network(
-                                    workerServices[index]['serviceImage'],
+                                    cubit.workerServices[index]['serviceImage'],
                                     height: 110.h,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
@@ -205,7 +141,7 @@ class _WorkerServicesState extends State<WorkerServices> {
                                         borderRadius: BorderRadius.circular(30.r)
                                     ),
                                     child: Text(
-                                      '${workerServices[index]['price']} ﷼ ',
+                                      '${cubit.workerServices[index]['price']} ﷼ ',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
@@ -249,7 +185,7 @@ class _WorkerServicesState extends State<WorkerServices> {
                                   height: 5.h,
                                 ),
                                 Text(
-                                  workerServices[index]['name'],
+                                  cubit.workerServices[index]['name'],
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -262,7 +198,7 @@ class _WorkerServicesState extends State<WorkerServices> {
                                   height: 5.h,
                                 ),
                                 Text(
-                                  workerServices[index]['description'],
+                                  cubit.workerServices[index]['description'],
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(

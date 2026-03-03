@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/images_view.dart';
@@ -11,10 +13,14 @@ import 'package:trying_homy/shared/cubit/states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class ServiceDetails extends StatelessWidget {
-  const ServiceDetails({super.key});
+  final String serviceId;
+   ServiceDetails({super.key, required this.serviceId});
 
   @override
   Widget build(BuildContext context) {
+    MyCubit cubit = MyCubit.get(context);
+    Map<String,dynamic> service =cubit.workerServices.firstWhere((service) =>service['id']==serviceId);
+    List<dynamic> review = service['reviews'];
     return BlocConsumer<MyCubit,States>(
         listener: (context, state) {},
         builder: (context, state) {
@@ -127,6 +133,7 @@ class ServiceDetails extends StatelessWidget {
                                       InkWell(
                                         borderRadius: BorderRadius.circular(12.r),
                                         onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
+                                        onLongPress: ()=>print(service[0]),
                                         child: Container(
                                           height: 70.h,
                                           width: 70.h,
@@ -236,7 +243,7 @@ class ServiceDetails extends StatelessWidget {
                                             borderRadius: BorderRadius.circular(6.r),
                                           ),
                                           child: Text(
-                                            'سباكة  >  تركيب أدوات صحية',
+                                            '${service['category']}  >  ${service['subCategory']}',
                                             style: TextStyle(
                                               color: cubit.isDark? Colors.white: Colors.grey.shade700,
                                               fontSize: 10.sp,
@@ -246,7 +253,7 @@ class ServiceDetails extends StatelessWidget {
                                         ),
                                         SizedBox(height: 10.h),
                                         Text(
-                                          'تركيب حوض حمام جداري (معلق) رخامي ابيض',
+                                          service['name'],
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15.sp,
@@ -254,7 +261,7 @@ class ServiceDetails extends StatelessWidget {
                                           ),
                                         ),
                                         SizedBox(height: 15.h),
-                                        Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade100, height: 1),
+                                        Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
                                         SizedBox(height: 15.h),
                                         Row(
                                           children: [
@@ -276,7 +283,7 @@ class ServiceDetails extends StatelessWidget {
                                                           ),
                                                           ),
                                                       Text(
-                                                        '15000 $reyalSymbol',
+                                                        '${service['price']} $reyalSymbol',
                                                         style: TextStyle(
                                                           color: mainColor,
                                                           fontSize: 14.sp,
@@ -291,7 +298,7 @@ class ServiceDetails extends StatelessWidget {
                                             Container(
                                                 height: 30.h,
                                                 width: 1,
-                                                color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                                color:  cubit.isDark? darkSubTextColor: Colors.grey.shade300,
                                             ),
                                             SizedBox(width: 15.w),
                                             Expanded(
@@ -314,7 +321,7 @@ class ServiceDetails extends StatelessWidget {
                                                           ),
                                                       ),
                                                       Text(
-                                                        '45 دقيقة',
+                                                        '${service['period']} دقيقة',
                                                         style: TextStyle(
                                                           color: cubit.isDark? Colors.white: Colors.black87,
                                                           fontSize: 14.sp,
@@ -388,7 +395,7 @@ class ServiceDetails extends StatelessWidget {
                                     height: 10.h
                                 ),
                                 ReadMoreText(
-                                  'خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات المائية والصرف، نضمن لك عدم وجود تسريبات وشكل جمالي متناسق خدمة احترافية لتركيب جميع أنواع أحواض الحمامات مع التوصيلات',
+                                  service['description'],
                                   style: TextStyle(
                                       fontSize: 12.sp,
                                       color:  cubit.isDark? Colors.white: Colors.black,
@@ -442,7 +449,7 @@ class ServiceDetails extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     Text(
-                                        '3.3',
+                                        '${service['rate']}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.orange,
@@ -459,9 +466,15 @@ class ServiceDetails extends StatelessWidget {
                           ListView.separated(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 3,
+                            itemCount: review.length,
                             separatorBuilder: (context, index) => SizedBox(height: 12.h),
                             itemBuilder: (context, index) {
+                              Timestamp? createdAt = review[index]['createdAt'];
+                              DateTime? date = createdAt?.toDate();
+                              String reviewDate = date != null
+                                  ? DateFormat('yyyy/MM/dd')
+                                  .format(date):'';
+
                               return Container(
                                 padding: EdgeInsets.all(14.r),
                                 decoration: BoxDecoration(
@@ -496,15 +509,15 @@ class ServiceDetails extends StatelessWidget {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'أحمد خالد',
+                                                review[index]['userName'],
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
-                                                    fontSize: 14.sp,
+                                                    fontSize: 13.sp,
                                                   color: cubit.isDark? Colors.white: Colors.black
                                                 ),
                                               ),
                                               Text(
-                                                'منذ يومين',
+                                                reviewDate,
                                                 style: TextStyle(
                                                   color:  cubit.isDark? darkSubTextColor: Colors.grey,
                                                     fontSize: 11.sp
@@ -514,17 +527,20 @@ class ServiceDetails extends StatelessWidget {
                                           ),
                                         ),
                                         Row(
-                                          children: List.generate(5, (i) => Icon(
-                                            Icons.star_rounded,
-                                            size: 16.r,
-                                            color: i < 4 ? Colors.orange : Colors.grey.shade300,
-                                          )),
+                                          children: List.generate(5, (i) {
+                                            double rating = (review[index]['rating'] ?? 0).toDouble();
+                                            return Icon(
+                                              Icons.star_rounded,
+                                              size: 16.r,
+                                              color: i < rating ? Colors.orange : Colors.grey.shade300,
+                                            );
+                                          }),
                                         ),
                                       ],
                                     ),
                                     SizedBox(height: 10.h),
                                     Text(
-                                      'شغل ممتاز وسريع جداً، التزم بالمواعيد وكان محترم جداً في التعامل. أنصح به بشدة.',
+                                      review[index]['comment'],
                                       style: TextStyle(
                                         fontSize: 12.sp,
                                         color: cubit.isDark? Colors.white70: Colors.black54,

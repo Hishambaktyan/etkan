@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/worker_order_details.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
@@ -61,122 +62,26 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
       ],
     );
   }
-  List<Map<String, dynamic>> bookingsData = [
-    {
-      'id': 101,
-      'status': 'مقبول',
-      'title': 'تركيب حوض حمام مودرن',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '12,000 ريال',
-      'address': 'عدن - المنصورة - ريمي',
-      'dateTime': '18/2/2026 - 9:00 ص',
-      'clientName': 'عبد المجيد محمد',
-    },
-    {
-      'id': 102,
-      'status': 'قيد الانتظار',
-      'title': 'صيانة تكييف سبليت',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '8,500 ريال',
-      'address': 'عدن - المعلا - الشارع الرئيسي',
-      'dateTime': '18/2/2026 - 11:30 ص',
-      'clientName': 'سالم ناصر',
-    },
-    {
-      'id': 103,
-      'status': 'مكتمل',
-      'title': 'تسليك مجاري المطبخ',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '5,000 ريال',
-      'address': 'عدن - كريتر - حي القطيع',
-      'dateTime': '17/2/2026 - 4:00 م',
-      'clientName': 'أحمد صبري',
-    },
-    {
-      'id': 104,
-      'status': 'مرفوض',
-      'title': 'تركيب فلتر مياه 7 مراحل',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '15,000 ريال',
-      'address': 'عدن - خور مكسر - حي السفارات',
-      'dateTime': '16/2/2026 - 10:00 ص',
-      'clientName': 'ليلى عبدالله',
-    },
-    {
-      'id': 105,
-      'status': 'في الطريق',
-      'title': 'تغيير خلاطات مغاسل',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '7,000 ريال',
-      'address': 'عدن - الشيخ عثمان - الممدارة',
-      'dateTime': '19/2/2026 - 8:30 ص',
-      'clientName': 'صالح محسن',
-    },
-    {
-      'id': 106,
-      'status': 'ملغي',
-      'title': 'فحص تسريبات مياه تحت البلاط',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '20,000 ريال',
-      'address': 'عدن - إنماء - المرحلة الثالثة',
-      'dateTime': '20/2/2026 - 1:00 م',
-      'clientName': 'مروان ياسين',
-    },
-    {
-      'id': 107,
-      'status': 'مكتمل',
-      'title': 'تركيب سخان كهربائي',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '9,000 ريال',
-      'address': 'عدن - دار سعد - حي الغربية',
-      'dateTime': '15/2/2026 - 3:45 م',
-      'clientName': 'عوض عمر',
-    },
-    {
-      'id': 108,
-      'status': 'مقبول',
-      'title': 'عزل أسطح ضد الرطوبة',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '45,000 ريال',
-      'address': 'عدن - البريقة - حي كود النمر',
-      'dateTime': '21/2/2026 - 7:00 ص',
-      'clientName': 'فؤاد خليل',
-    },
-    {
-      'id': 109,
-      'status': 'في الطريق',
-      'title': 'صيانة مضخة مياه (دينمو)',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '6,500 ريال',
-      'address': 'عدن - التواهي - حي القلوعة',
-      'dateTime': '14/2/2026 - 12:00 م',
-      'clientName': 'سمير علي',
-    },
-    {
-      'id': 110,
-      'status': 'قيد الانتظار',
-      'title': 'تمديد شبكة مياه جديدة',
-      'image': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'price': '55,000 ريال',
-      'address': 'عدن - الشعب - حي الرباط',
-      'dateTime': '22/2/2026 - 10:30 ص',
-      'clientName': 'جمال مهدي',
-    },
-  ];
   List<String> statusFilters = ['الكل', 'قيد الانتظار', 'مقبول','في الطريق','مكتمل','مرفوض','ملغي'];
   String selectedStatus = 'الكل';
+  @override
+  void initState() {
+    MyCubit.get(context).getWorkerRequests();
+    super.initState();
+  }
 
 
   @override
   Widget build(BuildContext context) {
     MyCubit cubit = MyCubit.get(context);
     List<Map<String, dynamic>> filteredList = selectedStatus == 'الكل'
-        ? bookingsData
-        : bookingsData.where((item) => item['status'] == selectedStatus).toList();
+        ? cubit.workerRequests
+        : cubit.workerRequests.where((item) => item['status'] == selectedStatus).toList();
     return BlocConsumer<MyCubit,States>(
       listener: (context, state) {},
         builder: (context, state) {
-          return Directionality(
+          return state is GetWorkerRequestsLoadingState?   BookingShimmerLoading(isDark: cubit.isDark)
+          :  Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(
               appBar: AppBar(
@@ -281,6 +186,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                       itemCount: filteredList.length,
                       itemBuilder: (context, index) {
                         var booking = filteredList[index];
+
                         Color statusColor;
                         switch (booking['status']) {
                           case 'مكتمل': statusColor = Colors.green; break;
@@ -293,7 +199,25 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                         return InkWell(
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
-                          onTap: ()=>move(context,const WorkerOrderDetails()),
+                          onTap: ()=>move(context, WorkerOrderDetails(request: booking,)),
+                          onLongPress: () async {
+                            await cubit.createRequest(
+                            category: "2",
+                            customerId: "2",
+                            providerId: "zgyZCfttdmWsmKTNWneC4vbD7sX2",
+                            subCategory: "6",
+                            address: "الشعب - حي السعادة عمارة 12",
+                            latitude: "33",
+                            clientName: "مروان أحمد عوض باقيان",
+                            clientPhone: "771771771",
+                            title: "ترميم بيبات الحمام",
+                            description: "وصف تجريبي للخدمة المطلوبة للتأكد من ظهور البيانات",
+                            image: "https://i.pinimg.com/1200x/3e/f3/50/3ef350dc86cc82a092463e5d795654b5.jpg",
+                            clientImage: "https://i.pinimg.com/736x/0d/bc/a7/0dbca7e372766da7842528c87f693c01.jpg",
+                            price: 30000,
+                            number: 2,
+                            );
+                          },
                           child: Padding(
                             padding:EdgeInsetsDirectional.only(bottom:index==9?0 : 20.h),
                             child: Container(
@@ -312,7 +236,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(12.r),
                                         child: Image.network(
-                                          booking['image'],
+                                          booking['image']?? '',
                                           width: 90.w,
                                           height: 90.h,
                                           fit: BoxFit.cover,
@@ -339,7 +263,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                                 booking['status']=='قيد الانتظار'?SizedBox(
                                                   width: 100.w,
                                                   child: Text(
-                                                    booking['title'],
+                                                    booking['title'] ?? '',
                                                     maxLines: 2,
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -353,7 +277,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                                     :booking['status']=='في الطريق'?SizedBox(
                                                   width: 110.w,
                                                   child: Text(
-                                                    booking['title'],
+                                                    booking['title'] ?? '',
                                                     maxLines: 2,
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -367,7 +291,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                                     :SizedBox(
                                                   width: 130.w,
                                                   child: Text(
-                                                    booking['title'],
+                                                    booking['title'] ?? '',
                                                     maxLines: 2,
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -390,7 +314,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                                     ),
                                                     child: Center(
                                                       child: Text(
-                                                        booking['status'],
+                                                        booking['status'] ?? '',
                                                         style: TextStyle(
                                                             color: statusColor,
                                                             fontWeight: FontWeight.bold,
@@ -407,7 +331,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                                 height: 7.h
                                             ),
                                             Text(
-                                              'رقم الطلب: ${booking['id']}',
+                                              'رقم الطلب: ${booking['number']} ' ?? '',
                                               style: TextStyle(
                                                   fontSize: 10.sp,
                                                   color: darkSubTextColor,
@@ -418,7 +342,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                                 height: 7.h
                                             ),
                                             Text(
-                                              booking['price'],
+                                              '${booking['price']} $reyalSymbol' ?? '',
                                               style: TextStyle(
                                                 fontSize: 13.sp,
                                                 fontWeight: FontWeight.bold,
@@ -442,17 +366,17 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                                     ),
                                     child: Column(
                                       children: [
-                                        buildDetailRow('العنوان:', booking['address'],'assets/loc.svg',cubit),
+                                        buildDetailRow('العنوان:', booking['address'] ?? '','assets/loc.svg',cubit),
                                         Padding(
                                           padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                           child: dashedDivider(cubit.isDark? darkSubTextColor: Colors.grey),
                                         ),
-                                        buildDetailRow('التاريخ والوقت:', booking['dateTime'],'assets/timer.svg',cubit),
+                                        buildDetailRow('التاريخ والوقت:', cubit.formatStatusTime(booking['scheduledAt']) ?? '','assets/timer.svg',cubit),
                                         Padding(
                                           padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                           child: dashedDivider(cubit.isDark? darkSubTextColor: Colors.grey),
                                         ),
-                                        buildDetailRow('العميل:', booking['clientName'],'assets/acc.svg',cubit),
+                                        buildDetailRow('العميل:', booking['clientName'] ?? '','assets/acc.svg',cubit),
                                       ],
                                     ),
                                   ),

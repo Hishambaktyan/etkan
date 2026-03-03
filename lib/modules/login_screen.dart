@@ -32,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state is LoginSuccessState) {
           cubit.phoneController.clear();
           cubit.passwordController.clear();
+          cubit.workerDataLoaded=false;
+          cubit.getWorkerData();
           var user = FirebaseAuth.instance.currentUser;
           if (user != null) {
             if (user.emailVerified) {
@@ -163,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cubit.isDark? darkBgColor: Colors.white,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(40.r),
                           topRight: Radius.circular(40.r),

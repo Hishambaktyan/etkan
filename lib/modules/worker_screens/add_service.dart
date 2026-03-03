@@ -141,8 +141,9 @@ class _AddServiceState extends State<AddService> {
     MyCubit cubit = MyCubit.get(context);
     return BlocConsumer<MyCubit,States>(
       listener: (context, state) {
-        if(state is UploadService){
+        if(state is UploadServiceSuccessState){
           showSnackBar(Colors.green, 'تم إضافة الخدمة بنجاح', context);
+          cubit.getWorkerData();
           moveAndReplace(context, const WorkerMainScreen());
         }
       },
@@ -266,6 +267,7 @@ class _AddServiceState extends State<AddService> {
                                   errorMes: 'يرجئ ملى الحقل',
                                   controller: serviceName,
                                   type: TextInputType.text,
+                                  isCovered: true
                                 ),
                                 SizedBox(
                                   height: 20.h,
@@ -277,6 +279,7 @@ class _AddServiceState extends State<AddService> {
                                   errorMes: 'يرجئ ملى الحقل',
                                   controller: serviceDept,
                                   type: TextInputType.text,
+                                    isCovered: true
                                 ),
                                 SizedBox(
                                   height: 20.h,
@@ -291,6 +294,7 @@ class _AddServiceState extends State<AddService> {
                                             errorMes: 'يرجئ ملى الحقل',
                                             controller: servicePrice,
                                             type: TextInputType.number,
+                                            isCovered: true
                                         ),
                                     ),
                                     SizedBox(
@@ -304,6 +308,7 @@ class _AddServiceState extends State<AddService> {
                                           errorMes: 'يرجئ ملى الحقل',
                                           controller: serviceDuration,
                                           type: TextInputType.number,
+                                          isCovered: true
                                       ),
                                     )
                                   ],
@@ -324,7 +329,7 @@ class _AddServiceState extends State<AddService> {
                                     return null;
                                   },
                                   controller: serviceDesc,
-                                  maxLines: 7,
+                                  maxLines: 6,
                                   decoration:InputDecoration(
                                     alignLabelWithHint: true,
                                     filled: true,
@@ -363,7 +368,8 @@ class _AddServiceState extends State<AddService> {
                 ),
                 bottomNavigationBar: Padding(
                   padding: EdgeInsetsDirectional.only(start: 20.w,end: 20.w,bottom: 15.h),
-                  child: defualtButtonWithIcon(
+                  child: state is UploadServiceLoadingState? const Center(child: CircularProgressIndicator())
+                    :defualtButtonWithIcon(
                       onPressed: (){
                         if(formKey.currentState!.validate()){
                           cubit.uploadService(
@@ -371,8 +377,8 @@ class _AddServiceState extends State<AddService> {
                               description: serviceDesc.text.trim(),
                               category: serviceDept.text.trim(),
                               subCategory: 'تركيب بانيو مصري',
-                              price: '23000',
-                              period: '45'
+                              price: servicePrice.text.trim(),
+                              period: serviceDuration.text.trim()
                           );
                         }
                       },
