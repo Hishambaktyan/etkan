@@ -65,13 +65,14 @@ class MyCubit extends Cubit<States>{
 
   Future<void> changeAvailability(value) async {
     if (userData == null) return;
+    amAvailable = value;
+    emit(ChangeAvailabilityState());
 
     try {
       await userData!.update({
         'isAvailable': value
       });
-      amAvailable = value;
-      emit(ChangeAvailabilityState());
+
     } catch (e) {
       print(e.toString());
     }

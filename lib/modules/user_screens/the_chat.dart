@@ -248,8 +248,8 @@ class _TheChatState extends State<TheChat> {
                                               maxWidth: MediaQuery.of(context).size.width * 0.75),
                                           decoration: BoxDecoration(
                                             color: isMe
-                                                ? cubit.isDark ? Colors.green.shade600 : Colors.green.shade400
-                                                : cubit.isDark ? lightDarkColor : Colors.green.withOpacity(0.2),
+                                                ? cubit.isDark ? Colors.blue.shade800 : Colors.blue.shade700
+                                                : cubit.isDark ? const Color(0xFF1C2128) : Colors.blue.withOpacity(0.3),
                                             borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(15.r),
                                               topRight: Radius.circular(15.r),
