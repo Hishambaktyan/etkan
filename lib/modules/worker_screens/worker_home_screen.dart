@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/search_screen.dart';
 import 'package:trying_homy/modules/worker_screens/add_service.dart';
 import 'package:trying_homy/modules/worker_screens/service_details.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services.dart';
@@ -12,7 +13,7 @@ import '../../shared/cubit/states.dart';
 import '../../shared/styles/colors.dart';
 
 class WorkerHomeScreen extends StatelessWidget {
-   WorkerHomeScreen({super.key});
+  WorkerHomeScreen({super.key});
 
   final List<Map<String, dynamic>> info = [
     {
@@ -151,6 +152,31 @@ class WorkerHomeScreen extends StatelessWidget {
                                                 ),
                                                 child: SvgPicture.asset(
                                                     'assets/not.svg',
+                                                    width: 23.w,
+                                                    color: Colors.white),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 15.w,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            move(context, const SearchScreen());
+                                          },
+                                          child: Stack(
+                                            alignment: Alignment.topRight,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.all(8.r),
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                      color: Colors.white30),
+                                                ),
+                                                child: SvgPicture.asset(
+                                                    'assets/search.svg',
                                                     width: 23.w,
                                                     color: Colors.white),
                                               ),
@@ -454,207 +480,228 @@ class WorkerHomeScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        cubit.workerServices.isEmpty? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height: 5.h,
-                                ),
-                                Icon(Icons.inbox_outlined,
-                                    size: 50.r, color: Colors.grey.shade400),
-                                SizedBox(height: 10.h),
-                                Text(
-                                  'لا يوجد لديك خدمات حالياً',
-                                  style: TextStyle(
-                                      fontSize: 13.sp,
-                                      color: Colors.grey.shade400),
-                                ),
-                              ],
-                            ),
-                          ):
-                        GridView.builder(
-                          itemCount: cubit.workerServices.length > 4
-                              ? 4
-                              : cubit.workerServices.length,
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          padding: EdgeInsetsDirectional.symmetric(
-                              horizontal: 10.w, vertical: 10.h),
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 200.w,
-                                  mainAxisExtent: 240.h,
-                                  crossAxisSpacing: 10.w,
-                                  mainAxisSpacing: 10.h),
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              borderRadius: BorderRadius.circular(12.r),
-                              onTap: () => move(
-                                  context,
-                                  ServiceDetails(
-                                    serviceId: cubit.workerServices[index]
-                                        ['id'],
-                                  )),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    color: cubit.isDark
-                                        ? lightDarkColor
-                                        : Colors.white,
-                                    boxShadow: shadow),
+                        cubit.workerServices.isEmpty
+                            ? Center(
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      height: 125.h,
-                                      child: Stack(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadiusDirectional.only(
-                                                    topStart:
-                                                        Radius.circular(12.r),
-                                                    topEnd:
-                                                        Radius.circular(12.r)),
-                                            child: Image.network(
-                                              '${cubit.workerServices[index]['serviceImage']}',
-                                              height: 110.h,
-                                              width: double.infinity,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  Container(
-                                                height: 110.h,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadiusDirectional
-                                                            .only(
-                                                                topStart: Radius
-                                                                    .circular(
-                                                                        12.r),
-                                                                topEnd: Radius
-                                                                    .circular(
-                                                                        12.r)),
-                                                    color:
-                                                        Colors.grey.shade100),
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons.wifi_off_rounded,
-                                                    size: 50,
-                                                    color: Colors.grey.shade400,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment:
-                                                AlignmentDirectional.bottomEnd,
-                                            child: Container(
-                                              height: 27.h,
-                                              width: 100.w,
-                                              padding:
-                                                  EdgeInsetsDirectional.only(
-                                                      top: 3.h),
-                                              alignment: Alignment.center,
-                                              margin:
-                                                  EdgeInsetsDirectional.only(
-                                                      end: 10.w),
-                                              decoration: BoxDecoration(
-                                                  color: mainColor,
-                                                  border: Border.all(
-                                                      color: Colors.white),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.r)),
-                                              child: Text(
-                                                '${cubit.workerServices[index]['price']} ﷼ ',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12.sp),
-                                              ),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment:
-                                                AlignmentDirectional.topStart,
-                                            child: Padding(
-                                              padding:
-                                                  EdgeInsetsDirectional.only(
-                                                      start: 10.w, top: 10.h),
-                                              child: CircleAvatar(
-                                                  radius: 18.r,
-                                                  backgroundColor: Colors.white,
-                                                  child: SvgPicture.asset(
-                                                    'assets/power.svg',
-                                                    color:
-                                                        cubit.isServicesActive
-                                                            ? Colors.green
-                                                            : Colors.grey,
-                                                    width: 22.w,
-                                                    height: 22.h,
-                                                  )),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                    SizedBox(
+                                      height: 5.h,
                                     ),
-                                    Padding(
-                                      padding: EdgeInsetsDirectional.symmetric(
-                                          horizontal: 10.w, vertical: 5.h),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: List.generate(
-                                                5,
-                                                (i) => Icon(
-                                                      Icons.star_rounded,
-                                                      size: 16.r,
-                                                      color: i < 4
-                                                          ? Colors.orange
-                                                          : Colors
-                                                              .grey.shade300,
-                                                    )),
-                                          ),
-                                          SizedBox(
-                                            height: 5.h,
-                                          ),
-                                          Text(
-                                            '${cubit.workerServices[index]['name']}',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12.sp,
-                                                color: cubit.isDark
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                          ),
-                                          SizedBox(
-                                            height: 5.h,
-                                          ),
-                                          Text(
-                                            '${cubit.workerServices[index]['description']}',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 10.sp,
-                                                color: cubit.isDark
-                                                    ? darkSubTextColor
-                                                    : Colors.grey),
-                                          ),
-                                        ],
-                                      ),
+                                    Icon(Icons.inbox_outlined,
+                                        size: 50.r,
+                                        color: Colors.grey.shade400),
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      'لا يوجد لديك خدمات حالياً',
+                                      style: TextStyle(
+                                          fontSize: 13.sp,
+                                          color: Colors.grey.shade400),
                                     ),
                                   ],
                                 ),
+                              )
+                            : GridView.builder(
+                                itemCount: cubit.workerServices.length > 4
+                                    ? 4
+                                    : cubit.workerServices.length,
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                padding: EdgeInsetsDirectional.symmetric(
+                                    horizontal: 10.w, vertical: 10.h),
+                                gridDelegate:
+                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent: 200.w,
+                                        mainAxisExtent: 240.h,
+                                        crossAxisSpacing: 10.w,
+                                        mainAxisSpacing: 10.h),
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    onTap: () => move(
+                                        context,
+                                        ServiceDetails(
+                                          serviceId: cubit.workerServices[index]
+                                              ['id'],
+                                        )),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12.r),
+                                          color: cubit.isDark
+                                              ? lightDarkColor
+                                              : Colors.white,
+                                          boxShadow: shadow),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            height: 125.h,
+                                            child: Stack(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadiusDirectional
+                                                          .only(
+                                                              topStart: Radius
+                                                                  .circular(
+                                                                      12.r),
+                                                              topEnd: Radius
+                                                                  .circular(
+                                                                      12.r)),
+                                                  child: Image.network(
+                                                    '${cubit.workerServices[index]['serviceImage']}',
+                                                    height: 110.h,
+                                                    width: double.infinity,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder: (context,
+                                                            error,
+                                                            stackTrace) =>
+                                                        Container(
+                                                      height: 110.h,
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadiusDirectional.only(
+                                                                  topStart: Radius
+                                                                      .circular(
+                                                                          12.r),
+                                                                  topEnd: Radius
+                                                                      .circular(12
+                                                                          .r)),
+                                                          color: Colors
+                                                              .grey.shade100),
+                                                      child: Center(
+                                                        child: Icon(
+                                                          Icons
+                                                              .wifi_off_rounded,
+                                                          size: 50,
+                                                          color: Colors
+                                                              .grey.shade400,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment:
+                                                      AlignmentDirectional
+                                                          .bottomEnd,
+                                                  child: Container(
+                                                    height: 27.h,
+                                                    width: 100.w,
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .only(top: 3.h),
+                                                    alignment: Alignment.center,
+                                                    margin:
+                                                        EdgeInsetsDirectional
+                                                            .only(end: 10.w),
+                                                    decoration: BoxDecoration(
+                                                        color: mainColor,
+                                                        border: Border.all(
+                                                            color:
+                                                                Colors.white),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    30.r)),
+                                                    child: Text(
+                                                      '${cubit.workerServices[index]['price']} ﷼ ',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 12.sp),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment:
+                                                      AlignmentDirectional
+                                                          .topStart,
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .only(
+                                                                start: 10.w,
+                                                                top: 10.h),
+                                                    child: CircleAvatar(
+                                                        radius: 18.r,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        child: SvgPicture.asset(
+                                                          'assets/power.svg',
+                                                          color: cubit
+                                                                  .isServicesActive
+                                                              ? Colors.green
+                                                              : Colors.grey,
+                                                          width: 22.w,
+                                                          height: 22.h,
+                                                        )),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.symmetric(
+                                                    horizontal: 10.w,
+                                                    vertical: 5.h),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: List.generate(
+                                                      5,
+                                                      (i) => Icon(
+                                                            Icons.star_rounded,
+                                                            size: 16.r,
+                                                            color: i < 4
+                                                                ? Colors.orange
+                                                                : Colors.grey
+                                                                    .shade300,
+                                                          )),
+                                                ),
+                                                SizedBox(
+                                                  height: 5.h,
+                                                ),
+                                                Text(
+                                                  '${cubit.workerServices[index]['name']}',
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 12.sp,
+                                                      color: cubit.isDark
+                                                          ? Colors.white
+                                                          : Colors.black),
+                                                ),
+                                                SizedBox(
+                                                  height: 5.h,
+                                                ),
+                                                Text(
+                                                  '${cubit.workerServices[index]['description']}',
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 10.sp,
+                                                      color: cubit.isDark
+                                                          ? darkSubTextColor
+                                                          : Colors.grey),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                         SizedBox(
                           height: 20.h,
                         ),

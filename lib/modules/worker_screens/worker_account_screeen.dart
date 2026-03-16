@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/contact_us_screen.dart';
+import 'package:trying_homy/modules/edit_profile_screen.dart';
 import 'package:trying_homy/modules/login_screen.dart';
 import 'package:trying_homy/modules/user_screens/faq_Screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
@@ -65,9 +67,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
               width: 25.w,
               height: 25.h,
             ),
-            SizedBox(
-                width: 10.w
-            ),
+            SizedBox(width: 10.w),
             Text(
               title,
               style: TextStyle(
@@ -88,13 +88,12 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                 ),
               )
             else
-              Icon(
-                Icons.navigate_next_rounded,
-                color: isDestructive
-                    ? Colors.red.withOpacity(0.5)
-                    : cubit.isDark!? Colors.white.withOpacity(0.5)
-                    :Colors.grey.withOpacity(0.5)
-              ),
+              Icon(Icons.navigate_next_rounded,
+                  color: isDestructive
+                      ? Colors.red.withOpacity(0.5)
+                      : cubit.isDark!
+                          ? Colors.white.withOpacity(0.5)
+                          : Colors.grey.withOpacity(0.5)),
           ],
         ),
       ),
@@ -104,8 +103,10 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
   Widget _buildDivider(dynamic cubit) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 0.w),
-      child:  Divider(
-        color: cubit.isDark? Colors.white.withOpacity(0.5): Colors.grey.withOpacity(0.5),
+      child: Divider(
+        color: cubit.isDark
+            ? Colors.white.withOpacity(0.5)
+            : Colors.grey.withOpacity(0.5),
       ),
     );
   }
@@ -141,8 +142,9 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                     width: 40.w,
                     height: 40.h,
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all( color: cubit.isDark? Colors.white:Colors.black),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: cubit.isDark ? Colors.white : Colors.black),
                     ),
                     child: Stack(
                       alignment: AlignmentDirectional.topEnd,
@@ -196,7 +198,8 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                 : Directionality(
                     textDirection: TextDirection.rtl,
                     child: Padding(
-                      padding: EdgeInsetsDirectional.only(top: 10.h, start: 20.w, end: 20.w),
+                      padding: EdgeInsetsDirectional.only(
+                          top: 10.h, start: 20.w, end: 20.w),
                       child: SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
                         child: Column(
@@ -209,12 +212,15 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                           width: 1,
-                                          color: Theme.of(context).textTheme.bodyLarge!.color ?? Colors.black
-                                      )
-                                  ),
+                                          color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .color ??
+                                              Colors.black)),
                                   child: CircleAvatar(
-                                    backgroundColor: Colors.grey.withOpacity(0.1),
-                                    radius:35.r,
+                                    backgroundColor:
+                                        Colors.grey.withOpacity(0.1),
+                                    radius: 35.r,
                                     backgroundImage: const NetworkImage(
                                         'https://i.pinimg.com/1200x/b8/82/83/b882836fa749f501aefa935d19e19977.jpg'),
                                   ),
@@ -224,14 +230,18 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                                 ),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'عبد الرحمن محمد أحمد',
                                         style: TextStyle(
                                           fontSize: 16.sp,
                                           fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
                                         ),
                                       ),
                                       Row(
@@ -278,7 +288,9 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                                 Expanded(
                                   child: defualtOutlinedButton(
                                     fontSize: 12,
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      move(context, const EditProfileScreen());
+                                    },
                                     text: 'تعديل الحساب',
                                     height: 43.h,
                                     textColor: cubit.isDark
@@ -306,18 +318,14 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                                     title: settingsList[0]['title'],
                                     icon: settingsList[0]['icon'],
                                     cubit: cubit,
-                                    onTap: () {
-                                    }
-                                    ),
+                                    onTap: () {}),
                                 _buildDivider(cubit),
                                 _buildSettingItem(context,
                                     title: settingsList[1]['title'],
                                     icon: settingsList[1]['icon'],
-                                    cubit: cubit,
-                                    onTap: () {
-
-                                    }
-                                ),
+                                    cubit: cubit, onTap: () {
+                                  move(context, const ContactUsScreen());
+                                }),
                                 _buildDivider(cubit),
                                 _buildSettingItem(
                                   context,
@@ -416,7 +424,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                                                                   ElevatedButton(
                                                                 onPressed:
                                                                     () async {
-                                                                      //await cubit.deleteUser();
+                                                                  //await cubit.deleteUser();
                                                                 },
                                                                 style: ElevatedButton
                                                                     .styleFrom(
