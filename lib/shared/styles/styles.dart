@@ -8,6 +8,8 @@ ThemeData lightTheme = ThemeData(
     appBarTheme: const AppBarTheme(
       backgroundColor:  bgColor,
       scrolledUnderElevation: 0,
+      titleSpacing: 10,
+      elevation: 0,
     ),
   textTheme: const TextTheme(
       bodyLarge: TextStyle(

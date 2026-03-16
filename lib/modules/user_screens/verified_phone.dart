@@ -117,11 +117,9 @@ class _State extends State<Verified_phone> {
                                     ),
                                     onChanged: (value) {
                                       if (value.isNotEmpty && index < length - 1) {
-                                        // انتقل تلقائي للمربع التالي
                                         FocusScope.of(context).requestFocus(focusNodes[index + 1]);
                                       }
                                       if (value.isEmpty && index > 0) {
-                                        // العودة للمربع السابق عند الحذف
                                         FocusScope.of(context).requestFocus(focusNodes[index - 1]);
                                       }
                                     },
@@ -155,7 +153,7 @@ class _State extends State<Verified_phone> {
                       defualtButton(
                         onPressed: (){
                           //if(formKey.currentState!.validate()){
-
+                          moveAndReplace(context, const UserMainScreen());
                           //}
                         },
                         text: 'التالي',

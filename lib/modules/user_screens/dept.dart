@@ -56,24 +56,11 @@ class _DeptState extends State<Dept> {
       "page": "PainterWorkersPage",
     },
   ];
-  List<LinearGradient> gradients = [
-    LinearGradient(colors: [Color(0xFFFFD700), Color(0xFFFFA500)]), // الكهرباء
-    LinearGradient(colors: [Color(0xFF00B4DB), Color(0xFF0083B0)]), // السباكة
-    LinearGradient(colors: [Color(0xFFB06AB3), Color(0xFF4568DC)]), // البناء
-    LinearGradient(colors: [Color(0xFF43C6AC), Color(0xFF191654)]), // التكييف
-    LinearGradient(colors: [Color(0xFFFF512F), Color(0xFFDD2476)]), // الحدادة
-    LinearGradient(colors: [Color(0xFF56CCF2), Color(0xFF2F80ED)]), // الماء
-    LinearGradient(colors: [Color(0xFFFF9966), Color(0xFFFF5E62)]), // النجارة
-    LinearGradient(colors: [Color(0xFF11998E), Color(0xFF38EF7D)]), // الدهان
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 10,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Text(
           'الأقسام',

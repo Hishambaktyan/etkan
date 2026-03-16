@@ -1,138 +1,242 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/login_screen.dart';
 import 'package:trying_homy/modules/user_screens/verified_phone.dart';
+import 'package:trying_homy/shared/cubit/cubit.dart';
+import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/compenents/components.dart';
 import '../../main.dart';
 
-class UserSIgnUp extends StatefulWidget {
-  const UserSIgnUp({super.key});
+class UserSignUp extends StatefulWidget {
+  const UserSignUp({super.key});
 
   @override
-  State<UserSIgnUp> createState() => _UserSIgnUpState();
+  State<UserSignUp> createState() => _UserSignUpState();
 }
 
-class _UserSIgnUpState extends State<UserSIgnUp> {
+class _UserSignUpState extends State<UserSignUp> {
   var userPhoneController = TextEditingController();
   var userNameController = TextEditingController();
   var userPasswordController = TextEditingController();
   var cityController = TextEditingController();
   bool isPassword = true;
-  var formKey_userSignUp=  GlobalKey<FormState>();
+  var formKey_userSignUp = GlobalKey<FormState>();
   String suffixIcon = 'assets/eye.svg';
-  List<String> imgList = [
-    'assets/elec.jpg',
-    'assets/plm.jpg',
-    'assets/wood.jpg',
-    'assets/ac.jpg',
-  ];
-  bool cubit = true;
+
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        body: Column(
-          children: [
-            Padding(
-              padding: EdgeInsetsDirectional.only(end: 20.w,start: 20.w,top: 20.h),
-              child: Column(
-                children: [
-                  Text(
-                    'مرحبا بك معنا!',
-                    style: TextStyle(
-                      fontSize: 30.0.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'انضم الان معنا',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  Form(
-                    key: formKey_userSignUp,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-
-                        defaultTextFormfeild(
-                          cubit: cubit,
-                          text: 'الاسم الكامل',
-                          prefixIcon: 'assets/acc.svg',
-                          errorMes: 'الاسم الأول يجب ان لا يكون فارغ',
-                          controller: userNameController,
-                          type: TextInputType.text,
-                        ),
-                        SizedBox(
-                          height: 15.0.h,
-                        ),
-                        defaultTextFormfeild(
-                          cubit: cubit,
-                          text: 'رقم الهاتف',
-                          prefixIcon: 'assets/phone.svg',
-                          errorMes: 'رقم الهاتق يجب ان لا يكون فارغ',
-                          controller: userPhoneController,
-                          type: TextInputType.phone,
-                        ),
-                        SizedBox(
-                          height: 15.0.h,
-                        ),
-                        defaultTextFormfeild(
-                            cubit: cubit,
-                            text: 'كلمة المرور',
-                            prefixIcon: 'assets/lock.svg',
-                            errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                            controller: userPasswordController,
-                            type: TextInputType.visiblePassword,
-                            isPassword: isPassword,
-                            isSuffixIcon: true,
-                            suffixIcon: suffixIcon,
-                            suffixPressed: (){
-                              isPassword =!isPassword;
-                              setState(() {
-                                suffixIcon = isPassword? 'assets/eye.svg' : 'assets/eye-slash.svg';                          });
-                            }
-                        ),
-                        SizedBox(
-                          height: 20.0.h,
-                        ),
-                        defualtButton(
-                          onPressed: (){
-                            // if(formKey_signup.currentState!.validate()){
-                            move(context, const Verified_phone());
-                            //}
-                          },
-                          text: 'تسجيل',
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'لدي حساب بالفعل',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[500]
-                              ),
-                            ),
-                            defaultTextButton(onPressed: ()=>moveAndReplace(context, const LoginScreen()), text:'سجل دخول'),
-
-                          ],
-                        ),
+    return BlocConsumer<MyCubit, States>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        MyCubit cubit = MyCubit.get(context);
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: Stack(
+              children: [
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                        mainColor.withOpacity(0.9),
+                        const Color(0xFF0F0F1E),
+                      ],
+                      stops: const [
+                        0.0,
+                        0.8,
                       ],
                     ),
                   ),
-                ],
-              ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -50.h,
+                        left: -50.w,
+                        child: CircleAvatar(
+                          radius: 100.r,
+                          backgroundColor: Colors.white.withOpacity(0.15),
+                        ),
+                      ),
+                      Positioned(
+                        top: 80.h,
+                        right: -60.w,
+                        child: Container(
+                          width: 250.r,
+                          height: 250.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                const Color(0xFF00F2FF).withOpacity(0.5),
+                                const Color(0xFF00F2FF).withOpacity(0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 200.h,
+                        left: -40.w,
+                        child: Container(
+                          width: 200.r,
+                          height: 200.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                mainColor.withOpacity(0.4),
+                                mainColor.withOpacity(0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+                          child: Container(color: Colors.transparent),
+                        ),
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.topCenter,
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(top: 120.h),
+                          child: Text(
+                            'إنشاء حساب\nمستخدم جديد',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32.sp,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.white.withOpacity(0.4),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: 450.h,
+                    width: double.infinity,
+                    padding: EdgeInsetsDirectional.symmetric(
+                        horizontal: 20.w, vertical: 30.h),
+                    decoration: BoxDecoration(
+                      color: cubit.isDark ? darkBgColor : Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(40.r),
+                        topRight: Radius.circular(40.r),
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 20,
+                          offset: Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Form(
+                        key: formKey_userSignUp,
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 50.h,
+                              child: defaultTextFormfeild(
+                                cubit: cubit,
+                                text: 'الاسم الكامل',
+                                prefixIcon: 'assets/acc.svg',
+                                errorMes: 'يجب كتابة الاسم',
+                                controller: userNameController,
+                                type: TextInputType.text,
+                              ),
+                            ),
+                            SizedBox(height: 15.h),
+                            Container(
+                              height: 50.h,
+                              child: defaultTextFormfeild(
+                                cubit: cubit,
+                                text: 'رقم الهاتف',
+                                prefixIcon: 'assets/phone.svg',
+                                errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
+                                controller: userPhoneController,
+                                type: TextInputType.phone,
+                              ),
+                            ),
+                            SizedBox(height: 15.h),
+                            Container(
+                              height: 50.h,
+                              child: defaultTextFormfeild(
+                                cubit: cubit,
+                                text: 'كلمة المرور',
+                                prefixIcon: 'assets/lock.svg',
+                                errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
+                                controller: userPasswordController,
+                                type: TextInputType.visiblePassword,
+                                isPassword: isPassword,
+                                isSuffixIcon: true,
+                                suffixIcon: suffixIcon,
+                                suffixPressed: () {
+                                  isPassword = !isPassword;
+                                  setState(() {
+                                    suffixIcon = isPassword
+                                        ? 'assets/eye.svg'
+                                        : 'assets/eye-slash.svg';
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            defualtButton(
+                              onPressed: () {
+                                move(context, const Verified_phone());
+                              },
+                              text: 'تسجيل',
+                              height: 50.h,
+                            ),
+                            SizedBox(height: 10.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'لديك حساب بالفعل؟',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey),
+                                ),
+                                defaultTextButton(
+                                    onPressed: () => moveAndReplace(
+                                        context, const LoginScreen()),
+                                    text: 'سجل دخول')
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

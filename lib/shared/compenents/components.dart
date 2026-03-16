@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trying_homy/shared/cubit/cubit.dart';
 import '../../modules/user_screens/booking_details_screen.dart';
 import '../../main.dart';
 import '../../modules/user_screens/worker_details.dart';
@@ -220,7 +221,7 @@ Widget defaultTextFormfeild(
       Function? suffixPressed,
       required TextInputType? type,
       double? fontSize,
-      required dynamic cubit,
+      required MyCubit cubit,
       bool isCovered=false
     }
     )
@@ -291,7 +292,8 @@ Widget defaultTextButton({
   required String text,
   bool isUpperCase =true,
   Color color = mainColor,
-  bool isLined = true
+  bool isLined = true,
+  bool isBold = false,
 })
 =>TextButton(
     onPressed: (){
@@ -301,6 +303,7 @@ Widget defaultTextButton({
       isUpperCase?text.toUpperCase():text,
       style:TextStyle(
           color: color,
+          fontWeight: isBold? FontWeight.bold: FontWeight.normal,
           decoration: isLined?TextDecoration.underline:null,
         decorationColor: mainColor,
       ),

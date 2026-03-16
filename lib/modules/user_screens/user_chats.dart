@@ -109,9 +109,6 @@ class _UserChatsState extends State<UserChats> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 10,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Text(
          'الدردشة',
@@ -122,45 +119,31 @@ class _UserChatsState extends State<UserChats> {
           ),
         ),
         actions: [
-           Row( // 4. إذا لم يكن هناك تحديد، نظهر أزرارك القديمة (البحث والإشعارات)
+           Row(
             children: [
               InkWell(
-                onTap: () {},
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: 40.w,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey)
-                  ),
-                  child: SvgPicture.asset('assets/search.svg'),
-                ),
-              ),
-              SizedBox(width: 10.w),
-              InkWell(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
                 onTap: () {
-                  setState(() {
-                  });
+                  setState(() {});
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: 40.w,
-                  height: 40.h,
+                  padding: const EdgeInsetsDirectional.all(10),
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey)
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        )
+                      ]
                   ),
-                  child: Stack(
-                    alignment: AlignmentDirectional.topEnd,
-                    children: [
-                      SvgPicture.asset('assets/not.svg'),
-                      if (true)
-                        CircleAvatar(
-                          radius: 4.r,
-                          backgroundColor: Colors.red,
-                        ),
-                    ],
+                  child: SvgPicture.asset(
+                    'assets/not.svg',
+                    width: 23.w,
+                    height: 23.h,
                   ),
                 ),
               ),
@@ -172,8 +155,7 @@ class _UserChatsState extends State<UserChats> {
       body: Directionality(
           textDirection: TextDirection.rtl,
           child: ListView.separated(
-            physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(start:10.w,top: 20.h,bottom: 20.h,end:10.w),
+              padding: EdgeInsetsDirectional.only(start:10.w,top: 10.h,bottom: 20.h,end:10.w),
               itemBuilder: (context, index) {
               var chat = chatData[index];
               return InkWell(

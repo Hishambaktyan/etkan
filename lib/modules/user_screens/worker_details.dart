@@ -6,6 +6,7 @@ import 'package:trying_homy/modules/user_screens/booking_details_screen.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 
+import '../../shared/cubit/cubit.dart';
 import '../../shared/styles/colors.dart';
 
 class Worker_details extends StatefulWidget {
@@ -399,7 +400,7 @@ class _Worker_detailsState extends State<Worker_details> {
                                     height: 10.h,
                                   ),
                                   defaultTextFormfeild(
-                                    cubit: cubit,
+                                    cubit: MyCubit.get(context),
                                       text: 'تعليق',
                                       prefixIcon: 'assets/chat2.svg',
                                       errorMes: 'حقل التعليق يجب ان لا يكون فارغ',
@@ -412,7 +413,7 @@ class _Worker_detailsState extends State<Worker_details> {
                                   ListView.separated(
                                     padding: EdgeInsetsDirectional.only(top: 10.h),
                                     shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     itemCount: 5,
                                     separatorBuilder: (_, __) =>SizedBox(
                                       height: 20.h,

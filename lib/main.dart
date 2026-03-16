@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/date_symbol_data_file.dart' show initializeDateFormatting;
 import 'package:trying_homy/modules/login_screen.dart';
 import 'package:trying_homy/shared/cubit/bloc_observer.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
@@ -18,6 +17,7 @@ import 'firebase_options.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
 import 'modules/user_screens/the_chat.dart';
 import 'notification_helper.dart';
+import 'on_boarding.dart';
 
 void move(BuildContext context, Widget screen) {
   Navigator.push(
@@ -172,7 +172,7 @@ class MyApp extends StatelessWidget {
                 home: FirebaseAuth.instance.currentUser != null &&
                     FirebaseAuth.instance.currentUser!.emailVerified
                     ? const WorkerMainScreen()
-                    : const LoginScreen(),
+                    : const OnBoardingScreen(),
               );
             },
           );

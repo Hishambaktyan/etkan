@@ -1,425 +1,484 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:marquee/marquee.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:trying_homy/modules/user_screens/worker_details.dart';
+import 'package:trying_homy/shared/cubit/cubit.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
+import '../../shared/cubit/states.dart';
 import '../../shared/styles/colors.dart';
-import 'dept.dart';
-import 'electric_workers.dart';
+import '../worker_screens/add_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Function(int) onCategoryTap;
-   const HomeScreen({required this.onCategoryTap});
+   const HomeScreen({super.key});
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, String>> theServices = [
-    {'imagePath': 'assets/SVGs/P.svg', 'label': 'السباكة'},
-    {'imagePath': 'assets/SVGs/E.svg', 'label': 'الكهرباء'},
-    {'imagePath': 'assets/SVGs/AC.svg', 'label': 'التكييف'},
-    {'imagePath': 'assets/SVGs/WT.svg', 'label': 'الماء'},
+  final List<Map<String, dynamic>> services = [
+    {
+      'iconPath': 'assets/SVGs/E.svg',
+      'label': 'كهرباء',
+    },
+    {
+      'iconPath': 'assets/SVGs/P.svg',
+      'label': 'سباكة',
+    },
+    {
+      'iconPath': 'assets/SVGs/AC.svg',
+      'label': 'تكييف',
+    },
+    {
+      'iconPath': 'assets/SVGs/PA.svg',
+      'label': 'دهان',
+    },
+    {
+      'iconPath': 'assets/SVGs/C.svg',
+      'label': 'بناء',
+    },
+    {
+      'iconPath': 'assets/SVGs/WT.svg',
+      'label': 'ماء',
+    },
   ];
-  final List<String> homeServices = [
-    'إصلاح تسريب المياه',
-    'تركيب لمبات وثريات',
-    'صيانة دورية للمكيفات',
-    'تصليح الأبواب والنوافذ',
-    'إصلاح الأعطال الكهربائية',
-    'تسليك المجاري والأنابيب',
-    'تركيب غرف نوم وخزائن',
-    'إصلاح أعطال التبريد',
-    'تركيب مفاتيح وبرايز كهربائية',
-    'تصليح المطابخ والخزائن الخشبية',
-  ];
-  final List<Map<String, dynamic>> workers = [
-  {
-  "name": "محمد علي اليوسفي",
-  "price": 5000,
-  "image": "https://i.pinimg.com/1200x/3e/f3/50/3ef350dc86cc82a092463e5d795654b5.jpg",
-  "isBusy": false,
-  "rating": 4.5,
-},
-{
-"name": "سعيد حسن القحطاني",
-"price": 11200,
-"image": "https://i.pinimg.com/736x/eb/76/a4/eb76a46ab920d056b02d203ca95e9a22.jpg",
-"isBusy": true,
-"rating": 4.0,
-},
-{
-"name": "أحمد خالد الفهد",
-"price": 9000,
-"image": "https://i.pinimg.com/736x/27/90/03/27900371354079f41e16751f2a320fdb.jpg",
-"isBusy": false,
-"rating": 4.2,
-},
-{
-"name": "خالد يوسف العتيبي",
-"price": 1100,
-"image": "https://i.pinimg.com/1200x/65/7c/e1/657ce19e18e65061190c7927400947cf.jpg",
-"isBusy": true,
-"rating": 3.8,
-},
-{
-"name": "سلمان عمر الحربي",
-"price": 9500,
-"image": "https://i.pinimg.com/736x/25/33/8f/25338f488af2c45912c15ebab325e363.jpg",
-"isBusy": false,
-"rating": 4.7,
-},
-{
-"name": "ياسر محمد الدوسري",
-"price": 13000,
-"image": "https://i.pinimg.com/1200x/d8/5a/f1/d85af1b5204c5a8546a7a2e929af45c7.jpg",
-"isBusy": true,
-"rating": 3.9,
-},
-];
-  PageController controller =PageController(viewportFraction: 0.5);
+  final PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 10,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        title: Text(
-          'مرحبا هشام',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 23.sp
-          ),
-        ),
-        actions: [
-          Row(
-            children: [
-              InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: (){
-                },
-                child: Container(
-                  padding: EdgeInsetsDirectional.all(10),
-                  width: 40.w,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey)
-                  ),
-                  child: Stack(
-                    alignment: AlignmentDirectional.topEnd,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/search.svg',
-                        width: 25.w,
-                        height: 25.h,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: (){
-                  setState(() {
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsetsDirectional.all(10),
-                  width: 40.w,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey)
-                  ),
-                  child: Stack(
-                    alignment: AlignmentDirectional.topEnd,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/not.svg',
-                        width: 25.w,
-                        height: 25.h,
-                      ),
-                      true?Padding(
-                        padding: EdgeInsetsDirectional.only(end: 1.w),
-                        child: CircleAvatar(
-                          radius: 4.r,
-                          backgroundColor: Colors.red,
-                        ),
-                      ):SizedBox()
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-            ],
-          )
-        ],
-      ),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Padding(
-          padding: EdgeInsetsDirectional.only(top: 10.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /*Padding(
-                        padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                        child: Container(
-                          height: 100.h,
-                          padding: EdgeInsetsDirectional.only(start: 10.w),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 180.w,
-                                child: Text(
-                                  'خدماتك المنزلية على بعد نقرة واحدة فقط!',
-                                  maxLines: 2,
+    return BlocConsumer<MyCubit,States>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        MyCubit cubit = MyCubit.get(context);
+            return Scaffold(
+              body: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Padding(
+                  padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, top: 40.h),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 24.r,
+                              backgroundColor: Colors.white,
+                              foregroundImage: const NetworkImage(
+                                  'https://i.pinimg.com/1200x/63/f3/a0/63f3a0fe0c318b623d9a431e2817b515.jpg'
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10.w,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'صباح الخير 👋',
                                   style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: Colors.black
+                                    fontSize: 14.sp,
                                   ),
                                 ),
+                                Text(
+                                  'هشام هاني أحمد',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              highlightColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              onTap: () {
+                                setState(() {});
+                              },
+                              child: Container(
+                                padding: const EdgeInsetsDirectional.all(10),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.08),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      )
+                                    ]
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/not.svg',
+                                  width: 23.w,
+                                  height: 23.h,
+                                ),
                               ),
-                              const Spacer(),
-                              ClipRRect(
-                                  borderRadius: BorderRadius.circular(15.r),
-                                  child: Image.asset(
-                                    'assets/hm.png',
-                                    fit: BoxFit.cover,
-                                    width: 100.w,
-                                    height: 100.h,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(15.r),
+                          onTap: () {},
+                          child: Container(
+                            height: 55,
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
                                   )
-                              ),
-                            ],
+                                ]
+                            ),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/loc.svg',
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(width: 10.w),
+                                const Expanded(
+                                  child: Text(
+                                    "ابحث هنا...",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),*/
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(start: 20.w,end: 5.w),
-                        child: Row(
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20.r),
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(20.r),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  mainColor,
+                                  mainColor.withOpacity(0.7),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: mainColor.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'اطلب خدمتك بسهولة',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      Text(
+                                        'اختر الخدمة التي تحتاجها وسيصلك أفضل العمال بسرعة',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 11.sp,
+                                        ),
+                                      ),
+                                      SizedBox(height: 15.h),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: mainColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10.r),
+                                          ),
+                                        ),
+                                        child: const Text('تصفح الخدمات'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
+                                Container(
+                                  height: 90.h,
+                                  width: 90.w,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(15.r),
+                                  ),
+                                  child: Icon(
+                                    Icons.home_repair_service_rounded,
+                                    size: 50.r,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        Row(
                           children: [
                             Text(
                               'الأقسام',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 15.sp
+                                  fontSize: 18.sp
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             TextButton(
                               onPressed: (){
-                                widget.onCategoryTap(1);
                               },
-                              child: Text(
+                              child: const Text(
                                   'عرض الكل'
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      SizedBox(
-                        height: 5.h,
-                      ),
-                      SizedBox(
-                        height: 110.h,
-                        child: ListView.builder(
-                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                          itemCount: theServices.length,
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsetsDirectional.only(bottom: 5.w),
                           physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder:(context, index) {
-                            final service = theServices[index];
-                            return Padding(
-                              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                              child: InkWell(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: ()=>move(context, const Electric_workers()),
-                                child: CategoryBuilder(
-                                    imagePath: service['imagePath']!,
-                                    label: service['label']!
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 5.h,
+                            crossAxisSpacing: 10.w,
+                            childAspectRatio: 0.9,
+                          ),
+                          itemCount: services.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  onTap: () {},
+                                  child: Container(
+                                    width: 70.w,
+                                    height: 70.h,
+                                    padding: const EdgeInsetsDirectional.all(15),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15.r),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.08),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        )
+                                      ]
+                                    ),
+                                    child: SvgPicture.asset(
+                                      services[index]['iconPath'],
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                SizedBox(height: 8.h),
+                                Text(
+                                  services[index]['label'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14.sp,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             );
                           },
                         ),
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(start: 20.w,end: 5.w),
-                        child: Text(
-                          'الخدمات الأكثر طلبا',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.sp
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      SizedBox(
-                        height: 40.h,
-                        child: ListView.separated(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index)=>InkWell(
-                              child: Chip(
-                                label: Text(homeServices[index]),
-
-                              ),
-                              onTap: ()=>move(context, const Dept()),
+                        Row(
+                          children: [
+                            Text(
+                              'الخدمات الرائجة',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.sp,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color),
                             ),
-                            separatorBuilder: (context, index) => SizedBox(width: 10.w,),
-                            itemCount: homeServices.length
+                            const Spacer(),
+                            defaultTextButton(
+                                onPressed: (){},
+                                text: 'عرض الكل',
+                                isLined: false)
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(start: 20.w,end: 5.w),
-                        child: Text(
-                          'الفنيون الرائجون',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.sp
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        GridView.builder(
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: 4,
+                          gridDelegate:  SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 200.w,
+                              mainAxisExtent: 250.h,
+                              crossAxisSpacing: 10.w,
+                              mainAxisSpacing: 10.h
                           ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5.h,
-                      ),
-                      SizedBox(
-                        height: 210.h,
-                        child: Padding(
-                          padding:EdgeInsetsDirectional.symmetric(horizontal: 5.w),
-                          child: PageView.builder(
-                            padEnds: false,
-                            scrollDirection: Axis.horizontal,
-                            controller: controller,
-                            itemBuilder:(context, index) {
-                              final worker= workers[index];
-                              return  InkWell(
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.only(top: 5.h,bottom: 20.h,start: 7.w,end: 7.w,),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(15.r),
-                                        boxShadow: shadow
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              borderRadius: BorderRadius.circular(12.r),
+                              onTap: () {},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  color: cubit.isDark ? lightDarkColor : Colors.white,
+                                ),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 142.h,
+                                      child: Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadiusDirectional.only(
+                                              topStart: Radius.circular(12.r),
+                                              topEnd: Radius.circular(12.r),
+                                            ),
+                                            child: Image.network(
+                                              'https://i.pinimg.com/736x/0d/bc/a7/0dbca7e372766da7842528c87f693c01.jpg',
+                                              height: 130.h,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: AlignmentDirectional.bottomEnd,
+                                            child: Container(
+                                              height: 27.h,
+                                              width: 100.w,
+                                              alignment: Alignment.center,
+                                              margin: EdgeInsetsDirectional.only(end: 10.w),
+                                              decoration: BoxDecoration(
+                                                color: mainColor,
+                                                border: Border.all(color: Colors.white),
+                                                borderRadius: BorderRadius.circular(30.r),
+                                              ),
+                                              child: Text(
+                                                '10000 $reyalSymbol',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12.sp,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: AlignmentDirectional.topStart,
+                                            child: Container(
+                                              height: 30.h,
+                                              width: 120.w,
+                                              alignment: Alignment.center,
+                                              margin: const EdgeInsetsDirectional.all(10),
+                                              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.9),
+                                                borderRadius: BorderRadius.circular(30.r),
+                                              ),
+                                              child: SizedBox(
+                                                height: 30.h,
+                                                child: Marquee(
+                                                  text: 'تركيب احواض في الحمام',
+                                                  style: TextStyle(
+                                                    color: mainColor,
+                                                    fontSize: 11.sp,
+                                                  ),
+                                                  scrollAxis: Axis.horizontal,
+                                                  blankSpace: 40.0,
+                                                  velocity: 30.0,
+                                                  pauseAfterRound: const Duration(seconds: 3),
+                                                  accelerationDuration: const Duration(seconds: 1),
+                                                  accelerationCurve: Curves.linear,
+                                                  decelerationDuration: const Duration(milliseconds: 500),
+                                                  decelerationCurve: Curves.easeOut,
+                                                ),
+                                              )
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    child: Padding(
-                                      padding: EdgeInsetsDirectional.symmetric(horizontal: 5.w,vertical: 5.h),
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.symmetric(
+                                        horizontal: 10.w,
+                                        vertical: 5.h,
+                                      ),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.circular(15.r),
-                                            child: Image.network(
-                                              worker['image'],
-                                              width: double.infinity,
-                                              height: 120.h,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) => Container(
-                                                color: Colors.grey.shade300,
-                                                height: 120.h,
-                                                width: double.infinity,
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons.wifi_off_rounded,
-                                                    color: Colors.grey.shade400,
-                                                    size: 40,
-                                                  ),
-                                                ),
+                                          Row(
+                                            children: List.generate(
+                                              5,
+                                                  (i) => Icon(
+                                                Icons.star_rounded,
+                                                size: 16.r,
+                                                color: i < 4
+                                                    ? Colors.orange
+                                                    : Colors.grey.shade300,
                                               ),
                                             ),
                                           ),
-                                          SizedBox(
-                                            height: 5.h,
-                                          ),
+                                          SizedBox(height: 5.h),
                                           Text(
-                                            worker['name'],
+                                            'تركيب بانيو مصري',
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.bold
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12.sp,
+                                              color: cubit.isDark ? Colors.white : Colors.black,
                                             ),
                                           ),
-                                          Spacer(),
+                                          SizedBox(height: 10.h),
                                           Row(
                                             children: [
-                                              Text(
-                                                '\$ يبدأ من ',
-                                                style: TextStyle(
-                                                    fontSize: 10.sp
+                                              CircleAvatar(
+                                                foregroundImage: const NetworkImage(
+                                                  'https://i.pinimg.com/1200x/47/91/f0/4791f027dcad85f85883359daf191c5d.jpg'
                                                 ),
+                                                radius: 15.r,
                                               ),
-                                              Text(
-                                                '${worker['price']}',
-                                                style: TextStyle(
-                                                    fontSize: 10.sp
-                                                ),
+                                              SizedBox(
+                                                width: 7.w,
                                               ),
-                                              const Spacer(),
-                                              Container(
-                                                height: 20.h,
-                                                width: 43.w,
-                                                decoration:BoxDecoration(
-                                                    color: Colors.black.withOpacity(0.5),
-                                                    borderRadius: BorderRadius.circular(7.r)
-                                                ),
-                                                child:
-                                                Padding(
-                                                  padding: EdgeInsetsDirectional.symmetric(vertical: 1.h,horizontal: 2.w),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    children: [
-                                                      Padding(
-                                                        padding: EdgeInsetsDirectional.symmetric(vertical: 2.h),
-                                                        child: Text(
-                                                          '${worker['rating']}',
-                                                          style: TextStyle(
-                                                              color: Colors.white,
-                                                              fontSize: 10.sp,
-                                                              fontWeight: FontWeight.bold
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding: EdgeInsetsDirectional.only(bottom: 2.w),
-                                                        child: Icon(
-                                                          Icons.star_rate_rounded,
-                                                          size: 16,
-                                                          color: Colors.orange.shade300,
-                                                        ),
-                                                      ),
-
-                                                    ],
+                                              SizedBox(
+                                                width: 90.w,
+                                                child: Text(
+                                                  'عبد الله عبد الرحمن',
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 10.sp
                                                   ),
                                                 ),
                                               ),
@@ -428,39 +487,116 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ],
                                       ),
                                     ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20.r),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  mainColor,
+                                  mainColor.withOpacity(0.7),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: mainColor.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  right: -20,
+                                  top: -20,
+                                  child: CircleAvatar(
+                                    radius: 50,
+                                    backgroundColor: Colors.white.withOpacity(0.1),
                                   ),
                                 ),
-                                onTap: ()=>move(context, const Worker_details()),
-                              );
-                            },
-                            itemCount: workers.length,
-
+                                Positioned(
+                                  left: 30,
+                                  bottom: -30,
+                                  child: CircleAvatar(
+                                    radius: 30,
+                                    backgroundColor: Colors.white.withOpacity(0.1),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(20.r),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'لم تجد الخدمة المناسبة؟',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18.sp,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5.h),
+                                            Text(
+                                              'يمكنك نشر إعلان لخدمتك الآن لتصل إلى العمال المهتمين',
+                                              style: TextStyle(
+                                                color: Colors.white.withOpacity(0.9),
+                                                fontSize: 12.sp,
+                                              ),
+                                            ),
+                                            SizedBox(height: 15.h),
+                                            ElevatedButton(
+                                              onPressed: () => move(context, const AddService()),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.white,
+                                                foregroundColor: mainColor,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10.r),
+                                                ),
+                                                elevation: 0,
+                                              ),
+                                              child: const Text('نشر إعلان الخدمة'),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.campaign_rounded,
+                                        size: 70.r,
+                                        color: Colors.white.withOpacity(0.3),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Center(
-                        child: SmoothPageIndicator(
-                            controller: controller,
-                            count: workers.length-1,
-                            effect: ExpandingDotsEffect(
-                              dotColor: Colors.grey,
-                              activeDotColor: mainColor,
-                              dotHeight: 8.h,
-                              dotWidth: 8.w,
-                            )
+                        SizedBox(
+                          height: 20.h,
                         ),
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            );
+          },
     );
   }
 }

@@ -1,166 +1,213 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/modules/login_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
+import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/styles/colors.dart';
 
-class SelectUserType extends StatelessWidget {
-  const SelectUserType({super.key});
+class SelectUserType extends StatefulWidget {
+  const SelectUserType({Key? key}) : super(key: key);
+
+  @override
+  State<SelectUserType> createState() => _SelectUserTypeState();
+}
+
+class _SelectUserTypeState extends State<SelectUserType> {
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10.h),
-                Text(
-                  'حدد دورك',
-                  style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  'أختر كيف تريد استخدام التطبيق',
-                  style: TextStyle(fontSize: 14.sp, color: Colors.black45),
-                ),
-                SizedBox(height: 24.h),
-
-                Expanded(
+        appBar: AppBar(
+          elevation: 0,
+          title: const Text(
+            'كيف ستستخدم البرنامج؟',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black87,
+        ),
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w, bottom: 20.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 25.h),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 0;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: selectedIndex == 0 ? const Color(0xFFE3F2FD) : const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(15.r),
+                    border: Border.all(
+                      color: selectedIndex == 0 ? const Color(0xFF1976D2) : Colors.transparent,
+                      width: 2.w,
+                    ),
+                    boxShadow: selectedIndex == 0
+                        ? [
+                      BoxShadow(
+                        color: const Color(0xFF1976D2).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      )
+                    ]
+                        : [],
+                  ),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _RoleCard(
-                        icon: Icons.person,
-                        title: 'مستخدم',
-                        subtitle: 'طلب خدمات منزلية وتتبع الخدمات',
-                        buttonText: 'الاستمرار كمستخدم',
-                        onTap: () {
-                         moveAndReplace(context, const UserSIgnUp());
-                        },
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/client.jpg',
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          CircleAvatar(
+                            radius: 25,
+                            backgroundColor: const Color(0xFF1976D2).withOpacity(0.85),
+                            child: const Icon(Icons.person_search, color: Colors.white, size: 28),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 20.h),
-                      _RoleCard(
-                        icon: Icons.handyman,
-                        title: 'حرفي',
-                        subtitle: 'قبول الوظائف وإدارة جدول عملك',
-                        buttonText: 'الاستمرار كحرفي',
-                        onTap: () {
-                          moveAndReplace(context, const WorkerSignup());
-                        },
+                      const SizedBox(height: 12),
+                      Text(
+                        'أنا عميل',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: selectedIndex == 0 ? Colors.black87 : Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'أبحث عن خدمات مهنية وأريد توظيف خبراء لمشاريعي القادمة.',
+                        style: TextStyle(
+                          color: selectedIndex == 0 ? Colors.black54 : Colors.black38,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Icon(
+                          selectedIndex == 0 ? Icons.check_circle : Icons.radio_button_unchecked,
+                          color: selectedIndex == 0 ? const Color(0xFF1976D2) : Colors.black38,
+                          size: 24,
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      )
-    );
-  }
-}
-
-class _RoleCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final String buttonText;
-  final VoidCallback onTap;
-
-  const _RoleCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.buttonText,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(18.r),
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(18.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.shade100,
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-          ],
-          border: Border.all(color: Colors.black12),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 52.w,
-              height: 52.w,
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(14.r),
               ),
-              child: Icon(icon, color: Colors.blue, size: 28.sp),
-            ),
-            SizedBox(width: 14.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title, // مثال: "زبون" أو "عامل صيانة"
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
+              SizedBox(height: 20.h),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 1;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: selectedIndex == 1 ? const Color(0xFFE3F2FD) : const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(15.r),
+                    border: Border.all(
+                      color: selectedIndex == 1 ? const Color(0xFF1976D2) : Colors.transparent,
+                      width: 2.w,
                     ),
+                    boxShadow: selectedIndex == 1
+                        ? [
+                      BoxShadow(
+                        color: const Color(0xFF1976D2).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      )
+                    ]
+                        : [],
                   ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    subtitle, // مثال: "اطلب خدمات الصيانة بسهولة"
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: Colors.black45,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 14.w,
-                        vertical: 10.h,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/provider.jfif',
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          CircleAvatar(
+                            radius: 25,
+                            backgroundColor: const Color(0xFF1976D2).withOpacity(0.85),
+                            child: const Icon(Icons.build_circle, color: Colors.white, size: 28),
+                          ),
+                        ],
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Text(
-                        buttonText, // مثال: "الدخول كزبون"
+                      const SizedBox(height: 12),
+                      Text(
+                        'أنا عامل',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: selectedIndex == 1 ? Colors.black87 : Colors.black54,
                         ),
                       ),
-                    ),
-                  )
-                ],
+                      const SizedBox(height: 6),
+                      Text(
+                        'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
+                        style: TextStyle(
+                          color: selectedIndex == 1 ? Colors.black54 : Colors.black38,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Icon(
+                          selectedIndex == 1 ? Icons.check_circle : Icons.radio_button_unchecked,
+                          color: selectedIndex == 1 ? const Color(0xFF1976D2) : Colors.black38,
+                          size: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+              const Spacer(),
+              defualtButton(
+                onPressed: () {
+                  if(selectedIndex==0){
+                    moveAndReplace(context, const UserSignUp() );
+                  }else{
+                    moveAndReplace(context, const WorkerSignup() );
+                  }
+                },
+                text: 'متابعة',
+                height: 55,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-

@@ -1,101 +1,165 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/modules/user_screens/user_chats.dart';
+import '../../modules/user_screens/user_chats.dart';
 import '../../modules/user_screens/bookings_screen.dart';
 import '../../modules/user_screens/home_screen.dart';
 import '../../modules/user_screens/user_account.dart';
 import '../../modules/user_screens/dept.dart';
+import '../../shared/cubit/cubit.dart';
+import '../../shared/cubit/states.dart';
 import '../../shared/styles/colors.dart';
 
-class UserMainScreen extends StatefulWidget {
+class UserMainScreen extends StatelessWidget {
   const UserMainScreen({super.key});
 
   @override
-  State<UserMainScreen> createState() => _UserMainScreenState();
-}
-
-class _UserMainScreenState extends State<UserMainScreen> {
-  int currentIndex = 0;
-
-  @override
   Widget build(BuildContext context) {
-    List<Widget> screens = <Widget>[
-      HomeScreen(
-        onCategoryTap: (int index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-      ),
-      const Dept(),
-      const BookingsScreen(),
-      const UserChats(),
-      const UserAccount(),
-    ];
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        bottomNavigationBar: NavigationBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          selectedIndex: currentIndex,
-          destinations: [
-            NavigationDestination(
-              icon: SvgPicture.asset(
-                'assets/home.svg',
-                width: 25.w,
-                height: 25.h,
-                color: currentIndex == 0 ? mainColor : Colors.grey,
+    return BlocConsumer<MyCubit, States>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        MyCubit cubit = MyCubit.get(context);
+        List<Widget> screens = [
+          const HomeScreen(),
+          const Dept(),
+          const BookingsScreen(),
+          const UserChats(),
+          const UserAccount(),
+        ];
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.grey.withOpacity(0.2),
+                    width: 0.5,
+                  ),
+                ),
               ),
-              label: 'الرئيسية',
-            ),
-            NavigationDestination(
-              icon: SvgPicture.asset(
-                'assets/grid.svg',
-                width: 25.w,
-                height: 25.h,
-                color: currentIndex == 1 ? mainColor : Colors.grey,
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+                  child: NavigationBar(
+                    labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return TextStyle(
+                          color: mainColor,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.bold,
+                        );
+                      }
+                      return TextStyle(
+                        color: cubit.isDark ? Colors.grey : Colors.black54,
+                        fontSize: 11.sp,
+                      );
+                    }),
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    indicatorColor: mainColor.withOpacity(0.2),
+                    selectedIndex: cubit.currentIndex,
+                    onDestinationSelected: (value) {
+                      cubit.changeIndex(value);
+                    },
+                    destinations: [
+                      NavigationDestination(
+                        icon: SvgPicture.asset(
+                          'assets/home.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: Colors.grey,
+                        ),
+                        selectedIcon: SvgPicture.asset(
+                          'assets/home_bold.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: cubit.currentIndex == 0
+                              ? mainColor
+                              : Colors.grey,
+                        ),
+                        label: 'الرئيسية',
+                      ),
+                      NavigationDestination(
+                        icon: SvgPicture.asset(
+                          'assets/grid.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: Colors.grey,
+                        ),
+                        selectedIcon: SvgPicture.asset(
+                          'assets/grid_bold.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: cubit.currentIndex == 1
+                              ? mainColor
+                              : Colors.grey,
+                        ),
+                        label: 'الأقسام',
+                      ),
+                      NavigationDestination(
+                        icon: SvgPicture.asset(
+                          'assets/ticket.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: Colors.grey,
+                        ),
+                        selectedIcon: SvgPicture.asset(
+                          'assets/ticket_bold.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: cubit.currentIndex == 2
+                              ? mainColor
+                              : Colors.grey,
+                        ),
+                        label: 'الحجوزات',
+                      ),
+                      NavigationDestination(
+                        icon: SvgPicture.asset(
+                          'assets/chat.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: Colors.grey,
+                        ),
+                        selectedIcon: SvgPicture.asset(
+                          'assets/chat_bold.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: cubit.currentIndex == 3
+                              ? mainColor
+                              : Colors.grey,
+                        ),
+                        label: 'الدردشة',
+                      ),
+                      NavigationDestination(
+                        icon: SvgPicture.asset(
+                          'assets/acc.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: Colors.grey,
+                        ),
+                        selectedIcon: SvgPicture.asset(
+                          'assets/acc_bold.svg',
+                          width: 25.w,
+                          height: 25.h,
+                          color: cubit.currentIndex == 4
+                              ? mainColor
+                              : Colors.grey,
+                        ),
+                        label: 'الحساب',
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              label: 'الأقسام',
             ),
-            NavigationDestination(
-              icon: SvgPicture.asset(
-                'assets/ticket.svg',
-                width: 25.w,
-                height: 25.h,
-                color: currentIndex == 2 ? mainColor : Colors.grey,
-              ),
-              label: 'الحجوزات',
-            ),
-            NavigationDestination(
-              icon: SvgPicture.asset(
-                'assets/chat.svg',
-                width: 25.w,
-                height: 25.h,
-                color: currentIndex == 3 ? mainColor : Colors.grey,
-              ),
-              label: 'الدردشة',
-            ),
-            NavigationDestination(
-              icon: SvgPicture.asset(
-                'assets/acc.svg',
-                width: 25.w,
-                height: 25.h,
-                color: currentIndex == 4 ? mainColor : Colors.grey,
-              ),
-              label: 'الحساب',
-            ),
-          ],
-          onDestinationSelected: (value) {
-            setState(() {
-              currentIndex = value;
-            });
-          },
-        ),
-        body: screens[currentIndex],
-      ),
+            body: screens[cubit.currentIndex],
+          ),
+        );
+      },
     );
   }
 }
