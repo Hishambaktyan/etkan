@@ -48,7 +48,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           backgroundColor: bgColor,
           actions: [
             defaultTextButton(
-              onPressed: () {},
+              onPressed: ()=>moveAndReplace(context, const SelectUserType()),
               text: 'تخطي',
               isLined: false,
               isBold: true

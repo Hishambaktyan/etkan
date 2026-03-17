@@ -17,7 +17,7 @@ import 'firebase_options.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
 import 'modules/user_screens/the_chat.dart';
 import 'notification_helper.dart';
-import 'on_boarding.dart';
+import 'modules/on_boarding.dart';
 
 void move(BuildContext context, Widget screen) {
   Navigator.push(

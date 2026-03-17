@@ -356,7 +356,7 @@ class _TheChatState extends State<TheChat> {
                                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 8),
                                       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.15),
                                       decoration: BoxDecoration(
-                                        color: cubit.isDark? lightDarkColor: Colors.green.withOpacity(0.2),
+                                        color: cubit.isDark? lightDarkColor: Colors.blue.withOpacity(0.3),
                                         borderRadius: BorderRadius.only(
                                           topLeft: Radius.circular(15.r),
                                           topRight: Radius.circular(15.r),
