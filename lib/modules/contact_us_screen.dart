@@ -11,10 +11,17 @@ class ContactUsScreen extends StatefulWidget {
   State<ContactUsScreen> createState() => _ContactUsScreenState();
 }
 
-TextEditingController problem = TextEditingController();
-TextEditingController problemdescription = TextEditingController();
-
 class _ContactUsScreenState extends State<ContactUsScreen> {
+  TextEditingController problem = TextEditingController();
+  TextEditingController problemdescription = TextEditingController();
+
+  @override
+  void dispose() {
+    problem.dispose();
+    problemdescription.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -39,13 +46,13 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsetsDirectional.only(
-                top: 10.h, bottom: 10.h, start: 15.w, end: 15.w),
+            padding:
+                EdgeInsetsDirectional.only(top: 10.h, start: 20.w, end: 20.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 400,
+                  width: double.infinity,
                   height: 180,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -92,7 +99,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   height: 20.h,
                 ),
                 Container(
-                  width: 400,
+                  width: double.infinity,
                   height: 80,
                   padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w),
                   decoration: BoxDecoration(
@@ -151,7 +158,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   height: 20.h,
                 ),
                 Container(
-                  width: 400,
+                  width: double.infinity,
                   height: 80,
                   padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w),
                   decoration: BoxDecoration(
@@ -210,7 +217,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   height: 20.h,
                 ),
                 Container(
-                  width: 400,
+                  width: double.infinity,
                   height: 80,
                   padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w),
                   decoration: BoxDecoration(
@@ -269,8 +276,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   height: 20.h,
                 ),
                 Container(
-                  width: 400.w,
-                  height: 450.h,
+                  width: double.infinity.w,
+                  height: 470.h,
                   padding: EdgeInsetsDirectional.only(
                       top: 20.h, start: 20.w, end: 20.w),
                   decoration: BoxDecoration(
@@ -307,7 +314,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       ),
                       defaultTextFormfeild(
                         text: "ماهي مشكلتك؟",
-                        prefixIcon: 'assets/phone.',
+                        prefixIcon: 'assets/phone.svg',
                         errorMes: 'يجب ان لا يكون فارغ',
                         controller: problem,
                         type: TextInputType.text,
@@ -364,6 +371,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           height: 50.h),
                     ],
                   ),
+                ),
+                SizedBox(
+                  height: 22.h,
                 ),
               ],
             ),

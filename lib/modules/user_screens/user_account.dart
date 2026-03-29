@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/contact_us_screen.dart';
+import 'package:trying_homy/modules/edit_profile_screen.dart';
 import 'package:trying_homy/modules/login_screen.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
@@ -14,7 +16,6 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
-
   bool isDark = false;
 
   List<Map<String, dynamic>> settingsList = [
@@ -145,8 +146,8 @@ class _UserAccountState extends State<UserAccount> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
-          padding: EdgeInsetsDirectional.only(
-              top: 10.h, start: 20.w, end: 20.w),
+          padding:
+              EdgeInsetsDirectional.only(top: 10.h, start: 20.w, end: 20.w),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -205,7 +206,8 @@ class _UserAccountState extends State<UserAccount> {
                     Expanded(
                       child: defualtOutlinedButton(
                         fontSize: 12,
-                        onPressed: () {},
+                        onPressed: () =>
+                            move(context, const EditProfileScreen()),
                         text: 'تعديل الحساب',
                         height: 43.h,
                         textColor: mainColor,
@@ -223,7 +225,7 @@ class _UserAccountState extends State<UserAccount> {
                 buildItem(
                     title: settingsList[1]['title'],
                     icon: settingsList[1]['icon'],
-                    onTap: () {}),
+                    onTap: () => move(context, const ContactUsScreen())),
                 divider(),
                 buildItem(
                     title: settingsList[2]['title'],
