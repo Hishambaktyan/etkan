@@ -192,19 +192,21 @@ class _SelectUserTypeState extends State<SelectUserType> {
                   ),
                 ),
               ),
-              const Spacer(),
-              defualtButton(
-                onPressed: () {
-                  if(selectedIndex==0){
-                    moveAndReplace(context, const UserSignUp() );
-                  }else{
-                    moveAndReplace(context, const WorkerSignup() );
-                  }
-                },
-                text: 'متابعة',
-                height: 55,
-              ),
             ],
+          ),
+        ),
+        bottomNavigationBar: Padding(
+          padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w,vertical: 10.h),
+          child: defualtButton(
+            onPressed: () {
+              if(selectedIndex==0){
+                moveAndReplace(context, const UserSignUp() );
+              }else{
+                moveAndReplace(context, const WorkerSignup() );
+              }
+            },
+            text: 'متابعة',
+            height: 55,
           ),
         ),
       ),
