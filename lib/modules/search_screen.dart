@@ -1,6 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:marquee/marquee.dart';
+import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -17,467 +20,591 @@ class _SearchScreenState extends State<SearchScreen> {
     'دهانات جوتن داخلية',
   ];
 
-  final List<Map<String, dynamic>> categories = [
-    {
-      'title': 'كهرباء',
-      'icon': Icons.bolt,
-      'iconColor': Colors.blue,
-      'bgColor': const Color(0xffEEF4FB),
-    },
-    {
-      'title': 'سباكة',
-      'icon': Icons.plumbing,
-      'iconColor': Colors.orange,
-      'bgColor': const Color(0xffFBF3EE),
-    },
-    {
-      'title': 'دهانات',
-      'icon': Icons.format_paint,
-      'iconColor': Colors.purple,
-      'bgColor': const Color(0xffF5EEFB),
-    },
-    {
-      'title': 'تكييف',
-      'icon': Icons.ac_unit,
-      'iconColor': Colors.green,
-      'bgColor': const Color(0xffEEF8F5),
-    },
-  ];
+  final TextEditingController searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
+  bool isPrimary = false;
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    searchFocusNode.dispose();
+    super.dispose();
+  }
 
   final List<Map<String, dynamic>> services = [
     {
-      'title': 'فحص شامل للكهرباء',
-      'price': 'يبدأ من 150 ريال',
-      'rating': '4.9',
-      'reviews': '120',
-      'image': 'assets/elec.jpg',
+      'iconPath': 'assets/SVGs/E.svg',
+      'label': 'كهرباء',
     },
     {
-      'title': 'كشف تسربات المياه',
-      'price': 'يبدأ من 200 ريال',
-      'rating': '4.7',
-      'reviews': '85',
-      'image': 'assets/plm.jpg',
+      'iconPath': 'assets/SVGs/P.svg',
+      'label': 'سباكة',
+    },
+    {
+      'iconPath': 'assets/SVGs/AC.svg',
+      'label': 'تكييف',
+    },
+    {
+      'iconPath': 'assets/SVGs/PA.svg',
+      'label': 'دهان',
+    },
+    {
+      'iconPath': 'assets/SVGs/C.svg',
+      'label': 'بناء',
+    },
+    {
+      'iconPath': 'assets/SVGs/WT.svg',
+      'label': 'ماء',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: bgColor,
-        appBar: AppBar(
-          backgroundColor: bgColor,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          centerTitle: false,
-          title: Text(
-            "البحث عن خدمات",
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-        ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.w),
+    return Scaffold(
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10.h),
-              Container(
-                height: 56.h,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(18.r),
-                ),
-                child: TextFormField(
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                    hintText: 'ابحث عن كهربائي، سباك، أو نجار...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 13.sp,
-                    ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 16.h,
-                    ),
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.all(14.w),
-                      child: SvgPicture.asset(
-                        'assets/search.svg',
-                        width: 20.w,
-                        height: 20.h,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    suffixIcon: Icon(
-                      Icons.mic_none,
-                      color: Colors.grey,
-                      size: 22.w,
+              ClipRRect(
+                borderRadius: BorderRadiusDirectional.vertical(
+                    bottom: Radius.circular(30.r)),
+                child: Container(
+                  height: 160.h,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                        mainColor.withOpacity(0.9),
+                        const Color(0xFF0F0F1E),
+                      ],
+                      stops: const [0.0, 0.8],
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 18.h),
-              SizedBox(
-                height: 45.h,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _buildFilterChip(
-                      text: 'تصفية',
-                      icon: Icons.tune,
-                      isPrimary: true,
-                    ),
-                    SizedBox(width: 10.w),
-                    _buildFilterChip(text: 'قريب مني'),
-                    SizedBox(width: 10.w),
-                    _buildFilterChip(text: 'الأعلى تقييماً'),
-                    SizedBox(width: 10.w),
-                    _buildFilterChip(text: 'سعر مناسب'),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20.h),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Stack(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'عمليات البحث الأخيرة',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                recentSearches.clear();
-                              });
-                            },
-                            child: Text(
-                              'مسح الكل',
-                              style: TextStyle(
-                                color: mainColor,
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Positioned(
+                        top: -50.h,
+                        left: -50.w,
+                        child: CircleAvatar(
+                          radius: 100.r,
+                          backgroundColor: Colors.white.withOpacity(0.15),
+                        ),
                       ),
-                      SizedBox(height: 10.h),
-                      if (recentSearches.isNotEmpty)
-                        ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: recentSearches.length,
-                          separatorBuilder: (context, index) => Divider(
-                            color: Colors.grey.shade300,
-                            height: 1.h,
+                      Positioned(
+                        top: 80.h,
+                        right: -60.w,
+                        child: Container(
+                          width: 250.r,
+                          height: 250.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                const Color(0xFF00F2FF).withOpacity(0.5),
+                                const Color(0xFF00F2FF).withOpacity(0),
+                              ],
+                            ),
                           ),
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    recentSearches.removeAt(index);
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.close,
-                                  color: Colors.blueGrey.shade200,
-                                  size: 22.w,
+                        ),
+                      ),
+                      Positioned(
+                        top: 200.h,
+                        left: -40.w,
+                        child: Container(
+                          width: 200.r,
+                          height: 200.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                mainColor.withOpacity(0.4),
+                                mainColor.withOpacity(0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: ClipRect(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                            child: Container(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.topCenter,
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(
+                            top: 30.h,
+                            start: 10.w,
+                            end: 10.w,
+                            bottom: 20.h,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/loc.svg',
+                                    color: Colors.white,
+                                    width: 35.w,
+                                    height: 35.h,
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'موقعك',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13.sp,
+                                          color: Colors.white,
+                                          height: 1,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        'عدن - المنصورة - ريمي',
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          color: Colors.white,
+                                          height: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  InkWell(
+                                    highlightColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    onTap: () {
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding:
+                                          const EdgeInsetsDirectional.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius:
+                                            BorderRadius.circular(10.r),
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/not.svg',
+                                        width: 23.w,
+                                        height: 23.h,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Spacer(),
+                              Container(
+                                height: 57.h,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 17),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30.r),
+                                ),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/search.svg',
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: searchController,
+                                        focusNode: searchFocusNode,
+                                        autofocus: true,
+                                        textInputAction: TextInputAction.search,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 14.sp,
+                                        ),
+                                        decoration: InputDecoration(
+                                          hintText: 'ابحث عن خدمات',
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 14.sp,
+                                          ),
+                                          border: InputBorder.none,
+                                          isCollapsed: true,
+                                        ),
+                                        onSubmitted: (value) {},
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              title: Text(
-                                recentSearches[index],
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              trailing: Icon(
-                                Icons.history,
-                                color: Colors.blueGrey.shade200,
-                                size: 22.w,
-                              ),
-                            );
-                          },
-                        )
-                      else
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.h),
-                          child: Text(
-                            'لا توجد عمليات بحث أخيرة',
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: Colors.grey,
-                            ),
+                            ],
                           ),
                         ),
-                      SizedBox(height: 22.h),
-                      Text(
-                        'الفئات الشائعة',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
                       ),
-                      SizedBox(height: 14.h),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: categories.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12.w,
-                          mainAxisSpacing: 12.h,
-                          childAspectRatio: 1.35,
-                        ),
-                        itemBuilder: (context, index) {
-                          final item = categories[index];
-                          return _buildCategoryCard(
-                            title: item['title'],
-                            icon: item['icon'],
-                            iconColor: item['iconColor'],
-                            bgColor: item['bgColor'],
-                          );
-                        },
-                      ),
-                      SizedBox(height: 22.h),
-                      Text(
-                        'خدمات مقترحة لك',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(height: 14.h),
-                      Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: services.length,
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 12.h),
-                          itemBuilder: (context, index) {
-                            final item = services[index];
-                            return _buildServiceCard(
-                              title: item['title'],
-                              price: item['price'],
-                              rating: item['rating'],
-                              reviews: item['reviews'],
-                              image: item['image'],
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterChip({
-    required String text,
-    IconData? icon,
-    bool isPrimary = false,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        color: isPrimary ? mainColor : Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: isPrimary ? mainColor : Colors.grey.shade300,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(
-              icon,
-              size: 18.w,
-              color: isPrimary ? Colors.white : Colors.black87,
-            ),
-            SizedBox(width: 6.w),
-          ],
-          Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: isPrimary ? Colors.white : Colors.black87,
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryCard({
-    required String title,
-    required IconData icon,
-    required Color iconColor,
-    required Color bgColor,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 24.r,
-            backgroundColor: iconColor.withOpacity(0.15),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 24.sp,
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServiceCard({
-    required String title,
-    required String price,
-    required String rating,
-    required String reviews,
-    required String image,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: const Color(0xffF8FAFC),
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.grey.shade400,
-            size: 18.sp,
-          ),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  title,
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  price,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+              SizedBox(height: 15.h),
+              Padding(
+                padding: EdgeInsetsDirectional.only(
+                    end: 10.w, start: 10.w, top: 10.h, bottom: 10.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '($reviews تقييم)',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.grey,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'عمليات البحث الأخيرة',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              recentSearches.clear();
+                            });
+                          },
+                          child: Text(
+                            'مسح الكل',
+                            style: TextStyle(
+                              color: mainColor,
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 6.w),
+                    if (recentSearches.isNotEmpty)
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: recentSearches.length,
+                        separatorBuilder: (context, index) => Divider(
+                          color: Colors.grey.shade300,
+                          height: 1.h,
+                        ),
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 15.h),
+                            child: Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      recentSearches.removeAt(index);
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.blueGrey.shade200,
+                                    size: 20.w,
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
+                                Expanded(
+                                  child: Text(
+                                    recentSearches[index],
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
+                                Icon(
+                                  Icons.history,
+                                  color: Colors.blueGrey.shade200,
+                                  size: 20.w,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      )
+                    else
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                        child: Text(
+                          'لا توجد عمليات بحث أخيرة',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    SizedBox(height: 15.h),
                     Text(
-                      rating,
+                      'الأقسام الشائعة',
                       style: TextStyle(
-                        fontSize: 13.sp,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange,
+                        color: Colors.black,
                       ),
                     ),
-                    SizedBox(width: 4.w),
-                    Icon(
-                      Icons.star,
-                      color: Colors.orange,
-                      size: 16.sp,
+                    SizedBox(height: 15.h),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsetsDirectional.zero,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10.h,
+                        crossAxisSpacing: 10.w,
+                        childAspectRatio: 2.1,
+                      ),
+                      itemCount: 4,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(15.r),
+                          onTap: () {},
+                          child: Container(
+                            padding: const EdgeInsetsDirectional.all(10),
+                            decoration: BoxDecoration(
+                                color: mainColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(15.r)),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 55.w,
+                                  height: 55.h,
+                                  padding: const EdgeInsetsDirectional.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15.r),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    services[index]['iconPath'],
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
+                                Text(
+                                  services[index]['label'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14.sp,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const Spacer(),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: mainColor,
+                                  size: 15,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 22.h),
+                    Text(
+                      'خدمات مقترحة لك',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 15.h),
+                    ListView.separated(
+                      padding: EdgeInsetsDirectional.zero,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: 4,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 15.h),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(12.r),
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.r),
+                              color: mainColor.withOpacity(0.1),
+                            ),
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 142.h,
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadiusDirectional.only(
+                                          topStart: Radius.circular(12.r),
+                                          topEnd: Radius.circular(12.r),
+                                        ),
+                                        child: Image.network(
+                                          'https://i.pinimg.com/736x/0d/bc/a7/0dbca7e372766da7842528c87f693c01.jpg',
+                                          height: 130.h,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment:
+                                            AlignmentDirectional.bottomEnd,
+                                        child: Container(
+                                          height: 27.h,
+                                          width: 100.w,
+                                          alignment: Alignment.center,
+                                          margin: EdgeInsetsDirectional.only(
+                                              end: 10.w),
+                                          decoration: BoxDecoration(
+                                            color: mainColor,
+                                            border:
+                                                Border.all(color: Colors.white),
+                                            borderRadius:
+                                                BorderRadius.circular(30.r),
+                                          ),
+                                          child: Text(
+                                            '10000 $reyalSymbol',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment:
+                                            AlignmentDirectional.topStart,
+                                        child: Container(
+                                            height: 30.h,
+                                            width: 120.w,
+                                            alignment: Alignment.center,
+                                            margin:
+                                                const EdgeInsetsDirectional.all(
+                                                    10),
+                                            padding:
+                                                EdgeInsetsDirectional.symmetric(
+                                                    horizontal: 10.w),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.white.withOpacity(0.9),
+                                              borderRadius:
+                                                  BorderRadius.circular(30.r),
+                                            ),
+                                            child: SizedBox(
+                                              height: 30.h,
+                                              child: Marquee(
+                                                text: 'تركيب احواض في الحمام',
+                                                style: TextStyle(
+                                                  color: mainColor,
+                                                  fontSize: 11.sp,
+                                                ),
+                                                scrollAxis: Axis.horizontal,
+                                                blankSpace: 40.0,
+                                                velocity: 30.0,
+                                                pauseAfterRound:
+                                                    const Duration(seconds: 3),
+                                                accelerationDuration:
+                                                    const Duration(seconds: 1),
+                                                accelerationCurve:
+                                                    Curves.linear,
+                                                decelerationDuration:
+                                                    const Duration(
+                                                        milliseconds: 500),
+                                                decelerationCurve:
+                                                    Curves.easeOut,
+                                              ),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.symmetric(
+                                    horizontal: 10.w,
+                                    vertical: 5.h,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: List.generate(
+                                          5,
+                                          (i) => Icon(
+                                            Icons.star_rounded,
+                                            size: 16.r,
+                                            color: i < 4
+                                                ? Colors.orange
+                                                : Colors.grey.shade300,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        'تركيب بانيو مصري',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12.sp,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            foregroundImage: const NetworkImage(
+                                                'https://i.pinimg.com/1200x/47/91/f0/4791f027dcad85f85883359daf191c5d.jpg'),
+                                            radius: 15.r,
+                                          ),
+                                          SizedBox(
+                                            width: 7.w,
+                                          ),
+                                          SizedBox(
+                                            width: 90.w,
+                                            child: Text(
+                                              'عبد الله عبد الرحمن',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 10.sp),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+            ],
           ),
-          SizedBox(width: 12.w),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12.r),
-            child: Image.asset(
-              image,
-              width: 74.w,
-              height: 74.h,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: 74.w,
-                  height: 74.h,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.image,
-                    color: Colors.grey.shade600,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
