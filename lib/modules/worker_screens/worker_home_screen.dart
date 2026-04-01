@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/search_screen.dart';
 import 'package:trying_homy/modules/worker_screens/add_service.dart';
-import 'package:trying_homy/modules/worker_screens/service_details.dart';
+import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
@@ -520,7 +520,7 @@ class WorkerHomeScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12.r),
                                     onTap: () => move(
                                         context,
-                                        ServiceDetails(
+                                        WorkerServiceDetails(
                                           serviceId: cubit.workerServices[index]
                                               ['id'],
                                         )),

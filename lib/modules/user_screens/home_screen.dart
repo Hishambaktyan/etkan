@@ -7,6 +7,7 @@
   import 'package:flutter_svg/svg.dart';
   import 'package:marquee/marquee.dart';
   import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:trying_homy/modules/user_screens/electric_workers.dart';
   import 'package:trying_homy/shared/cubit/cubit.dart';
   import '../../main.dart';
   import '../../shared/compenents/components.dart';
@@ -242,11 +243,13 @@
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, top: 15.h),
-                          child: Column(
-                            children: [
-                              ClipRRect(
+                        SizedBox(height: 20.h,),
+                        Column(
+                          children: [
+                            /*بانر ترحيبي*/
+                            Padding(
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                              child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15.r),
                                 child: Container(
                                   height: 140.h,
@@ -326,277 +329,302 @@
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              Row(
+                            ),
+                            SizedBox(height: 20.h,),
+                            /*الأقسام*/
+                            Padding(
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                              child: Column(
                                 children: [
-                                  Text(
-                                    'الأقسام',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.sp
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'الأقسام',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.sp
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      TextButton(
+                                        onPressed: ()=>cubit.changeIndex(1),
+                                        child: const Text(
+                                            'عرض الكل'
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const Spacer(),
-                                  TextButton(
-                                    onPressed: ()=>cubit.changeIndex(1),
-                                    child: const Text(
-                                        'عرض الكل'
+                                  SizedBox(height: 5.h,),
+                                  GridView.builder(
+                                    shrinkWrap: true,
+                                    padding:EdgeInsetsDirectional.zero,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 10.h,
+                                      crossAxisSpacing: 10.w,
+                                      childAspectRatio: 2.1,
                                     ),
+                                    itemCount: 4,
+                                    itemBuilder: (context, index) {
+                                      return InkWell(
+                                        splashColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(15.r),
+                                        onTap: ()=>move(context, const ElectricServices()),
+                                        child: Container(
+                                          padding: const EdgeInsetsDirectional.all(10),
+                                          decoration: BoxDecoration(
+                                              color: mainColor.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(15.r)
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                width: 55.w,
+                                                height: 55.h,
+                                                padding: const EdgeInsetsDirectional.all(12),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(15.r),
+                                                ),
+                                                child: SvgPicture.asset(
+                                                  services[index]['iconPath'],
+                                                ),
+                                              ),
+                                              SizedBox(width: 10.w),
+                                              Text(
+                                                services[index]['label'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 14.sp,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              const Spacer(),
+                                              const Icon(
+                                                Icons.arrow_forward_ios_rounded,
+                                                color: mainColor,
+                                                size: 15,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                height: 5.h,
-                              ),
-                              GridView.builder(
-                                shrinkWrap: true,
-                                padding:EdgeInsetsDirectional.zero,
-                                physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 10.h,
-                                  crossAxisSpacing: 10.w,
-                                  childAspectRatio: 2.1,
-                                ),
-                                itemCount: 4,
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    borderRadius: BorderRadius.circular(15.r),
-                                    onTap: () {},
-                                    child: Container(
-                                      padding: const EdgeInsetsDirectional.all(10),
-                                      decoration: BoxDecoration(
-                                          color: mainColor.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(15.r)
+                            ),
+                            SizedBox(height: 20.h,),
+                            /*الخدمات الرائجة*/
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'الخدمات الرائجة',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.sp,
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .color),
                                       ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Container(
-                                            width: 55.w,
-                                            height: 55.h,
-                                            padding: const EdgeInsetsDirectional.all(12),
+                                      const Spacer(),
+                                      defaultTextButton(
+                                          onPressed: (){},
+                                          text: 'عرض الكل',
+                                          isLined: false)
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 5.h,),
+                                SizedBox(
+                                  height: 320.h,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    padding: EdgeInsetsDirectional.only(start:15.w),
+                                    itemCount: 4,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: EdgeInsetsDirectional.only(start: index==0?0:15.w,end: index==3?15.w:0),
+                                        child: InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          borderRadius: BorderRadius.circular(12.r),
+                                          onTap: () {},
+                                          child: Container(
+                                            width: 300.w,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
                                               borderRadius: BorderRadius.circular(15.r),
-                                            ),
-                                            child: SvgPicture.asset(
-                                              services[index]['iconPath'],
-                                            ),
-                                          ),
-                                          SizedBox(width: 10.w),
-                                          Text(
-                                            services[index]['label'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14.sp,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          const Spacer(),
-                                          const Icon(
-                                            Icons.arrow_forward_ios_rounded,
-                                            color: mainColor,
-                                            size: 15,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    'الخدمات الرائجة',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.sp,
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .color),
-                                  ),
-                                  const Spacer(),
-                                  defaultTextButton(
-                                      onPressed: (){},
-                                      text: 'عرض الكل',
-                                      isLined: false)
-                                ],
-                              ),
-                              SizedBox(
-                                height: 5.h,
-                              ),
-                              GridView.builder(
-                                padding: EdgeInsetsDirectional.zero,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: 4,
-                                gridDelegate:  SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 200.w,
-                                    mainAxisExtent: 250.h,
-                                    crossAxisSpacing: 10.w,
-                                    mainAxisSpacing: 10.h
-                                ),
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    onTap: () {},
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        color: cubit.isDark ? lightDarkColor : mainColor.withOpacity(0.1),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 142.h,
-                                            child: Stack(
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius: BorderRadiusDirectional.only(
-                                                    topStart: Radius.circular(12.r),
-                                                    topEnd: Radius.circular(12.r),
-                                                  ),
-                                                  child: Image.network(
-                                                    'https://i.pinimg.com/736x/0d/bc/a7/0dbca7e372766da7842528c87f693c01.jpg',
-                                                    height: 130.h,
-                                                    width: double.infinity,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                                Align(
-                                                  alignment: AlignmentDirectional.bottomEnd,
-                                                  child: Container(
-                                                    height: 27.h,
-                                                    width: 100.w,
-                                                    alignment: Alignment.center,
-                                                    margin: EdgeInsetsDirectional.only(end: 10.w),
-                                                    decoration: BoxDecoration(
-                                                      color: mainColor,
-                                                      border: Border.all(color: Colors.white),
-                                                      borderRadius: BorderRadius.circular(30.r),
-                                                    ),
-                                                    child: Text(
-                                                      '10000 $reyalSymbol',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 12.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Align(
-                                                  alignment: AlignmentDirectional.topStart,
-                                                  child: Container(
-                                                      height: 30.h,
-                                                      width: 120.w,
-                                                      alignment: Alignment.center,
-                                                      margin: const EdgeInsetsDirectional.all(10),
-                                                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white.withOpacity(0.9),
-                                                        borderRadius: BorderRadius.circular(30.r),
-                                                      ),
-                                                      child: SizedBox(
-                                                        height: 30.h,
-                                                        child: Marquee(
-                                                          text: 'تركيب احواض في الحمام',
-                                                          style: TextStyle(
-                                                            color: mainColor,
-                                                            fontSize: 11.sp,
-                                                          ),
-                                                          scrollAxis: Axis.horizontal,
-                                                          blankSpace: 40.0,
-                                                          velocity: 30.0,
-                                                          pauseAfterRound: const Duration(seconds: 3),
-                                                          accelerationDuration: const Duration(seconds: 1),
-                                                          accelerationCurve: Curves.linear,
-                                                          decelerationDuration: const Duration(milliseconds: 500),
-                                                          decelerationCurve: Curves.easeOut,
-                                                        ),
-                                                      )
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsetsDirectional.symmetric(
-                                              horizontal: 10.w,
-                                              vertical: 5.h,
+                                              color: cubit.isDark ? lightDarkColor : mainColor.withOpacity(0.1),
                                             ),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Row(
-                                                  children: List.generate(
-                                                    5,
-                                                        (i) => Icon(
-                                                      Icons.star_rounded,
-                                                      size: 16.r,
-                                                      color: i < 4
-                                                          ? Colors.orange
-                                                          : Colors.grey.shade300,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(height: 5.h),
-                                                Text(
-                                                  'تركيب بانيو مصري',
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12.sp,
-                                                    color: cubit.isDark ? Colors.white : Colors.black,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 10.h),
-                                                Row(
+                                                Stack(
                                                   children: [
-                                                    CircleAvatar(
-                                                      foregroundImage: const NetworkImage(
-                                                          'https://i.pinimg.com/1200x/47/91/f0/4791f027dcad85f85883359daf191c5d.jpg'
+                                                    ClipRRect(
+                                                      borderRadius: BorderRadiusDirectional.only(
+                                                        topStart: Radius.circular(15.r),
+                                                        topEnd: Radius.circular(15.r),
                                                       ),
-                                                      radius: 15.r,
+                                                      child: Image.network(
+                                                        'https://i.pinimg.com/736x/0d/bc/a7/0dbca7e372766da7842528c87f693c01.jpg',
+                                                        height: 150.h,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context, error, stackTrace) => Container(
+                                                          height: 150.h,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadiusDirectional.only(
+                                                                topStart: Radius.circular(15.r),
+                                                                topEnd: Radius.circular(15.r),
+                                                              ),
+                                                              color: Colors.grey.shade200
+                                                          ),
+                                                        ),
+                                                      ),
                                                     ),
-                                                    SizedBox(
-                                                      width: 7.w,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 90.w,
-                                                      child: Text(
-                                                        'عبد الله عبد الرحمن',
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                            fontSize: 10.sp
+                                                    Align(
+                                                      alignment: AlignmentDirectional.topStart,
+                                                      child: Container(
+                                                        width: 90.w,
+                                                        alignment: Alignment.center,
+                                                        margin: EdgeInsetsDirectional.only(top: 10.h,start: 10.w),
+                                                        padding: EdgeInsetsDirectional.symmetric(vertical: 3.h,horizontal: 5.w),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white.withOpacity(0.5),
+                                                          border: Border.all(color: Colors.white),
+                                                          borderRadius: BorderRadius.circular(30.r),
+                                                        ),
+                                                        child: Text(
+                                                          'السباكة',
+                                                          style: TextStyle(
+                                                            color:mainColor,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 11.sp,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
+                                                SizedBox(height: 20.h,),
+                                                Padding(
+                                                  padding: EdgeInsetsDirectional.only(start: 10.w,end: 10.w),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              'تركيب بانيو مصري مصري مصري',
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 14.sp,
+                                                                color: cubit.isDark ? Colors.white : Colors.black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            alignment: Alignment.center,
+                                                            padding: EdgeInsetsDirectional.symmetric(vertical: 3.h,horizontal: 7.w),
+                                                            decoration: BoxDecoration(
+                                                              color: mainColor,
+                                                              border: Border.all(color: Colors.white),
+                                                              borderRadius: BorderRadius.circular(30.r),
+                                                            ),
+                                                            child: Text(
+                                                              '100000 $reyalSymbol',
+                                                              style: TextStyle(
+                                                                color: Colors.white,
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 13.sp,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 5.h,),
+                                                      Row(
+                                                        children: [
+                                                          const Icon(
+                                                            Icons.star_rounded,color: Colors.orange,
+                                                          ),
+                                                          SizedBox(width: 5.w,),
+                                                          const Text(
+                                                            '3.8',
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 10.h,),
+                                                      Row(
+                                                        children: [
+                                                          CircleAvatar(
+                                                            foregroundImage: const NetworkImage(
+                                                                'https://i.pinimg.com/1200x/47/91/f0/4791f027dcad85f85883359daf191c5d.jpg'
+                                                            ),
+                                                            radius: 20.r,
+                                                          ),
+                                                          SizedBox(width: 10.w,),
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              SizedBox(
+                                                                width: 200.w,
+                                                                child: Text(
+                                                                  'عبد الله عبد الرحمن ناصر ناصر',
+                                                                  maxLines: 1,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 12.sp
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                'سباك',
+                                                                maxLines: 1,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(
+                                                                    fontSize: 12.sp,
+                                                                  color: Colors.grey
+                                                                ),
+                                                              ),
+
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(20.r),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20.h,),
+                            /*اعلان نشر حدمة*/
+                            Padding(
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                              child: ClipRRect(
+                                borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(15.r),topEnd:Radius.circular(15.r) ),
                                 child: Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
@@ -686,11 +714,8 @@
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

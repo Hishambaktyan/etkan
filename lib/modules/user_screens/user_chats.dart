@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -5,6 +7,7 @@ import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/the_chat.dart';
 
 import '../../shared/compenents/components.dart';
+import '../../shared/styles/colors.dart';
 
 class UserChats extends StatefulWidget {
   const UserChats({super.key});
@@ -107,158 +110,122 @@ class _UserChatsState extends State<UserChats> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 10,
-        automaticallyImplyLeading: false,
-        title: Text(
-         'الدردشة',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 23.sp,
-              color: Colors.black
-          ),
-        ),
-        actions: [
-           Row(
-            children: [
-              InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: () {
-                  setState(() {});
-                },
-                child: Container(
-                  padding: const EdgeInsetsDirectional.all(10),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        )
-                      ]
-                  ),
-                  child: SvgPicture.asset(
-                    'assets/not.svg',
-                    width: 23.w,
-                    height: 23.h,
-                  ),
-                ),
-              ),
-              SizedBox(width: 10.w),
-            ],
-          ),
-        ],
-      ),
       body: Directionality(
           textDirection: TextDirection.rtl,
-          child: ListView.separated(
-              padding: EdgeInsetsDirectional.only(start:10.w,top: 10.h,bottom: 20.h,end:10.w),
-              itemBuilder: (context, index) {
-              var chat = chatData[index];
-              return InkWell(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: (){},
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.grey.shade400,
-                        radius: 27.r,
-                        backgroundImage:NetworkImage(
-                            chat['image']
-                        )
-                    ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                header(title:'الدردشات' ),
+                ListView.separated(
+                  shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsetsDirectional.only(start:10.w,top: 10.h,bottom: 20.h,end:10.w),
+                    itemBuilder: (context, index) {
+                    var chat = chatData[index];
+                    return InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: (){},
+                      child: Row(
                         children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 190.w,
-                                child: Text(
-                                  chat['name'],
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const Spacer(),
-                              Container(
-                                alignment: AlignmentDirectional.centerEnd,
-                                child: Text(
-                                  chat['time'],
-                                  style: TextStyle(
-                                      color: chat['unreadCount']!=0?Colors.green:Colors.grey,
-                                      fontSize: 11.sp
-                                  ),
-                                ),
-                              ),
-                            ],
+                          CircleAvatar(
+                            backgroundColor: mainColor.withOpacity(0.1),
+                              radius: 27.r,
+                              backgroundImage:NetworkImage(
+                                  chat['image']
+                              )
                           ),
-                          Row(
-                            children: [
-                              if(chat['unreadCount']==0)
-                                SvgPicture.asset(
-                                  chat['isRead']?'assets/checks.svg':'assets/check.svg',
-                                  color: chat['isRead']?Colors.blue:Colors.grey,
-                                  width: 15.w,
-                                  height: 15.w,
-                                ),
-                              SizedBox(
-                                width: 3.w,
-                              ),
-                              SizedBox(
-                                width: chat['unreadCount']!=0?240.w:250.w,
-                                child: Text(
-                                  chat['message'],
-                                  style: TextStyle(
-                                      color:Colors.grey,
-                                      fontSize: 11.sp
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const Spacer(),
-                              if(chat['unreadCount']!=0)
-                                Container(
-                                  height: 17.h,
-                                  width: 17.w,
-                                  alignment: Alignment.center,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.green,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsetsDirectional.only(top: 4.h),
-                                    child: Text(
-                                      '${chat['unreadCount']}',
-                                      style: TextStyle(
-                                        fontSize: 9.sp,
-                                        color: Colors.white,
-                                        height: 1,
-                                        leadingDistribution: TextLeadingDistribution.even,
+                          SizedBox(
+                            width: 10.w,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 190.w,
+                                      child: Text(
+                                        chat['name'],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                  ),
+                                    const Spacer(),
+                                    Container(
+                                      alignment: AlignmentDirectional.centerEnd,
+                                      child: Text(
+                                        chat['time'],
+                                        style: TextStyle(
+                                            color: chat['unreadCount']!=0?Colors.green:Colors.grey,
+                                            fontSize: 11.sp
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                            ],
+                                Row(
+                                  children: [
+                                    if(chat['unreadCount']==0)
+                                      SvgPicture.asset(
+                                        chat['isRead']?'assets/checks.svg':'assets/check.svg',
+                                        color: chat['isRead']?Colors.blue:Colors.grey,
+                                        width: 15.w,
+                                        height: 15.w,
+                                      ),
+                                    SizedBox(
+                                      width: 3.w,
+                                    ),
+                                    SizedBox(
+                                      width: chat['unreadCount']!=0?240.w:250.w,
+                                      child: Text(
+                                        chat['message'],
+                                        style: TextStyle(
+                                            color:Colors.grey,
+                                            fontSize: 11.sp
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    if(chat['unreadCount']!=0)
+                                      Container(
+                                        height: 17.h,
+                                        width: 17.w,
+                                        alignment: Alignment.center,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.green,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsetsDirectional.only(top: 4.h),
+                                          child: Text(
+                                            '${chat['unreadCount']}',
+                                            style: TextStyle(
+                                              fontSize: 9.sp,
+                                              color: Colors.white,
+                                              height: 1,
+                                              leadingDistribution: TextLeadingDistribution.even,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    );
+                    },
+                    separatorBuilder: (context, index) => SizedBox(height:17.h,),
+                    itemCount: 11
                 ),
-              );
-              },
-              separatorBuilder: (context, index) => SizedBox(height:17.h,),
-              itemCount: 11
+              ],
+            ),
           )
       ),
     );

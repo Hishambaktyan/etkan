@@ -12,9 +12,9 @@ import 'package:trying_homy/shared/cubit/cubit.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class ServiceDetails extends StatelessWidget {
+class WorkerServiceDetails extends StatelessWidget {
   final String serviceId;
-   ServiceDetails({super.key, required this.serviceId});
+   const WorkerServiceDetails({super.key, required this.serviceId});
 
   @override
   Widget build(BuildContext context) {

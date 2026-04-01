@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/add_service.dart';
-import 'package:trying_homy/modules/worker_screens/service_details.dart';
+import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
 import 'package:trying_homy/shared/cubit/states.dart';
 import '../../layout/worker_layout/worker_main_screen.dart';
@@ -89,7 +89,7 @@ class _WorkerServicesState extends State<WorkerServices> {
                 itemBuilder: (context, index) {
                   return InkWell(
                     borderRadius: BorderRadius.circular(12.r),
-                    onTap: ()=>move(context,   ServiceDetails(serviceId: cubit.workerServices[index]['id'],)),
+                    onTap: ()=>move(context,   WorkerServiceDetails(serviceId: cubit.workerServices[index]['id'],)),
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12.r),

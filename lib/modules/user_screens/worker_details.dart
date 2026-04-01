@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/booking_details_screen.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/user_screens/service_details.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 
 import '../../shared/cubit/cubit.dart';
@@ -493,7 +494,7 @@ class _Worker_detailsState extends State<Worker_details> {
       ),
       bottomNavigationBar: Padding(
           padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w,vertical: 10.h),
-        child: defualtButton(onPressed: ()=>move(context, BookingDetailsScreen()), text: 'حجز'),
+        child: defualtButton(onPressed: ()=>move(context, const ServiceDetails()), text: 'حجز'),
       ),
     );
   }

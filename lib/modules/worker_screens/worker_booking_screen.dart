@@ -177,9 +177,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                       },
                     ),
                   ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
+                  SizedBox(height: 10.h),
                   Expanded(
                     child: ListView.builder(
                       padding:  EdgeInsetsDirectional.only(start: 20.w,end: 20.w,top: 5.h,bottom: 20.h),

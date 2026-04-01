@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/contact_us_screen.dart';
 import 'package:trying_homy/modules/login_screen.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
@@ -14,10 +17,10 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
-
   bool isDark = false;
 
   List<Map<String, dynamic>> settingsList = [
+    {'title': 'عرض الحساب', 'icon': 'assets/eye.svg'},
     {'title': 'مشاركة التطبيق', 'icon': 'assets/share.svg'},
     {'title': 'تواصل معنا', 'icon': 'assets/chat.svg'},
     {'title': 'الأسئلة الشائعة', 'icon': 'assets/ques.svg'},
@@ -82,174 +85,219 @@ class _UserAccountState extends State<UserAccount> {
     );
   }
 
-  Widget divider() {
-    return Divider(
-      color: Colors.grey.withOpacity(.4),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 10,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text(
-          'الحساب',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 23.sp,
-          ),
-        ),
-        actions: [
-          Row(
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: () {},
+              ClipRRect(
+                borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
                 child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: 40.w,
-                  height: 40.h,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black),
+                      gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [
+                            mainColor.withOpacity(0.9),
+                            const Color(0xFF0F0F1E),
+                          ],
+                          stops: const [
+                            0.0,
+                            0.8,
+                          ]
+                      )
                   ),
                   child: Stack(
-                    alignment: AlignmentDirectional.topEnd,
                     children: [
-                      SvgPicture.asset(
-                        'assets/not.svg',
-                        width: 22.w,
-                        height: 22.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(end: 1.w),
+                      Positioned(
+                        top: -50.h,
+                        left: -50.w,
                         child: CircleAvatar(
-                          radius: 4.r,
-                          backgroundColor: Colors.red,
+                          radius: 100.r,
+                          backgroundColor: Colors.white.withOpacity(0.15),
+                        ),
+                      ),
+                      Positioned(
+                        top: 80.h,
+                        right: -60.w,
+                        child: Container(
+                          width: 250.r,
+                          height: 250.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                const Color(0xFF00F2FF).withOpacity(0.5),
+                                const Color(0xFF00F2FF).withOpacity(0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 200.h,
+                        left: -40.w,
+                        child: Container(
+                          width: 200.r,
+                          height: 200.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                mainColor.withOpacity(0.4),
+                                mainColor.withOpacity(0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: ClipRect(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                            child: Container(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.topCenter,
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w,bottom: 20.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'الحساب',
+                                    style: TextStyle(
+                                        fontSize: 23.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  InkWell(
+                                    highlightColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    onTap: () {
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsetsDirectional.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(10.r),
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/not.svg',
+                                        width: 23.w,
+                                        height: 23.h,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Center(
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 45.r,
+                                      backgroundColor: Colors.white.withOpacity(0.1),
+                                      backgroundImage: const NetworkImage(
+                                          'https://i.pinimg.com/736x/0e/45/8b/0e458b14989d9435ae048281a8b29c82.jpg'),
+                                    ),
+                                    SizedBox(height: 10.w),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'هشام هاني أحمد',
+                                          style: TextStyle(
+                                            fontSize: 15.sp,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5.h,),
+                                        Text(
+                                          '770770858',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13.sp,
+                                            letterSpacing: 5
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ],
                   ),
                 ),
               ),
-              SizedBox(width: 10.w)
+              SizedBox(height: 10.h,),
+              Padding(
+                padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w),
+                child: Column(
+                  children: [
+                    buildItem(
+                        title: settingsList[0]['title'],
+                        icon: settingsList[0]['icon'],
+                        onTap: () {}
+                    ),
+                    Divider(color: Colors.grey.withOpacity(.4),),
+                    buildItem(
+                        title: settingsList[1]['title'],
+                        icon: settingsList[1]['icon'],
+                        onTap: () {}
+                    ),
+                    Divider(color: Colors.grey.withOpacity(.4),),
+                    buildItem(
+                        title: settingsList[2]['title'],
+                        icon: settingsList[2]['icon'],
+                        onTap: ()=>move(context, const ContactUsScreen())
+                    ),
+                    Divider(color: Colors.grey.withOpacity(.4),),
+                    buildItem(
+                        title: settingsList[3]['title'],
+                        icon: settingsList[3]['icon'],
+                        onTap: () {}
+                    ),
+                    Divider(color: Colors.grey.withOpacity(.4),),
+                    buildItem(
+                        title: settingsList[4]['title'],
+                        icon: settingsList[4]['icon'],
+                        isSwitch: true,
+                      onTap: (){}
+                    ),
+                    Divider(color: Colors.grey.withOpacity(.4),),
+                    buildItem(
+                        title: settingsList[5]['title'],
+                        icon: settingsList[5]['icon'],
+                        isDanger: true,
+                        onTap: () => move(context, const LoginScreen())
+                    ),
+                    Divider(color: Colors.grey.withOpacity(.4),),
+                    buildItem(
+                        title: settingsList[6]['title'],
+                        icon: settingsList[6]['icon'],
+                        isDanger: true,
+                        onTap: () {}
+                    ),
+                  ],
+                ),
+              ),
             ],
-          )
-        ],
-      ),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Padding(
-          padding: EdgeInsetsDirectional.only(
-              top: 10.h, start: 20.w, end: 20.w),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(width: 1, color: Colors.black),
-                      ),
-                      child: CircleAvatar(
-                        radius: 35.r,
-                        backgroundColor: Colors.grey.withOpacity(.1),
-                        backgroundImage: const NetworkImage(
-                            'https://i.pinimg.com/736x/0e/45/8b/0e458b14989d9435ae048281a8b29c82.jpg'),
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'هشام هاني أحمد',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            '770770858',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13.sp,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 43.h,
-                        child: defualtButton(
-                          textSize: 12,
-                          onPressed: () {},
-                          text: 'عرض الحساب',
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 15.w),
-                    Expanded(
-                      child: defualtOutlinedButton(
-                        fontSize: 12,
-                        onPressed: () {},
-                        text: 'تعديل الحساب',
-                        height: 43.h,
-                        textColor: mainColor,
-                        border: mainColor,
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 25.h),
-                buildItem(
-                    title: settingsList[0]['title'],
-                    icon: settingsList[0]['icon'],
-                    onTap: () {}),
-                divider(),
-                buildItem(
-                    title: settingsList[1]['title'],
-                    icon: settingsList[1]['icon'],
-                    onTap: () {}),
-                divider(),
-                buildItem(
-                    title: settingsList[2]['title'],
-                    icon: settingsList[2]['icon'],
-                    onTap: () {}),
-                divider(),
-                buildItem(
-                    title: settingsList[3]['title'],
-                    icon: settingsList[3]['icon'],
-                    isSwitch: true,
-                    onTap: () {}),
-                divider(),
-                buildItem(
-                    title: settingsList[4]['title'],
-                    icon: settingsList[4]['icon'],
-                    isDanger: true,
-                    onTap: () => move(context, const LoginScreen())),
-                divider(),
-                buildItem(
-                    title: settingsList[5]['title'],
-                    icon: settingsList[5]['icon'],
-                    isDanger: true,
-                    onTap: () {}),
-                SizedBox(height: 40.h)
-              ],
-            ),
           ),
         ),
       ),

@@ -1,7 +1,11 @@
+import 'dart:ui';
+
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trying_homy/modules/search_screen.dart';
 import 'package:trying_homy/shared/cubit/cubit.dart';
 import '../../modules/user_screens/booking_details_screen.dart';
 import '../../main.dart';
@@ -15,14 +19,6 @@ const List<BoxShadow> shadow =  [
     offset: Offset(2, 5),
   ),
 ];
- List<BoxShadow> darkModeShadow =  [
-   BoxShadow (
-     color: Colors.white.withOpacity(0.1),
-     spreadRadius: 1.0,
-     blurRadius: 7.0,
-     offset: Offset(2, 5),
-   ),
- ];
 const String reyalSymbol = '\uFDFC';
 Widget dashedDivider(color) {
   return Padding(
@@ -63,7 +59,297 @@ void showSnackBar(Color background,String message,context){
   )
   );
 }
-
+/////////////////////////////////////////////
+Widget header({
+  double headerHeight = 110,
+  required String title,
+  context
+})
+{
+  return ClipRRect(
+  borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
+  child: Container(
+    height: headerHeight,
+    decoration: BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              mainColor.withOpacity(0.9),
+              const Color(0xFF0F0F1E),
+            ],
+            stops: const [
+              0.0,
+              0.8,
+            ]
+        )
+    ),
+    child: Stack(
+      children: [
+        Positioned(
+          top: -50.h,
+          left: -50.w,
+          child: CircleAvatar(
+            radius: 100.r,
+            backgroundColor: Colors.white.withOpacity(0.15),
+          ),
+        ),
+        Positioned(
+          top: 80.h,
+          right: -60.w,
+          child: Container(
+            width: 250.r,
+            height: 250.r,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFF00F2FF).withOpacity(0.5),
+                  const Color(0xFF00F2FF).withOpacity(0),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 200.h,
+          left: -40.w,
+          child: Container(
+            width: 200.r,
+            height: 200.r,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  mainColor.withOpacity(0.4),
+                  mainColor.withOpacity(0),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+        ),
+        Align(
+          alignment: AlignmentDirectional.topCenter,
+          child: Padding(
+            padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w,bottom: 20.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                          fontSize: 23.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white
+                      ),
+                    ),
+                    const Spacer(),
+                    InkWell(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                      },
+                      child: Container(
+                        padding: const EdgeInsetsDirectional.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/not.svg',
+                          width: 23.w,
+                          height: 23.h,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    ),
+  ),
+);
+}
+/////////////////////////////////////////////
+ Widget headerWithSearch({
+  double headerHeight = 160,
+  required String title,
+   required List<String> searchKeyWords,
+   bool isLeading = false,
+   required BuildContext context
+})
+{
+  return ClipRRect(
+  borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
+  child: Container(
+    height: headerHeight.h,
+    decoration: BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              mainColor.withOpacity(0.9),
+              const Color(0xFF0F0F1E),
+            ],
+            stops: const [
+              0.0,
+              0.8,
+            ]
+        )
+    ),
+    child: Stack(
+      children: [
+        Positioned(
+          top: -50.h,
+          left: -50.w,
+          child: CircleAvatar(
+            radius: 100.r,
+            backgroundColor: Colors.white.withOpacity(0.15),
+          ),
+        ),
+        Positioned(
+          top: 80.h,
+          right: -60.w,
+          child: Container(
+            width: 250.r,
+            height: 250.r,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFF00F2FF).withOpacity(0.5),
+                  const Color(0xFF00F2FF).withOpacity(0),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 200.h,
+          left: -40.w,
+          child: Container(
+            width: 200.r,
+            height: 200.r,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  mainColor.withOpacity(0.4),
+                  mainColor.withOpacity(0),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+        ),
+        Align(
+          alignment: AlignmentDirectional.topCenter,
+          child: Padding(
+            padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w,bottom: 20.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if(isLeading)IconButton(
+                        onPressed: ()=>Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,color: Colors.white,)
+                    ),
+                    Text(
+                      title,
+                      style: TextStyle(
+                          fontSize: 23.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white
+                      ),
+                    ),
+                    const Spacer(),
+                    InkWell(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                      },
+                      child: Container(
+                        padding: const EdgeInsetsDirectional.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/not.svg',
+                          width: 23.w,
+                          height: 23.h,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                InkWell(
+                  onTap: ()=>move(context, const SearchScreen()),
+                  child: Container(
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 17),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30.r),
+                    ),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/search.svg',
+                          color: Colors.grey,
+                        ),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                            child: SizedBox(
+                              height: 20,
+                              child: AnimatedTextKit(
+                                repeatForever: true,
+                                pause: const Duration(seconds: 2),
+                                animatedTexts: [
+                                  TyperAnimatedText(searchKeyWords[0],textStyle: const TextStyle(color: Colors.grey)),
+                                  TyperAnimatedText(searchKeyWords[1],textStyle: const TextStyle(color: Colors.grey)),
+                                  TyperAnimatedText(searchKeyWords[1],textStyle: const TextStyle(color: Colors.grey)),
+                                ],
+                              ),
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    ),
+  ),
+);
+}
 /////////////////////////////////////////////
 Widget defualtButton({
   double height = 50,
@@ -308,252 +594,6 @@ Widget defaultTextButton({
         decorationColor: mainColor,
       ),
     )
-);
-
-Widget buildWorkerItem(
-    String name,
-    int  price,
-    double rating,
-    bool isbusy,
-    String image,
-    context
-    )
-=> InkWell(
-  splashColor: Colors.transparent,
-  highlightColor: Colors.transparent,
-  child: Container(
-    width: double.infinity,
-    height: 130.h,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadiusDirectional.circular(15.r),
-      boxShadow: shadow
-    ),
-    child: Padding(
-        padding: EdgeInsetsDirectional.only(end: 10.w,start:10.w,top:10.h,bottom: 10.h),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15.r),
-              child: Image.network(
-                fit: BoxFit.cover,
-                width: 100.w,
-                height: 120.h,
-                image,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 100.w,
-                  height: 120.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.r),
-                    color: Colors.grey.shade300,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.wifi_off_rounded,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 10.w,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 170.w,
-                  child: Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.only(start: 4.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '\$ ابتدائا من: ',
-                        style: TextStyle(
-                            fontSize: 10.sp,
-                            color: Colors.grey
-                        ),
-                      ),
-                      SizedBox(
-                        width: 50.w,
-                        child: Text(
-                          '$price ريال',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 10.sp,
-                              color: Colors.grey
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 5.h,
-                ),
-                Text(
-                  isbusy?'مشغول':'متوفر',
-                  style: TextStyle(
-                      color: isbusy?Colors.red:Colors.green,
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.bold
-                  ),
-                ),
-              ],
-            ),
-            Spacer(),
-            Icon(
-              Icons.navigate_next_rounded,
-              size: 35,
-              color: Colors.grey,
-            ),
-
-          ],
-        )
-    ),
-  ),
-  onTap: (){
-    move(context, Worker_details());
-  },
-);
-
-Widget buildBookingItem(
-    String name,
-    int  price,
-    double rating,
-    bool isbusy,
-    String image,
-    context
-    )
-=> InkWell(
-  splashColor: Colors.transparent,
-  highlightColor: Colors.transparent,
-  child: Container(
-    width: double.infinity,
-    height: 100.h,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadiusDirectional.circular(15.r),
-      boxShadow: shadow
-    ),
-    child: Padding(
-        padding: EdgeInsetsDirectional.only(end: 10.w,start:10.w,top:10.h,bottom: 10.h),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15.r),
-              child: Image.network(
-                fit: BoxFit.cover,
-                width: 80.w,
-                height: 90.h,
-                image,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 100.w,
-                  height: 120.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.r),
-                    color: Colors.grey.shade300,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.wifi_off_rounded,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 10.w,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'رقم الحجز: ',
-                      style: TextStyle(
-                          fontSize: 11.sp
-                      ),
-                    ),
-                    Text(
-                      '43546',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10.sp
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 5.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'الفني: ',
-                      style: TextStyle(
-                          fontSize: 11.sp,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 130.w,
-                      child: Text(
-                        '$name',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 10.sp,
-                            color: Colors.grey
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 5.h,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      'موعد الحجز: ',
-                      style: TextStyle(
-                          fontSize: 11.sp,
-                      ),
-                    ),
-                    Text(
-                      '15-10-2025  4:12 م',
-                      style: TextStyle(
-                          fontSize: 10.sp,
-                        color: Colors.grey
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        )
-    ),
-  ),
-  onTap: (){
-    move(context, BookingDetailsScreen());
-  },
 );
 
 class CategoryBuilder extends StatelessWidget {
