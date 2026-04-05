@@ -7,9 +7,9 @@ import '../../modules/user_screens/user_chats.dart';
 import '../../modules/user_screens/bookings_screen.dart';
 import '../../modules/user_screens/home_screen.dart';
 import '../../modules/user_screens/user_account.dart';
-import '../../modules/user_screens/dept.dart';
-import '../../shared/cubit/cubit.dart';
-import '../../shared/cubit/states.dart';
+import '../../modules/user_screens/dept_screen.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
+import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
 class UserMainScreen extends StatelessWidget {
@@ -17,13 +17,13 @@ class UserMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MyCubit, States>(
+    return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
-        MyCubit cubit = MyCubit.get(context);
+        AppCubit cubit = AppCubit.get(context);
         List<Widget> screens = [
           const HomeScreen(),
-          const Dept(),
+          const DeptScreen(),
           const BookingsScreen(),
           const UserChats(),
           const UserAccount(),

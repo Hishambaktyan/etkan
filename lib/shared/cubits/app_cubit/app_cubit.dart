@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,33 +11,31 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
-import '../../modules/worker_screens/worker_account_screeen.dart';
-import '../../modules/worker_screens/worker_booking_screen.dart';
-import '../../modules/worker_screens/worker_chat.dart';
-import '../../modules/worker_screens/worker_home_screen.dart';
+import '../../../modules/worker_screens/worker_account_screeen.dart';
+import '../../../modules/worker_screens/worker_booking_screen.dart';
+import '../../../modules/worker_screens/worker_chat.dart';
+import '../../../modules/worker_screens/worker_home_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-import '../networks/local/cache_helper.dart';
+import '../../networks/local/cache_helper.dart';
+import 'app_states.dart';
 
-class MyCubit extends Cubit<States>{
+class AppCubit extends Cubit<AppStates>{
 
   final AudioPlayer player = AudioPlayer();
 
-  MyCubit(): super(InitState()){
+  AppCubit(): super(InitState()){
     player.setSource(AssetSource('sounds/pop.mp3')).then((_) {
       print("تم تحميل صوت الإرسال مسبقاً");
     });
   }
 
-  static MyCubit get(context)=>BlocProvider.of(context);
+  static AppCubit get(context)=>BlocProvider.of(context);
 
   int currentIndex = 0;
-
-  bool isNewNot = false;
 
   bool amAvailable = true;
 
@@ -99,9 +96,9 @@ class MyCubit extends Cubit<States>{
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-  Future<void> signUpUser(String email, String password) async  {
+  Future<void> workerSignUpUser(String email, String password) async  {
     try {
-      emit(SignUpLoadingState());
+      emit(WorkerSignUpLoadingState());
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
         email: email,
@@ -123,7 +120,7 @@ class MyCubit extends Cubit<States>{
       });
       await verifyEmail();
       await saveUserToken();
-      emit(SignUpSuccessState());
+      emit(WorkerSignUpSuccessState());
 
     } on FirebaseAuthException catch (e) {
 
@@ -131,14 +128,54 @@ class MyCubit extends Cubit<States>{
       if (e.code == 'email-already-in-use') errorMessage = 'هذا البريد مستخدم بالفعل';
       if (e.code == 'weak-password') errorMessage = 'كلمة المرور ضعيفة جداً';
 
-      emit(SignUpErrorState(error: errorMessage.toString()));
+      emit(WorkerSignUpErrorState(error: errorMessage.toString()));
     } catch (e) {
-      emit(SignUpErrorState(error: e.toString()));
+      emit(WorkerSignUpErrorState(error: e.toString()));
     }
   }
 
-  var phoneController = TextEditingController();
-  var passwordController = TextEditingController();
+  var userNameController = TextEditingController();
+  var userPasswordController = TextEditingController();
+  var userPhoneController = TextEditingController();
+
+  Future<void> signUpUser(String email, String password) async  {
+    try {
+      emit(UserSignUpLoadingState());
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      userId = userCredential.user!.uid;
+      await users.doc(userId).set({
+        'uid': userId,
+        'email':userCredential.user!.email,
+        'name':userNameController.text.trim(),
+        'role':'user',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      await verifyEmail();
+      await saveUserToken();
+      emit(UserSignUpSuccessState());
+
+    } on FirebaseAuthException catch (e) {
+
+      String errorMessage = 'حدث خطأ ما';
+      if (e.code == 'email-already-in-use') errorMessage = 'هذا البريد مستخدم بالفعل';
+      if (e.code == 'weak-password') errorMessage = 'كلمة المرور ضعيفة جداً';
+
+      emit(UserSignUpErrorState(error: errorMessage.toString()));
+    } catch (e) {
+      emit(UserSignUpErrorState(error: e.toString()));
+    }
+  }
+
+  var workerLoginPhoneController = TextEditingController();
+  var workerLoginPasswordController = TextEditingController();
+  ////////////////////////////////////////////////////////////////
+  var userLoginPhoneController = TextEditingController();
+  var userLoginPasswordController = TextEditingController();
 
   Future<void> loginUser(String email, String password) async {
     try {
@@ -300,7 +337,6 @@ class MyCubit extends Cubit<States>{
       emit(GetWorkerDataErrorState(error: e.toString()));
     }
   }
-
 
   File? serviceImage;
   var picker = ImagePicker();
@@ -538,7 +574,7 @@ class MyCubit extends Cubit<States>{
   Future<void> playSendSound() async {
     try {
       await player.stop();
-      await player.play(AssetSource('sounds/pop.mp3'), volume: 0.4);
+      await player.play(AssetSource('sounds/pop.mp3'), volume: 0.3);
       print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=');
     } catch (e) {
       print("Error playing sound: $e");
@@ -597,58 +633,6 @@ class MyCubit extends Cubit<States>{
     }
   }
 
-  Future<void> createRequest({
-    required String category,
-    required String customerId,
-    required String providerId,
-    required String subCategory,
-    required String address,
-    required String latitude,
-    required String clientName,
-    required String clientPhone,
-    required String title,
-    required String description,
-    required String image,
-    required String clientImage,
-    required int price,
-    required int number,
-  })
-  async {
-    try {
-      DateTime now = DateTime.now();
-
-      await FirebaseFirestore.instance.collection('requests').add({
-        "address": address,
-        "categoryId": category,
-        "clientName": clientName,
-        "clientPhone": clientPhone,
-        "clientImage": clientImage,
-        "createdAt": Timestamp.fromDate(now),
-        "customerId": customerId,
-        "description": description,
-        "duration": "53",
-        "image": image,
-        "latitude": latitude,
-        "number": number,
-        "price": price,
-        "providerId": providerId,
-        "scheduledAt": Timestamp.fromDate(
-          DateTime(2026, 2, 27, 23, 30),
-        ),
-        "status": "قيد الانتظار",
-        "statusHistory": {
-          "pendingAt": Timestamp.fromDate(now),
-        },
-        "subCategoryId": subCategory,
-        "title": title,
-      });
-
-      print("request created successfully ✅");
-    } catch (e) {
-      print("Error creating request: $e");
-    }
-  }
-
   List<Map<String,dynamic>> workerRequests=[];
   bool workerRequestsLoaded = false;
 
@@ -691,7 +675,7 @@ class MyCubit extends Cubit<States>{
 
   int getStepFromStatus(String status) {
     switch (status) {
-      case "قيد الانتظار": // الحالة الموجودة في صورتك
+      case "قيد الانتظار":
         return 0; // تم الطلب
       case "مقبول":
         return 1; // تم القبول
@@ -711,15 +695,34 @@ class MyCubit extends Cubit<States>{
 
   }
 
-  String DateFormatStatusTime(dynamic timestamp) {
+  String dateFormatStatusTime(dynamic timestamp) {
     if (timestamp == null) return "بانتظار التحديث";
     DateTime date = timestamp.toDate();
     return DateFormat('dd/MM/yyyy').format(date);
 
-  } String timeFormatStatusTime(dynamic timestamp) {
+  }
+
+  String timeFormatStatusTime(dynamic timestamp) {
     if (timestamp == null) return "بانتظار التحديث";
     DateTime date = timestamp.toDate();
     return DateFormat('hh:mm a').format(date) .replaceAll('AM', 'ص').replaceAll('PM', 'م');
 
   }
+
+  Map<String,dynamic> allUsers = {};
+
+  Future<void> getAllUsers() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .get();
+
+    allUsers={};
+
+    for (var doc in snapshot.docs) {
+      allUsers[doc.id] = doc.data();
+    }
+
+  }
+
+
 }

@@ -5,56 +5,61 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/user_screens/booking_details_screen.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-
+import 'package:trying_homy/modules/user_screens/booking_confirm_info_screen.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
 import '../images_view.dart';
 
 class ServiceDetails extends StatefulWidget {
-  const ServiceDetails({super.key});
+  final String category;
+  final String subCategory;
+  final String name;
+  final String image;
+  final int price;
+  final String period;
+  final String desc;
+  final double rate;
+  final String providerName;
+  final String providerSpec;
+  final List<dynamic> reviews;
+  final String providerId;
+
+  const ServiceDetails({
+    super.key, required this.category,
+    required this.subCategory,
+    required this.name,
+    required this.price,
+    required this.period,
+    required this.desc,
+    required this.rate,
+    required this.providerName,
+    required this.providerSpec, required this.reviews, required this.providerId, required this.image,
+  });
 
   @override
   State<ServiceDetails> createState() => _ServiceDetailsState();
 }
 
 class _ServiceDetailsState extends State<ServiceDetails> {
-  final Map<String, dynamic> service = {
-    'category': 'تنظيف',
-    'subCategory': 'تنظيف منازل',
-    'name': 'تنظيف شامل للمنزل وترتيب وتنظيف سامان',
-    'price': 25000,
-    'period': 90,
-    'description': 'خدمة تنظيف متكاملة تشمل الأرضيات، النوافذ، والأثاث باستخدام مواد آمنة وعالية الجودة. يتم التنفيذ بواسطة فريق محترف لضمان أفضل نتيجة ممكنة.',
-    'rate': 4.5,
-  };
-  final List<Map<String, dynamic>> review = [
-    {
-      'userName': 'أحمد',
-      'rating': 5,
-      'comment': 'خدمة ممتازة وسريعة جدًا',
-      'createdAt': Timestamp.fromDate(DateTime(2024, 5, 10)),
-    },
-    {
-      'userName': 'سارة',
-      'rating': 4,
-      'comment': 'شغل نظيف لكن تأخروا شوي',
-      'createdAt': Timestamp.fromDate(DateTime(2024, 6, 2)),
-    },
-    {
-      'userName': 'محمد',
-      'rating': 3,
-      'comment': 'الخدمة جيدة بشكل عام',
-      'createdAt': Timestamp.fromDate(DateTime(2024, 6, 15)),
-    },
-  ];
   final TextEditingController commentController = TextEditingController();
   double userRating = 0;
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
+    final category = widget.category;
+    final subCategory = widget.subCategory;
+    final name = widget.name;
+    final price = widget.price;
+    final period = widget.period;
+    final desc = widget.desc;
+    final rate = widget.rate;
+    final providerName = widget.providerName;
+    final providerSpec = widget.providerSpec;
+    final reviews = widget.reviews;
+    final image = widget.image;
+    final providerId = widget.providerId;
+    AppCubit cubit = AppCubit.get(context);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -65,11 +70,14 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                 height: 400.h,
                 child: Stack(
                   children: [
-                    Image.network(
-                      'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: 300.h,
+                    ClipRRect(
+                      borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(10.r)),
+                      child: Image.network(
+                        image,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 300.h,
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
@@ -157,103 +165,6 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                  onLongPress: ()=>print(service[0]),
-                                  child: Container(
-                                    height: 70.h,
-                                    width: 70.h,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                            color: Colors.white,
-                                            width: 2
-                                        ),
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        image: const DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg'
-                                            )
-                                        )
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                  child: Container(
-                                    height: 70.h,
-                                    width: 70.h,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                            color: Colors.white,
-                                            width: 2
-                                        ),
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        image: const DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                'https://i.pinimg.com/736x/d2/89/9f/d2899f239623e6cb64f1854b469af5b5.jpg'
-                                            )
-                                        )
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                  child: Container(
-                                    height: 70.h,
-                                    width: 70.h,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                            color: Colors.white,
-                                            width: 2
-                                        ),
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        image: const DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                'https://i.pinimg.com/736x/6d/66/af/6d66af4d10a9a7d19d1df880b0ce3b23.jpg'
-                                            )
-                                        )
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                  child: Container(
-                                    height: 70.h,
-                                    width: 70.h,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                            color: Colors.white,
-                                            width: 2
-                                        ),
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        image: const DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                'https://i.pinimg.com/1200x/9b/9c/93/9b9c93ac5db55031a32139e972ee6da6.jpg'
-                                            )
-                                        )
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 15.h,
-                            ),
                             Container(
                               padding: EdgeInsets.all(18.r),
                               width: double.infinity,
@@ -262,7 +173,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   borderRadius: BorderRadius.circular(20.r),
                                   boxShadow: [
                                     BoxShadow (
-                                      color: mainColor.withOpacity(0.1),
+                                      color: mainColor.withOpacity(0.2),
                                       spreadRadius: 1.0,
                                       blurRadius: 7.0,
                                       offset: const Offset(2, 5),
@@ -280,7 +191,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       borderRadius: BorderRadius.circular(6.r),
                                     ),
                                     child: Text(
-                                      '${service['category']}  >  ${service['subCategory']}',
+                                      '$category  >  $subCategory',
                                       style: TextStyle(
                                         color: cubit.isDark? Colors.white: Colors.grey.shade700,
                                         fontSize: 10.sp,
@@ -290,7 +201,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   ),
                                   SizedBox(height: 10.h),
                                   Text(
-                                    service['name'],
+                                    name,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15.sp,
@@ -320,7 +231,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  '${service['price']} $reyalSymbol',
+                                                  '$price $reyalSymbol',
                                                   style: TextStyle(
                                                     color: mainColor,
                                                     fontSize: 14.sp,
@@ -358,7 +269,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  '${service['period']} دقيقة',
+                                                  '$period دقيقة',
                                                   style: TextStyle(
                                                     color: cubit.isDark? Colors.white: Colors.black87,
                                                     fontSize: 14.sp,
@@ -395,7 +306,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                           borderRadius: BorderRadius.circular(20.r),
                           boxShadow: [
                             BoxShadow (
-                              color: mainColor.withOpacity(0.1),
+                              color: mainColor.withOpacity(0.2),
                               spreadRadius: 1.0,
                               blurRadius: 7.0,
                               offset: const Offset(2, 5),
@@ -436,7 +347,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                               height: 10.h
                           ),
                           ReadMoreText(
-                            service['description'],
+                          desc,
                             style: TextStyle(
                                 fontSize: 12.sp,
                                 color:  cubit.isDark? Colors.white: Colors.black,
@@ -461,7 +372,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                           borderRadius: BorderRadius.circular(20.r),
                           boxShadow: [
                             BoxShadow (
-                              color: mainColor.withOpacity(0.1),
+                              color: mainColor.withOpacity(0.2),
                               spreadRadius: 1.0,
                               blurRadius: 7.0,
                               offset: const Offset(2, 5),
@@ -511,7 +422,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'عبد الله عبد الرحمن ناصر',
+                                    providerName,
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
@@ -519,7 +430,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                     ),
                                   ),
                                   Text(
-                                    'كهرباء',
+                                    providerSpec,
                                     style: TextStyle(
                                       fontSize: 13.sp,
                                       color: Colors.grey,
@@ -600,7 +511,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                         borderRadius: BorderRadius.circular(20.r),
                         boxShadow: [
                           BoxShadow(
-                            color: mainColor.withOpacity(0.1),
+                            color: mainColor.withOpacity(0.2),
                             spreadRadius: 1,
                             blurRadius: 7,
                             offset: const Offset(2, 5),
@@ -648,7 +559,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   backgroundColor: Colors.orange.withOpacity(0.15),
                                   radius: 35.r,
                                   child: Text(
-                                    '3.6',
+                                    '$rate',
                                     style: TextStyle(
                                       color: Colors.orange,
                                       fontWeight: FontWeight.bold,
@@ -663,7 +574,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                     return Icon(
                                       Icons.star_rounded,
                                       size: 18.r,
-                                      color: index < 3.6 ? Colors.orange : Colors.grey.shade300,
+                                      color: index < rate ? Colors.orange : Colors.grey.shade300,
                                     );
                                   }),
                                 ),
@@ -733,16 +644,8 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                 onPressed: () {
                                   if (commentController.text.isNotEmpty &&
                                       userRating > 0) {
-                                    setState(() {
-                                      review.insert(0, {
-                                        'userName': 'أنت',
-                                        'rating': userRating,
-                                        'comment': commentController.text,
-                                        'createdAt': Timestamp.now(),
-                                      });
-                                    });
-                                    commentController.clear();
-                                    userRating = 0;
+                                    /*commentController.clear();
+                                    userRating = 0;*/
                                   }
                                 },
                                 text: 'نشر',
@@ -752,19 +655,19 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                           ),
                           SizedBox(height: 20.h),
                           ListView.separated(
-                            padding: EdgeInsets.zero,
+                            padding: EdgeInsetsDirectional.zero,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: review.length,
+                            itemCount: reviews.length,
                             separatorBuilder: (context, index) =>
                                 Divider(color: Colors.grey.shade300),
                             itemBuilder: (context, index) {
-                              Timestamp? createdAt = review[index]['createdAt'];
+                              var review = reviews[index];
+                              Timestamp? createdAt = review['createdAt'];
                               DateTime? date = createdAt?.toDate();
                               String reviewDate = date != null
                                   ? DateFormat('yyyy/MM/dd').format(date)
                                   : '';
-
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -790,7 +693,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                           CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              review[index]['userName'],
+                                              review['userName'],
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 13.sp,
@@ -814,7 +717,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       Row(
                                         children: List.generate(5, (i) {
                                           double rating =
-                                          (review[index]['rating'] ?? 0)
+                                          (review['rating'] ?? 0)
                                               .toDouble();
                                           return Icon(
                                             Icons.star_rounded,
@@ -829,7 +732,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   ),
                                   SizedBox(height: 10.h),
                                   Text(
-                                    review[index]['comment'],
+                                    review['comment'],
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       color: cubit.isDark
@@ -855,13 +758,16 @@ class _ServiceDetailsState extends State<ServiceDetails> {
         bottomNavigationBar: Padding(
           padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w,vertical: 10.h),
           child: defualtButton(
-              onPressed: ()=>move(context,BookingDetailsScreen(
-                serciveName: service['name'],
-                serciveCategory: service['category'],
-                serciveSubCategory: service['subCategory'],
-                servicePrice: service['price'],
-                servicePeriod: service['period']
-              )),
+              onPressed: ()=>move(context, BookingConfirmInfoScreen(
+                serciveName: name,
+                serciveCategory: category,
+                serciveSubCategory: subCategory,
+                servicePrice: price,
+                servicePeriod: period,
+                serciveImage:image,
+                providerId: providerId,
+              )
+              ),
               text: 'حجز'
           ),
         ),

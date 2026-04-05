@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+
+import '../shared/cubits/app_cubit/app_cubit.dart';
 
 class ContactUsScreen extends StatefulWidget {
   const ContactUsScreen({super.key});
@@ -318,7 +319,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                         errorMes: 'يجب ان لا يكون فارغ',
                         controller: problem,
                         type: TextInputType.text,
-                        cubit: MyCubit.get(context),
+                        cubit: AppCubit.get(context),
                       ),
                       SizedBox(
                         height: 20.h,

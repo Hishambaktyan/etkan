@@ -8,8 +8,8 @@ import 'package:trying_homy/modules/worker_screens/add_service.dart';
 import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import '../../shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
 class WorkerHomeScreen extends StatelessWidget {
@@ -36,8 +36,8 @@ class WorkerHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
-    return BlocConsumer<MyCubit, States>(
+    AppCubit cubit = AppCubit.get(context);
+    return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
         return state is GetWorkerDataLoadingState
@@ -355,9 +355,7 @@ class WorkerHomeScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 20.h,),
                         Container(
                           height: 120.h,
                           width: double.infinity,
@@ -453,9 +451,7 @@ class WorkerHomeScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 20.h,),
                         Padding(
                           padding:
                               EdgeInsetsDirectional.symmetric(horizontal: 10.w),
@@ -489,7 +485,7 @@ class WorkerHomeScreen extends StatelessWidget {
                                       height: 5.h,
                                     ),
                                     Icon(Icons.inbox_outlined,
-                                        size: 50.r,
+                                        size: 50,
                                         color: Colors.grey.shade400),
                                     SizedBox(height: 10.h),
                                     Text(

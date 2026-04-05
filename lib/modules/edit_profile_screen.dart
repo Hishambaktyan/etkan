@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-import '../shared/cubit/cubit.dart';
+import '../shared/cubits/app_cubit/app_cubit.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -124,7 +124,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         errorMes: 'الأسم يجب ان لا يكون فارغ',
                         controller: nameController,
                         type: TextInputType.name,
-                        cubit: MyCubit.get(context),
+                        cubit: AppCubit.get(context),
                       ),
                       SizedBox(height: 24.h),
                       defaultTextFormfeild(
@@ -133,7 +133,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         errorMes: 'رقم الهاتف يجب ان لا تكون فارغ',
                         controller: phoneController,
                         type: TextInputType.number,
-                        cubit: MyCubit.get(context),
+                        cubit: AppCubit.get(context),
                       ),
                       SizedBox(height: 24.h),
                       defaultTextFormfeild(
@@ -142,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         errorMes: 'البريد الألكتروني يجب ان لا يكون فارغ',
                         controller: emailController,
                         type: TextInputType.emailAddress,
-                        cubit: MyCubit.get(context),
+                        cubit: AppCubit.get(context),
                       ),
                       SizedBox(height: 24.h),
                       defualtButton(

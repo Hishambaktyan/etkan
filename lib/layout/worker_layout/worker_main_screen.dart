@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../shared/cubit/cubit.dart';
-import '../../shared/cubit/states.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
+import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
 class WorkerMainScreen extends StatelessWidget {
@@ -12,10 +12,10 @@ class WorkerMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MyCubit,States>(
+    return BlocConsumer<AppCubit,AppStates>(
       listener: (context, state){},
       builder: (context, state){
-        MyCubit cubit = MyCubit.get(context);
+        AppCubit cubit = AppCubit.get(context);
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(

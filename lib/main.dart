@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,14 +6,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/login_screen.dart';
-import 'package:trying_homy/shared/cubit/bloc_observer.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
+import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/bloc_observer.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/styles.dart';
 import 'firebase_options.dart';
+import 'layout/user_layout/user_main_screen.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
+import 'modules/user_screens/home_screen.dart';
 import 'modules/user_screens/the_chat.dart';
 import 'notification_helper.dart';
 import 'modules/on_boarding.dart';
@@ -154,15 +156,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MyCubit()..checkUser()..changeTheme(fromShared: isDark)..getWorkerData(),
+      create: (context) => AppCubit()..checkUser()..changeTheme(fromShared: isDark)..getWorkerData(),
       child: ScreenUtilInit(
         designSize: const Size(360, 800),
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
-          return BlocBuilder<MyCubit, States>(
+          return BlocBuilder<AppCubit, AppStates>(
             builder: (context, state) {
-              var cubit = MyCubit.get(context);
+              var cubit = AppCubit.get(context);
               return MaterialApp(
                 navigatorKey: navigatorKey,
                 themeMode: cubit.isDark ? ThemeMode.dark : ThemeMode.light,
@@ -171,7 +173,10 @@ class MyApp extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 home: FirebaseAuth.instance.currentUser != null &&
                     FirebaseAuth.instance.currentUser!.emailVerified
-                    ? const WorkerMainScreen()
+                    ? BlocProvider(
+                    create: (context) => UserServicesCubit()..getAllUsers()..getUserSevices(),
+                    child: const UserMainScreen()
+                )
                     : const OnBoardingScreen(),
               );
             },

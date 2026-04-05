@@ -5,12 +5,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
 import 'package:trying_homy/modules/edit_profile_screen.dart';
-import 'package:trying_homy/modules/login_screen.dart';
-import 'package:trying_homy/modules/user_screens/faq_Screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
+import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
 class WorkerAccountScreeen extends StatefulWidget {
@@ -113,7 +113,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
+    AppCubit cubit = AppCubit.get(context);
     return Scaffold(
         appBar: AppBar(
           titleSpacing: 10,
@@ -175,10 +175,10 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
             )
           ],
         ),
-        body: BlocConsumer<MyCubit, States>(
+        body: BlocConsumer<AppCubit, AppStates>(
           listener: (context, state) {
             if (state is LogOutSuccessState) {
-              moveAndReplace(context, const LoginScreen());
+              moveAndReplace(context, const WorkerLoginScreen());
               showSnackBar(Colors.green, 'تم تسجيل خروجك بنجاح', context);
             }
             if (state is LogOutErrorState) {
@@ -267,9 +267,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              height: 20.w,
-                            ),
+                            SizedBox(height: 20.w,),
                             Row(
                               children: [
                                 Expanded(
@@ -318,7 +316,8 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                                     title: settingsList[0]['title'],
                                     icon: settingsList[0]['icon'],
                                     cubit: cubit,
-                                    onTap: () {}),
+                                    onTap: () {}
+                                ),
                                 _buildDivider(cubit),
                                 _buildSettingItem(context,
                                     title: settingsList[1]['title'],

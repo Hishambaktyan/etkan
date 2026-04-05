@@ -7,16 +7,16 @@ import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-import '../main.dart';
+import '../../main.dart';
 
-class EmailVerificationScreen extends StatefulWidget {
-  const EmailVerificationScreen({super.key});
+class WorkerEmailVerificationScreen extends StatefulWidget {
+  const WorkerEmailVerificationScreen({super.key});
 
   @override
-  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
+  State<WorkerEmailVerificationScreen> createState() => _WorkerEmailVerificationScreenState();
 }
 
-class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
+class _WorkerEmailVerificationScreenState extends State<WorkerEmailVerificationScreen> {
   bool isEmailVerified = false;
   Timer? timer;
 

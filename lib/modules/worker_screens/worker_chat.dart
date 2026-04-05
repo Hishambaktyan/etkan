@@ -8,8 +8,8 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/the_chat.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 
 class WorkerChat extends StatefulWidget {
   const WorkerChat({super.key});
@@ -68,10 +68,10 @@ class _WorkerChatState extends State<WorkerChat> {
       .snapshots();
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MyCubit,States>(
+    return BlocConsumer<AppCubit,AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
-        MyCubit cubit = MyCubit.get(context);
+        AppCubit cubit = AppCubit.get(context);
           return Scaffold(
             appBar: AppBar(
               titleSpacing: 10,

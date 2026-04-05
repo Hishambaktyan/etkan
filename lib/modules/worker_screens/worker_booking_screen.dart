@@ -6,8 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/worker_order_details.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/compenents/components.dart';
 
@@ -66,18 +66,18 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
   String selectedStatus = 'الكل';
   @override
   void initState() {
-    MyCubit.get(context).getWorkerRequests();
+    AppCubit.get(context).getWorkerRequests();
     super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
+    AppCubit cubit = AppCubit.get(context);
     List<Map<String, dynamic>> filteredList = selectedStatus == 'الكل'
         ? cubit.workerRequests
         : cubit.workerRequests.where((item) => item['status'] == selectedStatus).toList();
-    return BlocConsumer<MyCubit,States>(
+    return BlocConsumer<AppCubit,AppStates>(
       listener: (context, state) {},
         builder: (context, state) {
           return state is GetWorkerRequestsLoadingState?   BookingShimmerLoading(isDark: cubit.isDark)
@@ -198,24 +198,7 @@ class _WorkerBookingScreenState extends State<WorkerBookingScreen> {
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
                           onTap: ()=>move(context, WorkerOrderDetails(request: booking,)),
-                          onLongPress: () async {
-                            await cubit.createRequest(
-                            category: "2",
-                            customerId: "2",
-                            providerId: "zgyZCfttdmWsmKTNWneC4vbD7sX2",
-                            subCategory: "6",
-                            address: "الشعب - حي السعادة عمارة 12",
-                            latitude: "33",
-                            clientName: "مروان أحمد عوض باقيان",
-                            clientPhone: "771771771",
-                            title: "ترميم بيبات الحمام",
-                            description: "وصف تجريبي للخدمة المطلوبة للتأكد من ظهور البيانات",
-                            image: "https://i.pinimg.com/1200x/3e/f3/50/3ef350dc86cc82a092463e5d795654b5.jpg",
-                            clientImage: "https://i.pinimg.com/736x/0d/bc/a7/0dbca7e372766da7842528c87f693c01.jpg",
-                            price: 30000,
-                            number: 2,
-                            );
-                          },
+                          onLongPress: () async {},
                           child: Padding(
                             padding:EdgeInsetsDirectional.only(bottom:index==9?0 : 20.h),
                             child: Container(

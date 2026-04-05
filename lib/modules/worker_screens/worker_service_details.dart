@@ -8,8 +8,8 @@ import 'package:readmore/readmore.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/images_view.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
+import '../../shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class WorkerServiceDetails extends StatelessWidget {
@@ -18,13 +18,13 @@ class WorkerServiceDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
+    AppCubit cubit = AppCubit.get(context);
     Map<String,dynamic> service =cubit.workerServices.firstWhere((service) =>service['id']==serviceId);
     List<dynamic> review = service['reviews'];
-    return BlocConsumer<MyCubit,States>(
+    return BlocConsumer<AppCubit,AppStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          MyCubit cubit = MyCubit.get(context);
+          AppCubit cubit = AppCubit.get(context);
           return Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(

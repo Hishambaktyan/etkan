@@ -8,8 +8,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/add_service.dart';
 import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
+import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../layout/worker_layout/worker_main_screen.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
@@ -29,10 +29,10 @@ class _WorkerServicesState extends State<WorkerServices> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MyCubit,States>(
+    return BlocConsumer<AppCubit,AppStates>(
         listener: (context, state) {},
       builder: (context, state) {
-        MyCubit cubit = MyCubit.get(context);
+        AppCubit cubit = AppCubit.get(context);
         return PopScope(
               canPop: false,
           onPopInvokedWithResult: (didPop, result) {

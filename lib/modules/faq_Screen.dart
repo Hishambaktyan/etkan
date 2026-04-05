@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+import '../shared/cubits/app_cubit/app_cubit.dart';
+import '../shared/cubits/app_cubit/app_states.dart';
 
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
@@ -75,8 +75,8 @@ class _FaqScreenState extends State<FaqScreen> {
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit  = MyCubit.get(context);
-    return BlocConsumer<MyCubit,States>(
+    AppCubit cubit  = AppCubit.get(context);
+    return BlocConsumer<AppCubit,AppStates>(
         listener: (context, state) {},
         builder: (context, state) {
           return Directionality(

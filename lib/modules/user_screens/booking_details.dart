@@ -4,16 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+
 import '../../main.dart';
+import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
+import '../../shared/styles/colors.dart';
 import '../images_view.dart';
 
-class WorkerOrderDetails extends StatelessWidget {
+class BookingDetails extends StatefulWidget {
   final Map<String,dynamic> request;
-   WorkerOrderDetails({super.key, required this.request});
+  final Map<String,dynamic> providerData;
+  const BookingDetails({super.key, required this.request, required this.providerData});
+
+  @override
+  State<BookingDetails> createState() => _BookingDetailsState();
+}
+
+class _BookingDetailsState extends State<BookingDetails> {
 
   final List<String> stepperSteps = [
     "قيد الانتظار",
@@ -93,7 +101,7 @@ class WorkerOrderDetails extends StatelessWidget {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            padding: EdgeInsets.all(20.r),
+            padding: EdgeInsetsDirectional.all(20.r),
             height: MediaQuery.of(context).size.height * 0.51,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,54 +116,50 @@ class WorkerOrderDetails extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                    height: 20.h
-                ),
+                SizedBox(height: 20.h),
                 Text(
                   'تفاصيل تتبع الحجز',
                   style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
                     color: cubit.isDark? Colors.white: Colors.black,
                   ),
                 ),
-                SizedBox(
-                    height: 25.h
-                ),
+                SizedBox(height: 25.h),
                 Expanded(
                   child: ListView(
-                    children: List.generate(stepperSteps.length, (index) {
-                      String currentStatusFromDb = requestData['status'];
-                      Map<int, String> statusTimesKeys = {
-                        0: 'createdAt',
-                        1: 'acceptedAt',
-                        2: 'processingAt',
-                        3: 'completedAt',
-                      };
-                      String timeKey = statusTimesKeys[index]!;
-                      String displayTime = cubit.formatStatusTime(requestData[timeKey]);
-                      bool isDone;
-                      bool isActive;
-                      Color circleColor;
-                      int currentStepIndex = stepperSteps.indexOf(currentStatusFromDb);
-                      if (terminalStates.contains(currentStatusFromDb)) {
-                        isDone = index < stepperSteps.indexOf("مقبول");
-                        isActive = false;
-                        circleColor = Colors.red;
-                      } else {
-                        isDone = index < currentStepIndex;
-                        isActive = index == currentStepIndex;
-                        circleColor = mainColor;
-                      }
-                      return buildVerticalStep(
-                        stepperSteps[index],
-                        displayTime,
-                        isDone,
-                        index != stepperSteps.length - 1,
-                        cubit,
-                        isActive: isActive,
-                      );
-                    },)
+                      children: List.generate(stepperSteps.length, (index) {
+                        String currentStatusFromDb = requestData['status'];
+                        Map<int, String> statusTimesKeys = {
+                          0: 'createdAt',
+                          1: 'acceptedAt',
+                          2: 'processingAt',
+                          3: 'completedAt',
+                        };
+                        String timeKey = statusTimesKeys[index]!;
+                        String displayTime = cubit.formatStatusTime(requestData[timeKey]);
+                        bool isDone;
+                        bool isActive;
+                        Color circleColor;
+                        int currentStepIndex = stepperSteps.indexOf(currentStatusFromDb);
+                        if (terminalStates.contains(currentStatusFromDb)) {
+                          isDone = index < stepperSteps.indexOf("مقبول");
+                          isActive = false;
+                          circleColor = Colors.red;
+                        } else {
+                          isDone = index < currentStepIndex;
+                          isActive = index == currentStepIndex;
+                          circleColor = mainColor;
+                        }
+                        return buildVerticalStep(
+                          stepperSteps[index],
+                          displayTime,
+                          isDone,
+                          index != stepperSteps.length - 1,
+                          cubit,
+                          isActive: isActive,
+                        );
+                      },)
                   ),
                 ),
               ],
@@ -166,7 +170,8 @@ class WorkerOrderDetails extends StatelessWidget {
     );
   }
 
-  Widget buildVerticalStep(String title, String time, bool isDone, bool showLine,dynamic cubit, {bool isActive = false}) {
+  Widget buildVerticalStep(String title, String time, bool isDone, bool showLine,dynamic cubit, {bool isActive = false})
+  {
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -225,9 +230,10 @@ class WorkerOrderDetails extends StatelessWidget {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
+    final Map<String,dynamic> request = widget.request;
+    final Map<String,dynamic> providerData = widget.providerData;
     return BlocConsumer<AppCubit,AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -239,14 +245,21 @@ class WorkerOrderDetails extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 370.h,
+                    height: 420.h,
                     child: Stack(
                       children: [
-                        Image.network(
-                          request['image'],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 300.h,
+                        ClipRRect(
+                          borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r)),
+                          child: Image.network(
+                            request['image'] ?? '',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 300.h,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              height: 130.h,
+                              color: Colors.grey.shade300,
+                            ) ,
+                          ),
                         ),
                         Padding(
                           padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w),
@@ -280,38 +293,47 @@ class WorkerOrderDetails extends StatelessWidget {
                                   padding: EdgeInsetsDirectional.all(18.r),
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: cubit.isDark? lightDarkColor: Colors.white,
+                                    color: cubit.isDark ? lightDarkColor : Colors.white,
                                     borderRadius: BorderRadius.circular(20.r),
-                                    boxShadow: cubit.isDark? []: shadow,
-                                      border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: mainColor.withOpacity(0.2),
+                                        spreadRadius: 1.0,
+                                        blurRadius: 7.0,
+                                        offset: const Offset(2, 5),
+                                      ),
+                                    ],
+                                    border: cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
                                   ),
                                   child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Container(
                                             padding: EdgeInsets.all(8.r),
                                             decoration: BoxDecoration(
-                                              color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
+                                              color: cubit.isDark ? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
                                               borderRadius: BorderRadius.circular(10.r),
                                             ),
                                             child: SvgPicture.asset(
-                                                'assets/ticket.svg',
+                                              'assets/ticket.svg',
                                               color: mainColor,
                                               width: 22.w,
                                               height: 22.h,
                                             ),
                                           ),
                                           SizedBox(width: 10.w),
-                                          Text(
-                                            'طلب رقم #${request['number']}',
-                                            style: TextStyle(
+                                          Expanded(
+                                            child: Text(
+                                              'تفاصيل الحجز',
+                                              style: TextStyle(
                                                 fontSize: 14.sp,
                                                 fontWeight: FontWeight.bold,
-                                              color: cubit.isDark? Colors.white: Colors.black
+                                                color: cubit.isDark ? Colors.white : Colors.black,
+                                              ),
                                             ),
                                           ),
-                                          const Spacer(),
                                           Container(
                                             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
                                             decoration: BoxDecoration(
@@ -319,7 +341,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                               borderRadius: BorderRadius.circular(7.r),
                                             ),
                                             child: Text(
-                                              request['status'],
+                                              request['status'] ?? '',
                                               style: TextStyle(
                                                 color: Colors.orange.shade800,
                                                 fontWeight: FontWeight.bold,
@@ -329,37 +351,43 @@ class WorkerOrderDetails extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 15.h),
-                                        child: Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
+                                      SizedBox(height: 15.h),
+                                      Text(
+                                        request['title'] ?? '',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: cubit.isDark ? Colors.white : Colors.black,
+                                        ),
                                       ),
+                                      SizedBox(height: 15.h),
                                       Row(
                                         children: [
                                           Expanded(
                                             child: Row(
                                               children: [
                                                 Icon(
-                                                    Icons.payments_outlined,
-                                                    size: 18.r,
-                                                    color: cubit.isDark? darkSubTextColor: Colors.grey
+                                                  Icons.calendar_today_outlined,
+                                                  size: 18.r,
+                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
                                                 ),
                                                 SizedBox(width: 8.w),
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                        'السعر التقديري',
-                                                        style: TextStyle(
-                                                            fontSize: 10.sp,
-                                                            color: cubit.isDark? darkSubTextColor: Colors.grey
-                                                        )
+                                                      'التاريخ',
+                                                      style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                      ),
                                                     ),
                                                     Text(
-                                                      '${request['price']} $reyalSymbol',
+                                                      cubit.dateFormatStatusTime(request['scheduledAt'] ?? ''),
                                                       style: TextStyle(
-                                                          color: mainColor,
-                                                          fontSize: 14.sp,
-                                                          fontWeight: FontWeight.bold
+                                                        color: cubit.isDark ? Colors.white : Colors.black87,
+                                                        fontSize: 13.sp,
+                                                        fontWeight: FontWeight.w500,
                                                       ),
                                                     ),
                                                   ],
@@ -368,32 +396,117 @@ class WorkerOrderDetails extends StatelessWidget {
                                             ),
                                           ),
                                           Container(
-                                              height: 30.h,
-                                              width: 1,
-                                              color: cubit.isDark? darkSubTextColor: Colors.grey.shade300
+                                            height: 35.h,
+                                            width: 1,
+                                            color: cubit.isDark ? darkSubTextColor : Colors.grey.shade300,
                                           ),
                                           SizedBox(width: 15.w),
                                           Expanded(
                                             child: Row(
                                               children: [
-                                                Icon(Icons.timer_outlined, size: 18.r,color: cubit.isDark? darkSubTextColor: Colors.grey),
+                                                Icon(
+                                                  Icons.access_time_outlined,
+                                                  size: 18.r,
+                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                ),
                                                 SizedBox(width: 8.w),
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                        'المدة المتوقعة',
-                                                        style: TextStyle(
-                                                            fontSize: 10.sp,
-                                                            color: cubit.isDark? darkSubTextColor: Colors.grey
-                                                        )
+                                                      'الوقت',
+                                                      style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                      ),
                                                     ),
                                                     Text(
-                                                      '${request['duration']} دقيقة',
+                                                      cubit.timeFormatStatusTime(request['scheduledAt'] ?? ''),
                                                       style: TextStyle(
-                                                          color: cubit.isDark? Colors.white: Colors.black87,
-                                                          fontSize: 14.sp,
-                                                          fontWeight: FontWeight.bold
+                                                        color: cubit.isDark ? Colors.white : Colors.black87,
+                                                        fontSize: 13.sp,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                                        child: Divider(
+                                          color: cubit.isDark ? darkSubTextColor : Colors.grey.shade300,
+                                          height: 1,
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.payments_outlined,
+                                                  size: 18.r,
+                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                ),
+                                                SizedBox(width: 8.w),
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'السعر التقديري',
+                                                      style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${request['price'] ?? ''} $reyalSymbol',
+                                                      style: TextStyle(
+                                                        color: mainColor,
+                                                        fontSize: 14.sp,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 35.h,
+                                            width: 1,
+                                            color: cubit.isDark ? darkSubTextColor : Colors.grey.shade300,
+                                          ),
+                                          SizedBox(width: 15.w),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.timer_outlined,
+                                                  size: 18.r,
+                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                ),
+                                                SizedBox(width: 8.w),
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'المدة المتوقعة',
+                                                      style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${request['duration'] ?? ''} دقيقة',
+                                                      style: TextStyle(
+                                                        color: cubit.isDark ? Colors.white : Colors.black87,
+                                                        fontSize: 14.sp,
+                                                        fontWeight: FontWeight.bold,
                                                       ),
                                                     ),
                                                   ],
@@ -405,7 +518,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                ),
+                                )
                               ],
                             ),
                           ),
@@ -413,9 +526,7 @@ class WorkerOrderDetails extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
+                  SizedBox(height: 15.h,),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                     child: Column(
@@ -424,9 +535,16 @@ class WorkerOrderDetails extends StatelessWidget {
                         Container(
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
-                            color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: cubit.isDark? []: shadow,
+                              color: cubit.isDark? lightDarkColor: Colors.white,
+                              borderRadius: BorderRadius.circular(20.r),
+                              boxShadow: [
+                                BoxShadow (
+                                  color: mainColor.withOpacity(0.2),
+                                  spreadRadius: 1.0,
+                                  blurRadius: 7.0,
+                                  offset: const Offset(2, 5),
+                                ),
+                              ],
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
                           child: Column(
@@ -437,8 +555,8 @@ class WorkerOrderDetails extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsetsDirectional.all(8),
                                     decoration: BoxDecoration(
-                                      color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10.r)
+                                        color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10.r)
                                     ),
                                     child: Icon(
                                         Icons.route_outlined,
@@ -452,18 +570,14 @@ class WorkerOrderDetails extends StatelessWidget {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14.sp,
-                                      color: cubit.isDark? Colors.white:Colors.black
+                                        color: cubit.isDark? Colors.white:Colors.black
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                  height: 20.h
-                              ),
+                              SizedBox(height: 20.h),
                               buildHorizontalStepper(currentStep: cubit.getStepFromStatus(request['status']),cubit: cubit),
-                              SizedBox(
-                                  height: 10.h
-                              ),
+                              SizedBox(height: 10.h),
                               Center(
                                 child: TextButton.icon(
                                   onPressed: () {
@@ -488,159 +602,20 @@ class WorkerOrderDetails extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 15.h,),
                         Container(
-                          padding: EdgeInsets.all(15.r),
+                          padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
-                            color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: shadow,
-                              border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsetsDirectional.all(8),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.r),
-                                        color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
-                                      ),
-                                      child: Icon(
-                                          Icons.build_circle_outlined,
-                                          size: 22.r,
-                                          color: mainColor
-                                      )
-                                  ),
-                                  SizedBox(
-                                      width: 10.w
-                                  ),
-                                  Text(
-                                    'تفاصيل الخدمة',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp,
-                                      color: cubit.isDark? Colors.white: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                  height: 15.h
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    child: Image.network(
-                                      request['image'],
-                                      width: 100.w,
-                                      height: 100.h,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => Container(
-                                        width: 100.w,
-                                        height: 100.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12.r),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width: 10.w
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          request['title'],
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: cubit.isDark? Colors.white: Colors.black,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${request['price']} $reyalSymbol',
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: mainColor,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                            height: 10.h
-                                        ),
-                                        Divider(
-                                            color: cubit.isDark? darkSubTextColor: Colors.grey.shade300,
-                                            height: 1
-                                        ),
-                                        SizedBox(
-                                            height: 10.h
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                                Icons.calendar_month_outlined,
-                                                size: 14.r,
-                                                color: cubit.isDark? darkSubTextColor: Colors.grey
-                                            ),
-                                            SizedBox(
-                                                width: 4.w
-                                            ),
-                                            Text(
-                                              cubit.dateFormatStatusTime(request['scheduledAt']),
-                                              style: TextStyle(
-                                                  fontSize: 11.sp,
-                                                  color: cubit.isDark? darkSubTextColor: Colors.grey.shade600
-                                              ),
-                                            ),
-                                            const Spacer(),
-                                            Icon(
-                                                Icons.access_time_rounded,
-                                                size: 14.r,
-                                                color: cubit.isDark? darkSubTextColor: Colors.grey
-                                            ),
-                                            SizedBox(
-                                                width: 4.w
-                                            ),
-                                            Text(
-                                              cubit.timeFormatStatusTime(request['scheduledAt']),
-                                              style: TextStyle(
-                                                  fontSize: 11.sp,
-                                                  color: cubit.isDark? darkSubTextColor: Colors.grey.shade600
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(15.r),
-                          decoration: BoxDecoration(
-                            color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: shadow,
+                              color: cubit.isDark? lightDarkColor: Colors.white,
+                              borderRadius: BorderRadius.circular(20.r),
+                              boxShadow: [
+                                BoxShadow (
+                                  color: mainColor.withOpacity(0.2),
+                                  spreadRadius: 1.0,
+                                  blurRadius: 7.0,
+                                  offset: const Offset(2, 5),
+                                ),
+                              ],
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
 
                           ),
@@ -664,7 +639,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                       width: 10.w
                                   ),
                                   Text(
-                                    'ملاحظات الطلب',
+                                    'ملاحظات الحجز',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14.sp,
@@ -677,7 +652,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   height: 10.h
                               ),
                               ReadMoreText(
-                                request['description'],
+                                request['description'] ?? '',
                                 style: TextStyle(
                                     fontSize: 12.sp,
                                     color:  cubit.isDark? Colors.white: Colors.black,
@@ -693,16 +668,21 @@ class WorkerOrderDetails extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 15.h,),
                         Container(
                           padding: EdgeInsetsDirectional.all(18.r),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: shadow,
+                              color: cubit.isDark? lightDarkColor: Colors.white,
+                              borderRadius: BorderRadius.circular(20.r),
+                              boxShadow: [
+                                BoxShadow (
+                                  color: mainColor.withOpacity(0.2),
+                                  spreadRadius: 1.0,
+                                  blurRadius: 7.0,
+                                  offset: const Offset(2, 5),
+                                ),
+                              ],
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
                           child: Column(
@@ -710,10 +690,10 @@ class WorkerOrderDetails extends StatelessWidget {
                               Row (
                                 children: [
                                   Container(
-                                    padding: const EdgeInsetsDirectional.all(8),
+                                      padding: const EdgeInsetsDirectional.all(8),
                                       decoration: BoxDecoration(
-                                        color: cubit.isDark? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10.r)
+                                          color: cubit.isDark? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(10.r)
                                       ),
                                       child: Icon(
                                           Icons.person_pin_outlined,
@@ -723,7 +703,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   ),
                                   SizedBox(width: 8.w),
                                   Text(
-                                    'معلومات العميل',
+                                    'معلومات الفني',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14.sp,
@@ -735,24 +715,15 @@ class WorkerOrderDetails extends StatelessWidget {
                               SizedBox(height: 10.h),
                               Row(
                                 children: [
-                                  Container(
-                                    height: 50.r,
-                                    width: 50.r,
-                                    padding: const EdgeInsetsDirectional.all(10),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.grey, width: 1),
-                                      image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                              request['clientImage']
-                                          )
-                                      )
+                                  CircleAvatar(
+                                    radius: 25.r,
+                                    backgroundImage: NetworkImage(
+                                       providerData['']  ?? ''
                                     ),
                                   ),
                                   SizedBox(width: 12.w),
                                   Text(
-                                    request['clientName'],
+                                    request['clientName'] ?? '',
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
@@ -776,7 +747,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   SizedBox(width: 10.w),
                                   Expanded(
                                     child: Text(
-                                      request['address'],
+                                      request['address'] ?? '',
                                       style: TextStyle(
                                           color: cubit.isDark? Colors.white: Colors.black87,
                                           fontSize: 12.sp
@@ -796,11 +767,11 @@ class WorkerOrderDetails extends StatelessWidget {
                                   ),
                                   SizedBox(width: 10.w),
                                   Text(
-                                    request['clientPhone'],
+                                    request['clientPhone'] ?? '',
                                     style: TextStyle(
                                         color: cubit.isDark? Colors.white: Colors.black87,
                                         fontSize: 12.sp,
-                                      letterSpacing: 7
+                                        letterSpacing: 7
                                     ),
                                   ),
                                 ],
@@ -889,9 +860,9 @@ class WorkerOrderDetails extends StatelessWidget {
                                       Text(
                                         'تأكيد قبول الطلب',
                                         style: TextStyle(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).textTheme.bodyLarge!.color
+                                            fontSize: 18.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).textTheme.bodyLarge!.color
                                         ),
                                       ),
                                       SizedBox(height: 10.h),
@@ -960,7 +931,7 @@ class WorkerOrderDetails extends StatelessWidget {
                           );
                         },
                         text: 'قبول',
-                      height: 50
+                        height: 50
                     ),
                   ),
                   SizedBox(
@@ -999,9 +970,9 @@ class WorkerOrderDetails extends StatelessWidget {
                                       Text(
                                         'تأكيد رفض الطلب',
                                         style: TextStyle(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).textTheme.bodyLarge!.color
+                                            fontSize: 18.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).textTheme.bodyLarge!.color
                                         ),
                                       ),
                                       SizedBox(height: 10.h),
@@ -1072,7 +1043,7 @@ class WorkerOrderDetails extends StatelessWidget {
                         text: 'رفض',
                         border: Colors.red,
                         textColor: Colors.red,
-                      height: 50
+                        height: 50
                     ),
                   )
                 ],

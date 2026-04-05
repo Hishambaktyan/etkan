@@ -5,42 +5,43 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/forgot_password_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_email_verification.dart';
+import 'package:trying_homy/modules/worker_screens/worker_forgot_password_screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
-import '../../shared/compenents/components.dart';
-import 'email_verfication_screen.dart';
+import '../../../shared/compenents/components.dart';
+import '../../layout/user_layout/user_main_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class UserLoginScreen extends StatefulWidget {
+  const UserLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<UserLoginScreen> createState() => _UserLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _UserLoginScreenState extends State<UserLoginScreen> {
   var formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
-    return BlocConsumer<MyCubit, States>(
+    AppCubit cubit = AppCubit.get(context);
+    return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {
         if (state is LoginSuccessState) {
-          cubit.phoneController.clear();
-          cubit.passwordController.clear();
+          cubit.userLoginPhoneController.clear();
+          cubit.userLoginPasswordController.clear();
           cubit.workerDataLoaded = false;
           cubit.getWorkerData();
           var user = FirebaseAuth.instance.currentUser;
           if (user != null) {
             if (user.emailVerified) {
-              moveAndReplace(context, const WorkerMainScreen());
+              moveAndReplace(context, const UserMainScreen());
             } else {
               showSnackBar(
                   Colors.orange, 'يرجى توثيق البريد الإلكتروني أولاً', context);
-              moveAndReplace(context, const EmailVerificationScreen());
+              moveAndReplace(context, const UserVerificationScreen());
             }
           }
         }
@@ -63,13 +64,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
                           colors: [
-                        mainColor.withOpacity(0.9),
-                        const Color(0xFF0F0F1E),
-                      ],
+                            mainColor.withOpacity(0.9),
+                            const Color(0xFF0F0F1E),
+                          ],
                           stops: const [
-                        0.0,
-                        0.8,
-                      ])),
+                            0.0,
+                            0.8,
+                          ])),
                   child: Stack(
                     children: [
                       Positioned(
@@ -190,8 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   text: 'البريد الألكتروني',
                                   prefixIcon: 'assets/phone.svg',
                                   errorMes:
-                                      'البريد الألكتروني يجب ان لا يكون فارغ',
-                                  controller: cubit.phoneController,
+                                  'البريد الألكتروني يجب ان لا يكون فارغ',
+                                  controller: cubit.userLoginPhoneController,
                                   type: TextInputType.emailAddress),
                             ),
                             SizedBox(height: 20.h),
@@ -202,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   text: 'كلمة المرور',
                                   prefixIcon: 'assets/lock.svg',
                                   errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                  controller: cubit.passwordController,
+                                  controller: cubit.userLoginPasswordController,
                                   type: TextInputType.visiblePassword,
                                   isPassword: cubit.isPassword,
                                   isSuffixIcon: true,
@@ -215,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               alignment: AlignmentDirectional.centerStart,
                               child: TextButton(
                                 onPressed: () {
-                                  move(context, const ForgotPasswordScreen());
+                                  move(context, const WorkerForgotPasswordScreen());
                                 },
                                 child: Text(
                                   'نسيت كلمة المرور؟',
@@ -230,24 +231,24 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(height: 20.h),
                             cubit.state is LoginLoadingState
                                 ? const Center(
-                                    child: CircularProgressIndicator())
+                                child: CircularProgressIndicator())
                                 : defualtButton(
-                                    onPressed: () async {
-                                      if (cubit.phoneController.text
-                                              .isNotEmpty &&
-                                          cubit.passwordController.text
-                                              .isNotEmpty) {
-                                        await cubit.loginUser(
-                                            cubit.phoneController.text.trim(),
-                                            cubit.passwordController.text
-                                                .trim());
-                                      } else {
-                                        showSnackBar(Colors.red,
-                                            'يرجى تعبة كل الحقول', context);
-                                      }
-                                    },
-                                    text: 'دخول',
-                                    height: 50.h),
+                                onPressed: () async {
+                                  if (cubit.userLoginPhoneController.text
+                                      .isNotEmpty &&
+                                      cubit.userLoginPasswordController.text
+                                          .isNotEmpty) {
+                                    await cubit.loginUser(
+                                        cubit.userLoginPhoneController.text.trim(),
+                                        cubit.userLoginPasswordController.text
+                                            .trim());
+                                  } else {
+                                    showSnackBar(Colors.red,
+                                        'يرجى تعبة كل الحقول', context);
+                                  }
+                                },
+                                text: 'دخول',
+                                height: 50.h),
                             SizedBox(height: 20.h),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,

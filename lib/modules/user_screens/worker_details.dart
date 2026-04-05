@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/user_screens/booking_details_screen.dart';
+import 'package:trying_homy/modules/user_screens/booking_confirm_info_screen.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/service_details.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-
-import '../../shared/cubit/cubit.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/styles/colors.dart';
 
 class Worker_details extends StatefulWidget {
@@ -401,7 +400,7 @@ class _Worker_detailsState extends State<Worker_details> {
                                     height: 10.h,
                                   ),
                                   defaultTextFormfeild(
-                                    cubit: MyCubit.get(context),
+                                    cubit: AppCubit.get(context),
                                       text: 'تعليق',
                                       prefixIcon: 'assets/chat2.svg',
                                       errorMes: 'حقل التعليق يجب ان لا يكون فارغ',
@@ -494,7 +493,7 @@ class _Worker_detailsState extends State<Worker_details> {
       ),
       bottomNavigationBar: Padding(
           padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w,vertical: 10.h),
-        child: defualtButton(onPressed: ()=>move(context, const ServiceDetails()), text: 'حجز'),
+        child: defualtButton(onPressed: ()=>move(context, const Worker_details()), text: 'حجز'),
       ),
     );
   }

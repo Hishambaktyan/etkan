@@ -2,58 +2,65 @@ import 'dart:ui';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/modules/user_screens/electric_workers.dart';
+import 'package:trying_homy/modules/user_screens/services_list.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 
 import '../../shared/styles/colors.dart';
 
 
-class Dept extends StatefulWidget {
-  const Dept({super.key});
+class DeptScreen extends StatefulWidget {
+  const DeptScreen({super.key});
 
   @override
-  State<Dept> createState() => _DeptState();
+  State<DeptScreen> createState() => _DeptScreenState();
 }
 
-class _DeptState extends State<Dept> {
-  List<Map<String, String>> services = [
+class _DeptScreenState extends State<DeptScreen> {
+  final List<Map<String, String>> services = [
     {
       "name": "الكهرباء",
       "icon": "assets/SVGs/E.svg",
+      "type":"كهرباء"
     },
     {
       "name": "السباكة",
       "icon": "assets/SVGs/P.svg",
+      "type":"سباكة"
     },
     {
       "name": "البناء",
       "icon": "assets/SVGs/C.svg",
+      "type":"بناء"
     },
     {
       "name": "التكييف",
       "icon": "assets/SVGs/AC.svg",
+      "type":"تكييف"
     },
     {
       "name": "الحدادة",
       "icon": "assets/SVGs/A.svg",
+      "type":"حدادة"
     },
     {
       "name": "الماء",
       "icon": "assets/SVGs/WT.svg",
-      "page": "WaterTanksWorkersPage",
+      "type":"ماء"
     },
     {
       "name": "النجارة",
       "icon": "assets/SVGs/CA.svg",
-      "page": "CarpenterWorkersPage",
+      "type":"نجارة"
     },
     {
       "name": "الدهان",
       "icon": "assets/SVGs/PA.svg",
-      "page": "PainterWorkersPage",
+      "type":"دهان"
     },
   ];
   @override
@@ -90,7 +97,11 @@ class _DeptState extends State<Dept> {
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   borderRadius: BorderRadius.circular(15.r),
-                  onTap: ()=>move(context, const ElectricServices()),
+                  onTap: ()=>move(context, BlocProvider.value(
+                    value: BlocProvider.of<UserServicesCubit>(context),
+                    child: ServicesList(categoryType: services[index]['type']!,),
+                  )
+                  ),
                   child: Container(
                     padding: const EdgeInsetsDirectional.all(10),
                     decoration: BoxDecoration(

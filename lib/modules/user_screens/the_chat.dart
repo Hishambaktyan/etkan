@@ -7,8 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../shared/styles/colors.dart';
 
@@ -90,7 +90,7 @@ class _TheChatState extends State<TheChat> {
 
   @override
   void initState() {
-    MyCubit cubit = MyCubit.get(context);
+    AppCubit cubit = AppCubit.get(context);
 
     cubit.resetUnreadCount(widget.chatId, widget.myId);
 
@@ -116,12 +116,12 @@ class _TheChatState extends State<TheChat> {
     super.initState();
   }
 
-  late MyCubit cubit;
+  late AppCubit cubit;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    cubit = MyCubit.get(context);
+    cubit = AppCubit.get(context);
   }
 
   @override
@@ -136,12 +136,12 @@ class _TheChatState extends State<TheChat> {
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
+    AppCubit cubit = AppCubit.get(context);
     String otherUserImage = widget.otherUserImage;
     String otherUsername = widget.otherUsername;
     String otherUserId = widget.otherUserId;
     String myId = widget.myId;
-    return BlocConsumer<MyCubit, States>(
+    return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
         return Directionality(
@@ -188,7 +188,7 @@ class _TheChatState extends State<TheChat> {
             body: StreamBuilder(
               stream: stream,
               builder: (context, snapshot) {
-                MyCubit.get(context).markAsSeen(widget.chatId, widget.myId);
+                AppCubit.get(context).markAsSeen(widget.chatId, widget.myId);
                 if (snapshot.hasError) {
                   return const Center(
                     child: Text(

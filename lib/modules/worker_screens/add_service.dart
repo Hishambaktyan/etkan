@@ -9,8 +9,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../../main.dart';
@@ -38,7 +38,7 @@ class _AddServiceState extends State<AddService> {
 
 
 
-   void showImageDialog(BuildContext context, MyCubit cubit) {
+   void showImageDialog(BuildContext context, AppCubit cubit) {
      showDialog(
        context: context,
        builder: (context) => AlertDialog(
@@ -102,7 +102,7 @@ class _AddServiceState extends State<AddService> {
     required String icon,
     required String label,
     required VoidCallback onTap,
-    required MyCubit cubit,
+    required AppCubit cubit,
   }) {
     return ListTile(
       leading: SvgPicture.asset(
@@ -122,12 +122,12 @@ class _AddServiceState extends State<AddService> {
       contentPadding: EdgeInsets.symmetric(horizontal: 24.w),
     );
   }
-   late MyCubit cubit;
+   late AppCubit cubit;
 
    @override
    void didChangeDependencies() {
      super.didChangeDependencies();
-     cubit = MyCubit.get(context);
+     cubit = AppCubit.get(context);
    }
 
   @override
@@ -138,8 +138,8 @@ class _AddServiceState extends State<AddService> {
 
   @override
   Widget build(BuildContext context) {
-    MyCubit cubit = MyCubit.get(context);
-    return BlocConsumer<MyCubit,States>(
+    AppCubit cubit = AppCubit.get(context);
+    return BlocConsumer<AppCubit,AppStates>(
       listener: (context, state) {
         if(state is UploadServiceSuccessState){
           showSnackBar(Colors.green, 'تم إضافة الخدمة بنجاح', context);

@@ -4,12 +4,12 @@
   import 'package:flutter_screenutil/flutter_screenutil.dart';
   import 'package:flutter_svg/flutter_svg.dart';
   import 'package:trying_homy/main.dart';
-  import 'package:trying_homy/modules/login_screen.dart';
-  import 'package:trying_homy/shared/cubit/cubit.dart';
-  import 'package:trying_homy/shared/cubit/states.dart';
+  import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
   import 'package:trying_homy/shared/styles/colors.dart';
   import '../../shared/compenents/components.dart';
-import '../email_verfication_screen.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
+import '../../shared/cubits/app_cubit/app_states.dart';
+import 'worker_email_verfication_screen.dart';
 
   class WorkerSignup extends StatefulWidget {
      const WorkerSignup({super.key});
@@ -21,13 +21,13 @@ import '../email_verfication_screen.dart';
   class _WorkerSignupState extends State<WorkerSignup> {
     @override
     Widget build(BuildContext context) {
-      MyCubit cubit = MyCubit.get(context);
-      return BlocConsumer<MyCubit,States>(
+      AppCubit cubit = AppCubit.get(context);
+      return BlocConsumer<AppCubit,AppStates>(
           listener: (context, state) {
-            if(state is SignUpErrorState){
+            if(state is WorkerSignUpErrorState){
               showSnackBar(Colors.red,state.error.toString(), context);
             }
-              if (state is SendVerficationCodeSuccessState) {
+            if (state is SendVerficationCodeSuccessState) {
                 cubit.workerPasswordController.clear();
                 cubit.workerPhoneController.clear();
                 cubit.workerNameController.clear();
@@ -37,9 +37,9 @@ import '../email_verfication_screen.dart';
                 cubit.getWorkerData();
                 showSnackBar(Colors.green, 'تم إنشاء حسابك بنجاح', context);
                 cubit.currentIndex=0;
-                moveAndReplace(context, const EmailVerificationScreen());
+                moveAndReplace(context, const WorkerEmailVerificationScreen());
               }
-              if(state is SendVerficationCodeErrorState){
+            if(state is SendVerficationCodeErrorState){
                 showSnackBar(Colors.red, 'فشل في إرسال بريد التحقق', context);
 
               }
@@ -178,9 +178,7 @@ import '../email_verfication_screen.dart';
                                     type: TextInputType.text,
                                 ),
                               ),
-                              SizedBox(
-                                height: 15.h,
-                              ),
+                              SizedBox(height: 15.h,),
                               Container(
                                 height: 50.h,
                                 child: defaultTextFormfeild(
@@ -192,9 +190,7 @@ import '../email_verfication_screen.dart';
                                   type: TextInputType.text,
                                 ),
                               ),
-                              SizedBox(
-                                height: 15.0.h,
-                              ),
+                              SizedBox(height: 15.0.h,),
                               Container(
                                 height: 50.h,
                                 child: defaultTextFormfeild(
@@ -206,9 +202,7 @@ import '../email_verfication_screen.dart';
                                   type: TextInputType.emailAddress,
                                 ),
                               ),
-                              SizedBox(
-                                height: 15.0.h,
-                              ),
+                              SizedBox(height: 15.0.h,),
                               Container(
                                 height: 50.h,
                                 child: defaultTextFormfeild(
@@ -225,9 +219,7 @@ import '../email_verfication_screen.dart';
 
                                 ),
                               ),
-                              SizedBox(
-                                height: 15.h,
-                              ),
+                              SizedBox(height: 15.h,),
                               DropdownButtonFormField<String>(
                                 dropdownColor: cubit.isDark? darkBgColor: Colors.white,
                                 isExpanded: false,
@@ -313,10 +305,8 @@ import '../email_verfication_screen.dart';
                                   return null;
                                 },
                               ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                               state is SignUpLoadingState || state is SendVerficationCodeLoadingState ?const Center(
+                              SizedBox(height: 20.h,),
+                               state is WorkerSignUpLoadingState || state is SendVerficationCodeLoadingState ?const Center(
                                 child: CircularProgressIndicator(),
                               )
                                   : defualtButton(
@@ -328,7 +318,7 @@ import '../email_verfication_screen.dart';
                                         cubit.workerPasswordController.text.isNotEmpty &&
                                         cubit.selectedDept!=null
                                     ){
-                                      await cubit.signUpUser(cubit.workerPhoneController.text.trim(), cubit.workerPasswordController.text.trim());
+                                      await cubit.workerSignUpUser(cubit.workerPhoneController.text.trim(), cubit.workerPasswordController.text.trim());
                                     }else{
                                       showSnackBar(Colors.red, 'يرجى تعبئة واختيار كل الحقول', context);
                                     }
@@ -350,7 +340,7 @@ import '../email_verfication_screen.dart';
                                     ),
                                   ),
                                   defaultTextButton(
-                                      onPressed: ()=>move(context, const LoginScreen()),
+                                      onPressed: ()=>move(context, const WorkerLoginScreen()),
                                       text: 'سجل دخول'
                                   )
                                 ],

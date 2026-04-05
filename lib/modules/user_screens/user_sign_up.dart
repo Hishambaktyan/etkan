@@ -2,13 +2,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/login_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_email_verification.dart';
 import 'package:trying_homy/modules/user_screens/verified_phone.dart';
-import 'package:trying_homy/shared/cubit/cubit.dart';
-import 'package:trying_homy/shared/cubit/states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/compenents/components.dart';
 import '../../main.dart';
+import '../worker_screens/worker_email_verfication_screen.dart';
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -18,20 +21,32 @@ class UserSignUp extends StatefulWidget {
 }
 
 class _UserSignUpState extends State<UserSignUp> {
-  var userPhoneController = TextEditingController();
-  var userNameController = TextEditingController();
-  var userPasswordController = TextEditingController();
-  var cityController = TextEditingController();
   bool isPassword = true;
   var formKey_userSignUp = GlobalKey<FormState>();
   String suffixIcon = 'assets/eye.svg';
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MyCubit, States>(
-      listener: (context, state) {},
+    AppCubit cubit = AppCubit.get(context);
+    return BlocConsumer<AppCubit, AppStates>(
+      listener: (context, state) {
+        if(state is UserSignUpErrorState){
+          showSnackBar(Colors.red,state.error.toString(), context);
+        }
+        if (state is SendVerficationCodeSuccessState) {
+          cubit.userPasswordController.clear();
+          cubit.userPhoneController.clear();
+          cubit.userNameController.clear();
+          showSnackBar(Colors.green, 'تم إنشاء حسابك بنجاح', context);
+          cubit.currentIndex=0;
+          moveAndReplace(context, const UserVerificationScreen());
+        }
+        if(state is SendVerficationCodeErrorState){
+          showSnackBar(Colors.red, 'فشل في إرسال بريد التحقق', context);
+
+        }
+      },
       builder: (context, state) {
-        MyCubit cubit = MyCubit.get(context);
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -163,7 +178,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                 text: 'الاسم الكامل',
                                 prefixIcon: 'assets/acc.svg',
                                 errorMes: 'يجب كتابة الاسم',
-                                controller: userNameController,
+                                controller: cubit.userNameController,
                                 type: TextInputType.text,
                               ),
                             ),
@@ -175,8 +190,8 @@ class _UserSignUpState extends State<UserSignUp> {
                                 text: 'رقم الهاتف',
                                 prefixIcon: 'assets/phone.svg',
                                 errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
-                                controller: userPhoneController,
-                                type: TextInputType.phone,
+                                controller: cubit.userPhoneController,
+                                type: TextInputType.text,
                               ),
                             ),
                             SizedBox(height: 15.h),
@@ -187,7 +202,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                 text: 'كلمة المرور',
                                 prefixIcon: 'assets/lock.svg',
                                 errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                controller: userPasswordController,
+                                controller: cubit.userPasswordController,
                                 type: TextInputType.visiblePassword,
                                 isPassword: isPassword,
                                 isSuffixIcon: true,
@@ -203,9 +218,23 @@ class _UserSignUpState extends State<UserSignUp> {
                               ),
                             ),
                             SizedBox(height: 20.h),
-                            defualtButton(
-                              onPressed: () {
-                                move(context, const Verified_phone());
+                            state is UserSignUpLoadingState || state is SendVerficationCodeLoadingState? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                                : defualtButton(
+                              onPressed: () async {
+                                if(
+                                cubit.userNameController.text.isNotEmpty &&
+                                cubit.userPhoneController.text.isNotEmpty &&
+                                cubit.userPasswordController.text.isNotEmpty
+                                ){
+                                  await cubit.signUpUser(
+                                      cubit.userPhoneController.text.trim(),
+                                      cubit.userPasswordController.text.trim()
+                                  );
+                                }else{
+                                  showSnackBar(Colors.red, 'يرجى تعبئة كل الحقول', context);
+                                }
                               },
                               text: 'تسجيل',
                               height: 50.h,
@@ -222,7 +251,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                 ),
                                 defaultTextButton(
                                     onPressed: () => moveAndReplace(
-                                        context, const LoginScreen()),
+                                        context, const UserLoginScreen()),
                                     text: 'سجل دخول')
                               ],
                             ),
