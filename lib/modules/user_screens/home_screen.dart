@@ -68,6 +68,8 @@
     @override
    void initState(){
       AppCubit.get(context).getAllUsers();
+      context.read<UserServicesCubit>().getUserSevices();
+      context.read<UserServicesCubit>().getAllUsers();
     super.initState();
   }
     @override

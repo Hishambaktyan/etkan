@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
@@ -568,10 +569,19 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                       ),
                     ),
                     SizedBox(height: 20.h,),
-                    BlocConsumer<BookingCubit,BookingStates>(
+                    BlocProvider(
+                      create: (context) => BookingCubit(),
+                      child: BlocConsumer<BookingCubit,BookingStates>(
+                        listener: (context, state) {
+                          if(state is CreateRequestSuccessState){
+                            cubit.changeIndex(0);
+                            moveAndReplace(context, const DoneBookingScreen());
+                          }
+                        },
                         builder: (context, state) {
                           BookingCubit bookingCubit = BookingCubit.get(context);
-                          return defualtButton(
+                          return state is CreateRequestLoadingState ? const Center(child: CircularProgressIndicator())
+                              :defualtButton(
                               onPressed: () async {
                                 DateTime bookingDateTime = DateTime(
                                   selectedDate!.year,
@@ -586,24 +596,19 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                     customerId: currentUser['uid'],
                                     providerId: providerId,
                                     subCategory: serviceSubCategory,
-                                    address: '',
-                                    latitude: '',
-                                    clientName: currentUser['name'],
-                                    clientPhone: currentUser['phone'],
+                                    address: 'VX6M+V7R شيخ عثمان، اليَمَن',
                                     title: serviceName,
                                     description: noteController.text.trim(),
                                     image: 'https://i.pinimg.com/1200x/3e/f3/50/3ef350dc86cc82a092463e5d795654b5.jpg',
-                                    clientImage: '',
                                     duration: servicePeriod,
                                     price: servicePrice,
-                                    number: 0,
                                     scheduledAt: Timestamp.fromDate(bookingDateTime)
                                 );
                               },
                               text: 'تأكيد الحجز'
                           );
                         },
-                        listener: (context, state) {},
+                      ),
                     ),
                     SizedBox(
                       height: 20.h,

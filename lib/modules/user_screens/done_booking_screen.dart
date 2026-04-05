@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/layout/user_layout/user_main_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 
 class DoneBookingScreen extends StatelessWidget {
@@ -38,7 +40,12 @@ class DoneBookingScreen extends StatelessWidget {
         padding:
             EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 20.h),
         child: defualtButton(
-            onPressed: () => moveAndReplace(context, const UserMainScreen()),
+            onPressed: () => moveAndReplace(context,
+              BlocProvider(
+                  create: (context) => UserServicesCubit(),
+                child: const UserMainScreen(),
+              )
+            ),
             text: 'العودة إلى الرئيسية'),
       ),
     );

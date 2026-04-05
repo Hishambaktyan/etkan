@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -101,7 +103,7 @@ class _BookingDetailsState extends State<BookingDetails> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            padding: EdgeInsetsDirectional.all(20.r),
+            padding: EdgeInsetsDirectional.only(start: 20.w,end: 20.w,bottom: 20.h,top: 10.h),
             height: MediaQuery.of(context).size.height * 0.51,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,8 +172,7 @@ class _BookingDetailsState extends State<BookingDetails> {
     );
   }
 
-  Widget buildVerticalStep(String title, String time, bool isDone, bool showLine,dynamic cubit, {bool isActive = false})
-  {
+  Widget buildVerticalStep(String title, String time, bool isDone, bool showLine,dynamic cubit, {bool isActive = false}) {
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -230,6 +231,7 @@ class _BookingDetailsState extends State<BookingDetails> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final Map<String,dynamic> request = widget.request;
@@ -718,12 +720,12 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   CircleAvatar(
                                     radius: 25.r,
                                     backgroundImage: NetworkImage(
-                                       providerData['']  ?? ''
+                                       providerData['profileImage'] ?? ''
                                     ),
                                   ),
                                   SizedBox(width: 12.w),
                                   Text(
-                                    request['clientName'] ?? '',
+                                    providerData['name']?? '',
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
@@ -733,30 +735,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 ],
                               ),
                               Padding(
-                                padding: EdgeInsets.symmetric(vertical: 15.h),
-                                child: Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade100, height: 1),
+                                padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
+                                child: Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
                               ),
-                              Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/loc.svg',
-                                    color: cubit.isDark? darkSubTextColor: Colors.grey.shade600,
-                                    width: 18.r,
-                                    height: 18.r,
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Expanded(
-                                    child: Text(
-                                      request['address'] ?? '',
-                                      style: TextStyle(
-                                          color: cubit.isDark? Colors.white: Colors.black87,
-                                          fontSize: 12.sp
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.h),
                               Row(
                                 children: [
                                   SvgPicture.asset(
@@ -767,7 +748,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   ),
                                   SizedBox(width: 10.w),
                                   Text(
-                                    request['clientPhone'] ?? '',
+                                    providerData['phone'] ?? '',
                                     style: TextStyle(
                                         color: cubit.isDark? Colors.white: Colors.black87,
                                         fontSize: 12.sp,
@@ -781,7 +762,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 children: [
                                   Expanded(
                                     child: defualtButtonWithIcon(
-                                      onPressed: () {},
+                                      onPressed: (){},
                                       text: 'دردشة',
                                       height: 45.h,
                                       textSize: 13.sp,
@@ -819,233 +800,6 @@ class _BookingDetailsState extends State<BookingDetails> {
                     ),
                   )
 
-                ],
-              ),
-            ),
-            bottomNavigationBar: Container(
-              width: double.infinity,
-              margin: EdgeInsetsDirectional.symmetric(horizontal: 20.w,vertical: 10.h),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: defualtButton(
-                        onPressed: (){
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: AlertDialog(
-                                  backgroundColor: cubit.isDark? lightDarkColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
-                                  contentPadding: EdgeInsets.all(20.r),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(15.r),
-                                        decoration: BoxDecoration(
-                                          color: mainColor.withOpacity(0.1),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.check_circle_outline_rounded,
-                                          color: mainColor,
-                                          size: 50.r,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        'تأكيد قبول الطلب',
-                                        style: TextStyle(
-                                            fontSize: 18.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).textTheme.bodyLarge!.color
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Text(
-                                        'هل أنت متأكد من رغبتك في قبول هذا الطلب والبدء في التنفيذ؟',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 13.sp,
-                                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                                          height: 1.5,
-                                        ),
-                                      ),
-                                      SizedBox(height: 25.h),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: mainColor,
-                                                padding: EdgeInsets.symmetric(vertical: 12.h),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(12.r),
-                                                ),
-                                                elevation: 0,
-                                              ),
-                                              child: Text(
-                                                'نعم، قبول',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 12.w),
-                                          Expanded(
-                                            child: OutlinedButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              style: OutlinedButton.styleFrom(
-                                                padding: EdgeInsets.symmetric(vertical: 12.h),
-                                                side: BorderSide(color: Colors.grey.shade300),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(12.r),
-                                                ),
-                                              ),
-                                              child: Text(
-                                                'تراجع',
-                                                style: TextStyle(
-                                                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                                                  fontSize: 14.sp,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        text: 'قبول',
-                        height: 50
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15.w,
-                  ),
-                  Expanded(
-                    child: defualtOutlinedButton(
-                        onPressed: (){
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: AlertDialog(
-                                  backgroundColor: cubit.isDark? lightDarkColor : Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
-                                  contentPadding: EdgeInsets.all(20.r),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(15.r),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(0.1),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.block_rounded,
-                                          color: Colors.red,
-                                          size: 50.r,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        'تأكيد رفض الطلب',
-                                        style: TextStyle(
-                                            fontSize: 18.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).textTheme.bodyLarge!.color
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Text(
-                                        'هل أنت متأكد من رغبتك في رفض هذا الطلب ؟',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 13.sp,
-                                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                                          height: 1.5,
-                                        ),
-                                      ),
-                                      SizedBox(height: 25.h),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.red,
-                                                padding: EdgeInsets.symmetric(vertical: 12.h),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(12.r),
-                                                ),
-                                                elevation: 0,
-                                              ),
-                                              child: Text(
-                                                'نعم، رفض',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 12.w),
-                                          Expanded(
-                                            child: OutlinedButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              style: OutlinedButton.styleFrom(
-                                                padding: EdgeInsets.symmetric(vertical: 12.h),
-                                                side: BorderSide(color: Colors.grey.shade300),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(12.r),
-                                                ),
-                                              ),
-                                              child: Text(
-                                                'تراجع',
-                                                style: TextStyle(
-                                                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                                                  fontSize: 14.sp,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        text: 'رفض',
-                        border: Colors.red,
-                        textColor: Colors.red,
-                        height: 50
-                    ),
-                  )
                 ],
               ),
             ),
