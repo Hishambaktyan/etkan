@@ -29,7 +29,6 @@ class _WorkerChatState extends State<WorkerChat> {
   })
   async {
     try {
-
       List<String> ids = [myId, receiverId];
       ids.sort();
       String chatId = ids.join('_');

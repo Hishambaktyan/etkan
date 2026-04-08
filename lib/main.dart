@@ -1,25 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/cubits/bloc_observer.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/styles.dart';
 import 'firebase_options.dart';
 import 'layout/user_layout/user_main_screen.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
-import 'modules/user_screens/home_screen.dart';
-import 'modules/user_screens/the_chat.dart';
-import 'notification_helper.dart';
 import 'modules/on_boarding.dart';
+import 'modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
 
 void move(BuildContext context, Widget screen) {
   Navigator.push(
@@ -50,42 +46,9 @@ void moveAndReplace(BuildContext context, Widget screen) {
   );
 }
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel',
-  'High Importance Notifications',
-  description: 'This channel is used for important notifications.',
-  importance: Importance.high,
-);
-
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  NotificationHelper.display(message);
-}
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void handleNotificationClick(RemoteMessage message) {
-  String chatId = message.data['chatId'] ?? '';
-  String senderId = message.data['senderId'] ?? '';
-  String senderName = message.data['senderName'] ?? 'مستخدم';
-  String senderImage = message.data['senderImage'] ?? '';
-
-  if (chatId.isNotEmpty && senderId.isNotEmpty && FirebaseAuth.instance.currentUser != null) {
-    moveAndReplace(
-      navigatorKey.currentContext!,
-      TheChat(
-        otherUserId: senderId,
-        chatId: chatId,
-        myId: FirebaseAuth.instance.currentUser!.uid,
-        otherUsername: senderName,
-        otherUserImage: senderImage,
-      ),
-    );
-  }
-}
 
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -112,51 +75,27 @@ Future<void> main() async {
 
   Bloc.observer = MyBlocObserver();
 
-  NotificationHelper.initialize();
-
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  await messaging.requestPermission();
-
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    NotificationHelper.display(message);
-  });
-
-  FirebaseMessaging.onBackgroundMessage(
-    firebaseMessagingBackgroundHandler,
-  );
-
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  FirebaseMessaging.instance.getInitialMessage().then((message) {
-    if (message != null) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        handleNotificationClick(message);
-      });
-    }
-  });
-
-  FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    handleNotificationClick(message);
-  });
-
   await CacheHelper.init();
   bool? isDark = CacheHelper.getBoolen(key: 'isDark');
+  bool? isWorker = CacheHelper.getBoolen(key: 'isWorker') ?? false;
 
-  runApp(MyApp(isDark));
+  runApp(MyApp(isDark: isDark,isWorker: isWorker,));
 }
 
 class MyApp extends StatelessWidget {
   final bool? isDark;
-  const MyApp(this.isDark, {super.key});
+  final bool? isWorker;
+  const MyApp({super.key, this.isWorker, this.isDark});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AppCubit()..checkUser()..changeTheme(fromShared: isDark)..getWorkerData(),
+    return MultiBlocProvider(
+      providers:[
+        BlocProvider<AppCubit>(create: (context) => AppCubit()..changeTheme(fromShared: isDark),),
+        BlocProvider<UserServicesCubit>(create: (context) => UserServicesCubit(),),
+        BlocProvider<BookingCubit>(create: (context) => BookingCubit(),),
+        BlocProvider<AuthCubit>(create: (context) => AuthCubit()..checkUser(),),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),
         minTextAdapt: true,
@@ -173,10 +112,7 @@ class MyApp extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 home: FirebaseAuth.instance.currentUser != null &&
                     FirebaseAuth.instance.currentUser!.emailVerified
-                    ? BlocProvider(
-                    create: (context) => UserServicesCubit()..getAllUsers()..getUserSevices(),
-                    child: const UserMainScreen()
-                )
+                    ? isWorker!? const WorkerMainScreen(): const UserMainScreen()
                     : const OnBoardingScreen(),
               );
             },

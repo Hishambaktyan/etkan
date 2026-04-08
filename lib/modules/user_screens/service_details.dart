@@ -60,6 +60,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
     final image = widget.image;
     final providerId = widget.providerId;
     AppCubit cubit = AppCubit.get(context);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(

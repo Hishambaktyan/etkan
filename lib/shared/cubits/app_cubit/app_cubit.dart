@@ -1,16 +1,17 @@
 import 'dart:io';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
+import '../../../modules/user_screens/bookings_screen.dart';
+import '../../../modules/user_screens/dept_screen.dart';
+import '../../../modules/user_screens/home_screen.dart';
+import '../../../modules/user_screens/user_account.dart';
+import '../../../modules/user_screens/user_chats.dart';
 import '../../../modules/worker_screens/worker_account_screeen.dart';
 import '../../../modules/worker_screens/worker_booking_screen.dart';
 import '../../../modules/worker_screens/worker_chat.dart';
@@ -19,19 +20,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:flutter/services.dart' show rootBundle;
-
 import '../../networks/local/cache_helper.dart';
 import 'app_states.dart';
 
 class AppCubit extends Cubit<AppStates>{
 
-  final AudioPlayer player = AudioPlayer();
-
-  AppCubit(): super(InitState()){
-    player.setSource(AssetSource('sounds/pop.mp3')).then((_) {
-      print("تم تحميل صوت الإرسال مسبقاً");
-    });
-  }
+  AppCubit(): super(InitState());
 
   static AppCubit get(context)=>BlocProvider.of(context);
 
@@ -45,14 +39,21 @@ class AppCubit extends Cubit<AppStates>{
     return FirebaseFirestore.instance.collection('users').doc(user.uid);
   }
 
-
   bool isServicesActive = true;
 
-  List<Widget> screens = [
+  List<Widget> workerScreens = [
      WorkerHomeScreen(),
     const WorkerBookingScreen(),
     const WorkerChat(),
     const WorkerAccountScreeen(),
+  ];
+
+  List<Widget> userScreen = [
+    const HomeScreen(),
+    const DeptScreen(),
+    const BookingsScreen(),
+    const UserChats(),
+    const UserAccount(),
   ];
 
   void changeIndex(value){
@@ -78,181 +79,6 @@ class AppCubit extends Cubit<AppStates>{
   void changeServiceActivity(value){
     isServicesActive = value;
     emit(ChangeServiceActivityState());
-  }
-
-  void changePasswordVisiability(){
-    isPassword=!isPassword;
-    emit(ChangePasswordVisiability());
-  }
-
-  String? selectedDept;
-  var workerNameController = TextEditingController();
-  var workerPasswordController = TextEditingController();
-  var workerAddController = TextEditingController();
-  var workerPhoneController = TextEditingController();
-  bool isPassword = true;
-  String get suffixIcon => isPassword? 'assets/eye.svg' : 'assets/eye-slash.svg';
-  String? userId;
-
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
-
-  Future<void> workerSignUpUser(String email, String password) async  {
-    try {
-      emit(WorkerSignUpLoadingState());
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      userId = userCredential.user!.uid;
-      await users.doc(userId).set({
-        'uid': userId,
-        'email':userCredential.user!.email,
-        'name':workerNameController.text.trim(),
-        'role':'provider',
-        'specialization':selectedDept,
-        'address':workerAddController.text.trim(),
-        'avgRating':0.0,
-        'isAvailable ': true,
-        'createdAt': FieldValue.serverTimestamp(),
-        'totalAmount':0
-      });
-      await verifyEmail();
-      await saveUserToken();
-      emit(WorkerSignUpSuccessState());
-
-    } on FirebaseAuthException catch (e) {
-
-      String errorMessage = 'حدث خطأ ما';
-      if (e.code == 'email-already-in-use') errorMessage = 'هذا البريد مستخدم بالفعل';
-      if (e.code == 'weak-password') errorMessage = 'كلمة المرور ضعيفة جداً';
-
-      emit(WorkerSignUpErrorState(error: errorMessage.toString()));
-    } catch (e) {
-      emit(WorkerSignUpErrorState(error: e.toString()));
-    }
-  }
-
-  var userNameController = TextEditingController();
-  var userPasswordController = TextEditingController();
-  var userPhoneController = TextEditingController();
-
-  Future<void> signUpUser(String email, String password) async  {
-    try {
-      emit(UserSignUpLoadingState());
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      userId = userCredential.user!.uid;
-      await users.doc(userId).set({
-        'uid': userId,
-        'email':userCredential.user!.email,
-        'name':userNameController.text.trim(),
-        'role':'user',
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      await verifyEmail();
-      await saveUserToken();
-      emit(UserSignUpSuccessState());
-
-    } on FirebaseAuthException catch (e) {
-
-      String errorMessage = 'حدث خطأ ما';
-      if (e.code == 'email-already-in-use') errorMessage = 'هذا البريد مستخدم بالفعل';
-      if (e.code == 'weak-password') errorMessage = 'كلمة المرور ضعيفة جداً';
-
-      emit(UserSignUpErrorState(error: errorMessage.toString()));
-    } catch (e) {
-      emit(UserSignUpErrorState(error: e.toString()));
-    }
-  }
-
-  var workerLoginPhoneController = TextEditingController();
-  var workerLoginPasswordController = TextEditingController();
-  ////////////////////////////////////////////////////////////////
-  var userLoginPhoneController = TextEditingController();
-  var userLoginPasswordController = TextEditingController();
-
-  Future<void> loginUser(String email, String password) async {
-    try {
-      emit(LoginLoadingState());
-        UserCredential userCredential=  await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password
-      );
-      await userCredential.user?.reload();
-      await saveUserToken();
-        currentIndex=0;
-      emit(LoginSuccessState());
-
-    } on FirebaseAuthException catch (e) {
-      String error = 'حدث خطأ ما';
-      if (e.code == 'user-not-found') error = 'المستخدم غير موجود';
-      if (e.code == 'wrong-password') error = 'كلمة المرور خاطئة';
-      if (e.code == 'invalid-email') error = 'البريد الإلكتروني غير صحيح';
-
-      emit(LoginErrorState(error: error.toString()));
-
-    } catch (e) {
-      emit(LoginErrorState(error: e.toString()));
-    }
-  }
-
-  Future<void> verifyEmail()async{
-    try{
-      emit(SendVerficationCodeLoadingState());
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-      emit(SendVerficationCodeSuccessState());
-
-    }catch(e){
-      emit(SendVerficationCodeErrorState(error: e.toString()));
-    }
-  }
-
-  Future<void> logOutUser()async{
-    try{
-      emit(LogOutLoadingState());
-      await FirebaseAuth.instance.signOut();
-      emit(LogOutSuccessState());
-    }catch(e){
-      emit(LogOutErrorState(error: e.toString()));
-      print(e.toString());
-    }
-  }
-
-  Future<void> saveUserToken() async {
-    try {
-      String? token = await FirebaseMessaging.instance.getToken();
-      User? user = FirebaseAuth.instance.currentUser;
-
-      if (token != null && user != null) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({
-          'token': token,
-        });
-        print("تم حفظ الـ Token بنجاح: $token");
-      }
-    } catch (e) {
-      print("خطأ أثناء حفظ الـ Token: ${e.toString()}");
-    }
-  }
-
-  Future<void> checkUser() async {
-    var user = FirebaseAuth.instance.currentUser;
-
-    if (user != null && user.emailVerified) {
-
-      await saveUserToken();
-      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-        saveUserToken();
-      });
-    }
   }
 
   String? workerName;
@@ -438,8 +264,6 @@ class AppCubit extends Cubit<AppStates>{
       await messageRef.update({
         'messageStatus': 'sent',
       }) ;
-      playSendSound();
-
       await FirebaseFirestore.instance
           .collection('chats')
           .doc(chatId)
@@ -568,16 +392,6 @@ class AppCubit extends Cubit<AppStates>{
             print(error.toString());
           }
       );
-    }
-  }
-
-  Future<void> playSendSound() async {
-    try {
-      await player.stop();
-      await player.play(AssetSource('sounds/pop.mp3'), volume: 0.3);
-      print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=');
-    } catch (e) {
-      print("Error playing sound: $e");
     }
   }
 
@@ -723,6 +537,5 @@ class AppCubit extends Cubit<AppStates>{
     }
 
   }
-
 
 }

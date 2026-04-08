@@ -11,7 +11,10 @@ import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import '../../shared/styles/colors.dart';
+import '../on_boarding.dart';
 
 class WorkerAccountScreeen extends StatefulWidget {
   const WorkerAccountScreeen({super.key});
@@ -113,7 +116,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
+    AppCubit appCubit = AppCubit.get(context);
     return Scaffold(
         appBar: AppBar(
           titleSpacing: 10,
@@ -144,7 +147,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: cubit.isDark ? Colors.white : Colors.black),
+                          color: appCubit.isDark ? Colors.white : Colors.black),
                     ),
                     child: Stack(
                       alignment: AlignmentDirectional.topEnd,
@@ -175,340 +178,337 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
             )
           ],
         ),
-        body: BlocConsumer<AppCubit, AppStates>(
-          listener: (context, state) {
-            if (state is LogOutSuccessState) {
-              moveAndReplace(context, const WorkerLoginScreen());
-              showSnackBar(Colors.green, 'تم تسجيل خروجك بنجاح', context);
-            }
-            if (state is LogOutErrorState) {
-              showSnackBar(Colors.red, state.error, context);
-            }
-            if (state is DeleteUserAccSuccessState) {
-              moveAndReplace(context, const WorkerSignup());
-            }
-            if (state is DeleteUserAccErrorState) {
-              showSnackBar(Colors.red, state.error, context);
-              print(state.error);
-            }
-          },
+        body: BlocBuilder<AppCubit, AppStates>(
           builder: (context, state) {
-            return cubit.state is LogOutLoadingState
-                ? const Center(child: CircularProgressIndicator())
-                : Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Padding(
-                      padding: EdgeInsetsDirectional.only(
-                          top: 10.h, start: 20.w, end: 20.w),
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 1,
-                                          color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .color ??
-                                              Colors.black)),
-                                  child: CircleAvatar(
-                                    backgroundColor:
-                                        Colors.grey.withOpacity(0.1),
-                                    radius: 35.r,
-                                    backgroundImage: const NetworkImage(
-                                        'https://i.pinimg.com/1200x/b8/82/83/b882836fa749f501aefa935d19e19977.jpg'),
-                                  ),
+            return BlocConsumer<AuthCubit,AuthStates>(
+              listener: (context, state) {
+                if (state is LogOutSuccessState) {
+                  showSnackBar(Colors.green, 'تم تسجيل خروجك بنجاح', context);
+                  appCubit.changeIndex(0);
+                  moveAndReplace(context, const OnBoardingScreen());
+                }
+                if (state is LogOutErrorState) {
+                  showSnackBar(Colors.red, state.error, context);
+                }
+              },
+              builder: (context, state) {
+                AuthCubit authCubit = AuthCubit.get(context);
+                return Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.only(
+                        top: 10.h, start: 20.w, end: 20.w),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 1,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .color ??
+                                            Colors.black)),
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                  Colors.grey.withOpacity(0.1),
+                                  radius: 35.r,
+                                  backgroundImage: const NetworkImage(
+                                      'https://i.pinimg.com/1200x/b8/82/83/b882836fa749f501aefa935d19e19977.jpg'),
                                 ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'عبد الرحمن محمد أحمد',
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color,
-                                        ),
+                              ),
+                              SizedBox(
+                                width: 10.w,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'عبد الرحمن محمد أحمد',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .color,
                                       ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'سباك',
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 13.sp,
-                                            ),
-                                          ),
-                                          Text(
-                                            '  -  770770858',
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 13.sp,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20.w,),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 43.h,
-                                    child: defualtButton(
-                                      textSize: 12,
-                                      onPressed: () {},
-                                      text: 'عرض الحساب',
                                     ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'سباك',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 13.sp,
+                                          ),
+                                        ),
+                                        Text(
+                                          '  -  770770858',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 13.sp,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20.w,),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  height: 43.h,
+                                  child: defualtButton(
+                                    textSize: 12,
+                                    onPressed: () {},
+                                    text: 'عرض الحساب',
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 15.w,
+                              ),
+                              SizedBox(
+                                width: 15.w,
+                              ),
+                              Expanded(
+                                child: defualtOutlinedButton(
+                                  fontSize: 12,
+                                  onPressed: () {
+                                    move(context, const EditProfileScreen());
+                                  },
+                                  text: 'تعديل الحساب',
+                                  height: 43.h,
+                                  textColor: appCubit.isDark
+                                      ? Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color!
+                                      : mainColor,
+                                  border: appCubit.isDark
+                                      ? Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color!
+                                      : mainColor,
                                 ),
-                                Expanded(
-                                  child: defualtOutlinedButton(
-                                    fontSize: 12,
-                                    onPressed: () {
-                                      move(context, const EditProfileScreen());
-                                    },
-                                    text: 'تعديل الحساب',
-                                    height: 43.h,
-                                    textColor: cubit.isDark
-                                        ? Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .color!
-                                        : mainColor,
-                                    border: cubit.isDark
-                                        ? Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .color!
-                                        : mainColor,
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 25.w,
-                            ),
-                            Column(
-                              children: [
-                                _buildSettingItem(context,
-                                    title: settingsList[0]['title'],
-                                    icon: settingsList[0]['icon'],
-                                    cubit: cubit,
-                                    onTap: () {}
-                                ),
-                                _buildDivider(cubit),
-                                _buildSettingItem(context,
-                                    title: settingsList[1]['title'],
-                                    icon: settingsList[1]['icon'],
-                                    cubit: cubit, onTap: () {
-                                  move(context, const ContactUsScreen());
-                                }),
-                                _buildDivider(cubit),
-                                _buildSettingItem(
-                                  context,
-                                  title: settingsList[2]['title'],
-                                  icon: settingsList[2]['icon'],
-                                  cubit: cubit,
-                                  onTap: () => move(context, const FaqScreen()),
-                                ),
-                                _buildDivider(cubit),
-                                _buildSettingItem(
-                                  context,
-                                  title: settingsList[3]['title'],
-                                  icon: settingsList[3]['icon'],
-                                  isSwitch: true,
-                                  cubit: cubit,
-                                  onTap: () {},
-                                ),
-                                _buildDivider(cubit),
-                                _buildSettingItem(
-                                  context,
-                                  title: settingsList[4]['title'],
-                                  icon: settingsList[4]['icon'],
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 25.w,
+                          ),
+                          Column(
+                            children: [
+                              _buildSettingItem(context,
+                                  title: settingsList[0]['title'],
+                                  icon: settingsList[0]['icon'],
+                                  cubit: appCubit,
+                                  onTap: () {}
+                              ),
+                              _buildDivider(appCubit),
+                              _buildSettingItem(context,
+                                  title: settingsList[1]['title'],
+                                  icon: settingsList[1]['icon'],
+                                  cubit: appCubit, onTap: () {
+                                    move(context, const ContactUsScreen());
+                                  }),
+                              _buildDivider(appCubit),
+                              _buildSettingItem(
+                                context,
+                                title: settingsList[2]['title'],
+                                icon: settingsList[2]['icon'],
+                                cubit: appCubit,
+                                onTap: () => move(context, const FaqScreen()),
+                              ),
+                              _buildDivider(appCubit),
+                              _buildSettingItem(
+                                context,
+                                title: settingsList[3]['title'],
+                                icon: settingsList[3]['icon'],
+                                isSwitch: true,
+                                cubit: appCubit,
+                                onTap: () {},
+                              ),
+                              _buildDivider(appCubit),
+                              _buildSettingItem(
+                                context,
+                                title: settingsList[4]['title'],
+                                icon: settingsList[4]['icon'],
+                                isDestructive: true,
+                                cubit: appCubit,
+                                onTap: () async => await authCubit.logOutUser(),
+                              ),
+                              _buildDivider(appCubit),
+                              _buildSettingItem(context,
+                                  title: settingsList[5]['title'],
+                                  icon: settingsList[5]['icon'],
                                   isDestructive: true,
-                                  cubit: cubit,
-                                  onTap: () async => await cubit.logOutUser(),
-                                ),
-                                _buildDivider(cubit),
-                                _buildSettingItem(context,
-                                    title: settingsList[5]['title'],
-                                    icon: settingsList[5]['icon'],
-                                    isDestructive: true,
-                                    cubit: cubit,
-                                    onTap: () => showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return Directionality(
-                                            textDirection: TextDirection.rtl,
-                                            child: AlertDialog(
-                                              backgroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.r),
-                                              ),
-                                              contentPadding:
-                                                  EdgeInsets.all(20.r),
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.all(15.r),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.red
-                                                          .withOpacity(0.1),
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                    child: SvgPicture.asset(
-                                                      'assets/delete.svg',
-                                                      color: Colors.red,
-                                                      width: 50.w,
-                                                      height: 50.h,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 20.h),
-                                                  Text(
-                                                    'تأكيد حذف الحساب',
-                                                    style: TextStyle(
-                                                      fontSize: 18.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 10.h),
-                                                  Text(
-                                                    'هل أنت متأكد من رغبتك في حذف حسابك، لن تتمكن من العودة مرة أخرى؟',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontSize: 13.sp,
-                                                      color:
-                                                          Colors.grey.shade600,
-                                                      height: 1.5,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 25.h),
-                                                  state
-                                                          is DeleteUserAccLoadingState
-                                                      ? const Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                          color: Colors.red,
-                                                        ))
-                                                      : Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child:
-                                                                  ElevatedButton(
-                                                                onPressed:
-                                                                    () async {
-                                                                  //await cubit.deleteUser();
-                                                                },
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .red,
-                                                                  padding: EdgeInsets
-                                                                      .symmetric(
-                                                                          vertical:
-                                                                              12.h),
-                                                                  shape:
-                                                                      RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12.r),
-                                                                  ),
-                                                                  elevation: 0,
-                                                                ),
-                                                                child: Text(
-                                                                  'نعم، حذف',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize:
-                                                                        14.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                                width: 12.w),
-                                                            Expanded(
-                                                              child:
-                                                                  OutlinedButton(
-                                                                onPressed: () =>
-                                                                    Navigator.pop(
-                                                                        context),
-                                                                style: OutlinedButton
-                                                                    .styleFrom(
-                                                                  padding: EdgeInsets
-                                                                      .symmetric(
-                                                                          vertical:
-                                                                              12.h),
-                                                                  side: BorderSide(
-                                                                      color: Colors
-                                                                          .grey
-                                                                          .shade300),
-                                                                  shape:
-                                                                      RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12.r),
-                                                                  ),
-                                                                ),
-                                                                child: Text(
-                                                                  'تراجع',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade700,
-                                                                    fontSize:
-                                                                        14.sp,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                ],
-                                              ),
+                                  cubit: appCubit,
+                                  onTap: () => showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Directionality(
+                                          textDirection: TextDirection.rtl,
+                                          child: AlertDialog(
+                                            backgroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(20.r),
                                             ),
-                                          );
-                                        })),
-                              ],
-                            )
-                          ],
-                        ),
+                                            contentPadding:
+                                            EdgeInsets.all(20.r),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                  EdgeInsets.all(15.r),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red
+                                                        .withOpacity(0.1),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: SvgPicture.asset(
+                                                    'assets/delete.svg',
+                                                    color: Colors.red,
+                                                    width: 50.w,
+                                                    height: 50.h,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 20.h),
+                                                Text(
+                                                  'تأكيد حذف الحساب',
+                                                  style: TextStyle(
+                                                    fontSize: 18.sp,
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 10.h),
+                                                Text(
+                                                  'هل أنت متأكد من رغبتك في حذف حسابك، لن تتمكن من العودة مرة أخرى؟',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 13.sp,
+                                                    color:
+                                                    Colors.grey.shade600,
+                                                    height: 1.5,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 25.h),
+                                                state
+                                                is DeleteUserAccLoadingState
+                                                    ? const Center(
+                                                    child:
+                                                    CircularProgressIndicator(
+                                                      color: Colors.red,
+                                                    ))
+                                                    : Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child:
+                                                      ElevatedButton(
+                                                        onPressed:
+                                                            () async {
+                                                          //await cubit.deleteUser();
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                          Colors
+                                                              .red,
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                              vertical:
+                                                              12.h),
+                                                          shape:
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(
+                                                                12.r),
+                                                          ),
+                                                          elevation: 0,
+                                                        ),
+                                                        child: Text(
+                                                          'نعم، حذف',
+                                                          style:
+                                                          TextStyle(
+                                                            color: Colors
+                                                                .white,
+                                                            fontSize:
+                                                            14.sp,
+                                                            fontWeight:
+                                                            FontWeight
+                                                                .bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                        width: 12.w),
+                                                    Expanded(
+                                                      child:
+                                                      OutlinedButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        style: OutlinedButton
+                                                            .styleFrom(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                              vertical:
+                                                              12.h),
+                                                          side: BorderSide(
+                                                              color: Colors
+                                                                  .grey
+                                                                  .shade300),
+                                                          shape:
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(
+                                                                12.r),
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          'تراجع',
+                                                          style:
+                                                          TextStyle(
+                                                            color: Colors
+                                                                .grey
+                                                                .shade700,
+                                                            fontSize:
+                                                            14.sp,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      })),
+                            ],
+                          )
+                        ],
                       ),
                     ),
-                  );
+                  ),
+                );
+              },
+            );
           },
         ));
   }

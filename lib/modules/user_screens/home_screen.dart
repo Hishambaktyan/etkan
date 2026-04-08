@@ -68,8 +68,8 @@
     @override
    void initState(){
       AppCubit.get(context).getAllUsers();
-      context.read<UserServicesCubit>().getUserSevices();
-      context.read<UserServicesCubit>().getAllUsers();
+      UserServicesCubit.get(context).getUserSevices();
+      UserServicesCubit.get(context).getAllUsers();
     super.initState();
   }
     @override
@@ -229,11 +229,7 @@
                                               const Spacer(),
                                               InkWell(
                                                 borderRadius: BorderRadius.circular(15.r),
-                                                onTap: ()=>move(context,
-                                                     BlocProvider.value(
-                                                        value: BlocProvider.of<UserServicesCubit>(context),
-                                                      child: const SearchScreen(),
-                                                    ),
+                                                onTap: ()=>move(context, const SearchScreen(),
                                                 ),
                                                 child: Container(
                                                   height: 50,
@@ -407,10 +403,7 @@
                                               splashColor: Colors.transparent,
                                               highlightColor: Colors.transparent,
                                               borderRadius: BorderRadius.circular(15.r),
-                                              onTap: ()=>move(context, BlocProvider.value(
-                                                value: BlocProvider.of<UserServicesCubit>(context),
-                                                child: ServicesList(categoryType: services[index]['type']!,),
-                                              )
+                                              onTap: ()=>move(context, ServicesList(categoryType: services[index]['type']!,)
                                               ),
                                               child: Container(
                                                 padding: const EdgeInsetsDirectional.all(10),

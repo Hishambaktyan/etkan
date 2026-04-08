@@ -75,7 +75,7 @@ class _ServicesListState extends State<ServicesList> {
                               itemCount: 7,
                               itemBuilder: (context, index) {
                                 return SizedBox(
-                                  width: 90.w,
+                                  width: 70.w,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
@@ -88,7 +88,7 @@ class _ServicesListState extends State<ServicesList> {
                                         height: 20.h,
                                         child: Marquee(
                                           text: 'تركيب فيش وبلاكات',
-                                          style: TextStyle(fontSize: 11.sp),
+                                          style: TextStyle(fontSize: 10.sp),
                                           scrollAxis: Axis.horizontal,
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           blankSpace: 40.0,

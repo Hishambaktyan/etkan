@@ -211,7 +211,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                               child: TextFormField(
                                                 controller: searchController,
                                                 focusNode: searchFocusNode,
-                                                autofocus: true,
                                                 textInputAction: TextInputAction.search,
                                                 style: TextStyle(
                                                   color: Colors.black,

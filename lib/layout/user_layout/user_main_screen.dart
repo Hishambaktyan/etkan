@@ -3,11 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../modules/user_screens/user_chats.dart';
-import '../../modules/user_screens/bookings_screen.dart';
-import '../../modules/user_screens/home_screen.dart';
-import '../../modules/user_screens/user_account.dart';
-import '../../modules/user_screens/dept_screen.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
@@ -17,17 +12,9 @@ class UserMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        AppCubit cubit = AppCubit.get(context);
-        List<Widget> screens = [
-          const HomeScreen(),
-          const DeptScreen(),
-          const BookingsScreen(),
-          const UserChats(),
-          const UserAccount(),
-        ];
+        AppCubit appCubit = AppCubit.get(context);
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -54,16 +41,16 @@ class UserMainScreen extends StatelessWidget {
                         );
                       }
                       return TextStyle(
-                        color: cubit.isDark ? Colors.grey : Colors.black54,
+                        color: appCubit.isDark ? Colors.grey : Colors.black54,
                         fontSize: 11.sp,
                       );
                     }),
                     backgroundColor: Colors.transparent,
                     elevation: 0,
                     indicatorColor: mainColor.withOpacity(0.2),
-                    selectedIndex: cubit.currentIndex,
+                    selectedIndex: appCubit.currentIndex,
                     onDestinationSelected: (value) {
-                      cubit.changeIndex(value);
+                      appCubit.changeIndex(value);
                     },
                     destinations: [
                       NavigationDestination(
@@ -77,7 +64,7 @@ class UserMainScreen extends StatelessWidget {
                           'assets/home_bold.svg',
                           width: 25.w,
                           height: 25.h,
-                          color: cubit.currentIndex == 0
+                          color: appCubit.currentIndex == 0
                               ? mainColor
                               : Colors.grey,
                         ),
@@ -94,7 +81,7 @@ class UserMainScreen extends StatelessWidget {
                           'assets/grid_bold.svg',
                           width: 25.w,
                           height: 25.h,
-                          color: cubit.currentIndex == 1
+                          color: appCubit.currentIndex == 1
                               ? mainColor
                               : Colors.grey,
                         ),
@@ -111,7 +98,7 @@ class UserMainScreen extends StatelessWidget {
                           'assets/ticket_bold.svg',
                           width: 25.w,
                           height: 25.h,
-                          color: cubit.currentIndex == 2
+                          color: appCubit.currentIndex == 2
                               ? mainColor
                               : Colors.grey,
                         ),
@@ -128,7 +115,7 @@ class UserMainScreen extends StatelessWidget {
                           'assets/chat_bold.svg',
                           width: 25.w,
                           height: 25.h,
-                          color: cubit.currentIndex == 3
+                          color: appCubit.currentIndex == 3
                               ? mainColor
                               : Colors.grey,
                         ),
@@ -145,7 +132,7 @@ class UserMainScreen extends StatelessWidget {
                           'assets/acc_bold.svg',
                           width: 25.w,
                           height: 25.h,
-                          color: cubit.currentIndex == 4
+                          color: appCubit.currentIndex == 4
                               ? mainColor
                               : Colors.grey,
                         ),
@@ -156,7 +143,7 @@ class UserMainScreen extends StatelessWidget {
                 ),
               ),
             ),
-            body: screens[cubit.currentIndex],
+            body: appCubit.userScreen[appCubit.currentIndex],
           ),
         );
       },

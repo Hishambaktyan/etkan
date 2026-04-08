@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../layout/user_layout/user_main_screen.dart';
@@ -44,7 +46,8 @@ class _UserVerificationScreenState extends State<UserVerificationScreen> {
       if (mounted) {
         Future.delayed(const Duration(seconds: 1));
         showSnackBar(Colors.green, 'تم توثيق حسابك', context);
-        moveAndReplace(context, const UserMainScreen());
+        moveAndReplace(context, const UserMainScreen()
+        );
       }
     }
   }

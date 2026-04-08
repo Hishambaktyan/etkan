@@ -236,8 +236,7 @@ class _BookingDetailsState extends State<BookingDetails> {
   Widget build(BuildContext context) {
     final Map<String,dynamic> request = widget.request;
     final Map<String,dynamic> providerData = widget.providerData;
-    return BlocConsumer<AppCubit,AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit,AppStates>(
       builder: (context, state) {
         AppCubit cubit = AppCubit.get(context);
         return Directionality(

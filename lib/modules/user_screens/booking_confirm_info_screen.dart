@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -6,14 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
+import 'package:trying_homy/layout/user_layout/user_main_screen.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/user_screens/booking_details.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
+import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
-import 'done_booking_screen.dart';
 
 class BookingConfirmInfoScreen extends StatefulWidget {
   final String serciveName;
@@ -53,10 +58,10 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
      String servicePeriod = widget.servicePeriod;
      String serviceImage = widget.serciveImage;
      String providerId = widget.providerId;
-    return BlocConsumer<AppCubit,AppStates>(
-      listener: (context, state) {},
+
+    return BlocBuilder<AppCubit,AppStates>(
       builder: (context, state) {
-        AppCubit cubit = AppCubit.get(context);
+        AppCubit appCubit = AppCubit.get(context);
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -79,7 +84,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                       padding: EdgeInsets.all(18.r),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                          color: cubit.isDark? lightDarkColor: Colors.white,
+                          color: appCubit.isDark? lightDarkColor: Colors.white,
                           boxShadow: [
                             BoxShadow (
                               color: mainColor.withOpacity(0.2),
@@ -89,7 +94,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                             ),
                           ],
                           borderRadius: BorderRadius.circular(20.r),
-                          border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+                          border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +105,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                   padding: const EdgeInsetsDirectional.all(8),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
+                                      color: appCubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
                                   ),
                                   child: const Icon(Icons.info_outline_rounded,color: mainColor,)
                               ),
@@ -110,7 +115,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14.sp,
-                                  color: cubit.isDark? Colors.white: Colors.black87,
+                                  color: appCubit.isDark? Colors.white: Colors.black87,
                                 ),
                               ),
                             ],
@@ -141,7 +146,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                   Text(
                                     '$serviceCategory   >   $serviceSubCategory',
                                     style: TextStyle(
-                                      color: cubit.isDark? Colors.white: Colors.grey.shade700,
+                                      color: appCubit.isDark? Colors.white: Colors.grey.shade700,
                                       fontSize: 10.sp,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -156,7 +161,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13.sp,
-                                        color: cubit.isDark? Colors.white: Colors.black,
+                                        color: appCubit.isDark? Colors.white: Colors.black,
                                       ),
                                     ),
                                   ),
@@ -165,7 +170,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                             ],
                           ),
                           SizedBox(height: 15.h),
-                          Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
+                          Divider(color: appCubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
                           SizedBox(height: 15.h),
                           Row(
                             children: [
@@ -175,7 +180,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                     Icon(
                                       Icons.payments_outlined,
                                       size: 18.r,
-                                      color:  cubit.isDark? darkSubTextColor: Colors.grey,                                                  ),
+                                      color:  appCubit.isDark? darkSubTextColor: Colors.grey,                                                  ),
                                     SizedBox(width: 8.w),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +188,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                         Text('السعر التقديري',
                                           style: TextStyle(
                                             fontSize: 10.sp,
-                                            color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                            color:  appCubit.isDark? darkSubTextColor: Colors.grey,
                                           ),
                                         ),
                                         Text(
@@ -202,7 +207,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                               Container(
                                 height: 30.h,
                                 width: 1,
-                                color:  cubit.isDark? darkSubTextColor: Colors.grey.shade300,
+                                color:  appCubit.isDark? darkSubTextColor: Colors.grey.shade300,
                               ),
                               SizedBox(width: 15.w),
                               Expanded(
@@ -211,7 +216,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                     Icon(
                                       Icons.timer_outlined,
                                       size: 18.r,
-                                      color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                      color:  appCubit.isDark? darkSubTextColor: Colors.grey,
                                     ),
                                     SizedBox(width: 8.w),
                                     Column(
@@ -221,13 +226,13 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                           'المدة المتوقعة',
                                           style: TextStyle(
                                             fontSize: 10.sp,
-                                            color:  cubit.isDark? darkSubTextColor: Colors.grey,
+                                            color:  appCubit.isDark? darkSubTextColor: Colors.grey,
                                           ),
                                         ),
                                         Text(
                                           '$servicePeriod دقيقة',
                                           style: TextStyle(
-                                            color: cubit.isDark? Colors.white: Colors.black87,
+                                            color: appCubit.isDark? Colors.white: Colors.black87,
                                             fontSize: 14.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -246,7 +251,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                     Container(
                       padding: EdgeInsets.all(15.r),
                       decoration: BoxDecoration(
-                          color: cubit.isDark? lightDarkColor: Colors.white,
+                          color: appCubit.isDark? lightDarkColor: Colors.white,
                           boxShadow: [
                             BoxShadow (
                               color: mainColor.withOpacity(0.2),
@@ -256,7 +261,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                             ),
                           ],
                           borderRadius: BorderRadius.circular(20.r),
-                          border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+                          border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,7 +272,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                   padding: const EdgeInsetsDirectional.all(8),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
+                                      color: appCubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
                                   ),
                                   child: SvgPicture.asset('assets/loc.svg',color: mainColor,)
                               ),
@@ -277,7 +282,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14.sp,
-                                  color: cubit.isDark? Colors.white: Colors.black87,
+                                  color: appCubit.isDark? Colors.white: Colors.black87,
                                 ),
                               ),
                             ],
@@ -307,7 +312,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                     Container(
                       padding: EdgeInsetsDirectional.all(15.r),
                       decoration: BoxDecoration(
-                          color: cubit.isDark? lightDarkColor: Colors.white,
+                          color: appCubit.isDark? lightDarkColor: Colors.white,
                           boxShadow: [
                             BoxShadow (
                               color: mainColor.withOpacity(0.2),
@@ -317,7 +322,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                             ),
                           ],
                           borderRadius: BorderRadius.circular(20.r),
-                          border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+                          border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +333,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                   padding: const EdgeInsetsDirectional.all(8),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
+                                      color: appCubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
                                   ),
                                   child: Icon(
                                       Icons.calendar_month_rounded,
@@ -342,7 +347,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14.sp,
-                                  color: cubit.isDark? Colors.white: Colors.black87,
+                                  color: appCubit.isDark? Colors.white: Colors.black87,
                                 ),
                               ),
                             ],
@@ -377,7 +382,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                               Container(
                                                   padding: const EdgeInsetsDirectional.all(8),
                                                   decoration: BoxDecoration(
-                                                      color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
+                                                      color: appCubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
                                                       borderRadius: BorderRadius.circular(10.r)
                                                   ),
                                                   child: const Icon(Icons.calendar_month_rounded,color: mainColor,size: 18,)
@@ -403,7 +408,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                               Container(
                                                   padding: const EdgeInsetsDirectional.all(8),
                                                   decoration: BoxDecoration(
-                                                      color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
+                                                      color: appCubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
                                                       borderRadius: BorderRadius.circular(10.r)
                                                   ),
                                                   child: const Icon(Icons.timer_outlined,color: mainColor,size: 18,)
@@ -506,7 +511,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                     Container(
                       padding: EdgeInsets.all(15.r),
                       decoration: BoxDecoration(
-                          color: cubit.isDark? lightDarkColor: Colors.white,
+                          color: appCubit.isDark? lightDarkColor: Colors.white,
                           boxShadow: [
                             BoxShadow (
                               color: mainColor.withOpacity(0.2),
@@ -516,7 +521,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                             ),
                           ],
                           borderRadius: BorderRadius.circular(20.r),
-                          border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+                          border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,7 +532,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                   padding: const EdgeInsetsDirectional.all(8),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
+                                      color: appCubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
                                   ),
                                   child: Icon(
                                       Icons.notes_rounded,
@@ -541,7 +546,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14.sp,
-                                  color: cubit.isDark? Colors.white: Colors.black87,
+                                  color: appCubit.isDark? Colors.white: Colors.black87,
                                 ),
                               ),
                             ],
@@ -569,46 +574,114 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                       ),
                     ),
                     SizedBox(height: 20.h,),
-                    BlocProvider(
-                      create: (context) => BookingCubit(),
-                      child: BlocConsumer<BookingCubit,BookingStates>(
-                        listener: (context, state) {
-                          if(state is CreateRequestSuccessState){
-                            cubit.changeIndex(0);
-                            moveAndReplace(context, const DoneBookingScreen());
-                          }
-                        },
-                        builder: (context, state) {
-                          BookingCubit bookingCubit = BookingCubit.get(context);
-                          return state is CreateRequestLoadingState ? const Center(child: CircularProgressIndicator())
-                              :defualtButton(
-                              onPressed: () async {
-                                DateTime bookingDateTime = DateTime(
-                                  selectedDate!.year,
-                                  selectedDate!.month,
-                                  selectedDate!.day,
-                                  selectedTime!.hour,
-                                  selectedTime!.minute,
-                                );
-                                var currentUser = cubit.allUsers[FirebaseAuth.instance.currentUser!.uid];
-                                await bookingCubit.createRequest(
-                                    category: serviceCategory,
-                                    customerId: currentUser['uid'],
-                                    providerId: providerId,
-                                    subCategory: serviceSubCategory,
-                                    address: 'VX6M+V7R شيخ عثمان، اليَمَن',
-                                    title: serviceName,
-                                    description: noteController.text.trim(),
-                                    image: 'https://i.pinimg.com/1200x/3e/f3/50/3ef350dc86cc82a092463e5d795654b5.jpg',
-                                    duration: servicePeriod,
-                                    price: servicePrice,
-                                    scheduledAt: Timestamp.fromDate(bookingDateTime)
-                                );
-                              },
-                              text: 'تأكيد الحجز'
+                    BlocConsumer<BookingCubit,BookingStates>(
+                      listener: (context, state) {
+                        if(state is CreateRequestSuccessState){
+                          appCubit.changeIndex(0);
+                          showDialog(
+                            context: context,
+                            barrierColor: Colors.black.withOpacity(0.2),
+                            builder: (BuildContext context) {
+                              return Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: Stack(
+                                  children: [
+                                    BackdropFilter(
+                                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                      child: Container(
+                                        color: Colors.transparent,
+                                      ),
+                                    ),
+                                    Center(
+                                      child: AlertDialog(
+                                        backgroundColor: appCubit.isDark ? lightDarkColor : Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20.r),
+                                        ),
+                                        contentPadding: EdgeInsets.all(20.r),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Lottie.asset(
+                                              'assets/animations/done.json',
+                                              width: 130.w,
+                                              height: 130.h
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'تم إرسال الطلب بنجاح',
+                                              style: TextStyle(
+                                                fontSize: 18.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context).textTheme.bodyLarge!.color,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Text(
+                                              'تم إرسال طلبك بنجاح، سوف يصلك إضعار عند قبول الفني للطلب',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                color: Theme.of(context).textTheme.bodyLarge!.color,
+                                                height: 1.5,
+                                              ),
+                                            ),
+                                            SizedBox(height: 25.h),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: defualtButton(
+                                                    onPressed: () => moveAndReplace(context, BlocProvider(
+                                                      create: (context) => UserServicesCubit(),
+                                                      child: const UserMainScreen(),
+                                                    )
+                                                    ),
+                                                    text: 'العودة إلى الرئيسية',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           );
-                        },
-                      ),
+                        }
+                      },
+                      builder: (context, state) {
+                        BookingCubit bookingCubit = BookingCubit.get(context);
+                        return state is CreateRequestLoadingState ? const Center(child: CircularProgressIndicator())
+                            :defualtButton(
+                            onPressed: () async {
+                              DateTime bookingDateTime = DateTime(
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
+                                selectedTime!.hour,
+                                selectedTime!.minute,
+                              );
+                              var currentUser = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid];
+                              await bookingCubit.createRequest(
+                                  category: serviceCategory,
+                                  customerId: currentUser['uid'],
+                                  providerId: providerId,
+                                  subCategory: serviceSubCategory,
+                                  address: 'VX6M+V7R شيخ عثمان، اليَمَن',
+                                  title: serviceName,
+                                  description: noteController.text.trim(),
+                                  image: 'https://i.pinimg.com/1200x/3e/f3/50/3ef350dc86cc82a092463e5d795654b5.jpg',
+                                  duration: servicePeriod,
+                                  price: servicePrice,
+                                  scheduledAt: Timestamp.fromDate(bookingDateTime)
+                              );
+                            },
+                            text: 'تأكيد الحجز'
+                        );
+                      },
                     ),
                     SizedBox(
                       height: 20.h,

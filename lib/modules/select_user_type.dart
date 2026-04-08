@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class SelectUserType extends StatefulWidget {
@@ -35,11 +37,10 @@ class _SelectUserTypeState extends State<SelectUserType> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w, bottom: 20.h),
+            padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w, bottom: 20.h,top: 25.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 25.h),
                 GestureDetector(
                   onTap: () {
                     setState(() {
@@ -202,8 +203,10 @@ class _SelectUserTypeState extends State<SelectUserType> {
           child: defualtButton(
             onPressed: () {
               if(selectedIndex==0){
+                CacheHelper.setBoolen(key: 'isWorker', value: false);
                 moveAndReplace(context, const UserSignUp() );
               }else{
+                CacheHelper.setBoolen(key: 'isWorker', value: true);
                 moveAndReplace(context, const WorkerSignup() );
               }
             },

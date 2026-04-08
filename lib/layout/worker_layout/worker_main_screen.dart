@@ -123,7 +123,7 @@ class WorkerMainScreen extends StatelessWidget {
                 ),
               ),
             ),
-            body: cubit.screens[cubit.currentIndex],
+            body: cubit.workerScreens[cubit.currentIndex],
           ),
         );
       }

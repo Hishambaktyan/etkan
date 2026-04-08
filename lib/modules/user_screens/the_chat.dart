@@ -335,7 +335,8 @@ class _TheChatState extends State<TheChat> {
                                     },
                                 );
                               },
-                              itemCount: docs.length),
+                              itemCount: docs.length
+                          ),
                         ),
                         StreamBuilder<DocumentSnapshot>(
                           stream: FirebaseFirestore.instance.collection('chats').doc(widget.chatId).snapshots(),

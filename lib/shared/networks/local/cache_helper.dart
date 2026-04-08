@@ -5,6 +5,7 @@ class CacheHelper{
   static  init() async {
     sharedPreferences = await SharedPreferences.getInstance();
   }
+
   static Future<bool>setBoolen(
       {required String key,
         required bool value,}
