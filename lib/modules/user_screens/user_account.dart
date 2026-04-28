@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,8 +8,7 @@ import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
 import 'package:trying_homy/modules/edit_profile_screen.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
-import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
+import 'package:trying_homy/modules/user_screens/fav_services.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
@@ -26,15 +25,15 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
-  bool isDark = false;
 
   List<Map<String, dynamic>> settingsList = [
     {'title': 'عرض الحساب', 'icon': 'assets/eye.svg'},
+    {'title': 'الخدمات المفضلة', 'icon': 'assets/heart.svg'},
     {'title': 'مشاركة التطبيق', 'icon': 'assets/share.svg'},
     {'title': 'تواصل معنا', 'icon': 'assets/chat.svg'},
     {'title': 'الأسئلة الشائعة', 'icon': 'assets/ques.svg'},
     {'title': 'الوضع المظلم', 'icon': 'assets/moon.svg'},
-    {'title': 'تسجيل خروج', 'icon': 'assets/login.svg'},
+    {'title': 'تسجيل خروج', 'icon': 'assets/out.svg'},
     {'title': 'حذف الحساب', 'icon': 'assets/delete.svg'},
   ];
 
@@ -72,11 +71,11 @@ class _UserAccountState extends State<UserAccount> {
               Transform.scale(
                 scale: .8,
                 child: Switch(
-                  value: isDark,
+                  value: AppCubit.get(context).isDark,
                   activeColor: mainColor,
                   onChanged: (v) {
                     setState(() {
-                      isDark = v;
+                      AppCubit.get(context).isDark = v;
                     });
                   },
                 ),
@@ -111,6 +110,7 @@ class _UserAccountState extends State<UserAccount> {
               }
             },
               builder: (context, state) {
+              Map<String,dynamic> user = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid];
               AuthCubit authCubit = AuthCubit.get(context);
                 return state is LogOutLoadingState ? const Center(child: CircularProgressIndicator())
                 : Scaffold(
@@ -234,15 +234,16 @@ class _UserAccountState extends State<UserAccount> {
                                                 CircleAvatar(
                                                   radius: 45.r,
                                                   backgroundColor: Colors.white.withOpacity(0.1),
-                                                  backgroundImage: const NetworkImage(
-                                                      'https://i.pinimg.com/736x/0e/45/8b/0e458b14989d9435ae048281a8b29c82.jpg'),
+                                                  backgroundImage: NetworkImage(
+                                                      user['profileImage']
+                                                  ),
                                                 ),
                                                 SizedBox(height: 10.w),
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                      'هشام هاني أحمد',
+                                                      user['name'],
                                                       style: TextStyle(
                                                         fontSize: 15.sp,
                                                         color: Colors.white,
@@ -251,7 +252,7 @@ class _UserAccountState extends State<UserAccount> {
                                                     ),
                                                     SizedBox(height: 5.h,),
                                                     Text(
-                                                      '770770858',
+                                                      user['phone'],
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontSize: 13.sp,
@@ -271,7 +272,7 @@ class _UserAccountState extends State<UserAccount> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 10.h,),
+                          SizedBox(height: 10.h),
                           Padding(
                             padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w),
                             child: Column(
@@ -285,31 +286,37 @@ class _UserAccountState extends State<UserAccount> {
                                 buildItem(
                                     title: settingsList[1]['title'],
                                     icon: settingsList[1]['icon'],
-                                    onTap: () {}
+                                    onTap: ()=>move(context, const FavServices())
                                 ),
                                 Divider(color: Colors.grey.withOpacity(.4),),
                                 buildItem(
                                     title: settingsList[2]['title'],
                                     icon: settingsList[2]['icon'],
-                                    onTap: ()=>move(context, const ContactUsScreen())
+                                    onTap: () {}
                                 ),
                                 Divider(color: Colors.grey.withOpacity(.4),),
                                 buildItem(
                                     title: settingsList[3]['title'],
                                     icon: settingsList[3]['icon'],
-                                    onTap: ()=>move(context, const FaqScreen())
+                                    onTap: ()=>move(context, const ContactUsScreen())
                                 ),
                                 Divider(color: Colors.grey.withOpacity(.4),),
                                 buildItem(
                                     title: settingsList[4]['title'],
                                     icon: settingsList[4]['icon'],
-                                    isSwitch: true,
-                                    onTap: (){}
+                                    onTap: ()=>move(context, const FaqScreen())
                                 ),
                                 Divider(color: Colors.grey.withOpacity(.4),),
                                 buildItem(
                                     title: settingsList[5]['title'],
                                     icon: settingsList[5]['icon'],
+                                    isSwitch: true,
+                                    onTap: ()=>appCubit.changeTheme()
+                                ),
+                                Divider(color: Colors.grey.withOpacity(.4),),
+                                buildItem(
+                                    title: settingsList[6]['title'],
+                                    icon: settingsList[6]['icon'],
                                     isDanger: true,
                                     onTap: () => showDialog(
                                       context: context,
@@ -399,8 +406,8 @@ class _UserAccountState extends State<UserAccount> {
                                 ),
                                 Divider(color: Colors.grey.withOpacity(.4),),
                                 buildItem(
-                                    title: settingsList[6]['title'],
-                                    icon: settingsList[6]['icon'],
+                                    title: settingsList[7]['title'],
+                                    icon: settingsList[7]['icon'],
                                     isDanger: true,
                                     onTap: () {}
                                 ),

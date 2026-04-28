@@ -98,14 +98,14 @@ class _UserChatsState extends State<UserChats> {
                       myName: 'هشام العميل',
                       myImage: 'https://i.pinimg.com/736x/52/21/33/522133dfd3c348af96890c25a39eae99.jpg'
                   );*/
-                  appCubit.message.text='نيقاااااااااا';
+                  /*appCubit.message.text='نيقاااااااااا';
                   await appCubit.sendMessage(
                       'fy988tHKrwS7h9M4jhONBk6iKwq1_zgyZCfttdmWsmKTNWneC4vbD7sX2',
                       'zgyZCfttdmWsmKTNWneC4vbD7sX2',
                       myUserId,
                     'السلام',
                     'السلاااام'
-                  );
+                  );*/
                 },
                 child: Container(
                   padding: const EdgeInsets.all(10),

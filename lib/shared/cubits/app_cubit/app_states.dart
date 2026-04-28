@@ -16,18 +16,6 @@ class ChangeServiceActivityState extends AppStates{}
 
 //////////////////////////////////////
 
-class SendMessageSuccessState extends AppStates{}
-
-class SendMessageLoadingState extends AppStates{}
-
-class SendMessageErrorState extends AppStates{
-  final String error;
-
-  SendMessageErrorState({required this.error});
-}
-
-//////////////////////////////////////
-
 class GetWorkerDataSuccessState extends AppStates{}
 
 class GetWorkerDataLoadingState extends AppStates{}

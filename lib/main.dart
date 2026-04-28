@@ -9,6 +9,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/cubits/bloc_observer.dart';
+import 'package:trying_homy/shared/cubits/chat_cubit/chat_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/styles.dart';
 import 'firebase_options.dart';
@@ -65,11 +66,11 @@ Future<void> main() async {
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user != null) {
       if(user.emailVerified){
-        print('-----------------------------------------"تم تسجيل الدخول بنجاح، الـ UID هو: ${user.uid}');
+        print('register successfully-----------------------------------------${user.uid}');
       }
     }
     else {
-      print("لا يوجد مستخدم مسجل حاليا-----------------------------ً");
+      print("no registered user currently-----------------------------ً");
     }
   });
 
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<UserServicesCubit>(create: (context) => UserServicesCubit(),),
         BlocProvider<BookingCubit>(create: (context) => BookingCubit(),),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()..checkUser(),),
+        BlocProvider(create: (context) => ChatCubit(),)
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),

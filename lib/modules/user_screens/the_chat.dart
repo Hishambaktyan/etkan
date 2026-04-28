@@ -10,6 +10,8 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:trying_homy/shared/cubits/chat_cubit/chat_cubit.dart';
+import 'package:trying_homy/shared/cubits/chat_cubit/chat_states.dart';
 import '../../shared/styles/colors.dart';
 
 class TheChat extends StatefulWidget {
@@ -88,11 +90,11 @@ class _TheChatState extends State<TheChat> {
     });
   }
 
+
   @override
   void initState() {
-    AppCubit cubit = AppCubit.get(context);
 
-    cubit.resetUnreadCount(widget.chatId, widget.myId);
+    ChatCubit.get(context).resetUnreadCount(widget.chatId, widget.myId);
 
     scrollController.addListener(() {
       if (scrollController.position.pixels > 100) {
@@ -111,22 +113,14 @@ class _TheChatState extends State<TheChat> {
         .collection('messages')
         .orderBy('timestamp',descending: true)
         .snapshots();
-    cubit.markAsSeen(widget.chatId, widget.myId);
+    ChatCubit.get(context).markAsSeen(widget.chatId, widget.myId);
     TheChat.currentChatId = widget.chatId;
     super.initState();
   }
 
-  late AppCubit cubit;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    cubit = AppCubit.get(context);
-  }
-
   @override
   void dispose() {
-    cubit.markAsSeen(widget.chatId, widget.myId);
+    ChatCubit.get(context).markAsSeen(widget.chatId, widget.myId);
     typingTimer?.cancel();
     messageFocus.dispose();
     scrollController.dispose();
@@ -136,450 +130,453 @@ class _TheChatState extends State<TheChat> {
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
     String otherUserImage = widget.otherUserImage;
     String otherUsername = widget.otherUsername;
     String otherUserId = widget.otherUserId;
     String myId = widget.myId;
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            appBar: AppBar(
-              titleSpacing: 0,
-              leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon:  Icon(
-                    CupertinoIcons.back,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-              ),
-              title: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(otherUserImage),
+        AppCubit appCubit = AppCubit.get(context);
+        return BlocBuilder<ChatCubit,ChatStates>(
+          builder:(context, state) {
+            ChatCubit chatCubit = ChatCubit.get(context);
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(
+                resizeToAvoidBottomInset: true,
+                appBar: AppBar(
+                  titleSpacing: 0,
+                  leading: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon:  Icon(
+                      CupertinoIcons.back,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
                   ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  Text(
-                      otherUsername,
-                      style:
+                  title: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(otherUserImage),
+                      ),
+                      SizedBox(
+                        width: 10.w,
+                      ),
+                      Text(
+                          otherUsername,
+                          style:
                           TextStyle(
                               fontSize: 13.sp, fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyLarge!.color
+                              color: Theme.of(context).textTheme.bodyLarge!.color
                           )
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              actions: [
-                IconButton(
-                    onPressed: () {},
-                    icon:  Icon(
-                        Icons.more_vert_rounded,
-                      color: Theme.of(context).iconTheme.color,
+                  actions: [
+                    IconButton(
+                        onPressed: () {},
+                        icon:  Icon(
+                          Icons.more_vert_rounded,
+                          color: Theme.of(context).iconTheme.color,
+                        )
                     )
-                )
-              ],
-            ),
-            body: StreamBuilder(
-              stream: stream,
-              builder: (context, snapshot) {
-                AppCubit.get(context).markAsSeen(widget.chatId, widget.myId);
-                if (snapshot.hasError) {
-                  return const Center(
-                    child: Text(
-                      'حدث خطأ ما...):',
-                      style: TextStyle(
-                          color: Colors.grey
-                      ),
-                    )
-                    ,
-                  );
-                }
-                if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'لا توجد دردشات...):',
-                      style: TextStyle(
-                          color: Colors.grey
-                      ),
-                    )
-                    ,
-                  );
-                }
-                var docs = snapshot.data!.docs;
-                for (var doc in docs) {
-                  var data = doc.data() as Map<String, dynamic>;
-                  if (data['receiverId'] == widget.myId && data['isSeen'] == false) {
-                    cubit.markAsSeen(widget.chatId, widget.myId);
-                    break;
-                  }
-                }
-                return Stack(
-                  alignment: AlignmentDirectional.bottomEnd,
-                  children: [
-                    Column(
+                  ],
+                ),
+                body: StreamBuilder(
+                  stream: stream,
+                  builder: (context, snapshot) {
+                    ChatCubit.get(context).markAsSeen(widget.chatId, widget.myId);
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text(
+                          'حدث خطأ ما...):',
+                          style: TextStyle(
+                              color: Colors.grey
+                          ),
+                        ),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'لا توجد دردشات...):',
+                          style: TextStyle(
+                              color: Colors.grey
+                          ),
+                        )
+                        ,
+                      );
+                    }
+                    var docs = snapshot.data!.docs;
+                    for (var doc in docs) {
+                      var data = doc.data() as Map<String, dynamic>;
+                      if (data['receiverId'] == widget.myId && data['isSeen'] == false) {
+                        chatCubit.markAsSeen(widget.chatId, widget.myId);
+                        break;
+                      }
+                    }
+                    return Stack(
+                      alignment: AlignmentDirectional.bottomEnd,
                       children: [
-                        Expanded(
-                          child: ListView.builder(
-                            reverse: true,
-                              padding: EdgeInsetsDirectional.only(bottom: 10.h),
-                              controller: scrollController,
-                              itemBuilder: (context, index) {
-                                var doc = docs[index];
-                                var chatData = doc.data() as Map<String, dynamic>;
-                                bool isMe = chatData['senderId'] == myId ? true : false;
-                                return SwipeableMessage(
-                                    child: Padding(
-                                      padding: EdgeInsetsDirectional.symmetric(
-                                          vertical: 7.h, horizontal: 7.w),
+                        Column(
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                  reverse: true,
+                                  padding: EdgeInsetsDirectional.only(bottom: 10.h),
+                                  controller: scrollController,
+                                  itemBuilder: (context, index) {
+                                    var doc = docs[index];
+                                    var chatData = doc.data() as Map<String, dynamic>;
+                                    bool isMe = chatData['senderId'] == myId ? true : false;
+                                    return SwipeableMessage(
+                                      child: Padding(
+                                        padding: EdgeInsetsDirectional.symmetric(
+                                            vertical: 7.h, horizontal: 7.w),
+                                        child: Align(
+                                          alignment: isMe
+                                              ? AlignmentDirectional.centerEnd
+                                              : AlignmentDirectional.centerStart,
+                                          child: Container(
+                                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 8.h, bottom: 2.h),
+                                            constraints: BoxConstraints(
+                                                maxWidth: MediaQuery.of(context).size.width * 0.75),
+                                            decoration: BoxDecoration(
+                                              color: isMe
+                                                  ? appCubit.isDark ? Colors.blue.shade800 : Colors.blue.shade700
+                                                  : appCubit.isDark ? const Color(0xFF1C2128) : Colors.blue.withOpacity(0.3),
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(15.r),
+                                                topRight: Radius.circular(15.r),
+                                                bottomLeft: isMe ? const Radius.circular(0) : Radius.circular(15.r),
+                                                bottomRight: isMe ? Radius.circular(15.r) : const Radius.circular(0),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                                              children: [
+                                                if (chatData['replyText'] != null)
+                                                  Container(
+                                                    margin: EdgeInsets.only(bottom: 5.h),
+                                                    padding: EdgeInsets.all(8.r),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black.withOpacity(0.05),
+                                                      borderRadius: BorderRadius.circular(10.r),
+                                                      border: Border(
+                                                        right: BorderSide(
+                                                          color: isMe ? Colors.white70 : mainColor,
+                                                          width: 3.w,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          chatData['replyName'] ?? '',
+                                                          style: TextStyle(
+                                                            color: isMe ? Colors.white : mainColor,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 11.sp,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          chatData['replyText'],
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(
+                                                            color: isMe ? Colors.white70 : Colors.grey.shade700,
+                                                            fontSize: 10.sp,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                Text(
+                                                  chatData['text'],
+                                                  style: TextStyle(
+                                                      color: isMe
+                                                          ? Colors.white
+                                                          : appCubit.isDark ? Colors.white.withOpacity(0.9) : Colors.black,
+                                                      fontSize: 13.sp),
+                                                ),
+                                                Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      appCubit.timeFormatStatusTime(chatData['timestamp']),
+                                                      style: TextStyle(
+                                                          color: isMe ? Colors.green.shade100 : Colors.grey,
+                                                          fontSize: 8.sp),
+                                                    ),
+                                                    SizedBox(width: 3.w),
+                                                    isMe
+                                                        ? chatCubit.buildMessageStatus(
+                                                      chatData['messageStatus'] ?? 'sent',
+                                                      chatData['isSeen'] ?? false,
+                                                      isMe,
+                                                    )
+                                                        : const SizedBox()
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      onReply: (){
+                                        onReply(chatData);
+                                      },
+                                    );
+                                  },
+                                  itemCount: docs.length
+                              ),
+                            ),
+                            StreamBuilder<DocumentSnapshot>(
+                              stream: FirebaseFirestore.instance.collection('chats').doc(widget.chatId).snapshots(),
+                              builder: (context, typingSnapshot) {
+                                if (typingSnapshot.hasData && typingSnapshot.data!.exists) {
+                                  var data = typingSnapshot.data!.data() as Map<String, dynamic>;
+                                  var typingMap = data['typingStatus'] as Map<String, dynamic>?;
+                                  bool isOtherTyping = typingMap?[widget.otherUserId] ?? false;
+
+                                  if (isOtherTyping) {
+                                    return AnimatedOpacity(
+                                      opacity: isOtherTyping ? 1.0 : 0.0,
+                                      duration: const Duration(milliseconds: 300),
                                       child: Align(
-                                        alignment: isMe
-                                            ? AlignmentDirectional.centerEnd
-                                            : AlignmentDirectional.centerStart,
+                                        alignment: AlignmentDirectional.centerStart,
                                         child: Container(
-                                          padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 8.h, bottom: 2.h),
-                                          constraints: BoxConstraints(
-                                              maxWidth: MediaQuery.of(context).size.width * 0.75),
+                                          margin: EdgeInsetsDirectional.only(start: 7.w),
+                                          padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 8),
+                                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.15),
                                           decoration: BoxDecoration(
-                                            color: isMe
-                                                ? cubit.isDark ? Colors.blue.shade800 : Colors.blue.shade700
-                                                : cubit.isDark ? const Color(0xFF1C2128) : Colors.blue.withOpacity(0.3),
+                                            color: appCubit.isDark? lightDarkColor: Colors.blue.withOpacity(0.3),
                                             borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(15.r),
                                               topRight: Radius.circular(15.r),
-                                              bottomLeft: isMe ? const Radius.circular(0) : Radius.circular(15.r),
-                                              bottomRight: isMe ? Radius.circular(15.r) : const Radius.circular(0),
+                                              bottomLeft: Radius.circular(15.r),
+                                              bottomRight: const Radius.circular(0),
                                             ),
                                           ),
-                                          child: Column(
-                                            crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                                            children: [
-                                              if (chatData['replyText'] != null)
-                                                Container(
-                                                  margin: EdgeInsets.only(bottom: 5.h),
-                                                  padding: EdgeInsets.all(8.r),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black.withOpacity(0.05),
-                                                    borderRadius: BorderRadius.circular(10.r),
-                                                    border: Border(
-                                                      right: BorderSide(
-                                                        color: isMe ? Colors.white70 : mainColor,
-                                                        width: 3.w,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        chatData['replyName'] ?? '',
-                                                        style: TextStyle(
-                                                          color: isMe ? Colors.white : mainColor,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 11.sp,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        chatData['replyText'],
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                          color: isMe ? Colors.white70 : Colors.grey.shade700,
-                                                          fontSize: 10.sp,
-                                                        ),
-                                                      ),
-                                                    ],
+                                          child:  SpinKitThreeBounce(
+                                            color: appCubit.isDark? Colors.grey.shade300: Colors.grey,
+                                            size: 10,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                                return const SizedBox();
+                              },
+                            ),
+                            Container(
+                              color: Colors.transparent,
+                              width: double.infinity,
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.only(
+                                  start: 13.w,
+                                  end: 13.w,
+                                  bottom: 13.h,
+                                  top: 5.h,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        clipBehavior: Clip.antiAlias,
+                                        decoration: BoxDecoration(
+                                          color: appCubit.isDark ? const Color(0xFF161B22) : Colors.grey.withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(17.r),
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            if (replyMessage != null)
+                                              Container(
+                                                width: double.infinity,
+                                                padding: EdgeInsets.all(8.r),
+                                                margin: EdgeInsets.all(5.r),
+                                                decoration: BoxDecoration(
+                                                  color: appCubit.isDark ? Colors.black.withOpacity(0.3) : Colors.white.withOpacity(0.5),
+                                                  borderRadius: BorderRadius.circular(12.r),
+                                                  border: Border(
+                                                    right: BorderSide(color: mainColor, width: 4.w),
                                                   ),
                                                 ),
-                                              Text(
-                                                chatData['text'],
-                                                style: TextStyle(
-                                                    color: isMe
-                                                        ? Colors.white
-                                                        : cubit.isDark ? Colors.white.withOpacity(0.9) : Colors.black,
-                                                    fontSize: 13.sp),
-                                              ),
-                                              Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    cubit.timeFormatStatusTime(chatData['timestamp']),
-                                                    style: TextStyle(
-                                                        color: isMe ? Colors.green.shade100 : Colors.grey,
-                                                        fontSize: 8.sp),
-                                                  ),
-                                                  SizedBox(width: 3.w),
-                                                  isMe
-                                                      ? cubit.buildMessageStatus(
-                                                    chatData['messageStatus'] ?? 'sent',
-                                                    chatData['isSeen'] ?? false,
-                                                    isMe,
-                                                  )
-                                                      : const SizedBox()
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    onReply: (){
-                                      onReply(chatData);
-                                    },
-                                );
-                              },
-                              itemCount: docs.length
-                          ),
-                        ),
-                        StreamBuilder<DocumentSnapshot>(
-                          stream: FirebaseFirestore.instance.collection('chats').doc(widget.chatId).snapshots(),
-                          builder: (context, typingSnapshot) {
-                            if (typingSnapshot.hasData && typingSnapshot.data!.exists) {
-                              var data = typingSnapshot.data!.data() as Map<String, dynamic>;
-                              var typingMap = data['typingStatus'] as Map<String, dynamic>?;
-                              bool isOtherTyping = typingMap?[widget.otherUserId] ?? false;
-
-                              if (isOtherTyping) {
-                                return AnimatedOpacity(
-                                  opacity: isOtherTyping ? 1.0 : 0.0,
-                                  duration: const Duration(milliseconds: 300),
-                                  child: Align(
-                                    alignment: AlignmentDirectional.centerStart,
-                                    child: Container(
-                                      margin: EdgeInsetsDirectional.only(start: 7.w),
-                                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 3,vertical: 8),
-                                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.15),
-                                      decoration: BoxDecoration(
-                                        color: cubit.isDark? lightDarkColor: Colors.blue.withOpacity(0.3),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15.r),
-                                          topRight: Radius.circular(15.r),
-                                          bottomLeft: Radius.circular(15.r),
-                                          bottomRight: const Radius.circular(0),
-                                        ),
-                                      ),
-                                      child:  SpinKitThreeBounce(
-                                        color: cubit.isDark? Colors.grey.shade300: Colors.grey,
-                                        size: 10,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                            return const SizedBox();
-                          },
-                        ),
-                        Container(
-                          color: Colors.transparent,
-                          width: double.infinity,
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.only(
-                              start: 13.w,
-                              end: 13.w,
-                              bottom: 13.h,
-                              top: 5.h,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
-                                      color: cubit.isDark ? const Color(0xFF161B22) : Colors.grey.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(17.r),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        if (replyMessage != null)
-                                          Container(
-                                            width: double.infinity,
-                                            padding: EdgeInsets.all(8.r),
-                                            margin: EdgeInsets.all(5.r),
-                                            decoration: BoxDecoration(
-                                              color: cubit.isDark ? Colors.black.withOpacity(0.3) : Colors.white.withOpacity(0.5),
-                                              borderRadius: BorderRadius.circular(12.r),
-                                              border: Border(
-                                                right: BorderSide(color: mainColor, width: 4.w),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        replyMessage!['senderId']==myId?
-                                                          'أنت'
-                                                            : otherUsername,
-                                                        style: TextStyle(
-                                                          color: mainColor,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 12.sp,
-                                                        ),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            replyMessage!['senderId']==myId?
+                                                            'أنت'
+                                                                : otherUsername,
+                                                            style: TextStyle(
+                                                              color: mainColor,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 12.sp,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            replyMessage!['text'] ?? '',
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: TextStyle(
+                                                              fontSize: 11.sp,
+                                                              color: Colors.grey,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                      Text(
-                                                        replyMessage!['text'] ?? '',
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                          fontSize: 11.sp,
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          replyMessage = null;
+                                                        });
+                                                      },
+                                                      child: Icon(Icons.close, size: 18.r, color: Colors.grey),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            TextFormField(
+                                              controller: chatCubit.message,
+                                              focusNode: messageFocus,
+                                              style: TextStyle(fontSize: 12.sp),
+                                              minLines: 1,
+                                              maxLines: 5,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  chatCubit.isTyping = value.isNotEmpty;
+                                                });
+
+                                                if (value.isNotEmpty) {
+                                                  setTypingStatus(true);
+                                                  typingTimer?.cancel();
+                                                  typingTimer = Timer(const Duration(seconds: 1), () {
+                                                    setTypingStatus(false);
+                                                  });
+                                                } else {
+                                                  typingTimer?.cancel();
+                                                  setTypingStatus(false);
+                                                }
+                                              },
+                                              keyboardType: TextInputType.multiline,
+                                              textAlignVertical: TextAlignVertical.center,
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsetsDirectional.symmetric(
+                                                  horizontal: 15.w,
+                                                  vertical: 10.h,
+                                                ),
+                                                hintText: 'اكتب رسالة...',
+                                                hintStyle: TextStyle(
+                                                  fontSize: 13.sp,
+                                                  color: Colors.grey,
+                                                ),
+                                                border: InputBorder.none,
+                                                suffixIcon: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    if (!chatCubit.isTyping)
+                                                      InkWell(
+                                                        splashColor: Colors.transparent,
+                                                        highlightColor: Colors.transparent,
+                                                        onTap: () {},
+                                                        child: SvgPicture.asset(
+                                                          'assets/camera.svg',
+                                                          height: 23.h,
+                                                          width: 23.h,
                                                           color: Colors.grey,
                                                         ),
                                                       ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      replyMessage = null;
-                                                    });
-                                                  },
-                                                  child: Icon(Icons.close, size: 18.r, color: Colors.grey),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        TextFormField(
-                                          controller: cubit.message,
-                                          focusNode: messageFocus,
-                                          style: TextStyle(fontSize: 12.sp),
-                                          minLines: 1,
-                                          maxLines: 5,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              cubit.isTyping = value.isNotEmpty;
-                                            });
-
-                                            if (value.isNotEmpty) {
-                                              setTypingStatus(true);
-                                              typingTimer?.cancel();
-                                              typingTimer = Timer(const Duration(seconds: 1), () {
-                                                setTypingStatus(false);
-                                              });
-                                            } else {
-                                              typingTimer?.cancel();
-                                              setTypingStatus(false);
-                                            }
-                                          },
-                                          keyboardType: TextInputType.multiline,
-                                          textAlignVertical: TextAlignVertical.center,
-                                          decoration: InputDecoration(
-                                            contentPadding: EdgeInsetsDirectional.symmetric(
-                                              horizontal: 15.w,
-                                              vertical: 10.h,
-                                            ),
-                                            hintText: 'ارسل رسالة...',
-                                            hintStyle: TextStyle(
-                                              fontSize: 13.sp,
-                                              color: Colors.grey,
-                                            ),
-                                            border: InputBorder.none,
-                                            suffixIcon: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                if (!cubit.isTyping)
-                                                  InkWell(
-                                                    splashColor: Colors.transparent,
-                                                    highlightColor: Colors.transparent,
-                                                    onTap: () {},
-                                                    child: SvgPicture.asset(
-                                                      'assets/camera.svg',
-                                                      height: 23.h,
-                                                      width: 23.h,
-                                                      color: Colors.grey,
+                                                    SizedBox(width: 15.w),
+                                                    InkWell(
+                                                      onTap: () {},
+                                                      child: SvgPicture.asset(
+                                                        'assets/clip.svg',
+                                                        height: 23.h,
+                                                        width: 23.h,
+                                                        color: Colors.grey,
+                                                      ),
                                                     ),
-                                                  ),
-                                                SizedBox(width: 15.w),
-                                                InkWell(
-                                                  onTap: () {},
-                                                  child: SvgPicture.asset(
-                                                    'assets/clip.svg',
-                                                    height: 23.h,
-                                                    width: 23.h,
-                                                    color: Colors.grey,
-                                                  ),
+                                                    SizedBox(width: 10.w),
+                                                  ],
                                                 ),
-                                                SizedBox(width: 10.w),
-                                              ],
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                SizedBox(width: 10.w),
-                                FloatingActionButton(
-                                  onPressed: () async {
-                                    String? rText = replyMessage != null ? replyMessage!['text'] : null;
-                                    String? rName = replyMessage != null
-                                        ? (replyMessage!['senderId'] == myId ? 'أنت' : widget.otherUsername)
-                                        : null;
-                                    setState(() {
-                                      replyMessage = null;
-                                    });
-                                    await cubit.sendMessage(widget.chatId, otherUserId, myId,rText,rName  );
+                                    SizedBox(width: 10.w),
+                                    FloatingActionButton(
+                                      onPressed: () async {
+                                        String? rText = replyMessage != null ? replyMessage!['text'] : null;
+                                        String? rName = replyMessage != null
+                                            ? (replyMessage!['senderId'] == myId ? 'أنت' : widget.otherUsername)
+                                            : null;
+                                        setState(() {
+                                          replyMessage = null;
+                                        });
+                                        await chatCubit.sendMessage(widget.chatId, otherUserId, myId,rText,rName  );
 
-                                  },
-                                  elevation: 0,
-                                  shape: const CircleBorder(),
-                                  backgroundColor: mainColor,
-                                  splashColor: Colors.transparent,
-                                  child: Icon(
-                                    Icons.send_rounded,
-                                    color: Colors.white,
-                                    size: 25.h,
-                                  ),
+                                      },
+                                      elevation: 0,
+                                      shape: const CircleBorder(),
+                                      backgroundColor: mainColor,
+                                      splashColor: Colors.transparent,
+                                      child: Icon(
+                                        Icons.send_rounded,
+                                        color: Colors.white,
+                                        size: 25.h,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        AnimatedScale(
+                          duration: const Duration(milliseconds: 200),
+                          scale: showScrollToBottomButton ? 1.0 : 0.0,
+                          child: AnimatedOpacity(
+                            duration: const Duration(milliseconds: 200),
+                            opacity: showScrollToBottomButton ? 1.0 : 0.0,
+                            child: Padding(
+                              padding: EdgeInsetsDirectional.only(
+                                  bottom: 100.h, end: 10.w),
+                              child: FloatingActionButton.small(
+                                heroTag: 'scroll_down',
+                                backgroundColor: appCubit.isDark? const Color(0xFF161B22) :Colors.white,
+                                elevation: 4,
+                                shape: const CircleBorder(),
+                                onPressed: () => scrollToBottom(),
+                                child: SvgPicture.asset(
+                                  'assets/down.svg',
+                                  width: 23.w,
+                                  height: 23.h,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        )
                       ],
-                    ),
-                    AnimatedScale(
-                      duration: const Duration(milliseconds: 200),
-                      scale: showScrollToBottomButton ? 1.0 : 0.0,
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        opacity: showScrollToBottomButton ? 1.0 : 0.0,
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.only(
-                              bottom: 100.h, end: 10.w),
-                          child: FloatingActionButton.small(
-                            heroTag: 'scroll_down',
-                            backgroundColor: cubit.isDark? const Color(0xFF161B22) :Colors.white,
-                            elevation: 4,
-                            shape: const CircleBorder(),
-                            onPressed: () => scrollToBottom(),
-                            child: SvgPicture.asset(
-                              'assets/down.svg',
-                              width: 23.w,
-                              height: 23.h,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              },
-            ),
-          ),
+                    );
+                  },
+                ),
+              ),
+            );
+        },
         );
       },
     );

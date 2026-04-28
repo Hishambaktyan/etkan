@@ -113,13 +113,20 @@ class _FaqScreenState extends State<FaqScreen> {
               body: ListView.separated(
                 padding: EdgeInsetsDirectional.all(10.r),
                 itemCount: faqData.length,
-                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                separatorBuilder: (context, index) => SizedBox(height: 20.h),
                 itemBuilder: (context, index) {
                   return Container(
                     decoration: BoxDecoration(
                       color: cubit.isDark? const Color(0xFF161B22): Colors.white,
                       borderRadius: BorderRadius.circular(15.r),
-                      boxShadow: cubit.isDark?[]: shadow,
+                      boxShadow: cubit.isDark?[]: [
+                        BoxShadow (
+                          color: mainColor.withOpacity(0.2),
+                          spreadRadius: 1.0,
+                          blurRadius: 7.0,
+                          offset: const Offset(2, 5),
+                        ),
+                      ],
                     ),
                     child: Theme(
                       data: Theme.of(context).copyWith(

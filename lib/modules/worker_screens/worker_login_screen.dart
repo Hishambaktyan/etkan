@@ -252,7 +252,8 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 20.h),
-                                authCubit.state is LoginLoadingState
+                                authCubit
+                                    .state is LoginLoadingState
                                     ? const Center(
                                     child: CircularProgressIndicator())
                                     : defualtButton(
