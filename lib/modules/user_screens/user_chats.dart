@@ -22,8 +22,8 @@ class _UserChatsState extends State<UserChats> {
   String myUserId = FirebaseAuth.instance.currentUser!.uid;
   final Stream<QuerySnapshot> chatStreamBuilder = FirebaseFirestore.instance
       .collection('chats')
-      .where('users', arrayContains: FirebaseAuth.instance.currentUser!.uid )
-      .orderBy('lastUpdate',descending: true)
+      .where('users', arrayContains: FirebaseAuth.instance.currentUser!.uid)
+      .orderBy('lastUpdate', descending: true)
       .snapshots();
 
   Future<void> createChat({
@@ -33,8 +33,7 @@ class _UserChatsState extends State<UserChats> {
     required String myId,
     required String myName,
     required String myImage,
-  })
-  async {
+  }) async {
     try {
       List<String> ids = [myId, receiverId];
       ids.sort();
@@ -62,17 +61,16 @@ class _UserChatsState extends State<UserChats> {
       }, SetOptions(merge: true));
 
       print('^^^^^^^^^^^^^^^^^^^^^^^^^^Done^^^^^^^^^^^^^^^^^^^^^^^^^');
-
-    } catch (e) {
-    }
+    } catch (e) {}
   }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit,AppStates>(
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
         return Scaffold(
-          appBar: AppBar(
+            /*appBar: AppBar(
             titleSpacing: 10,
             elevation: 0,
             scrolledUnderElevation: 0,
@@ -167,174 +165,210 @@ class _UserChatsState extends State<UserChats> {
               ),
               SizedBox(width: 10.w),
             ],
-          ),
-          body: StreamBuilder(
-            stream: chatStreamBuilder,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Center(
-                  child: Text(
-                    'حدث خطأ ما...',
-                    style: TextStyle(
-                        color: Colors.grey
-                    ),
-                  )
-                  ,
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) return ChatShimmerLoading(isDark: appCubit.isDark);
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'لا توجد دردشات...',
-                    style: TextStyle(
-                        color: Colors.grey
-                    ),
-                  )
-                  ,
-                );
-              }
-              var docs = snapshot.data!.docs;
-              return Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: ListView.separated(
-                    physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsetsDirectional.only(start:10.w,top: 20.h,bottom: 20.h,end:10.w),
-                    itemCount: docs.length,
-                    itemBuilder: (context, index) {
+          ),*/
 
-                      var doc = docs[index];
-                      var chatData = doc.data() as Map<String, dynamic>;
-                      String lastMessage = chatData['lastMessage'] ?? '';
-                      var unReadCount = (chatData['unreadCount'] ?? {})[myUserId] ?? 0;
+            body: SingleChildScrollView(
+          child: Column(
+            children: [
+              headerWithSearch(
+                title: 'الدردشة',
+                searchKeyWords: [
+                  "ابحث عن محادثة",
+                  "ابحث عن اسم الفني",
+                  "ابحث عن رسالة",
+                ],
+                context: context,
+              ),
+              StreamBuilder(
+                stream: chatStreamBuilder,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Center(
+                      child: Text(
+                        'حدث خطأ ما...',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    return ChatShimmerLoading(isDark: appCubit.isDark);
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SizedBox(
+                      height: 500.h,
+                      child: ChatShimmerLoading(isDark: appCubit.isDark),
+                    );
+                  }
+                  var docs = snapshot.data!.docs;
+                  return Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        padding: EdgeInsetsDirectional.only(
+                            start: 10.w, top: 20.h, bottom: 20.h, end: 10.w),
+                        itemCount: docs.length,
+                        itemBuilder: (context, index) {
+                          var doc = docs[index];
+                          var chatData = doc.data() as Map<String, dynamic>;
+                          String lastMessage = chatData['lastMessage'] ?? '';
+                          var unReadCount =
+                              (chatData['unreadCount'] ?? {})[myUserId] ?? 0;
 
-                      List users = chatData['users'] ?? [];
-                      String otherUser =
-                      users.firstWhere((id) => id != myUserId, orElse: () => '');
+                          List users = chatData['users'] ?? [];
+                          String otherUser = users.firstWhere(
+                              (id) => id != myUserId,
+                              orElse: () => '');
 
-                      Map<String, dynamic> usersInfo = chatData['userInfo'] ?? {};
+                          Map<String, dynamic> usersInfo =
+                              chatData['userInfo'] ?? {};
 
-                      var otherUserData = usersInfo[otherUser] ?? {};
+                          var otherUserData = usersInfo[otherUser] ?? {};
 
-                      var otherUsername = otherUserData['name'] ?? 'مستخدم';
-                      var otherUserImage = otherUserData['image'] ?? '';
+                          var otherUsername = otherUserData['name'] ?? 'مستخدم';
+                          var otherUserImage = otherUserData['image'] ?? '';
 
-                      bool isMe = chatData['lastSenderId'] == myUserId;
+                          bool isMe = chatData['lastSenderId'] == myUserId;
 
-                      Map<String, dynamic> unreadMap = chatData['unreadCount'] ?? {};
-                      int otherUnread = unreadMap[otherUser] ?? 0;
+                          Map<String, dynamic> unreadMap =
+                              chatData['unreadCount'] ?? {};
+                          int otherUnread = unreadMap[otherUser] ?? 0;
 
-                      bool otherHasRead = otherUnread == 0;
-                      return InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: ()=>move(context, TheChat(otherUsername: otherUsername, otherUserImage: otherUserImage,
-                          otherUserId: otherUser, myId: myUserId,chatId: doc.id,)),
-                        child:  Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: otherUserImage != null && otherUserImage != ''
-                                  ? NetworkImage(otherUserImage)
-                                  : null,
-                              backgroundColor: Colors.grey.withOpacity(0.1),
-                              radius: 23.r,
-                              child: otherUserImage == null || otherUserImage == ''
-                                  ? const Icon(Icons.person)
-                                  : null,
-                            ),
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                          bool otherHasRead = otherUnread == 0;
+                          return InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () => move(
+                                context,
+                                TheChat(
+                                  otherUsername: otherUsername,
+                                  otherUserImage: otherUserImage,
+                                  otherUserId: otherUser,
+                                  myId: myUserId,
+                                  chatId: doc.id,
+                                )),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage: otherUserImage != null &&
+                                          otherUserImage != ''
+                                      ? NetworkImage(otherUserImage)
+                                      : null,
+                                  backgroundColor: Colors.grey.withOpacity(0.1),
+                                  radius: 30.r,
+                                  child: otherUserImage == null ||
+                                          otherUserImage == ''
+                                      ? const Icon(Icons.person)
+                                      : null,
+                                ),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
-                                        width: 190.w,
-                                        child: Text(
-                                          otherUsername,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              color: Theme.of(context).textTheme.bodyLarge!.color
-                                          ),
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Container(
-                                        alignment: AlignmentDirectional.centerEnd,
-                                        child: Text(
-                                          appCubit.timeFormatStatusTime(chatData['lastUpdate']),
-                                          style: TextStyle(
-                                              color:Colors.grey,
-                                              fontSize: 10.sp
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      isMe
-                                          ? SvgPicture.asset(
-                                        otherHasRead ? 'assets/checks.svg' : 'assets/check.svg',
-                                        color: Colors.grey,
-                                        width: 15.w,
-                                        height: 15.w,
-                                      )
-                                          : const SizedBox(),
-                                      SizedBox(
-                                        width: 5.w,
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          lastMessage,
-                                          style: TextStyle(
-                                              color:Colors.grey,
-                                              fontSize: 11.sp
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      unReadCount != 0 ? Container(
-                                        height: 17.h,
-                                        width: 17.w,
-                                        alignment: Alignment.center,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.green,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsetsDirectional.only(top: 4.h),
-                                          child: Text(
-                                            '$unReadCount',
-                                            style: TextStyle(
-                                              fontSize: 9.sp,
-                                              color: Colors.white,
-                                              height: 1,
-                                              leadingDistribution: TextLeadingDistribution.even,
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 190.w,
+                                            child: Text(
+                                              otherUsername,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge!
+                                                      .color),
                                             ),
                                           ),
-                                        ),
-                                      ) : const SizedBox(),
+                                          const Spacer(),
+                                          Container(
+                                            alignment:
+                                                AlignmentDirectional.centerEnd,
+                                            child: Text(
+                                              appCubit.timeFormatStatusTime(
+                                                  chatData['lastUpdate']),
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.sp),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          isMe
+                                              ? SvgPicture.asset(
+                                                  otherHasRead
+                                                      ? 'assets/checks.svg'
+                                                      : 'assets/check.svg',
+                                                  color: Colors.grey,
+                                                  width: 15.w,
+                                                  height: 15.w,
+                                                )
+                                              : const SizedBox(),
+                                          SizedBox(
+                                            width: 5.w,
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              lastMessage,
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.sp),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          unReadCount != 0
+                                              ? Container(
+                                                  height: 17.h,
+                                                  width: 17.w,
+                                                  alignment: Alignment.center,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.green,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .only(top: 4.h),
+                                                    child: Text(
+                                                      '$unReadCount',
+                                                      style: TextStyle(
+                                                        fontSize: 9.sp,
+                                                        color: Colors.white,
+                                                        height: 1,
+                                                        leadingDistribution:
+                                                            TextLeadingDistribution
+                                                                .even,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox(),
+                                        ],
+                                      ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          );
+                        },
+                        separatorBuilder: (context, index) => SizedBox(
+                          height: 17.h,
                         ),
-                      );
-                    },
-                    separatorBuilder: (context, index) => SizedBox(height:17.h,),
-                  )
-              );
-            },
+                      ));
+                },
+              ),
+            ],
           ),
-        );
+        ));
       },
     );
   }

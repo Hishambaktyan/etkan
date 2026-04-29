@@ -5,14 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/search_screen.dart';
 import '../../modules/user_screens/booking_confirm_info_screen.dart';
 import '../../main.dart';
 import '../../modules/user_screens/worker_details.dart';
 import '../cubits/app_cubit/app_cubit.dart';
 import '../styles/colors.dart';
-const List<BoxShadow> shadow =  [
-  BoxShadow (
+
+const List<BoxShadow> shadow = [
+  BoxShadow(
     color: Colors.black12,
     spreadRadius: 1.0,
     blurRadius: 7.0,
@@ -27,7 +29,8 @@ Widget dashedDivider(color) {
       builder: (context, constraints) {
         const dashWidth = 5.0;
         const dashSpace = 3.0;
-        final dashCount = (constraints.constrainWidth() / (dashWidth + dashSpace)).floor();
+        final dashCount =
+            (constraints.constrainWidth() / (dashWidth + dashSpace)).floor();
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -36,7 +39,7 @@ Widget dashedDivider(color) {
               width: dashWidth,
               height: 1, // سمك الخط
               child: DecoratedBox(
-                decoration: BoxDecoration(color:color),
+                decoration: BoxDecoration(color: color),
               ),
             );
           }),
@@ -45,313 +48,346 @@ Widget dashedDivider(color) {
     ),
   );
 }
-void showSnackBar(Color background,String message,context){
+
+void showSnackBar(Color background, String message, context) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     backgroundColor: background,
     duration: const Duration(seconds: 2),
-    content: Text(message,textAlign: TextAlign.center,style: const TextStyle(fontSize: 13),),
+    content: Text(
+      message,
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontSize: 13),
+    ),
     elevation: 2,
     behavior: SnackBarBehavior.floating,
     width: MediaQuery.of(context).size.width * 0.50,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(50),
     ),
-  )
+  ));
+}
+
+/////////////////////////////////////////////
+Widget header({double headerHeight = 110, required String title, context}) {
+  return ClipRRect(
+    borderRadius:
+        BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
+    child: Container(
+      height: headerHeight,
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+            mainColor.withOpacity(0.9),
+            const Color(0xFF0F0F1E),
+          ],
+              stops: const [
+            0.0,
+            0.8,
+          ])),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -50.h,
+            left: -50.w,
+            child: CircleAvatar(
+              radius: 100.r,
+              backgroundColor: Colors.white.withOpacity(0.15),
+            ),
+          ),
+          Positioned(
+            top: 80.h,
+            right: -60.w,
+            child: Container(
+              width: 250.r,
+              height: 250.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF00F2FF).withOpacity(0.5),
+                    const Color(0xFF00F2FF).withOpacity(0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 200.h,
+            left: -40.w,
+            child: Container(
+              width: 200.r,
+              height: 200.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    mainColor.withOpacity(0.4),
+                    mainColor.withOpacity(0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          ),
+          Align(
+            alignment: AlignmentDirectional.topCenter,
+            child: Padding(
+              padding: EdgeInsetsDirectional.only(
+                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 23.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsetsDirectional.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/not.svg',
+                            width: 23.w,
+                            height: 23.h,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    ),
   );
 }
+
 /////////////////////////////////////////////
-Widget header({
-  double headerHeight = 110,
-  required String title,
-  context
-})
-{
+Widget headerWithSearch(
+    {double headerHeight = 160,
+    required String title,
+    required List<String> searchKeyWords,
+    bool isLeading = false,
+    required BuildContext context}) {
   return ClipRRect(
-  borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
-  child: Container(
-    height: headerHeight,
-    decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              mainColor.withOpacity(0.9),
-              const Color(0xFF0F0F1E),
-            ],
-            stops: const [
-              0.0,
-              0.8,
-            ]
-        )
-    ),
-    child: Stack(
-      children: [
-        Positioned(
-          top: -50.h,
-          left: -50.w,
-          child: CircleAvatar(
-            radius: 100.r,
-            backgroundColor: Colors.white.withOpacity(0.15),
-          ),
-        ),
-        Positioned(
-          top: 80.h,
-          right: -60.w,
-          child: Container(
-            width: 250.r,
-            height: 250.r,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  const Color(0xFF00F2FF).withOpacity(0.5),
-                  const Color(0xFF00F2FF).withOpacity(0),
-                ],
-              ),
+    borderRadius:
+        BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
+    child: Container(
+      height: headerHeight.h,
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+            mainColor.withOpacity(0.9),
+            const Color(0xFF0F0F1E),
+          ],
+              stops: const [
+            0.0,
+            0.8,
+          ])),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -50.h,
+            left: -50.w,
+            child: CircleAvatar(
+              radius: 100.r,
+              backgroundColor: Colors.white.withOpacity(0.15),
             ),
           ),
-        ),
-        Positioned(
-          top: 200.h,
-          left: -40.w,
-          child: Container(
-            width: 200.r,
-            height: 200.r,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  mainColor.withOpacity(0.4),
-                  mainColor.withOpacity(0),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-        ),
-        Align(
-          alignment: AlignmentDirectional.topCenter,
-          child: Padding(
-            padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w,bottom: 20.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                          fontSize: 23.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                      ),
-                    ),
-                    const Spacer(),
-                    InkWell(
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      onTap: () {
-                      },
-                      child: Container(
-                        padding: const EdgeInsetsDirectional.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/not.svg',
-                          width: 23.w,
-                          height: 23.h,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+          Positioned(
+            top: 80.h,
+            right: -60.w,
+            child: Container(
+              width: 250.r,
+              height: 250.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF00F2FF).withOpacity(0.5),
+                    const Color(0xFF00F2FF).withOpacity(0),
                   ],
                 ),
-              ],
-            ),
-          ),
-        )
-      ],
-    ),
-  ),
-);
-}
-/////////////////////////////////////////////
- Widget headerWithSearch({
-  double headerHeight = 160,
-  required String title,
-   required List<String> searchKeyWords,
-   bool isLeading = false,
-   required BuildContext context
-})
-{
-  return ClipRRect(
-  borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
-  child: Container(
-    height: headerHeight.h,
-    decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              mainColor.withOpacity(0.9),
-              const Color(0xFF0F0F1E),
-            ],
-            stops: const [
-              0.0,
-              0.8,
-            ]
-        )
-    ),
-    child: Stack(
-      children: [
-        Positioned(
-          top: -50.h,
-          left: -50.w,
-          child: CircleAvatar(
-            radius: 100.r,
-            backgroundColor: Colors.white.withOpacity(0.15),
-          ),
-        ),
-        Positioned(
-          top: 80.h,
-          right: -60.w,
-          child: Container(
-            width: 250.r,
-            height: 250.r,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  const Color(0xFF00F2FF).withOpacity(0.5),
-                  const Color(0xFF00F2FF).withOpacity(0),
-                ],
               ),
             ),
           ),
-        ),
-        Positioned(
-          top: 200.h,
-          left: -40.w,
-          child: Container(
-            width: 200.r,
-            height: 200.r,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  mainColor.withOpacity(0.4),
-                  mainColor.withOpacity(0),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-        ),
-        Align(
-          alignment: AlignmentDirectional.topCenter,
-          child: Padding(
-            padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w,bottom: 20.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if(isLeading)IconButton(
-                        onPressed: ()=>Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,color: Colors.white,)
-                    ),
-                    Text(
-                      title,
-                      style: TextStyle(
-                          fontSize: 23.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                      ),
-                    ),
-                    const Spacer(),
-                    InkWell(
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      onTap: () {
-                      },
-                      child: Container(
-                        padding: const EdgeInsetsDirectional.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/not.svg',
-                          width: 23.w,
-                          height: 23.h,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+          Positioned(
+            top: 200.h,
+            left: -40.w,
+            child: Container(
+              width: 200.r,
+              height: 200.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    mainColor.withOpacity(0.4),
+                    mainColor.withOpacity(0),
                   ],
                 ),
-                const Spacer(),
-                InkWell(
-                  onTap: ()=>move(context, const SearchScreen()),
-                  child: Container(
-                    height: 50,
-                    padding: const EdgeInsets.symmetric(horizontal: 17),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          ),
+          Align(
+            alignment: AlignmentDirectional.topCenter,
+            child: Padding(
+              padding: EdgeInsetsDirectional.only(
+                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (isLeading)
+                        IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white,
+                            )),
+                      Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 23.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          move(context, const NotificationsScreen());
+                        },
+                        child: Container(
+                          padding: const EdgeInsetsDirectional.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/not.svg',
+                            width: 23.w,
+                            height: 23.h,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    height: 57.h,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30.r),
                     ),
-                    child: Row(
+                    child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        SvgPicture.asset(
-                          'assets/search.svg',
-                          color: Colors.grey,
+                        TextFormField(
+                          onTap: () {},
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14.sp,
+                          ),
+                          cursorColor: mainColor,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            contentPadding: EdgeInsetsDirectional.only(
+                              start: 55.w,
+                              end: 17.w,
+                              top: 14.h,
+                              bottom: 14.h,
+                            ),
+                          ),
                         ),
-                        SizedBox(width: 10.w),
-                        Expanded(
-                            child: IgnorePointer(
-                              child: SizedBox(
-                                height: 20,
-                                child: AnimatedTextKit(
-                                  repeatForever: true,
-                                  pause: const Duration(seconds: 2),
-                                  animatedTexts: [
-                                    TyperAnimatedText(searchKeyWords[0],textStyle: const TextStyle(color: Colors.grey)),
-                                    TyperAnimatedText(searchKeyWords[1],textStyle: const TextStyle(color: Colors.grey)),
-                                    TyperAnimatedText(searchKeyWords[2],textStyle: const TextStyle(color: Colors.grey)),
-                                  ],
-                                ),
+                        PositionedDirectional(
+                          start: 17.w,
+                          child: SvgPicture.asset(
+                            'assets/search.svg',
+                            color: Colors.grey,
+                          ),
+                        ),
+                        PositionedDirectional(
+                          start: 55.w,
+                          end: 17.w,
+                          child: IgnorePointer(
+                            child: SizedBox(
+                              height: 20,
+                              child: AnimatedTextKit(
+                                repeatForever: true,
+                                pause: const Duration(seconds: 2),
+                                animatedTexts: [
+                                  TyperAnimatedText(
+                                    searchKeyWords[0],
+                                    textStyle:
+                                        const TextStyle(color: Colors.grey),
+                                  ),
+                                  TyperAnimatedText(
+                                    searchKeyWords[1],
+                                    textStyle:
+                                        const TextStyle(color: Colors.grey),
+                                  ),
+                                  TyperAnimatedText(
+                                    searchKeyWords[2],
+                                    textStyle:
+                                        const TextStyle(color: Colors.grey),
+                                  ),
+                                ],
                               ),
-                            )
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     ),
-  ),
-);
+  );
 }
+
 /////////////////////////////////////////////
 Widget defualtButton({
   double height = 50,
@@ -360,66 +396,59 @@ Widget defualtButton({
   Color background = mainColor,
   required Function? onPressed,
   required String? text,
-})
-=> Container(
-  height: height,
-  width: width,
-  decoration: BoxDecoration(
-    color: background,
-    borderRadius: BorderRadiusDirectional.circular(12.r),
-  ),
-  child: MaterialButton(
-    onPressed: () => onPressed!(),
-    splashColor: Colors.transparent,
-    highlightColor: Colors.transparent,
-    child: Text(
-      text!,
-      style: TextStyle(
-          fontSize:textSize.sp,
-          color: Colors.white
+}) =>
+    Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadiusDirectional.circular(12.r),
       ),
-    ),
-  ),
-);
-////////////////////////////////////////////
-Widget defualtButtonWithIcon({
-  double height = 50,
-  double textSize = 17,
-  double width = double.infinity,
-  Color background = mainColor,
-  required Function? onPressed,
-  required String? text,
-  required Widget icon
-})
-=> Container(
-  height: height,
-  width: width,
-  decoration: BoxDecoration(
-    color: background,
-    borderRadius: BorderRadiusDirectional.circular(12.r),
-  ),
-  child: MaterialButton(
-    onPressed: () => onPressed!(),
-    splashColor: Colors.transparent,
-    highlightColor: Colors.transparent,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        icon,
-        SizedBox(
-          width: 7.w,
-        ),
-        Text(
+      child: MaterialButton(
+        onPressed: () => onPressed!(),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Text(
           text!,
-          style: TextStyle(
-              fontSize: textSize.sp,
-              color: Colors.white
-          ),
+          style: TextStyle(fontSize: textSize.sp, color: Colors.white),
         ),
-      ],
-    ),
-  ),
-);
+      ),
+    );
+////////////////////////////////////////////
+Widget defualtButtonWithIcon(
+        {double height = 50,
+        double textSize = 17,
+        double width = double.infinity,
+        Color background = mainColor,
+        required Function? onPressed,
+        required String? text,
+        required Widget icon}) =>
+    Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadiusDirectional.circular(12.r),
+      ),
+      child: MaterialButton(
+        onPressed: () => onPressed!(),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            SizedBox(
+              width: 7.w,
+            ),
+            Text(
+              text!,
+              style: TextStyle(fontSize: textSize.sp, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
 ////////////////////////////////////////////
 Widget defualtOutlinedButton({
   double height = 50,
@@ -429,181 +458,164 @@ Widget defualtOutlinedButton({
   required Function? onPressed,
   required String? text,
   double fontSize = 15,
-})
-=> Container(
-  height: height,
-  width: double.infinity,
-  decoration: BoxDecoration(
-    color: bgColor,
-    border: Border.all(
-      color: border
-    ),
-    borderRadius: BorderRadiusDirectional.circular(10.r),
-  ),
-  child: MaterialButton(
-    onPressed: () => onPressed!(),
-    splashColor: Colors.transparent,
-    highlightColor: Colors.transparent,
-    child: Text(
-      text!,
-      style: TextStyle(
-          fontSize: fontSize.sp,
-          color: textColor
+}) =>
+    Container(
+      height: height,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border.all(color: border),
+        borderRadius: BorderRadiusDirectional.circular(10.r),
       ),
-    ),
-  ),
-);
-////////////////////////////////////////////
-Widget defualtOutlinedButtonWithIcon({
-  double height = 50,
-  Color border = mainColor,
-  Color textColor = mainColor,
-  Color bgColor = Colors.transparent,
-  required Function? onPressed,
-  required String? text,
-  double fontSize = 17,
-  required Widget icon
-})
-=> Container(
-  height: height,
-  width: double.infinity,
-  decoration: BoxDecoration(
-    color: bgColor,
-    border: Border.all(
-        color: border
-    ),
-    borderRadius: BorderRadiusDirectional.circular(10.r),
-  ),
-  child: MaterialButton(
-    onPressed: () => onPressed!(),
-    splashColor: Colors.transparent,
-    highlightColor: Colors.transparent,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        icon,
-        SizedBox(
-          width: 7.w,
-        ),
-        Text(
+      child: MaterialButton(
+        onPressed: () => onPressed!(),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Text(
           text!,
-          style: TextStyle(
-              fontSize: fontSize.sp,
-              color: textColor
-          ),
+          style: TextStyle(fontSize: fontSize.sp, color: textColor),
         ),
-      ],
-    ),
-  ),
-);
+      ),
+    );
+////////////////////////////////////////////
+Widget defualtOutlinedButtonWithIcon(
+        {double height = 50,
+        Color border = mainColor,
+        Color textColor = mainColor,
+        Color bgColor = Colors.transparent,
+        required Function? onPressed,
+        required String? text,
+        double fontSize = 17,
+        required Widget icon}) =>
+    Container(
+      height: height,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border.all(color: border),
+        borderRadius: BorderRadiusDirectional.circular(10.r),
+      ),
+      child: MaterialButton(
+        onPressed: () => onPressed!(),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            SizedBox(
+              width: 7.w,
+            ),
+            Text(
+              text!,
+              style: TextStyle(fontSize: fontSize.sp, color: textColor),
+            ),
+          ],
+        ),
+      ),
+    );
 ////////////////////////////////////////////
 Widget defaultTextFormfeild(
-    {
-      required String? text,
-      required String? prefixIcon,
-      required String? errorMes,
-      required TextEditingController? controller,
-      bool isPassword = false,
-      bool isSuffixIcon = false,
-      String? suffixIcon,
-      Function? suffixPressed,
-      required TextInputType? type,
-      double? fontSize,
-      required AppCubit cubit,
-      bool isCovered=false
-    }
-    )
-=>TextFormField(
-  style: TextStyle(
-    fontSize: 12.sp
-  ),
-  keyboardType: type,
-  textDirection: TextDirection.rtl,
-  validator: (value) {
-    if(value == null || value.isEmpty){
-      return errorMes;
-    }
-    return null;
-  },
-  controller: controller,
-  obscureText: isPassword,
-  decoration:InputDecoration(
-    filled: true,
-    fillColor: cubit.isDark? isCovered? darkBgColor: lightDarkColor : isCovered?Colors.white:Colors.grey.withOpacity(0.1),
-    labelText: text,
-    labelStyle: TextStyle(
-      fontSize: 12.sp,
-      color: cubit.isDark? darkSubTextColor: Colors.grey
-    ),
-    prefixIcon: Padding(
-      padding: const EdgeInsets.all(12),
-      child: SvgPicture.asset(
-        prefixIcon!,
-        width: 12.w,
-        height:12.h,
-        color:  cubit.isDark? darkSubTextColor: Colors.grey,
-      ),
-    ),
-    suffixIcon: isSuffixIcon? IconButton(
-          onPressed: (){
-            suffixPressed!();
-          },
-          icon: SvgPicture.asset(
-            suffixIcon!,
-            width:22.w,height:22.h,
-            color:  cubit.isDark? darkSubTextColor: Colors.grey,
+        {required String? text,
+        required String? prefixIcon,
+        required String? errorMes,
+        required TextEditingController? controller,
+        bool isPassword = false,
+        bool isSuffixIcon = false,
+        String? suffixIcon,
+        Function? suffixPressed,
+        required TextInputType? type,
+        double? fontSize,
+        required AppCubit cubit,
+        bool isCovered = false}) =>
+    TextFormField(
+      style: TextStyle(fontSize: 12.sp),
+      keyboardType: type,
+      textDirection: TextDirection.rtl,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return errorMes;
+        }
+        return null;
+      },
+      controller: controller,
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: cubit.isDark
+            ? isCovered
+                ? darkBgColor
+                : lightDarkColor
+            : isCovered
+                ? Colors.white
+                : Colors.grey.withOpacity(0.1),
+        labelText: text,
+        labelStyle: TextStyle(
+            fontSize: 12.sp,
+            color: cubit.isDark ? darkSubTextColor : Colors.grey),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.all(12),
+          child: SvgPicture.asset(
+            prefixIcon!,
+            width: 12.w,
+            height: 12.h,
+            color: cubit.isDark ? darkSubTextColor : Colors.grey,
           ),
-      highlightColor: Colors.transparent,
-      ) : null,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12.r),
-      borderSide: BorderSide.none
-    ),
-    focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12.r),
-    borderSide: const BorderSide(
-        color: mainColor
-    )
-),
-    errorBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12.r),
-    borderSide: const BorderSide(
-        color: Colors.red
-    )
-),
-
-  ),
-);
+        ),
+        suffixIcon: isSuffixIcon
+            ? IconButton(
+                onPressed: () {
+                  suffixPressed!();
+                },
+                icon: SvgPicture.asset(
+                  suffixIcon!,
+                  width: 22.w,
+                  height: 22.h,
+                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                ),
+                highlightColor: Colors.transparent,
+              )
+            : null,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.r),
+            borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.r),
+            borderSide: const BorderSide(color: mainColor)),
+        errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.r),
+            borderSide: const BorderSide(color: Colors.red)),
+      ),
+    );
 /////////////////////////////////////////////
 Widget defaultTextButton({
   required Function onPressed,
   required String text,
-  bool isUpperCase =true,
+  bool isUpperCase = true,
   Color color = mainColor,
   bool isLined = true,
   bool isBold = false,
-})
-=>TextButton(
-    onPressed: (){
-      onPressed();
-    },
-    child: Text(
-      isUpperCase?text.toUpperCase():text,
-      style:TextStyle(
-          color: color,
-          fontWeight: isBold? FontWeight.bold: FontWeight.normal,
-          decoration: isLined?TextDecoration.underline:null,
-        decorationColor: mainColor,
-      ),
-    )
-);
+}) =>
+    TextButton(
+        onPressed: () {
+          onPressed();
+        },
+        child: Text(
+          isUpperCase ? text.toUpperCase() : text,
+          style: TextStyle(
+            color: color,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            decoration: isLined ? TextDecoration.underline : null,
+            decorationColor: mainColor,
+          ),
+        ));
 
 class CategoryBuilder extends StatelessWidget {
-  final String imagePath;       // مسار الصورة
-  final String label;           // النص
-  final double iconSize;        // حجم الصورة داخل الـ CircleAvatar
-  final double textSize;        // حجم النص
-  final double spacing;         // المسافة بين الأيقونة والنص
+  final String imagePath; // مسار الصورة
+  final String label; // النص
+  final double iconSize; // حجم الصورة داخل الـ CircleAvatar
+  final double textSize; // حجم النص
+  final double spacing; // المسافة بين الأيقونة والنص
 
   const CategoryBuilder({
     Key? key,
@@ -622,10 +634,9 @@ class CategoryBuilder extends StatelessWidget {
           width: 65.w,
           height: 65.h,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15.r),
-            boxShadow: shadow
-          ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15.r),
+              boxShadow: shadow),
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SvgPicture.asset(
@@ -656,6 +667,8 @@ class ChatShimmerLoading extends StatelessWidget {
       baseColor: baseColor,
       highlightColor: highlightColor,
       child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsetsDirectional.only(start: 10.w, top: 20.h, end: 10.w),
         itemCount: 10,
         separatorBuilder: (context, index) => SizedBox(height: 17.h),
@@ -719,7 +732,8 @@ class BookingShimmerLoading extends StatelessWidget {
     Color baseColor = isDark ? const Color(0xFF161B22) : Colors.grey[300]!;
     Color highlightColor = isDark ? const Color(0xFF30363D) : Colors.grey[100]!;
 
-    Color cardBgColor = isDark ? Colors.white.withOpacity(0.05) : Colors.transparent;
+    Color cardBgColor =
+        isDark ? Colors.white.withOpacity(0.05) : Colors.transparent;
 
     Color contentColor = isDark ? Colors.white : Colors.grey[400]!;
 
@@ -730,7 +744,8 @@ class BookingShimmerLoading extends StatelessWidget {
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w, top: 5.h, bottom: 20.h),
+        padding: EdgeInsetsDirectional.only(
+            start: 20.w, end: 20.w, top: 5.h, bottom: 20.h),
         itemCount: 3,
         itemBuilder: (context, index) => Padding(
           padding: EdgeInsetsDirectional.only(bottom: 20.h),
@@ -739,7 +754,8 @@ class BookingShimmerLoading extends StatelessWidget {
             decoration: BoxDecoration(
               color: cardBgColor,
               borderRadius: BorderRadius.circular(15.r),
-              border: Border.all(color: isDark ? const Color(0xFF30363D) : Colors.grey[300]!),
+              border: Border.all(
+                  color: isDark ? const Color(0xFF30363D) : Colors.grey[300]!),
             ),
             child: Column(
               children: [
@@ -761,15 +777,37 @@ class BookingShimmerLoading extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Container(width: 100.w, height: 12.h, decoration: BoxDecoration(color: contentColor, borderRadius: BorderRadius.circular(4.r))),
+                              Container(
+                                  width: 100.w,
+                                  height: 12.h,
+                                  decoration: BoxDecoration(
+                                      color: contentColor,
+                                      borderRadius:
+                                          BorderRadius.circular(4.r))),
                               const Spacer(),
-                              Container(width: 55.w, height: 28.h, decoration: BoxDecoration(color: contentColor, borderRadius: BorderRadius.circular(6.r))),
+                              Container(
+                                  width: 55.w,
+                                  height: 28.h,
+                                  decoration: BoxDecoration(
+                                      color: contentColor,
+                                      borderRadius:
+                                          BorderRadius.circular(6.r))),
                             ],
                           ),
                           SizedBox(height: 10.h),
-                          Container(width: 70.w, height: 8.h, decoration: BoxDecoration(color: contentColor, borderRadius: BorderRadius.circular(4.r))),
+                          Container(
+                              width: 70.w,
+                              height: 8.h,
+                              decoration: BoxDecoration(
+                                  color: contentColor,
+                                  borderRadius: BorderRadius.circular(4.r))),
                           SizedBox(height: 12.h),
-                          Container(width: 50.w, height: 14.h, decoration: BoxDecoration(color: contentColor, borderRadius: BorderRadius.circular(4.r))),
+                          Container(
+                              width: 50.w,
+                              height: 14.h,
+                              decoration: BoxDecoration(
+                                  color: contentColor,
+                                  borderRadius: BorderRadius.circular(4.r))),
                         ],
                       ),
                     ),
@@ -780,7 +818,10 @@ class BookingShimmerLoading extends StatelessWidget {
                   padding: EdgeInsets.all(10.r),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: isDark ? const Color(0xFF30363D) : Colors.grey[200]!),
+                    border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF30363D)
+                            : Colors.grey[200]!),
                   ),
                   child: Column(
                     children: [
@@ -814,9 +855,17 @@ class BookingShimmerLoading extends StatelessWidget {
             ),
           ),
           SizedBox(width: 10.w),
-          Container(width: 40.w, height: 8.h, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4.r))),
+          Container(
+              width: 40.w,
+              height: 8.h,
+              decoration: BoxDecoration(
+                  color: color, borderRadius: BorderRadius.circular(4.r))),
           SizedBox(width: 20.w),
-          Expanded(child: Container(height: 8.h, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4.r)))),
+          Expanded(
+              child: Container(
+                  height: 8.h,
+                  decoration: BoxDecoration(
+                      color: color, borderRadius: BorderRadius.circular(4.r)))),
         ],
       ),
     );
@@ -857,20 +906,28 @@ class WorkerHomeShimmer extends StatelessWidget {
                 children: [
                   Container(
                     height: 270.h,
-                    padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, top: 35.h),
+                    padding: EdgeInsetsDirectional.only(
+                        start: 15.w, end: 15.w, top: 35.h),
                     decoration: const BoxDecoration(color: Colors.white),
                     child: Column(
                       children: [
                         Row(
                           children: [
-                            CircleAvatar(radius: 23.r, backgroundColor: Colors.white),
+                            CircleAvatar(
+                                radius: 23.r, backgroundColor: Colors.white),
                             SizedBox(width: 10.w),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(width: 100.w, height: 15.h, color: Colors.white),
+                                Container(
+                                    width: 100.w,
+                                    height: 15.h,
+                                    color: Colors.white),
                                 SizedBox(height: 5.h),
-                                Container(width: 60.w, height: 10.h, color: Colors.white),
+                                Container(
+                                    width: 60.w,
+                                    height: 10.h,
+                                    color: Colors.white),
                               ],
                             ),
                           ],
@@ -878,9 +935,13 @@ class WorkerHomeShimmer extends StatelessWidget {
                         const Spacer(),
                         Column(
                           children: [
-                            Container(width: 120.w, height: 30.h, color: Colors.white),
+                            Container(
+                                width: 120.w,
+                                height: 30.h,
+                                color: Colors.white),
                             SizedBox(height: 10.h),
-                            Container(width: 80.w, height: 15.h, color: Colors.white),
+                            Container(
+                                width: 80.w, height: 15.h, color: Colors.white),
                             SizedBox(height: 40.h),
                           ],
                         ),
@@ -953,7 +1014,8 @@ class WorkerHomeShimmer extends StatelessWidget {
                       height: 110.h,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(12.r)),
+                        borderRadius: BorderRadiusDirectional.vertical(
+                            top: Radius.circular(12.r)),
                       ),
                     ),
                     Padding(
@@ -961,11 +1023,16 @@ class WorkerHomeShimmer extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(width: 60.w, height: 10.h, color: Colors.white),
+                          Container(
+                              width: 60.w, height: 10.h, color: Colors.white),
                           SizedBox(height: 10.h),
-                          Container(width: double.infinity, height: 12.h, color: Colors.white),
+                          Container(
+                              width: double.infinity,
+                              height: 12.h,
+                              color: Colors.white),
                           SizedBox(height: 5.h),
-                          Container(width: 80.w, height: 10.h, color: Colors.white),
+                          Container(
+                              width: 80.w, height: 10.h, color: Colors.white),
                         ],
                       ),
                     ),
@@ -1012,7 +1079,8 @@ class UserHomeShimmer extends StatelessWidget {
     );
   }
 
-  Widget shimmerBox({required double height, double? width, double radius = 12}) {
+  Widget shimmerBox(
+      {required double height, double? width, double radius = 12}) {
     return Shimmer.fromColors(
       baseColor: Colors.transparent,
       highlightColor: Colors.transparent,
@@ -1194,7 +1262,8 @@ class UserServicesShimmer extends StatelessWidget {
                       Shimmer.fromColors(
                         baseColor: baseColor,
                         highlightColor: highlightColor,
-                        child: CircleAvatar(radius: 27.r, backgroundColor: Colors.white),
+                        child: CircleAvatar(
+                            radius: 27.r, backgroundColor: Colors.white),
                       ),
                       SizedBox(height: 8.h),
                       _shimmerBox(60.w, 12.h, baseColor, highlightColor),
@@ -1227,7 +1296,8 @@ class UserServicesShimmer extends StatelessWidget {
                           height: 150.h,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(15.r)),
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(15.r)),
                           ),
                         ),
                       ),
@@ -1239,8 +1309,11 @@ class UserServicesShimmer extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _shimmerBox(150.w, 15.h, baseColor, highlightColor),
-                                _shimmerBox(60.w, 25.h, baseColor, highlightColor, radius: 30.r),
+                                _shimmerBox(
+                                    150.w, 15.h, baseColor, highlightColor),
+                                _shimmerBox(
+                                    60.w, 25.h, baseColor, highlightColor,
+                                    radius: 30.r),
                               ],
                             ),
                             SizedBox(height: 10.h),
@@ -1251,15 +1324,19 @@ class UserServicesShimmer extends StatelessWidget {
                                 Shimmer.fromColors(
                                   baseColor: baseColor,
                                   highlightColor: highlightColor,
-                                  child: CircleAvatar(radius: 20.r, backgroundColor: Colors.white),
+                                  child: CircleAvatar(
+                                      radius: 20.r,
+                                      backgroundColor: Colors.white),
                                 ),
                                 SizedBox(width: 10.w),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _shimmerBox(120.w, 10.h, baseColor, highlightColor),
+                                    _shimmerBox(
+                                        120.w, 10.h, baseColor, highlightColor),
                                     SizedBox(height: 5.h),
-                                    _shimmerBox(50.w, 10.h, baseColor, highlightColor),
+                                    _shimmerBox(
+                                        50.w, 10.h, baseColor, highlightColor),
                                   ],
                                 ),
                               ],
@@ -1277,7 +1354,9 @@ class UserServicesShimmer extends StatelessWidget {
       ),
     );
   }
-  Widget _shimmerBox(double width, double height, Color base, Color highlight, {double radius = 5}) {
+
+  Widget _shimmerBox(double width, double height, Color base, Color highlight,
+      {double radius = 5}) {
     return Shimmer.fromColors(
       baseColor: base,
       highlightColor: highlight,
@@ -1298,16 +1377,21 @@ class UserBookingsShimmer extends StatelessWidget {
 
   const UserBookingsShimmer({super.key, required this.isDark});
 
-  Color get baseColor => isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade200;
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : Colors.grey.shade200;
 
-  Color get highlightColor => isDark ? const Color(0xFF3A3A3A) : Colors.grey.shade100;
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : Colors.grey.shade100;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          _shimmerBox(height: 50.h, width: double.infinity, margin: EdgeInsetsDirectional.all(15.w)),
+          _shimmerBox(
+              height: 50.h,
+              width: double.infinity,
+              margin: EdgeInsetsDirectional.all(15.w)),
           SizedBox(height: 15.h),
           SizedBox(
             height: 40.h,
@@ -1349,7 +1433,8 @@ class UserBookingsShimmer extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _shimmerBox(height: 12.h, width: double.infinity),
+                                _shimmerBox(
+                                    height: 12.h, width: double.infinity),
                                 SizedBox(height: 8.h),
                                 _shimmerBox(height: 10.h, width: 100.w),
                                 SizedBox(height: 8.h),
@@ -1365,7 +1450,9 @@ class UserBookingsShimmer extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(10.w),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF0D1117) : Colors.grey.shade100,
+                          color: isDark
+                              ? const Color(0xFF0D1117)
+                              : Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Column(
@@ -1426,5 +1513,3 @@ class UserBookingsShimmer extends StatelessWidget {
     );
   }
 }
-
-

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
+import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
 
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -15,16 +16,16 @@ import '../../shared/styles/colors.dart';
 import '../images_view.dart';
 
 class BookingDetails extends StatefulWidget {
-  final Map<String,dynamic> request;
-  final Map<String,dynamic> providerData;
-  const BookingDetails({super.key, required this.request, required this.providerData});
+  final Map<String, dynamic> request;
+  final Map<String, dynamic> providerData;
+  const BookingDetails(
+      {super.key, required this.request, required this.providerData});
 
   @override
   State<BookingDetails> createState() => _BookingDetailsState();
 }
 
 class _BookingDetailsState extends State<BookingDetails> {
-
   final List<String> stepperSteps = [
     "قيد الانتظار",
     "مقبول",
@@ -34,9 +35,14 @@ class _BookingDetailsState extends State<BookingDetails> {
 
   final List<String> terminalStates = ["مرفوض", "ملغي"];
 
-  Widget buildHorizontalStepper({required int currentStep,required dynamic cubit}) {
-
-    List<String> steps = ['تم الطلب', 'تم القبول', 'جاري التنفيذ','تم اكمال الخدمة'];
+  Widget buildHorizontalStepper(
+      {required int currentStep, required dynamic cubit}) {
+    List<String> steps = [
+      'تم الطلب',
+      'تم القبول',
+      'جاري التنفيذ',
+      'تم اكمال الخدمة'
+    ];
 
     return Row(
       children: List.generate(steps.length, (index) {
@@ -56,13 +62,19 @@ class _BookingDetailsState extends State<BookingDetails> {
                     height: 22.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isDone || isActive ? mainColor : Colors.grey.shade200,
-                      border: isActive ? Border.all(color: mainColor.withOpacity(0.2), width: 4) : null,
+                      color:
+                          isDone || isActive ? mainColor : Colors.grey.shade200,
+                      border: isActive
+                          ? Border.all(
+                              color: mainColor.withOpacity(0.2), width: 4)
+                          : null,
                     ),
                     child: Icon(
                       isDone ? Icons.check : Icons.circle,
                       size: 12.sp,
-                      color: isDone || isActive ? Colors.white : Colors.grey.shade400,
+                      color: isDone || isActive
+                          ? Colors.white
+                          : Colors.grey.shade400,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -70,8 +82,14 @@ class _BookingDetailsState extends State<BookingDetails> {
                     steps[index],
                     style: TextStyle(
                       fontSize: 9.sp,
-                      fontWeight: isActive || isDone ? FontWeight.bold : FontWeight.normal,
-                      color: isActive || isDone ? cubit.isDark? Colors.white: Colors.black : Colors.grey,
+                      fontWeight: isActive || isDone
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: isActive || isDone
+                          ? cubit.isDark
+                              ? Colors.white
+                              : Colors.black
+                          : Colors.grey,
                     ),
                   ),
                 ],
@@ -91,11 +109,12 @@ class _BookingDetailsState extends State<BookingDetails> {
     );
   }
 
-  void showFullTrackingSheet(BuildContext context , AppCubit cubit,dynamic requestData) {
+  void showFullTrackingSheet(
+      BuildContext context, AppCubit cubit, dynamic requestData) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: cubit.isDark? darkBgColor: Colors.white,
+      backgroundColor: cubit.isDark ? darkBgColor : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
       ),
@@ -103,7 +122,8 @@ class _BookingDetailsState extends State<BookingDetails> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            padding: EdgeInsetsDirectional.only(start: 20.w,end: 20.w,bottom: 20.h,top: 10.h),
+            padding: EdgeInsetsDirectional.only(
+                start: 20.w, end: 20.w, bottom: 20.h, top: 10.h),
             height: MediaQuery.of(context).size.height * 0.51,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +133,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                     width: 40.w,
                     height: 5.h,
                     decoration: BoxDecoration(
-                      color: cubit.isDark? Colors.white: Colors.grey.shade300,
+                      color: cubit.isDark ? Colors.white : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -124,45 +144,49 @@ class _BookingDetailsState extends State<BookingDetails> {
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
-                    color: cubit.isDark? Colors.white: Colors.black,
+                    color: cubit.isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 SizedBox(height: 25.h),
                 Expanded(
                   child: ListView(
-                      children: List.generate(stepperSteps.length, (index) {
-                        String currentStatusFromDb = requestData['status'];
-                        Map<int, String> statusTimesKeys = {
-                          0: 'createdAt',
-                          1: 'acceptedAt',
-                          2: 'processingAt',
-                          3: 'completedAt',
-                        };
-                        String timeKey = statusTimesKeys[index]!;
-                        String displayTime = cubit.formatStatusTime(requestData[timeKey]);
-                        bool isDone;
-                        bool isActive;
-                        Color circleColor;
-                        int currentStepIndex = stepperSteps.indexOf(currentStatusFromDb);
-                        if (terminalStates.contains(currentStatusFromDb)) {
-                          isDone = index < stepperSteps.indexOf("مقبول");
-                          isActive = false;
-                          circleColor = Colors.red;
-                        } else {
-                          isDone = index < currentStepIndex;
-                          isActive = index == currentStepIndex;
-                          circleColor = mainColor;
-                        }
-                        return buildVerticalStep(
-                          stepperSteps[index],
-                          displayTime,
-                          isDone,
-                          index != stepperSteps.length - 1,
-                          cubit,
-                          isActive: isActive,
-                        );
-                      },)
-                  ),
+                      children: List.generate(
+                    stepperSteps.length,
+                    (index) {
+                      String currentStatusFromDb = requestData['status'];
+                      Map<int, String> statusTimesKeys = {
+                        0: 'createdAt',
+                        1: 'acceptedAt',
+                        2: 'processingAt',
+                        3: 'completedAt',
+                      };
+                      String timeKey = statusTimesKeys[index]!;
+                      String displayTime =
+                          cubit.formatStatusTime(requestData[timeKey]);
+                      bool isDone;
+                      bool isActive;
+                      Color circleColor;
+                      int currentStepIndex =
+                          stepperSteps.indexOf(currentStatusFromDb);
+                      if (terminalStates.contains(currentStatusFromDb)) {
+                        isDone = index < stepperSteps.indexOf("مقبول");
+                        isActive = false;
+                        circleColor = Colors.red;
+                      } else {
+                        isDone = index < currentStepIndex;
+                        isActive = index == currentStepIndex;
+                        circleColor = mainColor;
+                      }
+                      return buildVerticalStep(
+                        stepperSteps[index],
+                        displayTime,
+                        isDone,
+                        index != stepperSteps.length - 1,
+                        cubit,
+                        isActive: isActive,
+                      );
+                    },
+                  )),
                 ),
               ],
             ),
@@ -172,7 +196,9 @@ class _BookingDetailsState extends State<BookingDetails> {
     );
   }
 
-  Widget buildVerticalStep(String title, String time, bool isDone, bool showLine,dynamic cubit, {bool isActive = false}) {
+  Widget buildVerticalStep(
+      String title, String time, bool isDone, bool showLine, dynamic cubit,
+      {bool isActive = false}) {
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -184,12 +210,15 @@ class _BookingDetailsState extends State<BookingDetails> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isDone || isActive ? mainColor : Colors.grey.shade200,
-                  border: isActive ? Border.all(color: mainColor.withOpacity(0.1), width: 4) : null,
+                  border: isActive
+                      ? Border.all(color: mainColor.withOpacity(0.1), width: 4)
+                      : null,
                 ),
                 child: Icon(
                   isDone ? Icons.check : Icons.circle,
                   size: 12.sp,
-                  color: isDone || isActive ? Colors.white : Colors.grey.shade400,
+                  color:
+                      isDone || isActive ? Colors.white : Colors.grey.shade400,
                 ),
               ),
               if (showLine)
@@ -210,18 +239,23 @@ class _BookingDetailsState extends State<BookingDetails> {
                   title,
                   style: TextStyle(
                     fontSize: 14.sp,
-                    fontWeight: isDone || isActive ? FontWeight.bold : FontWeight.normal,
-                    color: isDone || isActive ?
-                    cubit.isDark? Colors.white: Colors.black87 : cubit.isDark? darkSubTextColor
-                        : Colors.grey,
+                    fontWeight: isDone || isActive
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                    color: isDone || isActive
+                        ? cubit.isDark
+                            ? Colors.white
+                            : Colors.black87
+                        : cubit.isDark
+                            ? darkSubTextColor
+                            : Colors.grey,
                   ),
                 ),
                 Text(
                   time,
                   style: TextStyle(
                       fontSize: 11.sp,
-                      color: cubit.isDark? darkSubTextColor:Colors.grey
-                  ),
+                      color: cubit.isDark ? darkSubTextColor : Colors.grey),
                 ),
                 SizedBox(height: 25.h),
               ],
@@ -234,9 +268,9 @@ class _BookingDetailsState extends State<BookingDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String,dynamic> request = widget.request;
-    final Map<String,dynamic> providerData = widget.providerData;
-    return BlocBuilder<AppCubit,AppStates>(
+    final Map<String, dynamic> request = widget.request;
+    final Map<String, dynamic> providerData = widget.providerData;
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit cubit = AppCubit.get(context);
         return Directionality(
@@ -250,33 +284,35 @@ class _BookingDetailsState extends State<BookingDetails> {
                     child: Stack(
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r)),
+                          borderRadius: BorderRadiusDirectional.vertical(
+                              bottom: Radius.circular(15.r)),
                           child: Image.network(
                             request['image'] ?? '',
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 300.h,
-                            errorBuilder: (context, error, stackTrace) => Container(
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
                               height: 130.h,
                               color: Colors.grey.shade300,
-                            ) ,
+                            ),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w),
+                          padding: EdgeInsetsDirectional.only(
+                              top: 30.h, start: 10.w, end: 10.w),
                           child: Row(
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(7),
                                 child: CircleAvatar(
-                                  backgroundColor: Colors.white.withOpacity(0.8),
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.8),
                                   child: InkWell(
                                     splashColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
-                                    onTap: ()=>Navigator.pop(context),
-                                    child: const Icon(
-                                        CupertinoIcons.back
-                                    ),
+                                    onTap: () => Navigator.pop(context),
+                                    child: const Icon(CupertinoIcons.back),
                                   ),
                                 ),
                               ),
@@ -286,7 +322,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
-                            padding:EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 15.w),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -294,7 +331,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   padding: EdgeInsetsDirectional.all(18.r),
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: cubit.isDark ? lightDarkColor : Colors.white,
+                                    color: cubit.isDark
+                                        ? lightDarkColor
+                                        : Colors.white,
                                     borderRadius: BorderRadius.circular(20.r),
                                     boxShadow: [
                                       BoxShadow(
@@ -304,18 +343,25 @@ class _BookingDetailsState extends State<BookingDetails> {
                                         offset: const Offset(2, 5),
                                       ),
                                     ],
-                                    border: cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
+                                    border: cubit.isDark
+                                        ? Border.all(
+                                            color: const Color(0xFF30363D))
+                                        : null,
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Container(
                                             padding: EdgeInsets.all(8.r),
                                             decoration: BoxDecoration(
-                                              color: cubit.isDark ? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(10.r),
+                                              color: cubit.isDark
+                                                  ? mainColor.withOpacity(0.2)
+                                                  : mainColor.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(10.r),
                                             ),
                                             child: SvgPicture.asset(
                                               'assets/ticket.svg',
@@ -331,15 +377,21 @@ class _BookingDetailsState extends State<BookingDetails> {
                                               style: TextStyle(
                                                 fontSize: 14.sp,
                                                 fontWeight: FontWeight.bold,
-                                                color: cubit.isDark ? Colors.white : Colors.black,
+                                                color: cubit.isDark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                               ),
                                             ),
                                           ),
                                           Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12.w,
+                                                vertical: 5.h),
                                             decoration: BoxDecoration(
-                                              color: Colors.orange.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(7.r),
+                                              color: Colors.orange
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(7.r),
                                             ),
                                             child: Text(
                                               request['status'] ?? '',
@@ -358,7 +410,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                                         style: TextStyle(
                                           fontSize: 15.sp,
                                           fontWeight: FontWeight.bold,
-                                          color: cubit.isDark ? Colors.white : Colors.black,
+                                          color: cubit.isDark
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                       ),
                                       SizedBox(height: 15.h),
@@ -370,25 +424,35 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                 Icon(
                                                   Icons.calendar_today_outlined,
                                                   size: 18.r,
-                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                  color: cubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey,
                                                 ),
                                                 SizedBox(width: 8.w),
                                                 Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       'التاريخ',
                                                       style: TextStyle(
                                                         fontSize: 10.sp,
-                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                        color: cubit.isDark
+                                                            ? darkSubTextColor
+                                                            : Colors.grey,
                                                       ),
                                                     ),
                                                     Text(
-                                                      cubit.dateFormatStatusTime(request['scheduledAt'] ?? ''),
+                                                      cubit.dateFormatStatusTime(
+                                                          request['scheduledAt'] ??
+                                                              ''),
                                                       style: TextStyle(
-                                                        color: cubit.isDark ? Colors.white : Colors.black87,
+                                                        color: cubit.isDark
+                                                            ? Colors.white
+                                                            : Colors.black87,
                                                         fontSize: 13.sp,
-                                                        fontWeight: FontWeight.w500,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                       ),
                                                     ),
                                                   ],
@@ -399,7 +463,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                                           Container(
                                             height: 35.h,
                                             width: 1,
-                                            color: cubit.isDark ? darkSubTextColor : Colors.grey.shade300,
+                                            color: cubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade300,
                                           ),
                                           SizedBox(width: 15.w),
                                           Expanded(
@@ -408,25 +474,35 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                 Icon(
                                                   Icons.access_time_outlined,
                                                   size: 18.r,
-                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                  color: cubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey,
                                                 ),
                                                 SizedBox(width: 8.w),
                                                 Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       'الوقت',
                                                       style: TextStyle(
                                                         fontSize: 10.sp,
-                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                        color: cubit.isDark
+                                                            ? darkSubTextColor
+                                                            : Colors.grey,
                                                       ),
                                                     ),
                                                     Text(
-                                                      cubit.timeFormatStatusTime(request['scheduledAt'] ?? ''),
+                                                      cubit.timeFormatStatusTime(
+                                                          request['scheduledAt'] ??
+                                                              ''),
                                                       style: TextStyle(
-                                                        color: cubit.isDark ? Colors.white : Colors.black87,
+                                                        color: cubit.isDark
+                                                            ? Colors.white
+                                                            : Colors.black87,
                                                         fontSize: 13.sp,
-                                                        fontWeight: FontWeight.w500,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                       ),
                                                     ),
                                                   ],
@@ -437,9 +513,12 @@ class _BookingDetailsState extends State<BookingDetails> {
                                         ],
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 15.h),
                                         child: Divider(
-                                          color: cubit.isDark ? darkSubTextColor : Colors.grey.shade300,
+                                          color: cubit.isDark
+                                              ? darkSubTextColor
+                                              : Colors.grey.shade300,
                                           height: 1,
                                         ),
                                       ),
@@ -451,17 +530,22 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                 Icon(
                                                   Icons.payments_outlined,
                                                   size: 18.r,
-                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                  color: cubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey,
                                                 ),
                                                 SizedBox(width: 8.w),
                                                 Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       'السعر التقديري',
                                                       style: TextStyle(
                                                         fontSize: 10.sp,
-                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                        color: cubit.isDark
+                                                            ? darkSubTextColor
+                                                            : Colors.grey,
                                                       ),
                                                     ),
                                                     Text(
@@ -469,7 +553,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                       style: TextStyle(
                                                         color: mainColor,
                                                         fontSize: 14.sp,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                   ],
@@ -480,7 +565,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                                           Container(
                                             height: 35.h,
                                             width: 1,
-                                            color: cubit.isDark ? darkSubTextColor : Colors.grey.shade300,
+                                            color: cubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade300,
                                           ),
                                           SizedBox(width: 15.w),
                                           Expanded(
@@ -489,25 +576,33 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                 Icon(
                                                   Icons.timer_outlined,
                                                   size: 18.r,
-                                                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                  color: cubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey,
                                                 ),
                                                 SizedBox(width: 8.w),
                                                 Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       'المدة المتوقعة',
                                                       style: TextStyle(
                                                         fontSize: 10.sp,
-                                                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                                                        color: cubit.isDark
+                                                            ? darkSubTextColor
+                                                            : Colors.grey,
                                                       ),
                                                     ),
                                                     Text(
                                                       '${request['duration'] ?? ''} دقيقة',
                                                       style: TextStyle(
-                                                        color: cubit.isDark ? Colors.white : Colors.black87,
+                                                        color: cubit.isDark
+                                                            ? Colors.white
+                                                            : Colors.black87,
                                                         fontSize: 14.sp,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                   ],
@@ -527,27 +622,32 @@ class _BookingDetailsState extends State<BookingDetails> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 15.h,),
+                  SizedBox(
+                    height: 15.h,
+                  ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
-                              color: cubit.isDark? lightDarkColor: Colors.white,
+                              color:
+                                  cubit.isDark ? lightDarkColor : Colors.white,
                               borderRadius: BorderRadius.circular(20.r),
                               boxShadow: [
-                                BoxShadow (
+                                BoxShadow(
                                   color: mainColor.withOpacity(0.2),
                                   spreadRadius: 1.0,
                                   blurRadius: 7.0,
                                   offset: const Offset(2, 5),
                                 ),
                               ],
-                              border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-                          ),
+                              border: cubit.isDark
+                                  ? Border.all(color: const Color(0xFF30363D))
+                                  : null),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -556,14 +656,13 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   Container(
                                     padding: const EdgeInsetsDirectional.all(8),
                                     decoration: BoxDecoration(
-                                        color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10.r)
-                                    ),
-                                    child: Icon(
-                                        Icons.route_outlined,
-                                        size: 22.r,
-                                        color: mainColor
-                                    ),
+                                        color: cubit.isDark
+                                            ? mainColor.withOpacity(0.2)
+                                            : mainColor.withOpacity(0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(10.r)),
+                                    child: Icon(Icons.route_outlined,
+                                        size: 22.r, color: mainColor),
                                   ),
                                   SizedBox(width: 8.w),
                                   Text(
@@ -571,18 +670,23 @@ class _BookingDetailsState extends State<BookingDetails> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14.sp,
-                                        color: cubit.isDark? Colors.white:Colors.black
-                                    ),
+                                        color: cubit.isDark
+                                            ? Colors.white
+                                            : Colors.black),
                                   ),
                                 ],
                               ),
                               SizedBox(height: 20.h),
-                              buildHorizontalStepper(currentStep: cubit.getStepFromStatus(request['status']),cubit: cubit),
+                              buildHorizontalStepper(
+                                  currentStep: cubit
+                                      .getStepFromStatus(request['status']),
+                                  cubit: cubit),
                               SizedBox(height: 10.h),
                               Center(
                                 child: TextButton.icon(
                                   onPressed: () {
-                                    showFullTrackingSheet(context,cubit,request);
+                                    showFullTrackingSheet(
+                                        context, cubit, request);
                                   },
                                   icon: SvgPicture.asset(
                                     'assets/eye.svg',
@@ -603,113 +707,119 @@ class _BookingDetailsState extends State<BookingDetails> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 15.h,),
+                        SizedBox(
+                          height: 15.h,
+                        ),
                         Container(
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
-                              color: cubit.isDark? lightDarkColor: Colors.white,
+                              color:
+                                  cubit.isDark ? lightDarkColor : Colors.white,
                               borderRadius: BorderRadius.circular(20.r),
                               boxShadow: [
-                                BoxShadow (
+                                BoxShadow(
                                   color: mainColor.withOpacity(0.2),
                                   spreadRadius: 1.0,
                                   blurRadius: 7.0,
                                   offset: const Offset(2, 5),
                                 ),
                               ],
-                              border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-
-                          ),
+                              border: cubit.isDark
+                                  ? Border.all(color: const Color(0xFF30363D))
+                                  : null),
                           child: Column(
                             children: [
                               Row(
                                 children: [
                                   Container(
-                                      padding: const EdgeInsetsDirectional.all(8),
+                                      padding:
+                                          const EdgeInsetsDirectional.all(8),
                                       decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10.r),
-                                          color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
-                                      ),
-                                      child: Icon(
-                                          Icons.notes_rounded,
-                                          size: 22.r,
-                                          color: mainColor
-                                      )
-                                  ),
-                                  SizedBox(
-                                      width: 10.w
-                                  ),
+                                          borderRadius:
+                                              BorderRadius.circular(10.r),
+                                          color: cubit.isDark
+                                              ? mainColor.withOpacity(0.2)
+                                              : mainColor.withOpacity(0.1)),
+                                      child: Icon(Icons.notes_rounded,
+                                          size: 22.r, color: mainColor)),
+                                  SizedBox(width: 10.w),
                                   Text(
                                     'ملاحظات الحجز',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14.sp,
-                                      color: cubit.isDark? Colors.white: Colors.black87,
+                                      color: cubit.isDark
+                                          ? Colors.white
+                                          : Colors.black87,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                  height: 10.h
-                              ),
+                              SizedBox(height: 10.h),
                               ReadMoreText(
                                 request['description'] ?? '',
                                 style: TextStyle(
                                     fontSize: 12.sp,
-                                    color:  cubit.isDark? Colors.white: Colors.black,
-                                    height: 1.5
-                                ),
+                                    color: cubit.isDark
+                                        ? Colors.white
+                                        : Colors.black,
+                                    height: 1.5),
                                 trimLines: 3,
                                 colorClickableText: mainColor,
                                 trimMode: TrimMode.Line,
                                 trimCollapsedText: ' عرض المزيد',
                                 trimExpandedText: ' عرض أقل',
-                                moreStyle: TextStyle(fontSize: 12.sp,color: mainColor),
+                                moreStyle: TextStyle(
+                                    fontSize: 12.sp, color: mainColor),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: 15.h,),
+                        SizedBox(
+                          height: 15.h,
+                        ),
                         Container(
                           padding: EdgeInsetsDirectional.all(18.r),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                              color: cubit.isDark? lightDarkColor: Colors.white,
+                              color:
+                                  cubit.isDark ? lightDarkColor : Colors.white,
                               borderRadius: BorderRadius.circular(20.r),
                               boxShadow: [
-                                BoxShadow (
+                                BoxShadow(
                                   color: mainColor.withOpacity(0.2),
                                   spreadRadius: 1.0,
                                   blurRadius: 7.0,
                                   offset: const Offset(2, 5),
                                 ),
                               ],
-                              border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-                          ),
+                              border: cubit.isDark
+                                  ? Border.all(color: const Color(0xFF30363D))
+                                  : null),
                           child: Column(
                             children: [
-                              Row (
+                              Row(
                                 children: [
                                   Container(
-                                      padding: const EdgeInsetsDirectional.all(8),
+                                      padding:
+                                          const EdgeInsetsDirectional.all(8),
                                       decoration: BoxDecoration(
-                                          color: cubit.isDark? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10.r)
-                                      ),
-                                      child: Icon(
-                                          Icons.person_pin_outlined,
-                                          size: 22.r,
-                                          color: mainColor
-                                      )
-                                  ),
+                                          color: cubit.isDark
+                                              ? mainColor.withOpacity(0.2)
+                                              : mainColor.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(10.r)),
+                                      child: Icon(Icons.person_pin_outlined,
+                                          size: 22.r, color: mainColor)),
                                   SizedBox(width: 8.w),
                                   Text(
                                     'معلومات الفني',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14.sp,
-                                        color: cubit.isDark? Colors.white: Colors.black87
-                                    ),
+                                        color: cubit.isDark
+                                            ? Colors.white
+                                            : Colors.black87),
                                   ),
                                 ],
                               ),
@@ -719,29 +829,37 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   CircleAvatar(
                                     radius: 25.r,
                                     backgroundImage: NetworkImage(
-                                       providerData['profileImage'] ?? ''
-                                    ),
+                                        providerData['profileImage'] ?? ''),
                                   ),
                                   SizedBox(width: 12.w),
                                   Text(
-                                    providerData['name']?? '',
+                                    providerData['name'] ?? '',
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
-                                      color: cubit.isDark? Colors.white: Colors.black,
+                                      color: cubit.isDark
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                 ],
                               ),
                               Padding(
-                                padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
-                                child: Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
+                                padding: EdgeInsetsDirectional.symmetric(
+                                    vertical: 15.h),
+                                child: Divider(
+                                    color: cubit.isDark
+                                        ? darkSubTextColor
+                                        : Colors.grey.shade300,
+                                    height: 1),
                               ),
                               Row(
                                 children: [
                                   SvgPicture.asset(
                                     'assets/phone.svg',
-                                    color: cubit.isDark? darkSubTextColor: Colors.grey.shade600,
+                                    color: cubit.isDark
+                                        ? darkSubTextColor
+                                        : Colors.grey.shade600,
                                     width: 18.r,
                                     height: 18.r,
                                   ),
@@ -749,10 +867,11 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   Text(
                                     providerData['phone'] ?? '',
                                     style: TextStyle(
-                                        color: cubit.isDark? Colors.white: Colors.black87,
+                                        color: cubit.isDark
+                                            ? Colors.white
+                                            : Colors.black87,
                                         fontSize: 12.sp,
-                                        letterSpacing: 7
-                                    ),
+                                        letterSpacing: 7),
                                   ),
                                 ],
                               ),
@@ -760,8 +879,34 @@ class _BookingDetailsState extends State<BookingDetails> {
                               Row(
                                 children: [
                                   Expanded(
+                                    child: defualtOutlinedButtonWithIcon(
+                                      onPressed: () {
+                                        move(context,
+                                            const WorkerProfileScreen());
+                                      },
+                                      text: 'المزيد',
+                                      fontSize: 13.sp,
+                                      height: 45.h,
+                                      textColor: cubit.isDark
+                                          ? Colors.white
+                                          : mainColor,
+                                      border: cubit.isDark
+                                          ? Colors.white
+                                          : mainColor,
+                                      icon: SvgPicture.asset(
+                                        'assets/acc.svg',
+                                        color: cubit.isDark
+                                            ? Colors.white
+                                            : mainColor,
+                                        width: 20.r,
+                                        height: 20.r,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Expanded(
                                     child: defualtButtonWithIcon(
-                                      onPressed: (){},
+                                      onPressed: () {},
                                       text: 'دردشة',
                                       height: 45.h,
                                       textSize: 13.sp,
@@ -773,18 +918,24 @@ class _BookingDetailsState extends State<BookingDetails> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 12.w),
+                                  SizedBox(width: 10.w),
                                   Expanded(
                                     child: defualtOutlinedButtonWithIcon(
                                       onPressed: () {},
                                       text: 'إتصال',
                                       fontSize: 13.sp,
                                       height: 45.h,
-                                      textColor: cubit.isDark? Colors.white: mainColor,
-                                      border: cubit.isDark? Colors.white: mainColor,
+                                      textColor: cubit.isDark
+                                          ? Colors.white
+                                          : mainColor,
+                                      border: cubit.isDark
+                                          ? Colors.white
+                                          : mainColor,
                                       icon: SvgPicture.asset(
                                         'assets/phone.svg',
-                                        color: cubit.isDark? Colors.white: mainColor,
+                                        color: cubit.isDark
+                                            ? Colors.white
+                                            : mainColor,
                                         width: 20.r,
                                         height: 20.r,
                                       ),
@@ -798,12 +949,11 @@ class _BookingDetailsState extends State<BookingDetails> {
                       ],
                     ),
                   )
-
                 ],
               ),
             ),
           ),
-        ) ;
+        );
       },
     );
   }
