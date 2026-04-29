@@ -72,14 +72,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20.r),
-                    boxShadow: [
-                      BoxShadow (
-                        color: mainColor.withOpacity(0.2),
-                        spreadRadius: 1.0,
-                        blurRadius: 7.0,
-                        offset: const Offset(2, 5),
-                      ),
-                    ],
+                    boxShadow: blueShadow
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

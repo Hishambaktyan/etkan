@@ -379,21 +379,21 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   String formatStatusTime(dynamic timestamp) {
-    if (timestamp == null) return "بانتظار التحديث";
+    if (timestamp == null) return "";
     DateTime date = timestamp.toDate();
     return DateFormat('dd/MM/yyyy - hh:mm a').format(date) .replaceAll('AM', 'ص').replaceAll('PM', 'م');
 
   }
 
   String dateFormatStatusTime(dynamic timestamp) {
-    if (timestamp == null) return "بانتظار التحديث";
+    if (timestamp == null) return "";
     DateTime date = timestamp.toDate();
     return DateFormat('dd/MM/yyyy').format(date);
 
   }
 
   String timeFormatStatusTime(dynamic timestamp) {
-    if (timestamp == null) return "بانتظار التحديث";
+    if (timestamp == null) return "";
     DateTime date = timestamp.toDate();
     return DateFormat('hh:mm a').format(date) .replaceAll('AM', 'ص').replaceAll('PM', 'م');
 

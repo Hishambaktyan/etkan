@@ -7,9 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/search_screen.dart';
-import '../../modules/user_screens/booking_confirm_info_screen.dart';
 import '../../main.dart';
-import '../../modules/user_screens/worker_details.dart';
 import '../cubits/app_cubit/app_cubit.dart';
 import '../styles/colors.dart';
 
@@ -19,6 +17,14 @@ const List<BoxShadow> shadow = [
     spreadRadius: 1.0,
     blurRadius: 7.0,
     offset: Offset(2, 5),
+  ),
+];
+ List<BoxShadow> blueShadow =  [
+  BoxShadow (
+    color: mainColor.withOpacity(0.2),
+    spreadRadius: 1.0,
+    blurRadius: 7.0,
+    offset: const Offset(2, 5),
   ),
 ];
 const String reyalSymbol = '\uFDFC';

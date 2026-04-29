@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trying_homy/modules/admin_screen/admin_home_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -112,10 +113,10 @@ class MyApp extends StatelessWidget {
                 theme: lightTheme,
                 darkTheme: darkTheme,
                 debugShowCheckedModeBanner: false,
-                home: FirebaseAuth.instance.currentUser != null &&
+                home: const AdminHomeScreen() /*FirebaseAuth.instance.currentUser != null &&
                     FirebaseAuth.instance.currentUser!.emailVerified
                     ? isWorker!? const WorkerMainScreen(): const UserMainScreen()
-                    : const OnBoardingScreen(),
+                    : const OnBoardingScreen(),*/
               );
             },
           );
