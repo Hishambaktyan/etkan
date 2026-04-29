@@ -47,7 +47,6 @@ class UserMainScreen extends StatelessWidget {
                     }),
                     backgroundColor: Colors.transparent,
                     elevation: 0,
-                    height: 70.h,
                     indicatorColor: mainColor.withOpacity(0.2),
                     selectedIndex: appCubit.currentIndex,
                     onDestinationSelected: (value) {

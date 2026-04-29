@@ -44,13 +44,11 @@ void moveAndReplace(BuildContext context, Widget screen) {
       transitionDuration: const Duration(milliseconds: 10),
       reverseTransitionDuration: const Duration(milliseconds: 10),
     ),
-        (route) => false,
+    (route) => false,
   );
 }
 
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -66,11 +64,11 @@ Future<void> main() async {
 
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user != null) {
-      if(user.emailVerified){
-        print('register successfully-----------------------------------------${user.uid}');
+      if (user.emailVerified) {
+        print(
+            'register successfully-----------------------------------------${user.uid}');
       }
-    }
-    else {
+    } else {
       print("no registered user currently-----------------------------ً");
     }
   });
@@ -81,7 +79,10 @@ Future<void> main() async {
   bool? isDark = CacheHelper.getBoolen(key: 'isDark');
   bool? isWorker = CacheHelper.getBoolen(key: 'isWorker') ?? false;
 
-  runApp(MyApp(isDark: isDark,isWorker: isWorker,));
+  runApp(MyApp(
+    isDark: isDark,
+    isWorker: isWorker,
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -92,12 +93,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers:[
-        BlocProvider<AppCubit>(create: (context) => AppCubit()..changeTheme(fromShared: isDark),),
-        BlocProvider<UserServicesCubit>(create: (context) => UserServicesCubit(),),
-        BlocProvider<BookingCubit>(create: (context) => BookingCubit(),),
-        BlocProvider<AuthCubit>(create: (context) => AuthCubit()..checkUser(),),
-        BlocProvider(create: (context) => ChatCubit(),)
+      providers: [
+        BlocProvider<AppCubit>(
+          create: (context) => AppCubit()..changeTheme(fromShared: isDark),
+        ),
+        BlocProvider<UserServicesCubit>(
+          create: (context) => UserServicesCubit(),
+        ),
+        BlocProvider<BookingCubit>(
+          create: (context) => BookingCubit(),
+        ),
+        BlocProvider<AuthCubit>(
+          create: (context) => AuthCubit()..checkUser(),
+        ),
+        BlocProvider(
+          create: (context) => ChatCubit(),
+        )
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),
@@ -113,10 +124,12 @@ class MyApp extends StatelessWidget {
                 theme: lightTheme,
                 darkTheme: darkTheme,
                 debugShowCheckedModeBanner: false,
-                home: const AdminHomeScreen() /*FirebaseAuth.instance.currentUser != null &&
-                    FirebaseAuth.instance.currentUser!.emailVerified
-                    ? isWorker!? const WorkerMainScreen(): const UserMainScreen()
-                    : const OnBoardingScreen(),*/
+                home: FirebaseAuth.instance.currentUser != null &&
+                        FirebaseAuth.instance.currentUser!.emailVerified
+                    ? isWorker!
+                        ? const WorkerMainScreen()
+                        : const UserMainScreen()
+                    : const OnBoardingScreen(),
               );
             },
           );
