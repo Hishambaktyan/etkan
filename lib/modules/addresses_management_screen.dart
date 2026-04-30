@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/user_screens/select_adsress.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -807,7 +809,8 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                 height: 50.h,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    _showAddressSheet(cubit: cubit);
+                    move(context, SelectAdsress());
+                    //_showAddressSheet(cubit: cubit);
                   },
                   icon: Icon(
                     Icons.add_location_alt_outlined,
