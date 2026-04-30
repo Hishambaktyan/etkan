@@ -2,18 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
-  const PrivacyPolicyScreen({super.key});
+   PrivacyPolicyScreen({super.key});
 
-  Widget _buildHeaderCard(AppCubit cubit) {
+  Widget _buildHeaderCard(AppCubit cubit)  {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22.r),
         gradient: LinearGradient(
@@ -37,7 +38,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(14.r),
+            padding: EdgeInsetsDirectional.all(15.r),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.18),
               borderRadius: BorderRadius.circular(16.r),
@@ -45,13 +46,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 color: Colors.white.withOpacity(0.25),
               ),
             ),
-            child: Icon(
-              Icons.privacy_tip_outlined,
-              color: Colors.white,
-              size: 34.r,
-            ),
+            child: SvgPicture.asset('assets/reports.svg',color: Colors.white,width: 40.w,)
           ),
-          SizedBox(width: 14.w),
+          SizedBox(width: 10.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +57,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   'سياسة الخصوصية',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 19.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -69,7 +66,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   'نوضح لك كيف يتم جمع بياناتك واستخدامها وحمايتها داخل التطبيق.',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.88),
-                    fontSize: 12.sp,
+                    fontSize: 11.sp,
                     height: 1.5,
                   ),
                 ),
@@ -91,21 +88,17 @@ class PrivacyPolicyScreen extends StatelessWidget {
         border: cubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
             : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(9.r),
+            padding: EdgeInsetsDirectional.all(8.r),
             decoration: BoxDecoration(
               color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(11.r),
+              borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(
-              Icons.update_rounded,
-              color: mainColor,
-              size: 22.r,
-            ),
+            child: SvgPicture.asset('assets/update.svg',color: mainColor,width: 20.w,)
           ),
           SizedBox(width: 10.w),
           Expanded(
@@ -135,7 +128,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     required BuildContext context,
     required AppCubit cubit,
     required String title,
-    required IconData icon,
+    required String icon,
   }) {
     return Row(
       children: [
@@ -145,11 +138,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             color: mainColor.withOpacity(0.10),
             borderRadius: BorderRadius.circular(10.r),
           ),
-          child: Icon(
-            icon,
-            color: mainColor,
-            size: 20.r,
-          ),
+          child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
         ),
         SizedBox(width: 8.w),
         Text(
@@ -169,7 +158,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     required AppCubit cubit,
     required String title,
     required String body,
-    required IconData icon,
+    required String icon,
   }) {
     return Container(
       width: double.infinity,
@@ -180,7 +169,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
         border: cubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
             : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -204,11 +193,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               color: mainColor.withOpacity(0.10),
               borderRadius: BorderRadius.circular(11.r),
             ),
-            child: Icon(
-              icon,
-              color: mainColor,
-              size: 21.r,
-            ),
+            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
           ),
           title: Text(
             title,
@@ -238,7 +223,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     required AppCubit cubit,
     required String title,
     required String subtitle,
-    required IconData icon,
+    required String icon,
   }) {
     return Container(
       padding: EdgeInsets.all(14.r),
@@ -253,16 +238,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(9.r),
+            padding: EdgeInsetsDirectional.all(8.r),
             decoration: BoxDecoration(
               color: mainColor.withOpacity(0.10),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: mainColor,
-              size: 22.r,
-            ),
+            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
           ),
           SizedBox(width: 10.w),
           Expanded(
@@ -294,112 +275,51 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactCard(BuildContext context, AppCubit cubit) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: mainColor.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(
-          color: mainColor.withOpacity(0.20),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(11.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.14),
-              borderRadius: BorderRadius.circular(13.r),
-            ),
-            child: Icon(
-              Icons.support_agent_rounded,
-              color: mainColor,
-              size: 25.r,
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'لديك استفسار حول الخصوصية؟',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 5.h),
-                Text(
-                  'يمكنك التواصل مع فريق الدعم لمعرفة المزيد حول بياناتك وحقوقك داخل التطبيق.',
-                  style: TextStyle(
-                    color:
-                        cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
-                    fontSize: 11.sp,
-                    height: 1.6,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.navigate_next_rounded,
-            color: mainColor,
-          ),
-        ],
-      ),
-    );
-  }
+  final List<Map<String, dynamic>> policies = [
+    {
+      'title': 'البيانات التي نقوم بجمعها',
+      'icon': 'assets/folder.svg',
+      'body':
+      'قد نقوم بجمع بعض البيانات الأساسية مثل الاسم، رقم الهاتف، البريد الإلكتروني، الموقع، نوع الحساب، بيانات الطلبات، التقييمات، والمحادثات المرتبطة بالخدمة، وذلك بهدف تشغيل التطبيق وتحسين تجربة المستخدم.',
+    },
+    {
+      'title': 'استخدام بيانات الموقع',
+      'icon':'assets/loc.svg',
+      'body':
+      'يتم استخدام الموقع لتحديد مكان العميل عند إنشاء الطلب، ولمساعدة العامل على معرفة عنوان الخدمة. لا يتم استخدام الموقع خارج نطاق تقديم الخدمة أو تحسين عملية الحجز داخل التطبيق.',
+    },
+    {
+      'title': 'حماية البيانات',
+      'icon':'assets/lock.svg',
+      'body':
+      'نحرص على حماية بيانات المستخدمين من الوصول غير المصرح به، ونستخدم الخدمات الآمنة لتخزين البيانات وإدارتها. كما ننصح المستخدم بعدم مشاركة بيانات الدخول مع أي شخص آخر.',
+    },
+    {
+      'title': 'مشاركة البيانات',
+      'icon': 'assets/share.svg',
+      'body':
+      'لا يتم بيع بيانات المستخدمين أو مشاركتها مع جهات خارجية لأغراض تسويقية. قد يتم مشاركة بعض المعلومات الضرورية بين العميل والعامل لإتمام الخدمة، مثل الاسم ورقم التواصل والعنوان.',
+    },
+    {
+      'title': 'الصور والمرفقات',
+      'icon': 'assets/image.svg',
+      'body':
+      'قد يطلب التطبيق رفع صور متعلقة بالخدمة أو مستندات توثيق حساب العامل. يتم استخدام هذه الصور فقط للأغراض المرتبطة بالخدمة أو التحقق من الحساب.',
+    },
+    {
+      'title': 'حقوق المستخدم',
+      'icon': 'assets/acc_setting.svg',
+      'body':
+      'يحق للمستخدم تعديل بياناته الشخصية، إدارة عناوينه، طلب حذف حسابه، أو التواصل مع الدعم في حال وجود أي استفسار متعلق بالخصوصية أو استخدام البيانات.',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
-
-    final List<Map<String, dynamic>> policies = [
-      {
-        'title': 'البيانات التي نقوم بجمعها',
-        'icon': Icons.folder_copy_outlined,
-        'body':
-            'قد نقوم بجمع بعض البيانات الأساسية مثل الاسم، رقم الهاتف، البريد الإلكتروني، الموقع، نوع الحساب، بيانات الطلبات، التقييمات، والمحادثات المرتبطة بالخدمة، وذلك بهدف تشغيل التطبيق وتحسين تجربة المستخدم.',
-      },
-      {
-        'title': 'استخدام بيانات الموقع',
-        'icon': Icons.location_on_outlined,
-        'body':
-            'يتم استخدام الموقع لتحديد مكان العميل عند إنشاء الطلب، ولمساعدة العامل على معرفة عنوان الخدمة. لا يتم استخدام الموقع خارج نطاق تقديم الخدمة أو تحسين عملية الحجز داخل التطبيق.',
-      },
-      {
-        'title': 'حماية البيانات',
-        'icon': Icons.lock_outline_rounded,
-        'body':
-            'نحرص على حماية بيانات المستخدمين من الوصول غير المصرح به، ونستخدم الخدمات الآمنة لتخزين البيانات وإدارتها. كما ننصح المستخدم بعدم مشاركة بيانات الدخول مع أي شخص آخر.',
-      },
-      {
-        'title': 'مشاركة البيانات',
-        'icon': Icons.share_outlined,
-        'body':
-            'لا يتم بيع بيانات المستخدمين أو مشاركتها مع جهات خارجية لأغراض تسويقية. قد يتم مشاركة بعض المعلومات الضرورية بين العميل والعامل لإتمام الخدمة، مثل الاسم ورقم التواصل والعنوان.',
-      },
-      {
-        'title': 'الصور والمرفقات',
-        'icon': Icons.image_outlined,
-        'body':
-            'قد يطلب التطبيق رفع صور متعلقة بالخدمة أو مستندات توثيق حساب العامل. يتم استخدام هذه الصور فقط للأغراض المرتبطة بالخدمة أو التحقق من الحساب.',
-      },
-      {
-        'title': 'حقوق المستخدم',
-        'icon': Icons.manage_accounts_outlined,
-        'body':
-            'يحق للمستخدم تعديل بياناته الشخصية، إدارة عناوينه، طلب حذف حسابه، أو التواصل مع الدعم في حال وجود أي استفسار متعلق بالخصوصية أو استخدام البيانات.',
-      },
-    ];
-
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
+        AppCubit cubit = AppCubit.get(context);
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -436,24 +356,19 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 25.h,
-              ),
+              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeaderCard(cubit),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 20.h),
                   _buildLastUpdatedCard(context, cubit),
                   SizedBox(height: 25.h),
                   _buildSectionTitle(
                     context: context,
                     cubit: cubit,
                     title: 'ملخص الخصوصية',
-                    icon: Icons.fact_check_outlined,
+                    icon: 'assets/all.svg',
                   ),
                   SizedBox(height: 15.h),
                   _buildSmallInfoCard(
@@ -462,7 +377,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     title: 'استخدام واضح للبيانات',
                     subtitle:
                         'نستخدم بياناتك فقط لتشغيل الخدمات وتحسين التجربة.',
-                    icon: Icons.visibility_outlined,
+                    icon: 'assets/eye.svg',
                   ),
                   SizedBox(height: 12.h),
                   _buildSmallInfoCard(
@@ -471,29 +386,31 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     title: 'تحكم في حسابك',
                     subtitle:
                         'يمكنك تعديل بياناتك أو إدارة حسابك من الإعدادات.',
-                    icon: Icons.settings_outlined,
+                    icon: 'assets/setting.svg',
                   ),
                   SizedBox(height: 25.h),
                   _buildSectionTitle(
                     context: context,
                     cubit: cubit,
                     title: 'تفاصيل السياسة',
-                    icon: Icons.article_outlined,
+                    icon: 'assets/bookings.svg',
                   ),
                   SizedBox(height: 15.h),
-                  Column(
-                    children: policies.map((item) {
-                      return _buildPolicyCard(
-                        context: context,
-                        cubit: cubit,
-                        title: item['title'],
-                        body: item['body'],
-                        icon: item['icon'],
-                      );
-                    }).toList(),
+                  ListView.builder(
+                    itemCount: policies.length,
+                    shrinkWrap: true,
+                      physics:const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                      final police = policies[index];
+                        return _buildPolicyCard(
+                            context: context,
+                            cubit: cubit,
+                            title: police['title'],
+                            body: police['body'],
+                            icon: police['icon']
+                        );
+                      },
                   ),
-                  SizedBox(height: 10.h),
-                  _buildContactCard(context, cubit),
                 ],
               ),
             ),

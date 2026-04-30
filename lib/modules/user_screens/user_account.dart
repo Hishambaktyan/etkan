@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/aboutApp_screen.dart';
 import 'package:trying_homy/modules/addresses_management_screen.dart';
@@ -13,9 +13,6 @@ import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/privacy_policy_screen.dart';
 import 'package:trying_homy/modules/terms_conditions_screen.dart';
-import 'package:trying_homy/modules/user_screens/fav_services.dart';
-import 'package:trying_homy/modules/worker_screens/worker_account_verification_screen.dart';
-import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
@@ -39,7 +36,6 @@ class _UserAccountState extends State<UserAccount> {
     String name = user['name'] ?? 'مستخدم';
     String phone = user['phone'] ?? '';
     String image = user['profileImage'] ?? '';
-
     return ClipRRect(
       borderRadius: BorderRadiusDirectional.vertical(
         bottom: Radius.circular(35.r),
@@ -111,11 +107,7 @@ class _UserAccountState extends State<UserAccount> {
               ),
             ),
             Padding(
-              padding: EdgeInsetsDirectional.only(
-                top: 35.h,
-                start: 18.w,
-                end: 18.w,
-              ),
+              padding: EdgeInsetsDirectional.only(top: 35.h, start: 18.w, end: 18.w,),
               child: Column(
                 children: [
                   Row(
@@ -138,6 +130,7 @@ class _UserAccountState extends State<UserAccount> {
                         child: Container(
                           width: 42.w,
                           height: 42.h,
+                          padding: const EdgeInsetsDirectional.all(9),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.18),
                             borderRadius: BorderRadius.circular(13.r),
@@ -145,33 +138,14 @@ class _UserAccountState extends State<UserAccount> {
                               color: Colors.white.withOpacity(0.18),
                             ),
                           ),
-                          child: Stack(
-                            alignment: AlignmentDirectional.topEnd,
-                            children: [
-                              Center(
-                                child: Icon(
-                                  Icons.notifications_none_rounded,
-                                  color: Colors.white,
-                                  size: 25.r,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.only(
-                                  top: 9.h,
-                                  end: 9.w,
-                                ),
-                                child: CircleAvatar(
-                                  radius: 4.r,
-                                  backgroundColor: Colors.red,
-                                ),
-                              ),
-                            ],
+                          child: Center(
+                              child: SvgPicture.asset('assets/not.svg',color: Colors.white,)
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 28.h),
+                  SizedBox(height: 5.h),
                   Center(
                     child: Column(
                       children: [
@@ -206,21 +180,18 @@ class _UserAccountState extends State<UserAccount> {
                                 : null,
                           ),
                         ),
-                        SizedBox(height: 13.h),
+                        SizedBox(height: 10.h),
                         Text(
                           name,
                           style: TextStyle(
-                            fontSize: 18.sp,
+                            fontSize: 20.sp,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 6.h),
+                        SizedBox(height: 7.h),
                         Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 14.w,
-                            vertical: 6.h,
-                          ),
+                          padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 5.h,),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.14),
                             borderRadius: BorderRadius.circular(30.r),
@@ -228,9 +199,9 @@ class _UserAccountState extends State<UserAccount> {
                           child: Text(
                             phone,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 12.sp,
-                              letterSpacing: 1.5,
+                              color: Colors.white,
+                              fontSize: 13.sp,
+                              letterSpacing: 5,
                             ),
                           ),
                         ),
@@ -248,28 +219,20 @@ class _UserAccountState extends State<UserAccount> {
 
   Widget _buildSectionTitle({
     required String title,
-    required IconData icon,
+    required String icon,
     required AppCubit appCubit,
   }) {
     return Padding(
-      padding: EdgeInsetsDirectional.only(
-        start: 20.w,
-        end: 20.w,
-        bottom: 12.h,
-      ),
+      padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 10.h,),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(8.r),
+            padding: EdgeInsetsDirectional.all(10.r),
             decoration: BoxDecoration(
               color: mainColor.withOpacity(0.10),
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(
-              icon,
-              color: mainColor,
-              size: 20.r,
-            ),
+            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
           ),
           SizedBox(width: 8.w),
           Text(
@@ -291,22 +254,15 @@ class _UserAccountState extends State<UserAccount> {
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsetsDirectional.only(
-        start: 20.w,
-        end: 20.w,
-        bottom: 22.h,
-      ),
-      padding: EdgeInsetsDirectional.symmetric(
-        horizontal: 14.w,
-        vertical: 5.h,
-      ),
+      margin: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h,),
+      padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 5.h,),
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
         border: appCubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
             : Border.all(color: Colors.grey.shade100),
-        boxShadow: appCubit.isDark ? [] : shadow,
+        boxShadow: appCubit.isDark ? [] : blueShadow,
       ),
       child: Column(
         children: children,
@@ -326,7 +282,7 @@ class _UserAccountState extends State<UserAccount> {
   Widget _buildMenuItem({
     required AppCubit appCubit,
     required String title,
-    required IconData icon,
+    required String icon,
     required VoidCallback onTap,
     bool isSwitch = false,
     bool isDanger = false,
@@ -336,25 +292,22 @@ class _UserAccountState extends State<UserAccount> {
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 13.h),
+        padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
         child: Row(
           children: [
             Container(
               width: 38.r,
               height: 38.r,
+              padding: const EdgeInsetsDirectional.all(9),
               decoration: BoxDecoration(
                 color: isDanger
                     ? Colors.red.withOpacity(0.10)
                     : mainColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              child: Icon(
-                icon,
-                color: isDanger ? Colors.red : mainColor,
-                size: 21.r,
-              ),
+              child: SvgPicture.asset(icon,color: isDanger?Colors.red: mainColor,width: 20.w,)
             ),
-            SizedBox(width: 12.w),
+            SizedBox(width: 10.w),
             Expanded(
               child: Text(
                 title,
@@ -392,106 +345,11 @@ class _UserAccountState extends State<UserAccount> {
       ),
     );
   }
-
-  Widget _buildQuickCard({
-    required AppCubit appCubit,
-    required String title,
-    required String value,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.all(14.r),
-        decoration: BoxDecoration(
-          color: appCubit.isDark ? lightDarkColor : Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
-          border: appCubit.isDark
-              ? Border.all(color: const Color(0xFF30363D))
-              : null,
-          boxShadow: appCubit.isDark ? [] : shadow,
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10.r),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24.r,
-              ),
-            ),
-            SizedBox(height: 9.h),
-            Text(
-              value,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge!.color,
-                fontSize: 17.sp,
-                fontWeight: FontWeight.bold,
-                height: 1,
-              ),
-            ),
-            SizedBox(height: 5.h),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: appCubit.isDark ? darkSubTextColor : Colors.grey,
-                fontSize: 11.sp,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickInfo(AppCubit appCubit) {
-    return Padding(
-      padding: EdgeInsetsDirectional.only(
-        start: 20.w,
-        end: 20.w,
-        top: 18.h,
-        bottom: 22.h,
-      ),
-      child: Row(
-        children: [
-          _buildQuickCard(
-            appCubit: appCubit,
-            title: 'العناوين',
-            value: '2',
-            icon: Icons.location_on_outlined,
-            color: mainColor,
-          ),
-          SizedBox(width: 12.w),
-          _buildQuickCard(
-            appCubit: appCubit,
-            title: 'المفضلة',
-            value: '5',
-            icon: Icons.favorite_border_rounded,
-            color: Colors.red,
-          ),
-          SizedBox(width: 12.w),
-          _buildQuickCard(
-            appCubit: appCubit,
-            title: 'الطلبات',
-            value: '12',
-            icon: Icons.receipt_long_outlined,
-            color: Colors.orange,
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showLogoutDialog({
     required AppCubit appCubit,
     required AuthCubit authCubit,
-  }) {
+  })
+  {
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.25),
@@ -509,14 +367,14 @@ class _UserAccountState extends State<UserAccount> {
                   backgroundColor:
                       appCubit.isDark ? lightDarkColor : Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22.r),
+                    borderRadius: BorderRadiusDirectional.circular(22.r),
                   ),
-                  contentPadding: EdgeInsets.all(22.r),
+                  contentPadding: EdgeInsetsDirectional.all(22.r),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(16.r),
+                        padding: EdgeInsetsDirectional.all(16.r),
                         decoration: BoxDecoration(
                           color: Colors.red.withOpacity(0.10),
                           shape: BoxShape.circle,
@@ -610,11 +468,7 @@ class _UserAccountState extends State<UserAccount> {
                           color: Colors.red.withOpacity(0.10),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          Icons.delete_forever_rounded,
-                          color: Colors.red,
-                          size: 48.r,
-                        ),
+                        child: SvgPicture.asset('assets/delete.svg',color: Colors.red,width: 50.w,)
                       ),
                       SizedBox(height: 20.h),
                       Text(
@@ -695,17 +549,13 @@ class _UserAccountState extends State<UserAccount> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-
-            Map<String, dynamic> user =
-                appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid] ?? {};
-
+            Map<String, dynamic> user = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid] ?? {};
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
                 body: state is LogOutLoadingState
                     ? const Center(child: CircularProgressIndicator())
                     : SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -713,10 +563,10 @@ class _UserAccountState extends State<UserAccount> {
                               appCubit: appCubit,
                               user: user,
                             ),
-                            _buildQuickInfo(appCubit),
+                            SizedBox(height: 20.h,),
                             _buildSectionTitle(
                               title: 'الحساب الشخصي',
-                              icon: Icons.person_outline_rounded,
+                              icon: 'assets/acc.svg',
                               appCubit: appCubit,
                             ),
                             _buildMenuCard(
@@ -725,7 +575,7 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'عرض الحساب',
-                                  icon: Icons.visibility_outlined,
+                                  icon: 'assets/eye.svg',
                                   onTap: () {
                                     move(context, const EditProfileScreen());
                                   },
@@ -733,17 +583,8 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildDivider(appCubit),
                                 _buildMenuItem(
                                   appCubit: appCubit,
-                                  title: 'الخدمات المفضلة',
-                                  icon: Icons.favorite_border_rounded,
-                                  onTap: () {
-                                    move(context, const FavServices());
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
                                   title: 'إدارة العناوين',
-                                  icon: Icons.location_on_outlined,
+                                  icon: 'assets/loc.svg',
                                   onTap: () {
                                     move(
                                       context,
@@ -754,57 +595,24 @@ class _UserAccountState extends State<UserAccount> {
                               ],
                             ),
                             _buildSectionTitle(
-                              title: 'خدمات التطبيق',
-                              icon: Icons.apps_rounded,
+                              title: 'الدعم والمعلومات',
+                              icon: 'assets/support.svg',
                               appCubit: appCubit,
                             ),
                             _buildMenuCard(
                               appCubit: appCubit,
                               children: [
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'الإشتراكات',
-                                  icon: Icons.workspace_premium_outlined,
-                                  onTap: () {
-                                    move(
-                                      context,
-                                      const WorkerSubscriptionsScreen(),
-                                    );
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'توثيق الحساب',
-                                  icon: Icons.verified_user_outlined,
-                                  onTap: () {
-                                    move(
-                                      context,
-                                      const WorkerAccountVerificationScreen(),
-                                    );
-                                  },
-                                ),
-                                _buildDivider(appCubit),
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'مشاركة التطبيق',
-                                  icon: Icons.share_outlined,
+                                  icon: 'assets/share.svg',
                                   onTap: () {},
                                 ),
-                              ],
-                            ),
-                            _buildSectionTitle(
-                              title: 'الدعم والمعلومات',
-                              icon: Icons.support_agent_rounded,
-                              appCubit: appCubit,
-                            ),
-                            _buildMenuCard(
-                              appCubit: appCubit,
-                              children: [
+                                _buildDivider(appCubit),
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'تواصل معنا',
-                                  icon: Icons.chat_bubble_outline_rounded,
+                                  icon: 'assets/chat.svg',
                                   onTap: () {
                                     move(context, const ContactUsScreen());
                                   },
@@ -813,7 +621,7 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'الأسئلة الشائعة',
-                                  icon: Icons.help_outline_rounded,
+                                  icon: 'assets/ques.svg',
                                   onTap: () {
                                     move(context, const FaqScreen());
                                   },
@@ -822,7 +630,7 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'حول التطبيق',
-                                  icon: Icons.info_outline_rounded,
+                                  icon: 'assets/info.svg',
                                   onTap: () {
                                     move(context, const AboutAppScreen());
                                   },
@@ -831,16 +639,16 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'سياسة الخصوصية',
-                                  icon: Icons.privacy_tip_outlined,
+                                  icon: 'assets/reports.svg',
                                   onTap: () {
-                                    move(context, const PrivacyPolicyScreen());
+                                    move(context,  PrivacyPolicyScreen());
                                   },
                                 ),
                                 _buildDivider(appCubit),
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'الشروط والأحكام',
-                                  icon: Icons.gavel_rounded,
+                                  icon: 'assets/hammer.svg',
                                   onTap: () {
                                     move(
                                         context, const TermsConditionsScreen());
@@ -850,7 +658,7 @@ class _UserAccountState extends State<UserAccount> {
                             ),
                             _buildSectionTitle(
                               title: 'الإعدادات',
-                              icon: Icons.settings_outlined,
+                              icon: 'assets/setting.svg',
                               appCubit: appCubit,
                             ),
                             _buildMenuCard(
@@ -859,7 +667,7 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'الوضع المظلم',
-                                  icon: Icons.dark_mode_outlined,
+                                  icon: 'assets/moon.svg',
                                   isSwitch: true,
                                   onTap: () {},
                                 ),
@@ -867,7 +675,7 @@ class _UserAccountState extends State<UserAccount> {
                             ),
                             _buildSectionTitle(
                               title: 'إدارة الحساب',
-                              icon: Icons.manage_accounts_outlined,
+                              icon: 'assets/acc_setting.svg',
                               appCubit: appCubit,
                             ),
                             _buildMenuCard(
@@ -876,7 +684,7 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'تسجيل خروج',
-                                  icon: Icons.logout_rounded,
+                                  icon: 'assets/login.svg',
                                   isDanger: true,
                                   onTap: () {
                                     _showLogoutDialog(
@@ -889,7 +697,7 @@ class _UserAccountState extends State<UserAccount> {
                                 _buildMenuItem(
                                   appCubit: appCubit,
                                   title: 'حذف الحساب',
-                                  icon: Icons.delete_outline_rounded,
+                                  icon: 'assets/delete.svg',
                                   isDanger: true,
                                   onTap: () {
                                     _showDeleteAccountDialog(appCubit);

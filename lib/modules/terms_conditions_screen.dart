@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -20,7 +21,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
   Widget _buildHeaderCard(AppCubit cubit) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22.r),
         gradient: LinearGradient(
@@ -31,20 +32,12 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
             mainColor.withOpacity(0.75),
           ],
         ),
-        boxShadow: cubit.isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: mainColor.withOpacity(0.20),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+        boxShadow: blueShadow
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(14.r),
+            padding: EdgeInsetsDirectional.all(15.r),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.18),
               borderRadius: BorderRadius.circular(16.r),
@@ -52,13 +45,9 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                 color: Colors.white.withOpacity(0.25),
               ),
             ),
-            child: Icon(
-              Icons.gavel_rounded,
-              color: Colors.white,
-              size: 34.r,
-            ),
+            child: SvgPicture.asset('assets/tool.svg',color: Colors.white,width: 40.w,),
           ),
-          SizedBox(width: 14.w),
+          SizedBox(width: 10.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +56,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                   'الشروط والأحكام',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 19.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -98,26 +87,22 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
         border: cubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
             : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(9.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(11.r),
-            ),
-            child: Icon(
-              Icons.update_rounded,
-              color: mainColor,
-              size: 22.r,
-            ),
+              padding: EdgeInsetsDirectional.all(8.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: SvgPicture.asset('assets/update.svg',color: mainColor,width: 20.w,)
           ),
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
-              'آخر تحديث للشروط والأحكام',
+              'آخر تحديث لللشروط والأحكام',
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyLarge!.color,
                 fontSize: 13.sp,
@@ -142,7 +127,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     required BuildContext context,
     required AppCubit cubit,
     required String title,
-    required IconData icon,
+    required String icon,
   }) {
     return Row(
       children: [
@@ -152,11 +137,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
             color: mainColor.withOpacity(0.10),
             borderRadius: BorderRadius.circular(10.r),
           ),
-          child: Icon(
-            icon,
-            color: mainColor,
-            size: 20.r,
-          ),
+          child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
         ),
         SizedBox(width: 8.w),
         Text(
@@ -174,10 +155,9 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
   Widget _buildTermCard({
     required BuildContext context,
     required AppCubit cubit,
-    required String number,
     required String title,
     required String body,
-    required IconData icon,
+    required String icon,
   }) {
     return Container(
       width: double.infinity,
@@ -185,10 +165,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(18.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -198,51 +175,17 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
         ),
         child: ExpansionTile(
           tilePadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 4.h),
-          childrenPadding: EdgeInsetsDirectional.only(
-            start: 15.w,
-            end: 15.w,
-            bottom: 16.h,
-          ),
+          childrenPadding: EdgeInsetsDirectional.all(15.w),
           iconColor: mainColor,
           collapsedIconColor:
               cubit.isDark ? Colors.white.withOpacity(0.6) : Colors.grey,
-          leading: Stack(
-            alignment: AlignmentDirectional.topEnd,
-            children: [
-              Container(
-                padding: EdgeInsets.all(9.r),
-                decoration: BoxDecoration(
-                  color: mainColor.withOpacity(0.10),
-                  borderRadius: BorderRadius.circular(11.r),
-                ),
-                child: Icon(
-                  icon,
-                  color: mainColor,
-                  size: 21.r,
-                ),
+          leading: Container(
+              padding: EdgeInsets.all(9.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(11.r),
               ),
-              Transform.translate(
-                offset: Offset(5.w, -5.h),
-                child: Container(
-                  width: 18.r,
-                  height: 18.r,
-                  decoration: const BoxDecoration(
-                    color: mainColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      number,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+              child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
           ),
           title: Text(
             title,
@@ -270,7 +213,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
   Widget _buildWarningCard(BuildContext context, AppCubit cubit) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(15.r),
+      padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: Colors.orange.withOpacity(0.10),
         borderRadius: BorderRadius.circular(18.r),
@@ -282,16 +225,12 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(9.r),
+            padding: EdgeInsetsDirectional.all(9.r),
             decoration: BoxDecoration(
               color: Colors.orange.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.warning_amber_rounded,
-              color: Colors.orange.shade800,
-              size: 24.r,
-            ),
+            child: SvgPicture.asset('assets/reports.svg',color: Colors.orange.shade900,width: 20.w,)
           ),
           SizedBox(width: 10.w),
           Expanded(
@@ -317,7 +256,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     required AppCubit cubit,
     required String title,
     required String subtitle,
-    required IconData icon,
+    required String icon,
   }) {
     return Container(
       width: double.infinity,
@@ -328,7 +267,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
         border: cubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
             : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [
@@ -338,11 +277,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
               color: mainColor.withOpacity(0.10),
               borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(
-              icon,
-              color: mainColor,
-              size: 23.r,
-            ),
+            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
           ),
           SizedBox(width: 10.w),
           Expanded(
@@ -388,7 +323,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                   ? const Color(0xFF30363D)
                   : Colors.grey.shade200,
         ),
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [
@@ -420,117 +355,56 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     );
   }
 
-  Widget _buildContactCard(BuildContext context, AppCubit cubit) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: mainColor.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(
-          color: mainColor.withOpacity(0.20),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(11.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.14),
-              borderRadius: BorderRadius.circular(13.r),
-            ),
-            child: Icon(
-              Icons.support_agent_rounded,
-              color: mainColor,
-              size: 25.r,
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Text(
-              'لأي استفسار حول الشروط والأحكام يمكنك التواصل مع فريق الدعم.',
-              style: TextStyle(
-                color: cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
-                fontSize: 12.sp,
-                height: 1.7,
-              ),
-            ),
-          ),
-          Icon(
-            Icons.navigate_next_rounded,
-            color: mainColor,
-          ),
-        ],
-      ),
-    );
-  }
+  final List<Map<String, dynamic>> terms = [
+    {
+      'title': 'استخدام التطبيق',
+      'icon': 'assets/mobile.svg',
+      'body':
+      'يجب استخدام التطبيق للأغراض المخصصة له فقط، وهي طلب خدمات الصيانة المنزلية أو تقديمها بطريقة نظامية ومحترمة دون إساءة استخدام أي ميزة من ميزات التطبيق.',
+    },
+    {
+      'title': 'بيانات الحساب',
+      'icon': 'assets/acc.svg',
+      'body':
+      'يلتزم المستخدم بإدخال بيانات صحيحة عند إنشاء الحساب، مثل الاسم ورقم الهاتف والبريد الإلكتروني والعنوان. يتحمل المستخدم مسؤولية أي بيانات غير صحيحة يتم إدخالها.',
+    },
+    {
+      'title': 'التسعير والدفع',
+      'icon': 'assets/money.svg',
+      'body':
+      ' يتم تحديد سعر مبدئي للخدمة، ويمكن الاتفاق على التفاصيل النهائية بين العميل والعامل حسب طبيعة المشكلة. يجب الالتزام بطريقة الدفع المعتمدة داخل التطبيق.',
+    },
+    {
+      'title': 'التقييمات والبلاغات',
+      'icon': 'assets/review.svg',
+      'body':
+      'يحق للعميل تقييم العامل بعد اكتمال الخدمة، كما يمكنه إرسال بلاغ في حال وجود مشكلة في جودة العمل أو مخالفة في التعامل. يجب أن تكون التقييمات والبلاغات صادقة وغير مسيئة.',
+    },
+    {
+      'title': 'حساب العامل',
+      'icon': 'assets/providers.svg',
+      'body':
+      'يلتزم العامل بتقديم خدماته بجودة مناسبة، واحترام مواعيد الطلبات، وعدم استخدام بيانات العملاء خارج إطار تنفيذ الخدمة. قد يتم إيقاف حساب العامل عند تكرار المخالفات.',
+    },
+    {
+      'title': 'إيقاف أو حذف الحساب',
+      'icon': 'assets/block.svg',
+      'body':
+      'يحق لإدارة التطبيق إيقاف أو حذف الحساب في حال وجود إساءة استخدام، بيانات مزيفة، بلاغات متكررة، أو مخالفة واضحة للشروط والأحكام.',
+    },
+    {
+      'title': 'تعديل الشروط',
+      'icon': 'assets/pen.svg',
+      'body':
+      'قد يتم تعديل هذه الشروط عند الحاجة، وسيتم عرض آخر تحديث داخل هذه الصفحة. استمرار استخدام التطبيق بعد التعديل يعني الموافقة على الشروط الجديدة.',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
-
-    final List<Map<String, dynamic>> terms = [
-      {
-        'number': '1',
-        'title': 'استخدام التطبيق',
-        'icon': Icons.phone_android_rounded,
-        'body':
-            'يجب استخدام التطبيق للأغراض المخصصة له فقط، وهي طلب خدمات الصيانة المنزلية أو تقديمها بطريقة نظامية ومحترمة دون إساءة استخدام أي ميزة من ميزات التطبيق.',
-      },
-      {
-        'number': '2',
-        'title': 'بيانات الحساب',
-        'icon': Icons.account_circle_outlined,
-        'body':
-            'يلتزم المستخدم بإدخال بيانات صحيحة عند إنشاء الحساب، مثل الاسم ورقم الهاتف والبريد الإلكتروني والعنوان. يتحمل المستخدم مسؤولية أي بيانات غير صحيحة يتم إدخالها.',
-      },
-      {
-        'number': '3',
-        'title': 'طلبات الخدمة',
-        'icon': Icons.receipt_long_outlined,
-        'body':
-            'عند إنشاء طلب خدمة يجب توضيح المشكلة بشكل مناسب وتحديد العنوان الصحيح. يحق للعامل قبول الطلب أو رفضه حسب توفره ونطاق الخدمة الخاص به.',
-      },
-      {
-        'number': '4',
-        'title': 'التسعير والدفع',
-        'icon': Icons.payments_outlined,
-        'body':
-            'قد يتم تحديد سعر مبدئي للخدمة، ويمكن الاتفاق على التفاصيل النهائية بين العميل والعامل حسب طبيعة المشكلة. يجب الالتزام بطريقة الدفع المعتمدة داخل التطبيق.',
-      },
-      {
-        'number': '5',
-        'title': 'التقييمات والبلاغات',
-        'icon': Icons.reviews_outlined,
-        'body':
-            'يحق للعميل تقييم العامل بعد اكتمال الخدمة، كما يمكنه إرسال بلاغ في حال وجود مشكلة في جودة العمل أو مخالفة في التعامل. يجب أن تكون التقييمات والبلاغات صادقة وغير مسيئة.',
-      },
-      {
-        'number': '6',
-        'title': 'حساب العامل',
-        'icon': Icons.engineering_outlined,
-        'body':
-            'يلتزم العامل بتقديم خدماته بجودة مناسبة، واحترام مواعيد الطلبات، وعدم استخدام بيانات العملاء خارج إطار تنفيذ الخدمة. قد يتم إيقاف حساب العامل عند تكرار المخالفات.',
-      },
-      {
-        'number': '7',
-        'title': 'إيقاف أو حذف الحساب',
-        'icon': Icons.block_rounded,
-        'body':
-            'يحق لإدارة التطبيق إيقاف أو حذف الحساب في حال وجود إساءة استخدام، بيانات مزيفة، بلاغات متكررة، أو مخالفة واضحة للشروط والأحكام.',
-      },
-      {
-        'number': '8',
-        'title': 'تعديل الشروط',
-        'icon': Icons.edit_note_rounded,
-        'body':
-            'قد يتم تعديل هذه الشروط عند الحاجة، وسيتم عرض آخر تحديث داخل هذه الصفحة. استمرار استخدام التطبيق بعد التعديل يعني الموافقة على الشروط الجديدة.',
-      },
-    ];
-
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
+        AppCubit cubit = AppCubit.get(context);
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -567,26 +441,21 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 25.h,
-              ),
+              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeaderCard(cubit),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 20.h),
                   _buildLastUpdatedCard(context, cubit),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 25.h),
                   _buildWarningCard(context, cubit),
                   SizedBox(height: 25.h),
                   _buildSectionTitle(
                     context: context,
                     cubit: cubit,
                     title: 'تطبق الشروط على',
-                    icon: Icons.groups_rounded,
+                    icon: 'assets/users.svg',
                   ),
                   SizedBox(height: 15.h),
                   _buildUserTypeCard(
@@ -594,7 +463,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                     cubit: cubit,
                     title: 'العملاء',
                     subtitle: 'كل مستخدم يقوم بطلب خدمات الصيانة من التطبيق.',
-                    icon: Icons.person_outline_rounded,
+                    icon: 'assets/acc.svg',
                   ),
                   SizedBox(height: 12.h),
                   _buildUserTypeCard(
@@ -603,32 +472,33 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                     title: 'العمال ومقدمي الخدمات',
                     subtitle:
                         'كل عامل يقوم بتقديم خدمة أو استقبال طلبات داخل التطبيق.',
-                    icon: Icons.engineering_outlined,
+                    icon: 'assets/providers.svg',
                   ),
                   SizedBox(height: 25.h),
                   _buildSectionTitle(
                     context: context,
                     cubit: cubit,
                     title: 'بنود الشروط والأحكام',
-                    icon: Icons.article_outlined,
+                    icon: 'assets/bookings.svg',
                   ),
                   SizedBox(height: 15.h),
-                  Column(
-                    children: terms.map((item) {
-                      return _buildTermCard(
-                        context: context,
-                        cubit: cubit,
-                        number: item['number'],
-                        title: item['title'],
-                        body: item['body'],
-                        icon: item['icon'],
-                      );
-                    }).toList(),
+                  ListView.builder(
+                    itemCount: terms.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final term = terms[index];
+                        return _buildTermCard(
+                          context: context,
+                          cubit: cubit,
+                          title: term['title'],
+                          body: term['body'],
+                          icon: term['icon'],
+                        );
+                      },
                   ),
                   SizedBox(height: 10.h),
                   _buildAcceptanceCard(context, cubit),
-                  SizedBox(height: 16.h),
-                  _buildContactCard(context, cubit),
                 ],
               ),
             ),

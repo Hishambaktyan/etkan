@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -10,90 +11,23 @@ import 'package:trying_homy/shared/styles/colors.dart';
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({super.key});
 
-  Widget _buildHeaderCard(AppCubit cubit) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20.r),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22.r),
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            mainColor,
-            mainColor.withOpacity(0.75),
-          ],
-        ),
-        boxShadow: cubit.isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: mainColor.withOpacity(0.20),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 80.r,
-            height: 80.r,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white.withOpacity(0.25),
-              ),
-            ),
-            child: Icon(
-              Icons.home_repair_service_rounded,
-              color: Colors.white,
-              size: 42.r,
-            ),
-          ),
-          SizedBox(height: 15.h),
-          Text(
-            'Homy',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 28.sp,
-              fontWeight: FontWeight.bold,
-              height: 1,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'تطبيق طلب خدمات الصيانة المنزلية',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 13.sp,
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildInfoCard({
     required BuildContext context,
     required AppCubit cubit,
     required String title,
     required String description,
-    required IconData icon,
+    required String icon,
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(bottom: 14.h),
-      padding: EdgeInsets.all(16.r),
+      margin: EdgeInsetsDirectional.only(bottom: 14.h),
+      padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(18.r),
         border:
             cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,11 +40,7 @@ class AboutAppScreen extends StatelessWidget {
                   : mainColor.withOpacity(0.10),
               borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(
-              icon,
-              color: mainColor,
-              size: 23.r,
-            ),
+            child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -147,7 +77,7 @@ class AboutAppScreen extends StatelessWidget {
     required BuildContext context,
     required AppCubit cubit,
     required String title,
-    required IconData icon,
+    required String icon,
   }) {
     return Container(
       padding: EdgeInsets.all(14.r),
@@ -156,7 +86,7 @@ class AboutAppScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         border:
             cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Column(
         children: [
@@ -166,11 +96,7 @@ class AboutAppScreen extends StatelessWidget {
               color: mainColor.withOpacity(0.10),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: mainColor,
-              size: 24.r,
-            ),
+            child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
           ),
           SizedBox(height: 10.h),
           Text(
@@ -192,21 +118,17 @@ class AboutAppScreen extends StatelessWidget {
     required BuildContext context,
     required AppCubit cubit,
     required String title,
-    required IconData icon,
+    required String icon,
   }) {
     return Row(
       children: [
         Container(
-          padding: EdgeInsets.all(8.r),
+          padding: EdgeInsetsDirectional.all(10.r),
           decoration: BoxDecoration(
             color: mainColor.withOpacity(0.10),
             borderRadius: BorderRadius.circular(10.r),
           ),
-          child: Icon(
-            icon,
-            color: mainColor,
-            size: 20.r,
-          ),
+          child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
         ),
         SizedBox(width: 8.w),
         Text(
@@ -230,7 +152,7 @@ class AboutAppScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(18.r),
         border:
             cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [
@@ -240,11 +162,7 @@ class AboutAppScreen extends StatelessWidget {
               color: mainColor.withOpacity(0.10),
               borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(
-              Icons.info_outline_rounded,
-              color: mainColor,
-              size: 22.r,
-            ),
+            child: SvgPicture.asset('assets/info.svg',color: mainColor,)
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -313,31 +231,24 @@ class AboutAppScreen extends StatelessWidget {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 25.h,
-              ),
+              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeaderCard(cubit),
-                  SizedBox(height: 25.h),
                   _buildSectionTitle(
                     context: context,
                     cubit: cubit,
                     title: 'نبذة عن التطبيق',
-                    icon: Icons.article_outlined,
+                    icon: 'assets/bookings.svg',
                   ),
-                  SizedBox(height: 15.h),
+                  SizedBox(height: 20.h),
                   _buildInfoCard(
                     context: context,
                     cubit: cubit,
                     title: 'ما هو التطبيق؟',
                     description:
                         'تطبيق Homy يساعد العملاء على طلب خدمات الصيانة المنزلية بسهولة، مثل الكهرباء والسباكة والتكييف، مع إمكانية متابعة حالة الطلب والتواصل مع العامل داخل التطبيق.',
-                    icon: Icons.phone_android_rounded,
+                    icon: 'assets/mobile.svg',
                   ),
                   _buildInfoCard(
                     context: context,
@@ -345,14 +256,14 @@ class AboutAppScreen extends StatelessWidget {
                     title: 'هدف التطبيق',
                     description:
                         'يهدف التطبيق إلى تسهيل الوصول إلى العمال ومقدمي الخدمات، وتنظيم عملية الحجز، ورفع مستوى الثقة بين العميل والعامل من خلال التقييمات والبيانات الواضحة.',
-                    icon: Icons.flag_rounded,
+                    icon: 'assets/flag.svg',
                   ),
                   SizedBox(height: 10.h),
                   _buildSectionTitle(
                     context: context,
                     cubit: cubit,
                     title: 'مميزات التطبيق',
-                    icon: Icons.star_border_rounded,
+                    icon: 'assets/star.svg',
                   ),
                   SizedBox(height: 15.h),
                   GridView.count(
@@ -367,25 +278,25 @@ class AboutAppScreen extends StatelessWidget {
                         context: context,
                         cubit: cubit,
                         title: 'طلب خدمة بسهولة',
-                        icon: Icons.handyman_rounded,
+                        icon: 'assets/services.svg',
                       ),
                       _buildFeatureItem(
                         context: context,
                         cubit: cubit,
                         title: 'تتبع حالة الطلب',
-                        icon: Icons.timeline_rounded,
+                        icon: 'assets/timeline.svg',
                       ),
                       _buildFeatureItem(
                         context: context,
                         cubit: cubit,
                         title: 'دردشة مباشرة',
-                        icon: Icons.chat_bubble_outline_rounded,
+                        icon: 'assets/chat.svg',
                       ),
                       _buildFeatureItem(
                         context: context,
                         cubit: cubit,
                         title: 'تقييم العمال',
-                        icon: Icons.reviews_rounded,
+                        icon: 'assets/review.svg',
                       ),
                     ],
                   ),

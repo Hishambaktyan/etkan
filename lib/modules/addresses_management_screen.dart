@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -44,7 +45,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
   Widget _buildHeaderCard(AppCubit cubit) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(18.r),
+      padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22.r),
         gradient: LinearGradient(
@@ -55,34 +56,22 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
             mainColor.withOpacity(0.75),
           ],
         ),
-        boxShadow: cubit.isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: mainColor.withOpacity(0.20),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+        boxShadow: cubit.isDark ? [] : blueShadow,
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(14.r),
+            padding: EdgeInsetsDirectional.all(15.r),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadiusDirectional.circular(16.r),
               border: Border.all(
                 color: Colors.white.withOpacity(0.25),
               ),
             ),
-            child: Icon(
-              Icons.location_on_outlined,
-              color: Colors.white,
-              size: 34.r,
-            ),
+            child: SvgPicture.asset('assets/loc.svg',color: Colors.white,width: 40.w,)
           ),
-          SizedBox(width: 14.w),
+          SizedBox(width: 10.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +80,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                   'إدارة العناوين',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 19.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -99,7 +88,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                 Text(
                   'أضف وعدّل عناوينك لاستخدامها عند إنشاء طلب خدمة جديد.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.88),
+                    color: Colors.white,
                     fontSize: 12.sp,
                     height: 1.5,
                   ),
@@ -112,95 +101,16 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
     );
   }
 
-  Widget _buildSummaryCard(AppCubit cubit) {
-    int defaultIndex =
-        addresses.indexWhere((item) => item['isDefault'] == true);
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(15.r),
-      decoration: BoxDecoration(
-        color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Icon(
-              Icons.home_work_outlined,
-              color: mainColor,
-              size: 23.r,
-            ),
-          ),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'عدد العناوين المحفوظة',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  defaultIndex == -1
-                      ? 'لا يوجد عنوان افتراضي'
-                      : 'العنوان الافتراضي: ${addresses[defaultIndex]['title']}',
-                  style: TextStyle(
-                    color: cubit.isDark ? darkSubTextColor : Colors.grey,
-                    fontSize: 11.sp,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 7.h),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(30.r),
-            ),
-            child: Text(
-              '${addresses.length}',
-              style: TextStyle(
-                color: mainColor,
-                fontSize: 15.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSectionTitle(AppCubit cubit) {
     return Row(
       children: [
         Container(
-          padding: EdgeInsets.all(8.r),
+          padding: EdgeInsetsDirectional.all(10.r),
           decoration: BoxDecoration(
             color: mainColor.withOpacity(0.10),
             borderRadius: BorderRadius.circular(10.r),
           ),
-          child: Icon(
-            Icons.bookmark_border_rounded,
-            color: mainColor,
-            size: 20.r,
-          ),
+          child: SvgPicture.asset('assets/saved.svg',color: mainColor,width: 20.w,)
         ),
         SizedBox(width: 8.w),
         Text(
@@ -214,13 +124,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
       ],
     );
   }
-
-  IconData _getAddressIcon(String type) {
-    if (type == 'العمل') return Icons.business_center_outlined;
-    if (type == 'أخرى') return Icons.location_city_outlined;
-    return Icons.home_outlined;
-  }
-
+  
   Widget _buildAddressCard({
     required AppCubit cubit,
     required Map<String, dynamic> address,
@@ -228,8 +132,8 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(bottom: 15.h),
-      padding: EdgeInsets.all(15.r),
+      margin: EdgeInsetsDirectional.only(bottom: 15.h),
+      padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -241,42 +145,36 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                   : Colors.grey.shade200,
           width: address['isDefault'] ? 1.3 : 1,
         ),
-        boxShadow: cubit.isDark ? [] : shadow,
+        boxShadow: blueShadow,
       ),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(11.r),
+                padding: EdgeInsetsDirectional.all(10.r),
                 decoration: BoxDecoration(
                   color: mainColor.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(13.r),
                 ),
-                child: Icon(
-                  _getAddressIcon(address['type']),
-                  color: mainColor,
-                  size: 25.r,
-                ),
+                child: SvgPicture.asset('assets/home.svg',color: mainColor,width: 25.w,)
               ),
-              SizedBox(width: 11.w),
+              SizedBox(width: 10.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Flexible(
-                          child: Text(
-                            address['title'],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge!.color,
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Text(
+                          address['title'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyLarge!.color,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         if (address['isDefault']) ...[
@@ -313,76 +211,6 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                   ],
                 ),
               ),
-              PopupMenuButton<String>(
-                color: cubit.isDark ? lightDarkColor : Colors.white,
-                icon: Icon(
-                  Icons.more_vert_rounded,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14.r),
-                ),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    _showAddressSheet(
-                      cubit: cubit,
-                      index: index,
-                      oldAddress: address,
-                    );
-                  } else if (value == 'default') {
-                    _setDefaultAddress(index);
-                  } else if (value == 'delete') {
-                    _deleteAddress(index);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit_outlined,
-                              color: mainColor, size: 20.r),
-                          SizedBox(width: 8.w),
-                          const Text('تعديل'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'default',
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Row(
-                        children: [
-                          Icon(Icons.check_circle_outline,
-                              color: Colors.green, size: 20.r),
-                          SizedBox(width: 8.w),
-                          const Text('تعيين كافتراضي'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_outline,
-                              color: Colors.red, size: 20.r),
-                          SizedBox(width: 8.w),
-                          const Text(
-                            'حذف',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
           Padding(
@@ -406,7 +234,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
             title: 'الوصف',
             value: address['details'],
           ),
-          SizedBox(height: 14.h),
+          SizedBox(height: 15.h),
           Row(
             children: [
               Expanded(
@@ -435,6 +263,13 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                 ),
               ),
             ],
+          ),
+          SizedBox(height: 10.h),
+          _buildSmallButton(
+            title: 'حذف',
+            icon: Icons.delete_outline_rounded,
+            color: Colors.red,
+            onTap: ()=>_deleteAddress(index),
           ),
         ],
       ),
@@ -530,11 +365,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                 color: mainColor.withOpacity(0.10),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.location_off_outlined,
-                color: mainColor,
-                size: 55.r,
-              ),
+              child: SvgPicture.asset('assets/no_loc.svg',color: mainColor,width: 60.w,)
             ),
             SizedBox(height: 18.h),
             Text(
@@ -638,7 +469,8 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
     required AppCubit cubit,
     int? index,
     Map<String, dynamic>? oldAddress,
-  }) {
+  })
+  {
     TextEditingController titleController = TextEditingController(
       text: oldAddress == null ? '' : oldAddress['title'],
     );
@@ -890,7 +722,6 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
   @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
-
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -930,18 +761,11 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 100.h,
-              ),
+              padding: const EdgeInsetsDirectional.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeaderCard(cubit),
-                  SizedBox(height: 16.h),
-                  _buildSummaryCard(cubit),
                   SizedBox(height: 25.h),
                   _buildSectionTitle(cubit),
                   SizedBox(height: 15.h),
