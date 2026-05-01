@@ -356,7 +356,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                         )
                                     ),
                                     SizedBox(width: 4.w),
-                                    Icon(Icons.star_rounded, color: Colors.orange,),
+                                    const Icon(Icons.star_rounded, color: Colors.orange,),
                                   ],
                                 ),
                               ),
