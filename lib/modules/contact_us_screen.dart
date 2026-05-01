@@ -48,7 +48,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsetsDirectional.only(top: 10.h, start: 20.w, end: 20.w,bottom: 20.h),
+            padding: EdgeInsetsDirectional.only(top: 10.h, start: 10.w, end: 10.w,bottom: 20.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

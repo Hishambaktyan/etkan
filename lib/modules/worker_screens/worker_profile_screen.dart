@@ -1,9 +1,19 @@
+import 'dart:ui';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trying_homy/modules/images_view.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+
+import '../../main.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
+import '../notifications_screen.dart';
 
 class WorkerProfileScreen extends StatefulWidget {
   const WorkerProfileScreen({super.key});
@@ -14,15 +24,15 @@ class WorkerProfileScreen extends StatefulWidget {
 
 class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
   final String workerName = 'هادي محمد';
-  final String workerSpec = 'فني كهرباء وتمديدات';
+  final String workerSpec = 'كهربائي';
   final String phone = '778830326';
   final double rating = 4.8;
   final int completedJobs = 37;
-  final String workerImage =
-      'https://d26e3f10zvrezp.cloudfront.net/Gallery/d72c67af-9f10-4d9d-b3db-fdc1647e6acc-1024x1024.webp';
+  final String workerImage = 'https://d26e3f10zvrezp.cloudfront.net/Gallery/d72c67af-9f10-4d9d-b3db-fdc1647e6acc-1024x1024.webp';
 
-  final String about =
-      'فني محترف في أعمال الكهرباء والصيانة المنزلية، أمتلك خبرة واسعة في تركيب الإنارة، إصلاح الأعطال، وتمديدات الكهرباء للمنازل والمحلات، وأهتم بجودة العمل والالتزام بالمواعيد.';
+  final String coverImage = 'https://img.pikbest.com/photo/20241027/rear-view-of-two-female-multiracial-electrical-workers-dressed_11011952.jpg!bw700';
+
+  final String about = 'فني محترف في أعمال الكهرباء والصيانة المنزلية، أمتلك خبرة واسعة في تركيب الإنارة، إصلاح الأعطال، وتمديدات الكهرباء للمنازل والمحلات، وأهتم بجودة العمل والالتزام بالمواعيد.';
 
   final List<String> experiences = [
     'خبرة أكثر من 5 سنوات في الصيانة الكهربائية',
@@ -34,543 +44,628 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
   final List<Map<String, String>> previousWorks = [
     {
       'title': 'تركيب إنارة منزلية كاملة',
-      'image':
-          'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop'
+      'image': 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop'
     },
     {
       'title': 'صيانة لوحة كهرباء',
-      'image':
-          'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=1200&auto=format&fit=crop'
+      'image': 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=1200&auto=format&fit=crop'
     },
     {
       'title': 'تمديدات شقة سكنية',
-      'image':
-          'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop'
+      'image': 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop'
     },
   ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 290.h,
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadiusDirectional.vertical(
-                        bottom: Radius.circular(18),
+  Widget buildSectionHeader({
+    required String title,
+    required Widget icon,
+    required AppCubit cubit,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsetsDirectional.all(8.r),
+          decoration: BoxDecoration(
+            color: cubit.isDark
+                ? mainColor.withOpacity(0.20)
+                : mainColor.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: icon,
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildWhiteCard({
+    required Widget child,
+    required AppCubit cubit,
+    EdgeInsetsGeometry? padding,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: padding ?? EdgeInsetsDirectional.all(18.r),
+      decoration: BoxDecoration(
+        color: cubit.isDark ? lightDarkColor : Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        border: cubit.isDark
+            ? Border.all(color: const Color(0xFF30363D))
+            : null,
+        boxShadow: cubit.isDark ? [] : blueShadow,
+      ),
+      child: child,
+    );
+  }
+  Widget buildStatCard({
+    required Widget icon,
+    required String value,
+    required String title,
+    required AppCubit cubit,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsetsDirectional.all(15.w),
+        decoration: BoxDecoration(
+          color: cubit.isDark ? lightDarkColor : Colors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          border: cubit.isDark
+              ? Border.all(color: const Color(0xFF30363D))
+              : null,
+          boxShadow: cubit.isDark ? [] : blueShadow,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 23.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                ),
+                const Spacer(),
+                icon,
+              ],
+            ),
+            SizedBox(height: 5.h),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 15.sp,
+                color: cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget buildHeader({
+    required AppCubit appCubit,
+    required Map<String, dynamic> user,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadiusDirectional.vertical(
+        bottom: Radius.circular(35.r),
+      ),
+      child: Container(
+        width: double.infinity,
+        height: 300.h,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              mainColor.withOpacity(0.9),
+              const Color(0xFF0F0F1E),
+            ],
+            stops: const [0.0, 0.8],
+          ),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -50.h,
+              left: -50.w,
+              child: CircleAvatar(
+                radius: 100.r,
+                backgroundColor: Colors.white.withOpacity(0.15),
+              ),
+            ),
+            Positioned(
+              top: 80.h,
+              right: -60.w,
+              child: Container(
+                width: 250.r,
+                height: 250.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF00F2FF).withOpacity(0.5),
+                      const Color(0xFF00F2FF).withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 200.h,
+              left: -40.w,
+              child: Container(
+                width: 200.r,
+                height: 200.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      mainColor.withOpacity(0.4),
+                      mainColor.withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                  child: Container(color: Colors.transparent),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsetsDirectional.only(top: 35.h, start: 5.w, end: 18.w,),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed:()=>Navigator.pop(context),
+                          icon: const Icon(CupertinoIcons.back,color: Colors.white,)
                       ),
-                      child: Image.network(
-                        "https://img.pikbest.com/photo/20241027/rear-view-of-two-female-multiracial-electrical-workers-dressed_11011952.jpg!bw700",
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: 250.h,
+                      Text(
+                        'الحساب',
+                        style: TextStyle(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: ()=> move(context, const NotificationsScreen()),
+                        child: Container(
+                          width: 42.w,
+                          height: 42.h,
+                          padding: const EdgeInsetsDirectional.all(9),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.18),
+                            borderRadius: BorderRadius.circular(13.r),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.18),
+                            ),
+                          ),
+                          child: Center(
+                              child: SvgPicture.asset('assets/not.svg',color: Colors.white,)
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5.h),
+                  Center(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 98.r,
+                          height: 98.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.15),
+                                blurRadius: 15,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 48.r,
+                            backgroundColor: Colors.white.withOpacity(0.12),
+                            backgroundImage:
+                            workerImage.isNotEmpty ? NetworkImage(workerImage) : null,
+                            child: workerImage.isEmpty
+                                ? Icon(
+                              Icons.person_rounded,
+                              color: Colors.white,
+                              size: 48.r,
+                            )
+                                : null,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        Text(
+                          workerName,
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 7.h),
+                        Container(
+                          padding: EdgeInsetsDirectional.only(start: 12.w,end: 15.w,top: 5.h),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.14),
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          child: Text(
+                            workerSpec,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildQuickStats(AppCubit cubit) {
+    return Row(
+      children: [
+        buildStatCard(
+          cubit: cubit,
+          icon: SvgPicture.asset(
+            'assets/star.svg',
+            color: mainColor,
+            width: 30.w,
+          ),
+          value: rating.toString(),
+          title: 'التقييم',
+        ),
+        SizedBox(width: 15.w),
+        buildStatCard(
+          cubit: cubit,
+          icon: SvgPicture.asset(
+            'assets/services.svg',
+            color: mainColor,
+            width: 30.w,
+          ),
+          value: '$completedJobs',
+          title: 'عمل مكتمل',
+        ),
+      ],
+    );
+  }
+
+  Widget buildAboutCard(AppCubit cubit) {
+    return buildWhiteCard(
+      cubit: cubit,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            about,
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: cubit.isDark ? darkSubTextColor : Colors.black87,
+              height: 1.8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildContactCard(AppCubit cubit) {
+    return buildWhiteCard(
+      cubit: cubit,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsetsDirectional.all(13.r),
+            decoration: BoxDecoration(
+              color: cubit.isDark
+                  ? mainColor.withOpacity(0.18)
+                  : mainColor.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  'assets/phone.svg',
+                  color: mainColor,
+                  width: 20.r,
+                  height: 20.r,
+                ),
+                SizedBox(width: 10.w),
+                Text(
+                  phone,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontSize: 13.sp,
+                    letterSpacing: 5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 18.h),
+          Row(
+            children: [
+              Expanded(
+                child: defualtButtonWithIcon(
+                  onPressed: () {},
+                  text: 'دردشة',
+                  height: 45.h,
+                  textSize: 13.sp,
+                  icon: SvgPicture.asset(
+                    'assets/chat.svg',
+                    color: Colors.white,
+                    width: 20.r,
+                    height: 20.r,
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: defualtOutlinedButtonWithIcon(
+                  onPressed: () {},
+                  text: 'إتصال',
+                  fontSize: 13.sp,
+                  height: 45.h,
+                  textColor: mainColor,
+                  border: mainColor,
+                  icon: SvgPicture.asset(
+                    'assets/phone.svg',
+                    color: mainColor,
+                    width: 20.r,
+                    height: 20.r,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildExperiencesCard(AppCubit cubit) {
+    return buildWhiteCard(
+      cubit: cubit,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: experiences.map((exp) {
+              return Padding(
+                padding: EdgeInsetsDirectional.only(bottom: 10.h),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsetsDirectional.all(3.r),
+                      decoration: BoxDecoration(
+                        color: cubit.isDark
+                            ? mainColor.withOpacity(0.20)
+                            : mainColor.withOpacity(0.10),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check_rounded,
+                        color: mainColor,
+                        size: 14.r,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.only(
-                        top: 30.h,
-                        start: 12.w,
-                        end: 12.w,
-                      ),
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white.withOpacity(0.8),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () => Navigator.pop(context),
-                          child: const Icon(CupertinoIcons.back),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        exp,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: cubit.isDark ? darkSubTextColor : Colors.black87,
+                          height: 1.6,
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        width: 115.w,
-                        height: 115.w,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              workerImage,
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildPreviousWorksCard(AppCubit cubit) {
+    return buildWhiteCard(
+      cubit: cubit,
+      padding: EdgeInsetsDirectional.only(bottom: 10.r),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsetsDirectional.only(
+              start: 10.w,
+              end: 18.w,
+              top: 18.h,
+              bottom: 14.h,
+            ),
+            child: SizedBox(
+              height: 155.h,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: previousWorks.length,
+                separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                itemBuilder: (context, index) {
+                  final work = previousWorks[index];
+
+                  return InkWell(
+                    onTap: () => move(
+                      context,
+                      ImageViewerPage(imageUrl: work['image']!),
+                    ),
+                    child: Container(
+                      width: 175.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        color: cubit.isDark
+                            ? darkBgColor
+                            : Colors.grey.shade100,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              work['image']!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: cubit.isDark
+                                      ? darkBgColor
+                                      : Colors.grey.shade200,
+                                  child: Icon(
+                                    Icons.image_not_supported_outlined,
+                                    color: cubit.isDark
+                                        ? darkSubTextColor
+                                        : Colors.grey,
+                                    size: 35.r,
+                                  ),
+                                );
+                              },
                             ),
-                            fit: BoxFit.cover,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.12),
-                              blurRadius: 12,
-                              offset: const Offset(0, 6),
+                            Container(
+                              alignment: Alignment.bottomCenter,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withOpacity(0.65),
+                                  ],
+                                ),
+                              ),
+                              padding: EdgeInsetsDirectional.all(10.r),
+                              child: Text(
+                                work['title']!,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.4,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AppCubit,AppStates>(
+        builder: (context, state) {
+          AppCubit appCubit = AppCubit.get(context);
+          Map<String, dynamic> user = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid] ?? {};
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(18.r),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: mainColor.withOpacity(0.12),
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: const Offset(2, 5),
-                          ),
-                        ],
-                      ),
+                    buildHeader(appCubit:appCubit,user: user ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsetsDirectional.all(8),
-                                decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10.r),
-                                ),
-                                child: Icon(Icons.info_outline,
-                                    size: 20.r, color: mainColor),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'نبذة عن العامل',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.sp,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
+                          buildQuickStats(appCubit),
+                          SizedBox(height: 25.h),
+                          buildSectionHeader(
+                            title: 'معلومات التواصل',
+                            icon: SvgPicture.asset('assets/contact.svg',color: mainColor,width: 25.w,),
+                            cubit: appCubit
                           ),
-                          SizedBox(height: 14.h),
-                          Text(
-                            about,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: Colors.black87,
-                              height: 1.8,
-                            ),
+                          SizedBox(height: 10.h),
+                          buildContactCard(appCubit),
+                          SizedBox(height: 20.h),
+                          buildSectionHeader(
+                            title: 'نبذة عن العامل',
+                            icon: SvgPicture.asset('assets/info.svg',color: mainColor,width: 25.w,),
+                              cubit: appCubit
                           ),
+                          SizedBox(height: 10.h),
+                          buildAboutCard(appCubit),
+                          SizedBox(height: 20.h),
+                          buildSectionHeader(
+                            title: 'الخبرات',
+                            icon: SvgPicture.asset('assets/subs.svg',color: mainColor,width: 25.w,),
+                              cubit: appCubit
+                          ),
+                          SizedBox(height: 10.h),
+                          buildExperiencesCard(appCubit),
+                          SizedBox(height: 20.h),
+                          buildSectionHeader(
+                            title: 'الأعمال السابقة',
+                            icon: SvgPicture.asset('assets/image.svg',color: mainColor,width: 25.w,),
+                              cubit: appCubit
+                          ),
+                          SizedBox(height: 10.h),
+                          buildPreviousWorksCard(appCubit),
                         ],
                       ),
                     ),
-                    SizedBox(height: 14.h),
-                    Container(
-                      padding: EdgeInsets.all(18.r),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: mainColor.withOpacity(0.15),
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: const Offset(2, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsetsDirectional.all(8),
-                                decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10.r),
-                                ),
-                                child: Icon(
-                                  Icons.person_pin_outlined,
-                                  size: 22.r,
-                                  color: mainColor,
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'معلومات الفني',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.sp,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 14.h),
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 28.r,
-                                backgroundColor: mainColor.withOpacity(0.1),
-                                backgroundImage: NetworkImage(
-                                  workerImage,
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      workerName,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4.h),
-                                    Text(
-                                      workerSpec,
-                                      style: TextStyle(
-                                        fontSize: 13.sp,
-                                        color: Colors.grey[700],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 15.h),
-                            child:
-                                Divider(color: Colors.grey.shade200, height: 1),
-                          ),
-                          Row(
-                            children: [
-                              Icon(Icons.phone_outlined,
-                                  color: Colors.grey.shade600, size: 18),
-                              SizedBox(width: 10.w),
-                              Text(
-                                phone,
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 12.sp,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 14.h),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 12.h, horizontal: 10.w),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withOpacity(0.07),
-                                    borderRadius: BorderRadius.circular(14.r),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.star_rounded,
-                                          color: mainColor, size: 20.r),
-                                      SizedBox(width: 8.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            rating.toString(),
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            'التقييم',
-                                            style: TextStyle(
-                                              fontSize: 11.sp,
-                                              color: Colors.grey[700],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 12.h, horizontal: 10.w),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withOpacity(0.07),
-                                    borderRadius: BorderRadius.circular(14.r),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.work_outline,
-                                          color: mainColor, size: 20.r),
-                                      SizedBox(width: 8.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '$completedJobs',
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            'الأعمال',
-                                            style: TextStyle(
-                                              fontSize: 11.sp,
-                                              color: Colors.grey[700],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 18.h),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: defualtButtonWithIcon(
-                                  onPressed: () {},
-                                  text: 'دردشة',
-                                  height: 45.h,
-                                  textSize: 13.sp,
-                                  icon: SvgPicture.asset(
-                                    'assets/chat.svg',
-                                    color: Colors.white,
-                                    width: 20.r,
-                                    height: 20.r,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: defualtOutlinedButtonWithIcon(
-                                  onPressed: () {},
-                                  text: 'إتصال',
-                                  fontSize: 13.sp,
-                                  height: 45.h,
-                                  textColor: mainColor,
-                                  border: mainColor,
-                                  icon: SvgPicture.asset(
-                                    'assets/phone.svg',
-                                    color: mainColor,
-                                    width: 20.r,
-                                    height: 20.r,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 14.h),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(18.r),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: mainColor.withOpacity(0.12),
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: const Offset(2, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsetsDirectional.all(8),
-                                decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10.r),
-                                ),
-                                child: Icon(Icons.workspace_premium_outlined,
-                                    size: 20.r, color: mainColor),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'الخبرات',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.sp,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 14.h),
-                          Column(
-                            children: experiences
-                                .map(
-                                  (exp) => Padding(
-                                    padding: EdgeInsets.only(bottom: 10.h),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Icon(Icons.check_circle,
-                                            color: mainColor, size: 18.r),
-                                        SizedBox(width: 8.w),
-                                        Expanded(
-                                          child: Text(
-                                            exp,
-                                            style: TextStyle(
-                                              fontSize: 13.sp,
-                                              color: Colors.black87,
-                                              height: 1.6,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 14.h),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsetsDirectional.only(bottom: 18.r),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: mainColor.withOpacity(0.12),
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: const Offset(2, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsetsDirectional.only(
-                                start: 18, end: 18, top: 18, bottom: 14),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsetsDirectional.all(8),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(10.r),
-                                  ),
-                                  child: Icon(Icons.image_outlined,
-                                      size: 20.r, color: mainColor),
-                                ),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  'الأعمال السابقة',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.sp,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 150.h,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: previousWorks.length,
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(width: 12.w),
-                              itemBuilder: (context, index) {
-                                final work = previousWorks[index];
-                                return Container(
-                                  width: 170.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16.r),
-                                    color: Colors.grey.shade100,
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16.r),
-                                    child: Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        Image.network(
-                                          work['image']!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                        Container(
-                                          alignment: Alignment.bottomCenter,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                              colors: [
-                                                Colors.transparent,
-                                                Colors.black.withOpacity(0.6),
-                                              ],
-                                            ),
-                                          ),
-                                          padding: EdgeInsets.all(10.r),
-                                          child: Text(
-                                            work['title']!,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        },
     );
   }
 }

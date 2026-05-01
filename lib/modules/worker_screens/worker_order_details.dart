@@ -6,10 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
-import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
-import '../images_view.dart';
 
 class WorkerOrderDetails extends StatelessWidget {
   final Map<String,dynamic> request;
@@ -226,12 +224,46 @@ class WorkerOrderDetails extends StatelessWidget {
     );
   }
 
+  Widget buildSectionTitle({
+    required String title,
+    required IconData icon,
+    required dynamic cubit,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsetsDirectional.all(8.w),
+          decoration: BoxDecoration(
+            color: cubit.isDark
+                ? mainColor.withOpacity(0.2)
+                : mainColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: Icon(
+            icon,
+            size: 22.r,
+            color: mainColor,
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+            color: cubit.isDark ? Colors.white : Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit,AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit,AppStates>(
       builder: (context, state) {
         AppCubit cubit = AppCubit.get(context);
+        var userData = cubit.allUsers[request['customerId']] ?? {};
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -239,14 +271,17 @@ class WorkerOrderDetails extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 370.h,
+                    height: 360.h,
                     child: Stack(
                       children: [
-                        Image.network(
-                          request['image'],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 300.h,
+                        ClipRRect(
+                          borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r)),
+                          child: Image.network(
+                            request['image'],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 300.h,
+                          ),
                         ),
                         Padding(
                           padding: EdgeInsetsDirectional.only(top: 30.h,start: 10.w,end: 10.w),
@@ -272,7 +307,7 @@ class WorkerOrderDetails extends StatelessWidget {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
-                            padding:EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                            padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -282,7 +317,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: cubit.isDark? lightDarkColor: Colors.white,
                                     borderRadius: BorderRadius.circular(20.r),
-                                    boxShadow: cubit.isDark? []: shadow,
+                                    boxShadow: blueShadow,
                                       border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                                   ),
                                   child: Column(
@@ -304,7 +339,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                           ),
                                           SizedBox(width: 10.w),
                                           Text(
-                                            'طلب رقم #${request['number']}',
+                                            'تفاصيل الطلب',
                                             style: TextStyle(
                                                 fontSize: 14.sp,
                                                 fontWeight: FontWeight.bold,
@@ -403,6 +438,15 @@ class WorkerOrderDetails extends StatelessWidget {
                                           ),
                                         ],
                                       ),
+                                      SizedBox(height: 10.h,),
+                                      Text(
+                                        '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade400,
+                                          fontSize: 8.sp
+                                        ),
+
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -413,53 +457,25 @@ class WorkerOrderDetails extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
+                  SizedBox(height: 10.h,),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        buildSectionTitle(title: 'مراحل التنفيذ', icon: Icons.route_outlined, cubit: cubit),
+                        SizedBox(height: 10.h,),
                         Container(
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: cubit.isDark? []: shadow,
+                            boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsetsDirectional.all(8),
-                                    decoration: BoxDecoration(
-                                      color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10.r)
-                                    ),
-                                    child: Icon(
-                                        Icons.route_outlined,
-                                        size: 22.r,
-                                        color: mainColor
-                                    ),
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    'مراحل التنفيذ',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp,
-                                      color: cubit.isDark? Colors.white:Colors.black
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                  height: 20.h
-                              ),
                               buildHorizontalStepper(currentStep: cubit.getStepFromStatus(request['status']),cubit: cubit),
                               SizedBox(
                                   height: 10.h
@@ -488,49 +504,19 @@ class WorkerOrderDetails extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 20.h,),
+                        buildSectionTitle(title: 'تفاصيل الخدمة', icon: Icons.build_circle_outlined, cubit: cubit),
+                        SizedBox(height: 10.h,),
                         Container(
-                          padding: EdgeInsets.all(15.r),
+                          padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: shadow,
+                            boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
                           child: Column(
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsetsDirectional.all(8),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.r),
-                                        color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
-                                      ),
-                                      child: Icon(
-                                          Icons.build_circle_outlined,
-                                          size: 22.r,
-                                          color: mainColor
-                                      )
-                                  ),
-                                  SizedBox(
-                                      width: 10.w
-                                  ),
-                                  Text(
-                                    'تفاصيل الخدمة',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp,
-                                      color: cubit.isDark? Colors.white: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                  height: 15.h
-                              ),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -632,107 +618,48 @@ class WorkerOrderDetails extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 20.h,),
+                        buildSectionTitle(title: 'ملاحظات الطلب', icon: Icons.notes_rounded, cubit: cubit),
+                        SizedBox(height: 10.h,),
                         Container(
-                          padding: EdgeInsets.all(15.r),
+                          width: double.infinity,
+                          padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: shadow,
+                            boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-
                           ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                      padding: const EdgeInsetsDirectional.all(8),
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10.r),
-                                          color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
-                                      ),
-                                      child: Icon(
-                                          Icons.notes_rounded,
-                                          size: 22.r,
-                                          color: mainColor
-                                      )
-                                  ),
-                                  SizedBox(
-                                      width: 10.w
-                                  ),
-                                  Text(
-                                    'ملاحظات الطلب',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.sp,
-                                      color: cubit.isDark? Colors.white: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                  height: 10.h
-                              ),
-                              ReadMoreText(
-                                request['description'],
-                                style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color:  cubit.isDark? Colors.white: Colors.black,
-                                    height: 1.5
-                                ),
-                                trimLines: 3,
-                                colorClickableText: mainColor,
-                                trimMode: TrimMode.Line,
-                                trimCollapsedText: ' عرض المزيد',
-                                trimExpandedText: ' عرض أقل',
-                                moreStyle: TextStyle(fontSize: 12.sp,color: mainColor),
-                              ),
-                            ],
+                          child: ReadMoreText(
+                            textAlign: TextAlign.center,
+                            request['description'],
+                            style: TextStyle(
+                                fontSize: 12.sp,
+                                color:  cubit.isDark? Colors.white: Colors.black,
+                                height: 1.5
+                            ),
+                            trimLines: 3,
+                            colorClickableText: mainColor,
+                            trimMode: TrimMode.Line,
+                            trimCollapsedText: ' عرض المزيد',
+                            trimExpandedText: ' عرض أقل',
+                            moreStyle: TextStyle(fontSize: 12.sp,color: mainColor),
                           ),
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 20.h,),
+                        buildSectionTitle(title: 'معلومات العميل', icon: Icons.person_pin_outlined, cubit: cubit),
+                        SizedBox(height: 10.h,),
                         Container(
-                          padding: EdgeInsetsDirectional.all(18.r),
+                          padding: EdgeInsetsDirectional.all(15.r),
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: shadow,
+                            boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
                           child: Column(
                             children: [
-                              Row (
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsetsDirectional.all(8),
-                                      decoration: BoxDecoration(
-                                        color: cubit.isDark? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10.r)
-                                      ),
-                                      child: Icon(
-                                          Icons.person_pin_outlined,
-                                          size: 22.r,
-                                          color: mainColor
-                                      )
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    'معلومات العميل',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp,
-                                        color: cubit.isDark? Colors.white: Colors.black87
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.h),
                               Row(
                                 children: [
                                   Container(
@@ -745,14 +672,14 @@ class WorkerOrderDetails extends StatelessWidget {
                                       image: DecorationImage(
                                         fit: BoxFit.cover,
                                           image: NetworkImage(
-                                              request['clientImage']
+                                              userData['profileImage'] ?? ''
                                           )
                                       )
                                     ),
                                   ),
                                   SizedBox(width: 12.w),
                                   Text(
-                                    request['clientName'],
+                                    userData['name'] ?? '',
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
@@ -796,7 +723,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   ),
                                   SizedBox(width: 10.w),
                                   Text(
-                                    request['clientPhone'],
+                                    userData['phone'] ?? '',
                                     style: TextStyle(
                                         color: cubit.isDark? Colors.white: Colors.black87,
                                         fontSize: 12.sp,
@@ -847,7 +774,6 @@ class WorkerOrderDetails extends StatelessWidget {
                       ],
                     ),
                   )
-
                 ],
               ),
             ),

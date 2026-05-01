@@ -53,8 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
           textDirection: TextDirection.rtl,
           child: BlocBuilder<UserServicesCubit, UserServicesStates>(
             builder: (context, state) {
-              UserServicesCubit userServicesCubit =
-                  UserServicesCubit.get(context);
+              UserServicesCubit userServicesCubit = UserServicesCubit.get(context);
               return ConditionalBuilder(
                 condition: state is GetUserAllServicesLoadingState,
                 builder: (context) => UserHomeShimmer(isDark: appCubit.isDark),
@@ -137,11 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Align(
                                 alignment: AlignmentDirectional.topCenter,
                                 child: Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                      top: 30.h,
-                                      start: 10.w,
-                                      end: 10.w,
-                                      bottom: 20.h),
+                                  padding: EdgeInsetsDirectional.only(top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -211,12 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const Spacer(),
                                       InkWell(
-                                        borderRadius:
-                                            BorderRadius.circular(15.r),
-                                        onTap: () => move(
-                                          context,
-                                          const SearchScreen(),
-                                        ),
+                                        borderRadius: BorderRadius.circular(15.r),
+                                        onTap: () => move(context, const SearchScreen(),),
                                         child: Container(
                                           height: 50,
                                           padding: const EdgeInsets.symmetric(
@@ -288,9 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
+                      SizedBox(height: 20.h,),
                       Column(
                         children: [
                           /*بانر ترحيبي*/
@@ -385,9 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h,),
                           /*الأقسام*/
                           Padding(
                             padding: EdgeInsetsDirectional.symmetric(
@@ -484,15 +471,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h,),
                           /*الخدمات الرائجة*/
                           Column(
                             children: [
                               Padding(
-                                padding: EdgeInsetsDirectional.symmetric(
-                                    horizontal: 15.w),
+                                padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                                 child: Row(
                                   children: [
                                     Text(
@@ -508,9 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                               ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
+                              SizedBox(height: 10.h,),
                               SizedBox(
                                 height: 320.h,
                                 child: ListView.builder(
@@ -519,10 +501,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       EdgeInsetsDirectional.only(start: 15.w),
                                   itemCount: 4,
                                   itemBuilder: (context, index) {
-                                    var service =
-                                        userServicesCubit.userServices[index];
-                                    var providerData = userServicesCubit
-                                        .allUsers[service['providerId']];
+                                    var service = userServicesCubit.userServices[index];
+                                    var providerData = userServicesCubit.allUsers[service['providerId']];
                                     return Padding(
                                       padding: EdgeInsetsDirectional.only(
                                           start: index == 0 ? 0 : 15.w,

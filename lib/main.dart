@@ -95,7 +95,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AppCubit>(
-          create: (context) => AppCubit()..changeTheme(fromShared: isDark),
+          create: (context) => AppCubit()..changeTheme(fromShared: isDark)..getAllUsers(),
         ),
         BlocProvider<UserServicesCubit>(
           create: (context) => UserServicesCubit(),

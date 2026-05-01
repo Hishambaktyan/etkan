@@ -12,9 +12,14 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
-class WorkerHomeScreen extends StatelessWidget {
-  WorkerHomeScreen({super.key});
+class WorkerHomeScreen extends StatefulWidget {
+  const WorkerHomeScreen({super.key});
 
+  @override
+  State<WorkerHomeScreen> createState() => _WorkerHomeScreenState();
+}
+
+class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
   final List<Map<String, dynamic>> info = [
     {
       'title': 'كل الحجوزات',
@@ -34,457 +39,285 @@ class WorkerHomeScreen extends StatelessWidget {
     },
   ];
 
+  Widget _buildSectionTitle({
+    required String title,
+    required String icon,
+    required AppCubit appCubit,
+  }) {
+    return Row(
+      children: [
+        Container(
+            padding: EdgeInsetsDirectional.all(10.r),
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          title,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        return state is GetWorkerDataLoadingState
-            ? WorkerHomeShimmer(isDark: cubit.isDark)
-            : Directionality(
+        if (state is GetWorkerDataLoadingState) {
+          return WorkerHomeShimmer(isDark: cubit.isDark);
+        } else {
+          return Directionality(
                 textDirection: TextDirection.rtl,
                 child: Scaffold(
                   body: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 340.h,
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 270.h,
-                                padding: EdgeInsetsDirectional.only(
-                                    start: 15.w, end: 15.w, top: 35.h),
-                                decoration: BoxDecoration(
-                                    gradient: cubit.amAvailable
-                                        ? LinearGradient(
-                                            colors: [
-                                              mainColor,
-                                              mainColor.withOpacity(0.7),
-                                              mainColor.withOpacity(0.5),
-                                              cubit.isDark
-                                                  ? mainColor.withOpacity(0.5)
-                                                  : Colors.white,
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            stops: const [0.0, 0.85, 0.95, 1.0])
-                                        : LinearGradient(
-                                            colors: [
-                                              Colors.grey.shade500
-                                                  .withOpacity(0.5),
-                                              Colors.grey.shade700
-                                                  .withOpacity(0.5),
-                                              Colors.grey.shade300
-                                                  .withOpacity(0.5),
-                                              cubit.isDark
-                                                  ? darkBgColor
-                                                  : Colors.white,
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            stops: const [
-                                              0.0,
-                                              0.85,
-                                              0.95,
-                                              1.0
-                                            ]),
-                                    boxShadow: cubit.isDark
-                                        ? [
-                                            BoxShadow(
-                                              color: (cubit.amAvailable
-                                                      ? mainColor
-                                                      : Colors.grey)
-                                                  .withOpacity(0.3),
-                                              blurRadius: 20,
-                                              offset: const Offset(0, 10),
-                                            ),
-                                          ]
-                                        : []),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 23.r,
-                                          backgroundColor: Colors.white,
-                                          foregroundImage: const NetworkImage(
-                                              'https://i.pinimg.com/1200x/b8/82/83/b882836fa749f501aefa935d19e19977.jpg'),
-                                        ),
-                                        SizedBox(width: 10.w),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                cubit.workerName ?? '',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16.sp,
-                                                    color: Colors.white,
-                                                    height: 1.2),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              Text(
-                                                cubit.workerDept ?? '',
-                                                style: const TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {},
-                                          child: Stack(
-                                            alignment: Alignment.topRight,
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.all(8.r),
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                      color: Colors.white30),
-                                                ),
-                                                child: SvgPicture.asset(
-                                                    'assets/not.svg',
-                                                    width: 23.w,
-                                                    color: Colors.white),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 15.w,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            move(context, const SearchScreen());
-                                          },
-                                          child: Stack(
-                                            alignment: Alignment.topRight,
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.all(8.r),
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                      color: Colors.white30),
-                                                ),
-                                                child: SvgPicture.asset(
-                                                    'assets/search.svg',
-                                                    width: 23.w,
-                                                    color: Colors.white),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const Spacer(),
-                                    Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Container(
-                                          height: 180.h,
-                                          width: 300.w,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadiusDirectional
-                                                      .vertical(
-                                                          top: Radius.circular(
-                                                              150.r)),
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.white.withOpacity(0.2),
-                                                  Colors.white.withOpacity(0.1),
-                                                ],
-                                              ),
-                                              border: const BorderDirectional(
-                                                top: BorderSide(
-                                                    color: Colors.white),
-                                              )),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsetsDirectional.only(
-                                              bottom: 20.h),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${cubit.workerTotalAmount} \uFDFC',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 28.sp,
-                                                    height: 1),
-                                              ),
-                                              Text(
-                                                'إجمالي الأرباح',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 17.sp,
-                                                    height: 1),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                        headerWithSearch(
+                            title: 'مرحبا، ${cubit.workerName}',
+                            searchKeyWords:['ايحث عن خدماتك','ايحث عن حجوزاتك المكتملة','ايحث عن خدماتك الرائجة',] ,
+                            context: context
+                        ),
+                        SizedBox(height: 10.h,),
+                        GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 5.w,
+                            mainAxisSpacing: 15.h,
+                            childAspectRatio: 1.4
+                          ),
+                          shrinkWrap: true,
+                          padding: EdgeInsetsDirectional.only(end: 10.w, start: 10.w, bottom: 10.w),
+                          itemCount: info.length,
+                          itemBuilder: (context, index) {
+                            var data = info[index];
+                            return Container(
+                              margin: EdgeInsetsDirectional.only(end: index == 3 ? 0 : 10.w),
+                              decoration: BoxDecoration(
+                                  color: cubit.isDark ? lightDarkColor : Colors.white,
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  boxShadow: blueShadow
                               ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: SizedBox(
-                                  height: 115.h,
-                                  child: ListView.builder(
-                                    padding: EdgeInsetsDirectional.only(
-                                        end: 10.w, start: 10.w, bottom: 10.w),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: info.length,
-                                    itemBuilder: (context, index) {
-                                      var data = info[index];
-                                      return Container(
-                                        margin: EdgeInsetsDirectional.only(
-                                            end: index == 3 ? 0 : 10.w),
-                                        width: 170.w,
-                                        decoration: BoxDecoration(
-                                            color: cubit.isDark
-                                                ? lightDarkColor
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(12.r),
-                                            boxShadow:
-                                                cubit.isDark ? [] : shadow),
-                                        child: Stack(
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    bottom: -10,
+                                    left: -10,
+                                    child: Transform.rotate(
+                                      angle: 0.4,
+                                      child: SvgPicture.asset(
+                                        data['icon'],
+                                        color: cubit.isDark
+                                            ? mainColor.withOpacity(0.1)
+                                            : mainColor
+                                            .withOpacity(0.2),
+                                        width: 53.w,
+                                        height: 53.h,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                    const EdgeInsetsDirectional.all(10),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
                                           children: [
-                                            Positioned(
-                                              bottom: -10,
-                                              left: -10,
+                                            Text(
+                                              index == 0
+                                                  ? '${cubit.workerRequestsCount}'
+                                                  : index == 1
+                                                  ? '${cubit.workerComplatedRequestsCount}'
+                                                  : index == 2
+                                                  ? '${cubit.workerServicesCount}'
+                                                  : index == 3
+                                                  ? '${cubit.workerRating}'
+                                                  : '0',
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  color: mainColor,
+                                                  fontSize: 20.sp),
+                                            ),
+                                            const Spacer(),
+                                            CircleAvatar(
+                                              backgroundColor: cubit
+                                                  .isDark
+                                                  ? mainColor
+                                                  .withOpacity(
+                                                  0.2)
+                                                  : mainColor
+                                                  .withOpacity(
+                                                  0.1),
+                                              radius: 23.r,
                                               child: SvgPicture.asset(
                                                 data['icon'],
-                                                color: cubit.isDark
-                                                    ? mainColor.withOpacity(0.1)
-                                                    : mainColor
-                                                        .withOpacity(0.2),
-                                                width: 53.w,
-                                                height: 53.h,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsetsDirectional
-                                                      .all(10),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        index == 0
-                                                            ? '${cubit.workerRequestsCount}'
-                                                            : index == 1
-                                                                ? '${cubit.workerComplatedRequestsCount}'
-                                                                : index == 2
-                                                                    ? '${cubit.workerServicesCount}'
-                                                                    : index == 3
-                                                                        ? '${cubit.workerRating}'
-                                                                        : '0',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: cubit.isDark
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                            fontSize: 20.sp),
-                                                      ),
-                                                      const Spacer(),
-                                                      CircleAvatar(
-                                                        backgroundColor: cubit
-                                                                .isDark
-                                                            ? mainColor
-                                                                .withOpacity(
-                                                                    0.2)
-                                                            : mainColor
-                                                                .withOpacity(
-                                                                    0.1),
-                                                        radius: 23.r,
-                                                        child: SvgPicture.asset(
-                                                          data['icon'],
-                                                          color: mainColor,
-                                                          width: 23.w,
-                                                          height: 23.h,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height: 15.h,
-                                                  ),
-                                                  Text(
-                                                    data['title'],
-                                                    style: TextStyle(
-                                                        color: cubit.isDark
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13.sp,
-                                                        height: 1),
-                                                  ),
-                                                ],
+                                                color: mainColor,
+                                                width: 23.w,
+                                                height: 23.h,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      );
-                                    },
+                                        SizedBox(height: 15.h,),
+                                        Text(
+                                          data['title'],
+                                          style: TextStyle(
+                                              color: cubit.isDark
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                              fontWeight:
+                                              FontWeight.bold,
+                                              fontSize: 12.sp,
+                                              height: 1),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
                         SizedBox(height: 20.h,),
+                        Padding(
+                            padding:
+                            EdgeInsetsDirectional.only(start: 10.w,end: 2.w),
+                            child: _buildSectionTitle(title: 'حالة الاتصال', icon: 'assets/power.svg', appCubit: cubit)
+                        ),
+                        SizedBox(height: 10.h,),
                         Container(
-                          height: 120.h,
                           width: double.infinity,
-                          margin:
-                              EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                          margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                          padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
+                            color: cubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
-                            gradient: cubit.amAvailable
-                                ? LinearGradient(
-                                    colors: [
-                                      mainColor,
-                                      mainColor.withOpacity(0.7),
-                                    ],
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    stops: const [
-                                      0.0,
-                                      0.85,
-                                    ])
-                                : LinearGradient(
-                                    colors: [
-                                      Colors.grey.shade500.withOpacity(0.5),
-                                      Colors.grey.shade700.withOpacity(0.5),
-                                    ],
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    stops: const [
-                                      0.0,
-                                      0.85,
-                                    ]),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (cubit.amAvailable
-                                        ? mainColor
-                                        : Colors.grey)
-                                    .withOpacity(0.3),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
+                            border: Border.all(
+                              color: cubit.amAvailable
+                                  ? mainColor.withOpacity(0.35)
+                                  : Colors.grey.withOpacity(0.25),
+                            ),
+                            boxShadow: cubit.isDark ? [] : blueShadow,
                           ),
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 20.h, vertical: 10.h),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 28.r,
-                                  backgroundColor: Colors.white,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 55.w,
+                                height: 55.w,
+                                decoration: BoxDecoration(
+                                  color: cubit.amAvailable
+                                      ? mainColor.withOpacity(0.12)
+                                      : Colors.grey.withOpacity(0.12),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
                                   child: SvgPicture.asset(
                                     'assets/power.svg',
-                                    width: 28.w,
-                                    height: 28.h,
-                                    color: cubit.amAvailable
-                                        ? mainColor
-                                        : Colors.grey,
+                                    width: 27.w,
+                                    height: 27.h,
+                                    color: cubit.amAvailable ? mainColor : Colors.grey,
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'حالة الأتصال',
+                                      cubit.amAvailable ? 'متاح لاستقبال الطلبات' : 'غير متاح حالياً',
                                       style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20.sp),
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                                      ),
                                     ),
+                                    SizedBox(height: 5.h),
                                     Text(
                                       cubit.amAvailable
-                                          ? 'انت الآن متصل'
-                                          : 'انت الآن غير متصل',
+                                          ? 'يمكن للعملاء إرسال طلبات جديدة إليك'
+                                          : 'لن تظهر للعملاء كعامل متاح حالياً',
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 13.sp),
+                                        fontSize: 12.sp,
+                                        height: 1.5,
+                                        color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                                      ),
                                     ),
                                   ],
                                 ),
-                                const Spacer(),
-                                Transform.scale(
-                                  scale: 0.8,
-                                  child: Switch(
-                                    value: cubit.amAvailable,
-                                    activeColor: Colors.white,
-                                    onChanged: (value) =>
-                                        cubit.changeAvailability(value),
+                              ),
+                              SizedBox(width: 10.w),
+                              InkWell(
+                                onTap: () => cubit.changeAvailability(!cubit.amAvailable),
+                                borderRadius: BorderRadius.circular(30.r),
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 250),
+                                  width: 75.w,
+                                  height: 36.h,
+                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 4.w),
+                                  decoration: BoxDecoration(
+                                    color: cubit.amAvailable ? mainColor : Colors.grey.shade400,
+                                    borderRadius: BorderRadius.circular(30.r),
+                                  ),
+                                  child: AnimatedAlign(
+                                    duration: const Duration(milliseconds: 250),
+                                    alignment: cubit.amAvailable
+                                        ? AlignmentDirectional.centerStart
+                                        : AlignmentDirectional.centerEnd,
+                                    child: Container(
+                                      width: 28.w,
+                                      height: 28.w,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        cubit.amAvailable
+                                            ? Icons.check_rounded
+                                            : Icons.close_rounded,
+                                        color: cubit.amAvailable ? mainColor : Colors.grey,
+                                        size: 18.r,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(height: 20.h,),
                         Padding(
                           padding:
-                              EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                              EdgeInsetsDirectional.only(start: 10.w,end: 2.w),
                           child: Row(
                             children: [
-                              Text(
-                                'الخدمات الحالية',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.sp,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .color),
-                              ),
+                              _buildSectionTitle(title: 'الخدمات الحالية', icon: 'assets/services.svg', appCubit: cubit),
                               const Spacer(),
-                              defaultTextButton(
-                                  onPressed: () =>
-                                      moveAndReplace(context, WorkerServices()),
-                                  text: 'عرض الكل',
-                                  isLined: false)
+                              defaultTextButton(onPressed: (){}, text: 'عرض الكل',isLined: false),
                             ],
-                          ),
+                          )
                         ),
-                        cubit.workerServices.isEmpty
-                            ? Center(
+                        cubit.workerServices.isEmpty ? Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    SizedBox(
-                                      height: 5.h,
-                                    ),
-                                    Icon(Icons.inbox_outlined,
+                                    Icon(
+                                        Icons.inbox_outlined,
                                         size: 50,
                                         color: Colors.grey.shade400),
                                     SizedBox(height: 10.h),
@@ -498,188 +331,156 @@ class WorkerHomeScreen extends StatelessWidget {
                                 ),
                               )
                             : GridView.builder(
-                                itemCount: cubit.workerServices.length > 4
-                                    ? 4
-                                    : cubit.workerServices.length,
+                                itemCount: cubit.workerServices.length > 4 ? 4 : cubit.workerServices.length,
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                padding: EdgeInsetsDirectional.symmetric(
-                                    horizontal: 10.w, vertical: 10.h),
-                                gridDelegate:
-                                    SliverGridDelegateWithMaxCrossAxisExtent(
-                                        maxCrossAxisExtent: 200.w,
-                                        mainAxisExtent: 240.h,
+                                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                        mainAxisExtent: 230.h,
+                                        crossAxisCount: 2,
                                         crossAxisSpacing: 10.w,
-                                        mainAxisSpacing: 10.h),
+                                        mainAxisSpacing: 15.h
+                                ),
                                 itemBuilder: (context, index) {
-                                  return InkWell(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    onTap: () => move(
-                                        context,
-                                        WorkerServiceDetails(
-                                          serviceId: cubit.workerServices[index]
-                                              ['id'],
-                                        )),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(12.r),
-                                          color: cubit.isDark
-                                              ? lightDarkColor
-                                              : Colors.white,
-                                          boxShadow: shadow),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            height: 125.h,
-                                            child: Stack(
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadiusDirectional
-                                                          .only(
-                                                              topStart: Radius
-                                                                  .circular(
-                                                                      12.r),
-                                                              topEnd: Radius
-                                                                  .circular(
-                                                                      12.r)),
-                                                  child: Image.network(
-                                                    '${cubit.workerServices[index]['serviceImage']}',
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20.r),
+                                        color: mainColor.withOpacity(0.09),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 125.h,
+                                          child: Stack(
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius: BorderRadiusDirectional.only(
+                                                    topStart: Radius.circular(20.r),
+                                                    topEnd: Radius.circular(20.r)
+                                                ),
+                                                child: Image.network(
+                                                  '${cubit.workerServices[index]['serviceImage']}',
+                                                  height: 110.h,
+                                                  width: double.infinity,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error, stackTrace) => Container(
                                                     height: 110.h,
-                                                    width: double.infinity,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder: (context,
-                                                            error,
-                                                            stackTrace) =>
-                                                        Container(
-                                                      height: 110.h,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadiusDirectional.only(
-                                                                  topStart: Radius
-                                                                      .circular(
-                                                                          12.r),
-                                                                  topEnd: Radius
-                                                                      .circular(12
-                                                                          .r)),
-                                                          color: Colors
-                                                              .grey.shade100),
-                                                      child: Center(
-                                                        child: Icon(
-                                                          Icons
-                                                              .wifi_off_rounded,
-                                                          size: 50,
-                                                          color: Colors
-                                                              .grey.shade400,
-                                                        ),
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadiusDirectional.only(
+                                                                topStart: Radius
+                                                                    .circular(
+                                                                        12.r),
+                                                                topEnd: Radius
+                                                                    .circular(12
+                                                                        .r)),
+                                                        color: Colors
+                                                            .grey.shade100),
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons
+                                                            .wifi_off_rounded,
+                                                        size: 50,
+                                                        color: Colors
+                                                            .grey.shade400,
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                                Align(
-                                                  alignment:
-                                                      AlignmentDirectional
-                                                          .bottomEnd,
-                                                  child: Container(
-                                                    height: 27.h,
-                                                    width: 100.w,
-                                                    padding:
-                                                        EdgeInsetsDirectional
-                                                            .only(top: 3.h),
-                                                    alignment: Alignment.center,
-                                                    margin:
-                                                        EdgeInsetsDirectional
-                                                            .only(end: 10.w),
-                                                    decoration: BoxDecoration(
-                                                        color: mainColor,
-                                                        border: Border.all(
-                                                            color:
-                                                                Colors.white),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                    30.r)),
-                                                    child: Text(
-                                                      '${cubit.workerServices[index]['price']} ﷼ ',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 12.sp),
+                                              ),
+                                              Align(
+                                                alignment: AlignmentDirectional.bottomEnd,
+                                                child: Container(
+                                                  height: 30.h,
+                                                  width: 110.w,
+                                                  padding: EdgeInsetsDirectional.only(top: 3.h),
+                                                  alignment: Alignment.center,
+                                                  margin: EdgeInsetsDirectional.only(end: 10.w),
+                                                  decoration: BoxDecoration(
+                                                      color: mainColor,
+                                                      border: Border.all(
+                                                          color: Colors.white
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(30.r)
+                                                  ),
+                                                  child: Text(
+                                                    '${cubit.workerServices[index]['price']} ﷼ ',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 13.sp),
+                                                  ),
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: AlignmentDirectional.topStart,
+                                                child: InkWell(
+                                                  onTap: (){
+                                                    setState(() {
+                                                      showSnackBar(
+                                                          Colors.green,
+                                                          cubit.isServicesActive? 'تم الغاء تفعيل الخدمة':'تم تفعيل الخدمة',
+                                                          context
+                                                      );
+                                                      cubit.isServicesActive=!cubit.isServicesActive;
+                                                    });
+                                                  },
+                                                  child: Padding(
+                                                    padding: EdgeInsetsDirectional.only(start: 10.w, top: 10.h),
+                                                    child: CircleAvatar(
+                                                        radius: 18.r,
+                                                        backgroundColor: Colors.white,
+                                                        child: SvgPicture.asset(
+                                                          'assets/power.svg',
+                                                          color: cubit.isServicesActive ? Colors.green : Colors.grey,
+                                                          width: 22.w,
+                                                          height: 22.h,
+                                                        )
                                                     ),
                                                   ),
                                                 ),
-                                                Align(
-                                                  alignment:
-                                                      AlignmentDirectional
-                                                          .topStart,
-                                                  child: Padding(
-                                                    padding:
-                                                        EdgeInsetsDirectional
-                                                            .only(
-                                                                start: 10.w,
-                                                                top: 10.h),
-                                                    child: CircleAvatar(
-                                                        radius: 18.r,
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        child: SvgPicture.asset(
-                                                          'assets/power.svg',
-                                                          color: cubit
-                                                                  .isServicesActive
-                                                              ? Colors.green
-                                                              : Colors.grey,
-                                                          width: 22.w,
-                                                          height: 22.h,
-                                                        )),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                    horizontal: 10.w,
-                                                    vertical: 5.h),
+                                        ),
+                                        InkWell(
+                                          onTap: () => move(context, WorkerServiceDetails(serviceId: cubit.workerServices[index]['id'],)),
+                                          child: Padding(
+                                            padding: EdgeInsetsDirectional.only(start: 10.w,end: 10.w,top: 5.h),
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Row(
-                                                  children: List.generate(
-                                                      5,
-                                                      (i) => Icon(
-                                                            Icons.star_rounded,
-                                                            size: 16.r,
-                                                            color: i < 4
-                                                                ? Colors.orange
-                                                                : Colors.grey
-                                                                    .shade300,
-                                                          )),
+                                                 Row(
+                                                   crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    const Icon(Icons.star_rounded,color: Colors.orange,),
+                                                    SizedBox(width: 3.w,),
+                                                    Text(
+                                                      '${cubit.workerServices[index]['rate']}',
+                                                      style: TextStyle(
+                                                        fontSize: 11.sp,
+                                                        height: 1,
+                                                        color: Colors.grey.shade500,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                SizedBox(
-                                                  height: 5.h,
-                                                ),
+                                                SizedBox(height: 5.h,),
                                                 Text(
                                                   '${cubit.workerServices[index]['name']}',
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 12.sp,
-                                                      color: cubit.isDark
-                                                          ? Colors.white
-                                                          : Colors.black),
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 13.sp,
+                                                      color: cubit.isDark ? Colors.white : Colors.black
+                                                  ),
                                                 ),
-                                                SizedBox(
-                                                  height: 5.h,
-                                                ),
+                                                SizedBox(height: 5.h,),
                                                 Text(
-                                                  '${cubit.workerServices[index]['description']}',
+                                                  '${cubit.workerServices[index]['description']} ',
                                                   maxLines: 2,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -692,20 +493,17 @@ class WorkerHomeScreen extends StatelessWidget {
                                               ],
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   );
                                 },
                               ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 20.h,),
                         Padding(
-                          padding:
-                              EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20.r),
+                            borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(20.r)),
                             child: Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
@@ -717,13 +515,7 @@ class WorkerHomeScreen extends StatelessWidget {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: mainColor.withOpacity(0.3),
-                                    blurRadius: 15,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
+                                boxShadow: blueShadow
                               ),
                               child: Stack(
                                 children: [
@@ -804,14 +596,12 @@ class WorkerHomeScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 30.h,
-                        ),
                       ],
                     ),
                   ),
                 ),
               );
+        }
       },
     );
   }

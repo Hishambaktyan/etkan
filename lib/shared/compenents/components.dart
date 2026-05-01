@@ -21,7 +21,7 @@ const List<BoxShadow> shadow = [
 ];
  List<BoxShadow> blueShadow =  [
   BoxShadow (
-    color: mainColor.withOpacity(0.2),
+    color: mainColor.withOpacity(0.1),
     spreadRadius: 1.0,
     blurRadius: 7.0,
     offset: const Offset(2, 5),
@@ -74,7 +74,7 @@ void showSnackBar(Color background, String message, context) {
 }
 
 /////////////////////////////////////////////
-Widget header({double headerHeight = 110, required String title, context}) {
+Widget header({double headerHeight = 110, required String title,required context}) {
   return ClipRRect(
     borderRadius:
         BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
@@ -165,12 +165,15 @@ Widget header({double headerHeight = 110, required String title, context}) {
                       InkWell(
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
-                        onTap: () {},
+                        onTap: ()=>move(context, const NotificationsScreen()),
                         child: Container(
-                          padding: const EdgeInsetsDirectional.all(10),
+                          padding:  EdgeInsetsDirectional.all(9.w),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10.r),
+                            borderRadius: BorderRadius.circular(13.r),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.18),
+                            ),
                           ),
                           child: SvgPicture.asset(
                             'assets/not.svg',
@@ -300,10 +303,13 @@ Widget headerWithSearch(
                           move(context, const NotificationsScreen());
                         },
                         child: Container(
-                          padding: const EdgeInsetsDirectional.all(10),
+                          padding:  EdgeInsetsDirectional.all(9.w),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10.r),
+                            borderRadius: BorderRadius.circular(13.r),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.18),
+                            ),
                           ),
                           child: SvgPicture.asset(
                             'assets/not.svg',
@@ -316,72 +322,58 @@ Widget headerWithSearch(
                     ],
                   ),
                   const Spacer(),
-                  Container(
-                    height: 57.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30.r),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        TextFormField(
-                          onTap: () {},
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14.sp,
-                          ),
-                          cursorColor: mainColor,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            contentPadding: EdgeInsetsDirectional.only(
-                              start: 55.w,
-                              end: 17.w,
-                              top: 14.h,
-                              bottom: 14.h,
-                            ),
-                          ),
-                        ),
-                        PositionedDirectional(
-                          start: 17.w,
-                          child: SvgPicture.asset(
+                  InkWell(
+                    borderRadius: BorderRadius.circular(15.r),
+                    onTap: () => move(context, const SearchScreen(),),
+                    child: Container(
+                      height: 50,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 17),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                        BorderRadius.circular(30.r),
+                      ),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
                             'assets/search.svg',
                             color: Colors.grey,
                           ),
-                        ),
-                        PositionedDirectional(
-                          start: 55.w,
-                          end: 17.w,
-                          child: IgnorePointer(
-                            child: SizedBox(
-                              height: 20,
-                              child: AnimatedTextKit(
-                                repeatForever: true,
-                                pause: const Duration(seconds: 2),
-                                animatedTexts: [
-                                  TyperAnimatedText(
-                                    searchKeyWords[0],
-                                    textStyle:
-                                        const TextStyle(color: Colors.grey),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                              child: IgnorePointer(
+                                child: SizedBox(
+                                  height: 20,
+                                  child: AnimatedTextKit(
+                                    repeatForever: true,
+                                    pause: const Duration(
+                                        seconds: 2),
+                                    animatedTexts: [
+                                      TyperAnimatedText(
+                                          searchKeyWords[0],
+                                          textStyle:
+                                          const TextStyle(
+                                              color: Colors
+                                                  .grey)),
+                                      TyperAnimatedText(
+                                          searchKeyWords[1],
+                                          textStyle:
+                                          const TextStyle(
+                                              color: Colors
+                                                  .grey)),
+                                      TyperAnimatedText(
+                                          searchKeyWords[2],
+                                          textStyle:
+                                          const TextStyle(
+                                              color: Colors
+                                                  .grey)),
+                                    ],
                                   ),
-                                  TyperAnimatedText(
-                                    searchKeyWords[1],
-                                    textStyle:
-                                        const TextStyle(color: Colors.grey),
-                                  ),
-                                  TyperAnimatedText(
-                                    searchKeyWords[2],
-                                    textStyle:
-                                        const TextStyle(color: Colors.grey),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                                ),
+                              )),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -724,166 +716,6 @@ class ChatShimmerLoading extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class BookingShimmerLoading extends StatelessWidget {
-  final bool isDark;
-  const BookingShimmerLoading({super.key, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    Color baseColor = isDark ? const Color(0xFF161B22) : Colors.grey[300]!;
-    Color highlightColor = isDark ? const Color(0xFF30363D) : Colors.grey[100]!;
-
-    Color cardBgColor =
-        isDark ? Colors.white.withOpacity(0.05) : Colors.transparent;
-
-    Color contentColor = isDark ? Colors.white : Colors.grey[400]!;
-
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      direction: ShimmerDirection.rtl,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        padding: EdgeInsetsDirectional.only(
-            start: 20.w, end: 20.w, top: 5.h, bottom: 20.h),
-        itemCount: 3,
-        itemBuilder: (context, index) => Padding(
-          padding: EdgeInsetsDirectional.only(bottom: 20.h),
-          child: Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-              color: cardBgColor,
-              borderRadius: BorderRadius.circular(15.r),
-              border: Border.all(
-                  color: isDark ? const Color(0xFF30363D) : Colors.grey[300]!),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 90.w,
-                      height: 90.h,
-                      decoration: BoxDecoration(
-                        color: contentColor,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                  width: 100.w,
-                                  height: 12.h,
-                                  decoration: BoxDecoration(
-                                      color: contentColor,
-                                      borderRadius:
-                                          BorderRadius.circular(4.r))),
-                              const Spacer(),
-                              Container(
-                                  width: 55.w,
-                                  height: 28.h,
-                                  decoration: BoxDecoration(
-                                      color: contentColor,
-                                      borderRadius:
-                                          BorderRadius.circular(6.r))),
-                            ],
-                          ),
-                          SizedBox(height: 10.h),
-                          Container(
-                              width: 70.w,
-                              height: 8.h,
-                              decoration: BoxDecoration(
-                                  color: contentColor,
-                                  borderRadius: BorderRadius.circular(4.r))),
-                          SizedBox(height: 12.h),
-                          Container(
-                              width: 50.w,
-                              height: 14.h,
-                              decoration: BoxDecoration(
-                                  color: contentColor,
-                                  borderRadius: BorderRadius.circular(4.r))),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15.h),
-                Container(
-                  padding: EdgeInsets.all(10.r),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF30363D)
-                            : Colors.grey[200]!),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildShimmerDetailRow(contentColor),
-                      _buildShimmerDivider(isDark),
-                      _buildShimmerDetailRow(contentColor),
-                      _buildShimmerDivider(isDark),
-                      _buildShimmerDetailRow(contentColor),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerDetailRow(Color color) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h),
-      child: Row(
-        children: [
-          Container(
-            width: 32.w,
-            height: 32.h,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-          ),
-          SizedBox(width: 10.w),
-          Container(
-              width: 40.w,
-              height: 8.h,
-              decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(4.r))),
-          SizedBox(width: 20.w),
-          Expanded(
-              child: Container(
-                  height: 8.h,
-                  decoration: BoxDecoration(
-                      color: color, borderRadius: BorderRadius.circular(4.r)))),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShimmerDivider(bool isDark) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-      child: Container(
-        width: double.infinity,
-        height: 1.h,
-        color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey[300]!,
       ),
     );
   }
