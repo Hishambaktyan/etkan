@@ -3,10 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/search_screen.dart';
 import 'package:trying_homy/modules/worker_screens/add_service.dart';
 import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
-import 'package:trying_homy/modules/worker_screens/worker_services.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
@@ -23,7 +21,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
   final List<Map<String, dynamic>> info = [
     {
       'title': 'كل الحجوزات',
-      'icon': 'assets/receipt.svg',
+      'icon': 'assets/bookings.svg',
     },
     {
       'title': 'الحجوزات المكتملة',
@@ -31,7 +29,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
     },
     {
       'title': 'كل الخدمات',
-      'icon': 'assets/tool.svg',
+      'icon': 'assets/services.svg',
     },
     {
       'title': 'التقييم',
@@ -94,7 +92,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                             crossAxisCount: 2,
                             crossAxisSpacing: 5.w,
                             mainAxisSpacing: 15.h,
-                            childAspectRatio: 1.4
+                            childAspectRatio: 1.5
                           ),
                           shrinkWrap: true,
                           padding: EdgeInsetsDirectional.only(end: 10.w, start: 10.w, bottom: 10.w),
@@ -135,6 +133,16 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       children: [
                                         Row(
                                           children: [
+                                            CircleAvatar(
+                                              backgroundColor: cubit.isDark ? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
+                                              radius: 25.r,
+                                              child: SvgPicture.asset(
+                                                data['icon'],
+                                                color: mainColor,
+                                                width: 27.w,
+                                              ),
+                                            ),
+                                            const Spacer(),
                                             Text(
                                               index == 0
                                                   ? '${cubit.workerRequestsCount}'
@@ -151,27 +159,9 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                                   color: mainColor,
                                                   fontSize: 20.sp),
                                             ),
-                                            const Spacer(),
-                                            CircleAvatar(
-                                              backgroundColor: cubit
-                                                  .isDark
-                                                  ? mainColor
-                                                  .withOpacity(
-                                                  0.2)
-                                                  : mainColor
-                                                  .withOpacity(
-                                                  0.1),
-                                              radius: 23.r,
-                                              child: SvgPicture.asset(
-                                                data['icon'],
-                                                color: mainColor,
-                                                width: 23.w,
-                                                height: 23.h,
-                                              ),
-                                            ),
                                           ],
                                         ),
-                                        SizedBox(height: 15.h,),
+                                        const Spacer(),
                                         Text(
                                           data['title'],
                                           style: TextStyle(
@@ -180,7 +170,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                                   : Colors.black,
                                               fontWeight:
                                               FontWeight.bold,
-                                              fontSize: 12.sp,
+                                              fontSize: 13.sp,
                                               height: 1),
                                         ),
                                       ],

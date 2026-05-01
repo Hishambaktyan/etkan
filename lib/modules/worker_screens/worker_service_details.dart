@@ -12,17 +12,56 @@ import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class WorkerServiceDetails extends StatelessWidget {
+class WorkerServiceDetails extends StatefulWidget {
   final String serviceId;
    const WorkerServiceDetails({super.key, required this.serviceId});
 
   @override
+  State<WorkerServiceDetails> createState() => _WorkerServiceDetailsState();
+}
+
+class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
+
+  Widget buildSectionTitle({
+    required String title,
+    required IconData icon,
+    required dynamic cubit,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsetsDirectional.all(8.w),
+          decoration: BoxDecoration(
+            color: cubit.isDark
+                ? mainColor.withOpacity(0.2)
+                : mainColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: Icon(
+            icon,
+            size: 22.r,
+            color: mainColor,
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+            color: cubit.isDark ? Colors.white : Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
-    Map<String,dynamic> service =cubit.workerServices.firstWhere((service) =>service['id']==serviceId);
+    Map<String,dynamic> service =cubit.workerServices.firstWhere((service) =>service['id']==widget.serviceId);
     List<dynamic> review = service['reviews'];
-    return BlocConsumer<AppCubit,AppStates>(
-        listener: (context, state) {},
+    return BlocBuilder<AppCubit,AppStates>(
         builder: (context, state) {
           AppCubit cubit = AppCubit.get(context);
           return Directionality(
@@ -127,123 +166,26 @@ class WorkerServiceDetails extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      InkWell(
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                        onLongPress: ()=>print(service[0]),
-                                        child: Container(
-                                          height: 70.h,
-                                          width: 70.h,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2
-                                              ),
-                                              borderRadius: BorderRadius.circular(12.r),
-                                            image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                                image: NetworkImage(
-                                                  'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg'
-                                                )
-                                            )
-                                          ),
-                                        ),
-                                      ),
-                                      InkWell(
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                        child: Container(
-                                          height: 70.h,
-                                          width: 70.h,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2
-                                              ),
-                                              borderRadius: BorderRadius.circular(12.r),
-                                            image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                                image: NetworkImage(
-                                                  'https://i.pinimg.com/736x/d2/89/9f/d2899f239623e6cb64f1854b469af5b5.jpg'
-                                                )
-                                            )
-                                          ),
-                                        ),
-                                      ),
-                                      InkWell(
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                        child: Container(
-                                          height: 70.h,
-                                          width: 70.h,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2
-                                              ),
-                                              borderRadius: BorderRadius.circular(12.r),
-                                            image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                                image: NetworkImage(
-                                                  'https://i.pinimg.com/736x/6d/66/af/6d66af4d10a9a7d19d1df880b0ce3b23.jpg'
-                                                )
-                                            )
-                                          ),
-                                        ),
-                                      ),
-                                      InkWell(
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        onTap: ()=>move(context, const ImageViewerPage(imageUrl:'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg' ),),
-                                        child: Container(
-                                          height: 70.h,
-                                          width: 70.h,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2
-                                              ),
-                                              borderRadius: BorderRadius.circular(12.r),
-                                            image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                                image: NetworkImage(
-                                                  'https://i.pinimg.com/1200x/9b/9c/93/9b9c93ac5db55031a32139e972ee6da6.jpg'
-                                                )
-                                            )
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 15.h,
-                                  ),
                                   Container(
-                                    padding: EdgeInsets.all(18.r),
+                                    padding: EdgeInsetsDirectional.all(18.r),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: cubit.isDark? lightDarkColor: Colors.white,
                                       borderRadius: BorderRadius.circular(20.r),
-                                      boxShadow: shadow,
+                                      boxShadow: blueShadow,
                                         border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                                     ),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 4.h),
                                           decoration: BoxDecoration(
-                                            color: cubit.isDark? darkBgColor: Colors.grey.shade100,
+                                            color: mainColor.withOpacity(0.1),
                                             borderRadius: BorderRadius.circular(6.r),
                                           ),
                                           child: Text(
-                                            '${service['category']}  >  ${service['subCategory']}',
+                                            '${service['category']}',
                                             style: TextStyle(
                                               color: cubit.isDark? Colors.white: Colors.grey.shade700,
                                               fontSize: 10.sp,
@@ -335,6 +277,15 @@ class WorkerServiceDetails extends StatelessWidget {
                                             ),
                                           ],
                                         ),
+                                        SizedBox(height: 10.h,),
+                                        Text(
+                                          '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
+                                          style: TextStyle(
+                                              color: Colors.grey.shade400,
+                                              fontSize: 8.sp
+                                          ),
+
+                                        ),
                                       ],
                                     ),
                                   )
@@ -345,55 +296,26 @@ class WorkerServiceDetails extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
+                    SizedBox(height: 10.h,),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                      padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 10.h),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          buildSectionTitle(title: 'وصف الخدمة', icon: Icons.notes_rounded, cubit: cubit),
+                          SizedBox(height: 10.h,),
                           Container(
-                            padding: EdgeInsets.all(15.r),
+                            width: double.infinity,
+                            padding: EdgeInsetsDirectional.all(15.r),
                             decoration: BoxDecoration(
                                 color: cubit.isDark? lightDarkColor: Colors.white,
                                 borderRadius: BorderRadius.circular(20.r),
-                                boxShadow: shadow,
+                                boxShadow: blueShadow,
                                 border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
 
                             ),
                             child: Column(
                               children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                        padding: const EdgeInsetsDirectional.all(8),
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10.r),
-                                            color: cubit.isDark?mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1)
-                                        ),
-                                        child: Icon(
-                                            Icons.notes_rounded,
-                                            size: 22.r,
-                                            color: mainColor
-                                        )
-                                    ),
-                                    SizedBox(
-                                        width: 10.w
-                                    ),
-                                    Text(
-                                      'وصف الخدمة',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp,
-                                        color: cubit.isDark? Colors.white: Colors.black87,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                    height: 10.h
-                                ),
                                 ReadMoreText(
                                   service['description'],
                                   style: TextStyle(
@@ -411,35 +333,10 @@ class WorkerServiceDetails extends StatelessWidget {
                               ],
                             ),
                           ),
-                          SizedBox(
-                              height: 24.h
-                          ),
+                          SizedBox(height: 20.h),
                           Row(
                             children: [
-                              Container(
-                                padding: EdgeInsets.all(8.r),
-                                decoration: BoxDecoration(
-                                  color: cubit.isDark? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: Icon(
-                                    Icons.star_outline_rounded,
-                                    size: 22.r,
-                                    color: mainColor
-                                ),
-                              ),
-                              SizedBox(
-                                  width: 10.w
-                              ),
-                              Text(
-                                'التقييمات والمراجعات',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
-                                  color: cubit.isDark? Colors.white:Colors.black
-                                ),
-                              ),
-                              const Spacer(),
+                              Expanded(child: buildSectionTitle(title: 'التقييم والمراجعة', icon: Icons.star_border_rounded, cubit: cubit)),
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                 decoration: BoxDecoration(
@@ -447,17 +344,19 @@ class WorkerServiceDetails extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
                                         '${service['rate']}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.orange,
-                                            fontSize: 12.sp
+                                            fontSize: 12.sp,
+                                          height: 1
                                         )
                                     ),
                                     SizedBox(width: 4.w),
-                                    Icon(Icons.star_rounded, color: Colors.orange, size: 16.r),
+                                    Icon(Icons.star_rounded, color: Colors.orange,),
                                   ],
                                 ),
                               ),
@@ -555,7 +454,7 @@ class WorkerServiceDetails extends StatelessWidget {
                         ],
                       ),
                     )
-                
+
                   ],
                 ),
               ),
