@@ -16,57 +16,73 @@ class SelectAdsress extends StatefulWidget {
 
 class _SelectAdsressState extends State<SelectAdsress> {
 
+  bool isGettingLocation = false;
+
   Future<void> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-    if (!serviceEnabled) {
-      showSnackBar(Colors.red, 'فعّل خدمة الموقع من إعدادات الجهاز', context);
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-
-      if (permission == LocationPermission.denied) {
-        showSnackBar(Colors.red, 'تم رفض صلاحية الموقع', context);
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      showSnackBar(
-        Colors.red,
-        'صلاحية الموقع مرفوضة نهائيًا، افتحها من الإعدادات',
-        context,
-      );
-      return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    final newLocation = LatLng(
-      position.latitude,
-      position.longitude,
-    );
-
-    if (!isValidLatLng(newLocation)) {
-      showSnackBar(Colors.red, 'تعذر تحديد موقع صحيح', context);
-      return;
-    }
+    if (isGettingLocation) return;
 
     setState(() {
-      selectedLocation = newLocation;
+      isGettingLocation = true;
     });
+    try{
+      bool serviceEnabled;
+      LocationPermission permission;
 
-    mapController.move(newLocation, 16);
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+      if (!serviceEnabled) {
+        showSnackBar(Colors.red, 'فعّل خدمة الموقع من إعدادات الجهاز', context);
+        return;
+      }
+
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+
+        if (permission == LocationPermission.denied) {
+          showSnackBar(Colors.red, 'تم رفض صلاحية الموقع', context);
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        showSnackBar(
+          Colors.red,
+          'صلاحية الموقع مرفوضة نهائيًا، افتحها من الإعدادات',
+          context,
+        );
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      final newLocation = LatLng(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (!isValidLatLng(newLocation)) {
+        showSnackBar(Colors.red, 'تعذر تحديد موقع صحيح', context);
+        return;
+      }
+
+      setState(() {
+        selectedLocation = newLocation;
+      });
+
+      mapController.move(newLocation, 16);
+      setState(() {
+        isGettingLocation=false;
+      });
+    }catch(e){
+      showSnackBar(Colors.red, 'تعذر تحديد الموقع، حاول مرة أخرى', context);
+
+    }
   }
+
   final MapController mapController = MapController();
 
   LatLng selectedLocation = const LatLng(15.3694, 44.1910);
@@ -184,20 +200,31 @@ class _SelectAdsressState extends State<SelectAdsress> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   InkWell(
-                    onTap: getCurrentLocation,
+                    onTap: isGettingLocation ? null : getCurrentLocation,
                     borderRadius: BorderRadius.circular(15.r),
                     child: Container(
                       height: 50.h,
                       width: 50.w,
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.r),
-                          boxShadow: shadow
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15.r),
+                        boxShadow: shadow,
                       ),
-                      child: Icon(
-                        Icons.my_location_rounded,
-                        color: mainColor,
-                        size: 25.sp,
+                      child: Center(
+                        child: isGettingLocation
+                            ? SizedBox(
+                          height: 22.h,
+                          width: 22.w,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: mainColor,
+                          ),
+                        )
+                            : Icon(
+                          Icons.my_location_rounded,
+                          color: mainColor,
+                          size: 25.sp,
+                        ),
                       ),
                     ),
                   ),
