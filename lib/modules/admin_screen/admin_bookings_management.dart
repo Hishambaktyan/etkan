@@ -140,7 +140,6 @@ class _AdminBookingsManagementState extends State<AdminBookingsManagement> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-
         List<Map<String, dynamic>> bookings = selectedStatus == 'الكل'
             ? getDummyBookings()
             : getDummyBookings()
@@ -258,141 +257,136 @@ class _AdminBookingsManagementState extends State<AdminBookingsManagement> {
                         }
                         return Padding(
                           padding: EdgeInsetsDirectional.only(bottom: 20.h),
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: (){},
-                            child: Container(
-                              padding: const EdgeInsetsDirectional.all(10),
-                              decoration: BoxDecoration(
-                                color: mainColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(15.r),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(15.r),
-                                        child: Image.network(
-                                          booking['image'] ?? '',
+                          child: Container(
+                            padding: const EdgeInsetsDirectional.all(10),
+                            decoration: BoxDecoration(
+                              color: mainColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(15.r),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(15.r),
+                                      child: Image.network(
+                                        booking['image'] ?? '',
+                                        width: 80.w,
+                                        height: 80.h,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
                                           width: 80.w,
                                           height: 80.h,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) => Container(
-                                            width: 80.w,
-                                            height: 80.h,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.shade200,
-                                            ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade200,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 10.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    booking['title'],
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.black,
-                                                    ),
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  booking['title'],
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 13.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
                                                   ),
                                                 ),
-                                                SizedBox(width: 10.w),
-                                                Container(
-                                                  height: 30.h,
-                                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 7.w),
-                                                  decoration: BoxDecoration(
-                                                    color: statusColor.withOpacity(0.2),
-                                                    borderRadius: BorderRadius.circular(6.r),
-                                                  ),
-                                                  child: Center(
-                                                    child: Text(
-                                                      status,
-                                                      style: TextStyle(
-                                                        color: statusColor,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 11.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 5.h),
-                                            Text(
-                                              '${booking['price']} $reyalSymbol',
-                                              style: TextStyle(
-                                                fontSize: 13.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: mainColor,
                                               ),
+                                              SizedBox(width: 10.w),
+                                              Container(
+                                                height: 30.h,
+                                                padding: EdgeInsetsDirectional.symmetric(horizontal: 7.w),
+                                                decoration: BoxDecoration(
+                                                  color: statusColor.withOpacity(0.2),
+                                                  borderRadius: BorderRadius.circular(6.r),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    status,
+                                                    style: TextStyle(
+                                                      color: statusColor,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 11.sp,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 5.h),
+                                          Text(
+                                            '${booking['price']} $reyalSymbol',
+                                            style: TextStyle(
+                                              fontSize: 13.sp,
+                                              fontWeight: FontWeight.bold,
+                                              color: mainColor,
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10.h),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      buildDetailRow(
+                                        'العنوان:',
+                                        booking['address'],
+                                        'assets/loc.svg',
+                                        appCubit,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                        child: dashedDivider(Colors.grey),
+                                      ),
+                                      buildDetailRow(
+                                        'التاريخ والوقت:',
+                                        booking['scheduledAt'].toString(),
+                                        'assets/timer.svg',
+                                        appCubit,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                        child: dashedDivider(Colors.grey),
+                                      ),
+                                      buildDetailRow(
+                                        'المستخدم:',
+                                        booking['clientName'],
+                                        'assets/acc.svg',
+                                        appCubit,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                        child: dashedDivider(Colors.grey),
+                                      ),
+                                      buildDetailRow(
+                                        'الفني:',
+                                        booking['providerName'],
+                                        'assets/providers.svg',
+                                        appCubit,
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 10.h),
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12.r),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        buildDetailRow(
-                                          'العنوان:',
-                                          booking['address'],
-                                          'assets/loc.svg',
-                                          appCubit,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                          child: dashedDivider(Colors.grey),
-                                        ),
-                                        buildDetailRow(
-                                          'التاريخ والوقت:',
-                                          booking['scheduledAt'].toString(),
-                                          'assets/timer.svg',
-                                          appCubit,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                          child: dashedDivider(Colors.grey),
-                                        ),
-                                        buildDetailRow(
-                                          'المستخدم:',
-                                          booking['providerName'],
-                                          'assets/acc.svg',
-                                          appCubit,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                          child: dashedDivider(Colors.grey),
-                                        ),
-                                        buildDetailRow(
-                                          'الفني:',
-                                          booking['clientName'],
-                                          'assets/providers.svg',
-                                          appCubit,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         );

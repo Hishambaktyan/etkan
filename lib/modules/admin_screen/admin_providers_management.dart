@@ -14,7 +14,7 @@ class AdminProviderMangament extends StatefulWidget {
 }
 
 class _AdminProviderMangamentState extends State<AdminProviderMangament> {
-  final List<Map<String, String>> users = [
+  final List<Map<String, String>> providers = [
     {
       'name': 'أحمد محمد',
       'image': 'https://randomuser.me/api/portraits/men/1.jpg',
@@ -95,9 +95,9 @@ class _AdminProviderMangamentState extends State<AdminProviderMangament> {
                   mainAxisExtent: 255
                 ),
                 padding:  EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 20.h),
-                itemCount: users.length,
+                itemCount: providers.length,
                 itemBuilder:(context, index) {
-                  final user = users[index];
+                  final user = providers[index];
                   return Container(
                     decoration: BoxDecoration(
                         color: mainColor.withOpacity(0.1),

@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 
+import '../../../main.dart';
+import '../../../modules/user_screens/verified_phone.dart';
+import '../../compenents/components.dart';
+
 class AuthCubit extends Cubit<AuthStates>{
   AuthCubit(): super(AuthInitSatate());
 
@@ -104,7 +108,6 @@ class AuthCubit extends Cubit<AuthStates>{
     }
   }
 
-
   var workerLoginPhoneController = TextEditingController();
   var workerLoginPasswordController = TextEditingController();
   ////////////////////////////////////////////////////////////////
@@ -187,5 +190,7 @@ class AuthCubit extends Cubit<AuthStates>{
       });
     }
   }
+
+
 
 }

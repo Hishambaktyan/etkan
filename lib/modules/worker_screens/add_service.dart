@@ -237,19 +237,15 @@ class _AddServiceState extends State<AddService> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
+                        SizedBox(height: 10.h,),
                         Text(
-                          'ملاحظة: يمكنكك رفع صور بصيغة"jpg."أو "png."أو "jpeg".',
+                          '* ملاحظة: يمكنكك رفع صور بصيغة"jpg."أو "png."أو "jpeg".',
                           style: TextStyle(
                             color: cubit.isDark? darkSubTextColor: Colors.grey.shade400,
                             fontSize: 9.sp
                           ),
                         ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
+                        SizedBox(height: 15.h,),
                         Container(
                           padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w,vertical: 20),
                           decoration: BoxDecoration(
@@ -269,21 +265,7 @@ class _AddServiceState extends State<AddService> {
                                   type: TextInputType.text,
                                   isCovered: true
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
-                                defaultTextFormfeild(
-                                    cubit: cubit,
-                                  text: 'قسم الخدمة',
-                                  prefixIcon: 'assets/grid.svg',
-                                  errorMes: 'يرجئ ملى الحقل',
-                                  controller: serviceDept,
-                                  type: TextInputType.text,
-                                    isCovered: true
-                                ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                                 Row(
                                   children: [
                                     Expanded(

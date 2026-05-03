@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/add_service.dart';
 import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
+import 'package:trying_homy/modules/worker_screens/worker_services.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
@@ -183,8 +184,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         ),
                         SizedBox(height: 20.h,),
                         Padding(
-                            padding:
-                            EdgeInsetsDirectional.only(start: 10.w,end: 2.w),
+                            padding: EdgeInsetsDirectional.only(start: 10.w,end: 2.w),
                             child: _buildSectionTitle(title: 'حالة الاتصال', icon: 'assets/power.svg', appCubit: cubit)
                         ),
                         SizedBox(height: 10.h,),
@@ -298,7 +298,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                             children: [
                               _buildSectionTitle(title: 'الخدمات الحالية', icon: 'assets/services.svg', appCubit: cubit),
                               const Spacer(),
-                              defaultTextButton(onPressed: (){}, text: 'عرض الكل',isLined: false),
+                              defaultTextButton(onPressed: ()=>move(context, WorkerServices()), text: 'عرض الكل',isLined: false),
                             ],
                           )
                         ),

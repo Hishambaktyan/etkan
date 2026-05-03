@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
 
@@ -24,7 +23,8 @@ class _SelectAdsressState extends State<SelectAdsress> {
     setState(() {
       isGettingLocation = true;
     });
-    try{
+
+    try {
       bool serviceEnabled;
       LocationPermission permission;
 
@@ -32,6 +32,9 @@ class _SelectAdsressState extends State<SelectAdsress> {
 
       if (!serviceEnabled) {
         showSnackBar(Colors.red, 'فعّل خدمة الموقع من إعدادات الجهاز', context);
+        setState(() {
+          isGettingLocation = false;
+        });
         return;
       }
 
@@ -48,10 +51,7 @@ class _SelectAdsressState extends State<SelectAdsress> {
 
       if (permission == LocationPermission.deniedForever) {
         showSnackBar(
-          Colors.red,
-          'صلاحية الموقع مرفوضة نهائيًا، افتحها من الإعدادات',
-          context,
-        );
+          Colors.red, 'صلاحية الموقع مرفوضة نهائيًا، افتحها من الإعدادات', context,);
         return;
       }
 
@@ -73,17 +73,18 @@ class _SelectAdsressState extends State<SelectAdsress> {
         selectedLocation = newLocation;
       });
 
-      mapController.move(newLocation, 16);
+      mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(newLocation, 16),
+      );
       setState(() {
-        isGettingLocation=false;
+        isGettingLocation = false;
       });
-    }catch(e){
+    } catch (e) {
       showSnackBar(Colors.red, 'تعذر تحديد الموقع، حاول مرة أخرى', context);
-
     }
   }
 
-  final MapController mapController = MapController();
+  GoogleMapController? mapController;
 
   LatLng selectedLocation = const LatLng(15.3694, 44.1910);
 
@@ -103,41 +104,28 @@ class _SelectAdsressState extends State<SelectAdsress> {
       child: Scaffold(
         body: Stack(
           children: [
-            FlutterMap(
-              mapController: mapController,
-              options: MapOptions(
-                initialCenter: selectedLocation,
-                initialZoom: 14,
-                onTap: (tapPosition, point) {
-                  if (isValidLatLng(point)) {
-                    setState(() {
-                      selectedLocation = point;
-                    });
-                  }
-                },
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: selectedLocation,
+                zoom: 14,
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.edit_homy',
+              mapType: MapType.normal,
+              zoomControlsEnabled: false,
+              myLocationButtonEnabled: false,
+              onMapCreated: (GoogleMapController controller) {
+                mapController = controller;
+              },
+              markers: {
+                Marker(
+                  markerId: const MarkerId('selected_location'),
+                  position: selectedLocation,
                 ),
-                MarkerLayer(
-                  markers: isValidLatLng(selectedLocation)
-                      ? [
-                    Marker(
-                      point: selectedLocation,
-                      width: 50.w,
-                      height: 50.h,
-                      child: Icon(
-                        Icons.location_on_rounded,
-                        color: mainColor,
-                        size: 45.sp,
-                      ),
-                    ),
-                  ]
-                      : [],
-                ),
-              ],
+              },
+              onTap: (LatLng point) {
+                setState(() {
+                  selectedLocation = point;
+                });
+              },
             ),
             PositionedDirectional(
               top: 45.h,

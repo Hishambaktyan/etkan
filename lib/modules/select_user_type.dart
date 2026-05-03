@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/admin_screen/admin_home_screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
@@ -194,6 +195,87 @@ class _SelectUserTypeState extends State<SelectUserType> {
                     ),
                   ),
                 ),
+                SizedBox(height: 20.h),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 2;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: selectedIndex == 2 ? const Color(0xFFE3F2FD) : const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(15.r),
+                      border: Border.all(
+                        color: selectedIndex == 2 ? const Color(0xFF1976D2) : Colors.transparent,
+                        width: 2.w,
+                      ),
+                      boxShadow: selectedIndex == 2
+                          ? [
+                        BoxShadow(
+                          color: const Color(0xFF1976D2).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        )
+                      ]
+                          : [],
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                'assets/admin.jpg',
+                                height: 140,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            CircleAvatar(
+                              radius: 25,
+                              backgroundColor: const Color(0xFF1976D2).withOpacity(0.85),
+                              child: const Icon(
+                                Icons.admin_panel_settings_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'أنا مسؤول',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: selectedIndex == 2 ? Colors.black87 : Colors.black54,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'أريد إدارة المستخدمين، الخدمات، الحجوزات، والاشتراكات داخل النظام.',
+                          style: TextStyle(
+                            color: selectedIndex == 2 ? Colors.black54 : Colors.black38,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Icon(
+                            selectedIndex == 2 ? Icons.check_circle : Icons.radio_button_unchecked,
+                            color: selectedIndex == 2 ? const Color(0xFF1976D2) : Colors.black38,
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -205,9 +287,11 @@ class _SelectUserTypeState extends State<SelectUserType> {
               if(selectedIndex==0){
                 CacheHelper.setBoolen(key: 'isWorker', value: false);
                 moveAndReplace(context, const UserSignUp() );
-              }else{
+              }else if(selectedIndex==1){
                 CacheHelper.setBoolen(key: 'isWorker', value: true);
                 moveAndReplace(context, const WorkerSignup() );
+              }else{
+                moveAndReplace(context, const AdminHomeScreen());
               }
             },
             text: 'متابعة',

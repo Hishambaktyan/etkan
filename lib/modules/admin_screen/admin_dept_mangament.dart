@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:marquee/marquee.dart';
+import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/admin_screen/add_dept.dart';
+import 'package:trying_homy/modules/admin_screen/manage_dept.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
@@ -79,7 +83,7 @@ class _AdminDeptMangamentState extends State<AdminDeptMangament> {
             ),
             actions: [
               IconButton(
-                  onPressed: (){},
+                  onPressed: ()=>move(context, const AddDept()),
                   icon:  Icon(Icons.add_rounded,color: Colors.white,size: 30.w,)
               ),
               SizedBox(width: 5.w,),
@@ -94,51 +98,75 @@ class _AdminDeptMangamentState extends State<AdminDeptMangament> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 15.h,
                     crossAxisSpacing: 10.w,
-                    childAspectRatio: 2.1,
+                    childAspectRatio: 1.1,
                   ),
                   itemCount: services.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      borderRadius: BorderRadius.circular(15.r),
                       onTap: (){},
                       child: Container(
-                        padding: const EdgeInsetsDirectional.all(10),
                         decoration: BoxDecoration(
-                            color: mainColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(15.r)
+                            color: mainColor.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(15.r),
+                          border: Border.all(color: mainColor.withOpacity(0.1))
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.all(10),
+                                child: SvgPicture.asset(
+                                  services[index]['icon']!,
+                                  width: 60.w,
+                                ),
+                              ),
+                            ),
                             Container(
-                              width: 55.w,
-                              height: 55.h,
-                              padding: const EdgeInsetsDirectional.all(12),
+                              height: 40.h,
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(15.r),
+                                borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r))
                               ),
-                              child: SvgPicture.asset(
-                                services[index]['icon']!,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: services[index]['name']!.length > 10
+                                        ? SizedBox(
+                                      height: 25.h,
+                                      child: Marquee(
+                                        text: services[index]['name']!,
+                                        scrollAxis: Axis.horizontal,
+                                        blankSpace: 20.w,
+                                        velocity: 30,
+                                        pauseAfterRound: const Duration(seconds: 1),
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                        ),
+                                      ),
+                                    )
+                                        : Text(
+                                      services[index]['name']!,
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                      onPressed: ()=>move(context, const ManageDept()),
+                                      icon: const Icon(Icons.more_horiz_rounded)
+                                  )
+                                ],
                               ),
                             ),
-                            SizedBox(width: 10.w),
-                            Text(
-                              services[index]['name']!,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14.sp,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const Spacer(),
-                            const Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              color: mainColor,
-                              size: 15,
-                            ),
+
                           ],
                         ),
                       ),

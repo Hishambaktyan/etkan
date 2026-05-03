@@ -11,6 +11,7 @@ import 'package:trying_homy/shared/styles/colors.dart';
 import '../../main.dart';
 import 'admin_dept_mangament.dart';
 import 'admin_providers_management.dart';
+import 'admin_users_managament.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -97,29 +98,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          appBar: AppBar(
-            titleSpacing: 15,
-            backgroundColor: mainColor,
-            title: Text(
-              'لوحة التحكم',
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            actions: [
-              IconButton(
-                  onPressed: () => move(context, const NotificationsScreen()),
-                  icon: SvgPicture.asset(
-                    'assets/not.svg',
-                    color: Colors.white,
-                    width: 30.w,
-                  )),
-              SizedBox(
-                width: 5.w,
-              )
-            ],
-          ),
           body: BlocBuilder<AppCubit, AppStates>(
             builder: (context, state) {
               AppCubit appCubit = AppCubit.get(context);
@@ -127,6 +105,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    header(title: 'مرحبا، هشام', context: context),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -185,9 +164,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         );
                       },
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
+                    SizedBox(height: 20.h,),
                     Padding(
                       padding: EdgeInsetsDirectional.only(start: 15.w),
                       child: Row(
@@ -221,9 +198,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
+                    SizedBox(height: 10.h,),
                     GridView.builder(
                       shrinkWrap: true,
                       padding:
@@ -283,9 +258,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         );
                       },
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
+                    SizedBox(height: 20.h,),
                     Padding(
                       padding: EdgeInsetsDirectional.only(start: 15.w),
                       child: Row(
@@ -319,9 +292,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
+                    SizedBox(height: 10.h,),
                     SizedBox(
                       height: 250.h,
                       child: ListView.separated(
@@ -420,9 +391,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
+                    SizedBox(height: 20.h,),
                     Padding(
                       padding: EdgeInsetsDirectional.only(start: 15.w),
                       child: Row(
@@ -455,9 +424,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
+                    SizedBox(height: 10.h,),
                     SizedBox(
                       height: 300.h,
                       child: ListView.separated(
@@ -643,9 +610,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
+                    SizedBox(height: 20.h,),
                     Padding(
                       padding: EdgeInsetsDirectional.only(start: 15.w),
                       child: Row(
@@ -679,9 +644,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
+                    SizedBox(height: 10.h),
                     SizedBox(
                       height: 370.h,
                       child: ListView.separated(
@@ -975,6 +938,122 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.only(start: 15.w),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 45.h,
+                            width: 45.w,
+                            padding: EdgeInsetsDirectional.all(8.w),
+                            decoration: BoxDecoration(
+                                color: mainColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10.r)),
+                            child: SvgPicture.asset(
+                              'assets/acc.svg',
+                              color: mainColor,
+                            ),
+                          ),
+                          SizedBox(width: 10.w,),
+                          Text(
+                            'المستخدمون',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18.sp),
+                          ),
+                          const Spacer(),
+                          defaultTextButton(
+                              onPressed: () =>
+                                  move(context, const AdminUsersManagament()),
+                              text: 'عرض الكل',
+                              isLined: false),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10.h,),
+                    SizedBox(
+                      height: 220.h,
+                      child: ListView.separated(
+                        padding: EdgeInsetsDirectional.only(start: 15.w),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 5,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            width: 170.w,
+                            decoration: BoxDecoration(
+                                color: mainColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20.r)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                ClipRRect(
+                                  borderRadius:
+                                  BorderRadiusDirectional.vertical(
+                                      top: Radius.circular(20.r)),
+                                  child: Image.network(
+                                    'https://i.pinimg.com/736x/d1/81/e4/d181e44cf0a7d5f9190bc96939da4164.jpg',
+                                    height: 115.h,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                        Container(
+                                          height: 115.h,
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              borderRadius:
+                                              BorderRadius.circular(20.r)),
+                                        ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.all(15.w),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'عبد الله محمد احمد',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(height: 10.h,),
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 20.r,
+                                            child: IconButton(
+                                                onPressed: () {},
+                                                icon: SvgPicture.asset(
+                                                  'assets/whats.svg',
+                                                  color: mainColor,
+                                                )),
+                                          ),
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 20.r,
+                                            child: IconButton(
+                                                onPressed: () {},
+                                                icon: SvgPicture.asset(
+                                                  'assets/phone.svg',
+                                                  color: mainColor,
+                                                )),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) => SizedBox(width: 15.w,),
+                      ),
+                    ),
+                    SizedBox(height: 20.h,),
                   ],
                 ),
               );

@@ -29,8 +29,7 @@ class _WorkerServicesState extends State<WorkerServices> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit,AppStates>(
-        listener: (context, state) {},
+    return BlocBuilder<AppCubit,AppStates>(
       builder: (context, state) {
         AppCubit cubit = AppCubit.get(context);
         return PopScope(
@@ -77,140 +76,169 @@ class _WorkerServicesState extends State<WorkerServices> {
               ),
               body: GridView.builder(
                 itemCount: cubit.workerServices.length,
-                physics: const BouncingScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200.w,
-                    mainAxisExtent: 255.h,
-                    crossAxisSpacing: 10.w,
-                    mainAxisSpacing: 20.h
-                ),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 10.h),
+                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisExtent: 230.h,
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.w,
+                    mainAxisSpacing: 15.h
+                ),
                 itemBuilder: (context, index) {
-                  return InkWell(
-                    borderRadius: BorderRadius.circular(12.r),
-                    onTap: ()=>move(context,   WorkerServiceDetails(serviceId: cubit.workerServices[index]['id'],)),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.r),
-                          color: cubit.isDark?  lightDarkColor: Colors.white,
-                          boxShadow: shadow
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 125.h,
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius:BorderRadiusDirectional.only(topStart: Radius.circular(12.r),topEnd:Radius.circular(12.r)),
-                                  child: Image.network(
-                                    cubit.workerServices[index]['serviceImage'],
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.r),
+                      color: mainColor.withOpacity(0.09),
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 125.h,
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadiusDirectional.only(
+                                    topStart: Radius.circular(20.r),
+                                    topEnd: Radius.circular(20.r)
+                                ),
+                                child: Image.network(
+                                  '${cubit.workerServices[index]['serviceImage']}',
+                                  height: 110.h,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Container(
                                     height: 110.h,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(
-                                      height: 110.h,
-                                      decoration: BoxDecoration(
-                                          borderRadius:BorderRadiusDirectional.only(topStart: Radius.circular(12.r),topEnd:Radius.circular(12.r)),
-                                          color: Colors.grey.shade100
-                                      ),
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.wifi_off_rounded,
-                                          size: 50,
-                                          color: Colors.grey.shade400,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: AlignmentDirectional.bottomEnd,
-                                  child: Container(
-                                    height: 27.h,
-                                    width: 100.w,
-                                    padding: EdgeInsetsDirectional.only(top: 3.h),
-                                    alignment: Alignment.center,
-                                    margin: EdgeInsetsDirectional.only(end: 10.w),
                                     decoration: BoxDecoration(
-                                        color: mainColor,
-                                        border: Border.all(
-                                            color: Colors.white
-                                        ),
-                                        borderRadius: BorderRadius.circular(30.r)
-                                    ),
-                                    child: Text(
-                                      '${cubit.workerServices[index]['price']} ﷼ ',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12.sp
+                                        borderRadius:
+                                        BorderRadiusDirectional.only(
+                                            topStart: Radius
+                                                .circular(
+                                                12.r),
+                                            topEnd: Radius
+                                                .circular(12
+                                                .r)),
+                                        color: Colors
+                                            .grey.shade100),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons
+                                            .wifi_off_rounded,
+                                        size: 50,
+                                        color: Colors
+                                            .grey.shade400,
                                       ),
                                     ),
                                   ),
                                 ),
-                                Align(
-                                  alignment: AlignmentDirectional.topStart,
+                              ),
+                              Align(
+                                alignment: AlignmentDirectional.bottomEnd,
+                                child: Container(
+                                  height: 30.h,
+                                  width: 110.w,
+                                  padding: EdgeInsetsDirectional.only(top: 3.h),
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsetsDirectional.only(end: 10.w),
+                                  decoration: BoxDecoration(
+                                      color: mainColor,
+                                      border: Border.all(
+                                          color: Colors.white
+                                      ),
+                                      borderRadius: BorderRadius.circular(30.r)
+                                  ),
+                                  child: Text(
+                                    '${cubit.workerServices[index]['price']} ﷼ ',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight:
+                                        FontWeight.bold,
+                                        fontSize: 13.sp),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: AlignmentDirectional.topStart,
+                                child: InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      showSnackBar(
+                                          Colors.green,
+                                          cubit.isServicesActive? 'تم الغاء تفعيل الخدمة':'تم تفعيل الخدمة',
+                                          context
+                                      );
+                                      cubit.isServicesActive=!cubit.isServicesActive;
+                                    });
+                                  },
                                   child: Padding(
-                                    padding: EdgeInsetsDirectional.only(start: 10.w,top: 10.h),
+                                    padding: EdgeInsetsDirectional.only(start: 10.w, top: 10.h),
                                     child: CircleAvatar(
                                         radius: 18.r,
                                         backgroundColor: Colors.white,
                                         child: SvgPicture.asset(
                                           'assets/power.svg',
-                                          color: cubit.isServicesActive?Colors.green:Colors.grey,
+                                          color: cubit.isServicesActive ? Colors.green : Colors.grey,
                                           width: 22.w,
                                           height: 22.h,
                                         )
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 5.h),
-                            child:  Column(
+                        ),
+                        InkWell(
+                          onTap: () => move(context, WorkerServiceDetails(serviceId: cubit.workerServices[index]['id'],)),
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.only(start: 10.w,end: 10.w,top: 5.h),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  children: List.generate(5, (i) => Icon(
-                                    Icons.star_rounded,
-                                    size: 16.r,
-                                    color: i < 4 ? Colors.orange : Colors.grey.shade300,
-                                  )),
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const Icon(Icons.star_rounded,color: Colors.orange,),
+                                    SizedBox(width: 3.w,),
+                                    Text(
+                                      '${cubit.workerServices[index]['rate']}',
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        height: 1,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(
-                                  height: 5.h,
-                                ),
+                                SizedBox(height: 5.h,),
                                 Text(
-                                  cubit.workerServices[index]['name'],
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                  '${cubit.workerServices[index]['name']}',
+                                  maxLines: 1,
+                                  overflow:
+                                  TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13.sp,
-                                      color: Theme.of(context).textTheme.bodyLarge!.color
+                                      color: cubit.isDark ? Colors.white : Colors.black
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 5.h,
-                                ),
+                                SizedBox(height: 5.h,),
                                 Text(
-                                  cubit.workerServices[index]['description'],
+                                  '${cubit.workerServices[index]['description']} ',
                                   maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow:
+                                  TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontSize: 10.sp,
-                                      color: cubit.isDark? darkSubTextColor: Colors.grey
-                                  ),
+                                      color: cubit.isDark
+                                          ? darkSubTextColor
+                                          : Colors.grey),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   );
                 },
