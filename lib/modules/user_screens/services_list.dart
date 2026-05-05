@@ -56,56 +56,6 @@ class _ServicesListState extends State<ServicesList> {
                               context: context
                           ),
                           SizedBox(height: 15.h,),
-                          Padding(
-                            padding: EdgeInsetsDirectional.only(start: 15.w),
-                            child: Text(
-                              'أقسام ال${widget.categoryType}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.sp
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 5.h,),
-                          SizedBox(
-                            height: 100.h,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: EdgeInsetsDirectional.only(start: 15.w),
-                              itemCount: 7,
-                              itemBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 70.w,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundColor: mainColor.withOpacity(0.1),
-                                        radius: 27.r,
-                                      ),
-                                      SizedBox(height: 3.h,),
-                                      SizedBox(
-                                        height: 20.h,
-                                        child: Marquee(
-                                          text: 'تركيب فيش وبلاكات',
-                                          style: TextStyle(fontSize: 10.sp),
-                                          scrollAxis: Axis.horizontal,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          blankSpace: 40.0,
-                                          velocity: 50.0,
-                                          pauseAfterRound: const Duration(seconds: 1),
-                                          startPadding: 10.0,
-                                          accelerationDuration: const Duration(seconds: 1),
-                                          decelerationDuration: const Duration(milliseconds: 500),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (context, index) => SizedBox(width: 10.w,),
-                            ),
-                          ),
                           ListView.separated(
                             itemCount: userServicesCubit.userElecServices.length,
                             physics: const NeverScrollableScrollPhysics(),
@@ -264,9 +214,7 @@ class _ServicesListState extends State<ServicesList> {
                                 ),
                               );
                             },
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: 15.h,
-                            ),
+                            separatorBuilder: (context, index) => SizedBox(height: 15.h,),
                           ),
                         ],
                       ),

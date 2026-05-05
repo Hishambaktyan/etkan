@@ -11,6 +11,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/cubits/bloc_observer.dart';
 import 'package:trying_homy/shared/cubits/chat_cubit/chat_cubit.dart';
+import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/styles.dart';
 import 'firebase_options.dart';
@@ -108,7 +109,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ChatCubit(),
-        )
+        ),
+        BlocProvider(
+          create: (context) => LocationCubit(),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),

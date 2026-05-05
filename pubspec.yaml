@@ -68,7 +68,7 @@ dependencies:
   animated_text_kit: ^4.3.0
   geolocator: ^14.0.2
   google_maps_flutter: 2.13.1
-
+  skeletonizer: ^1.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

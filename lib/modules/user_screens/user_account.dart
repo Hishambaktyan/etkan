@@ -191,7 +191,7 @@ class _UserAccountState extends State<UserAccount> {
                         ),
                         SizedBox(height: 7.h),
                         Container(
-                          padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 5.h,),
+                          padding: EdgeInsetsDirectional.only(start: 12.w,end: 15.w, top: 5.h,),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.14),
                             borderRadius: BorderRadius.circular(30.r),
@@ -202,6 +202,7 @@ class _UserAccountState extends State<UserAccount> {
                               color: Colors.white,
                               fontSize: 13.sp,
                               letterSpacing: 5,
+                              height: 1.7
                             ),
                           ),
                         ),

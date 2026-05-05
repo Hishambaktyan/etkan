@@ -1,13 +1,19 @@
+import 'dart:ui';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/select_adsress.dart';
+import 'package:trying_homy/modules/user_screens/add_address.dart';
+import 'package:trying_homy/modules/user_screens/edit_address.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
+import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class AddressesManagementScreen extends StatefulWidget {
@@ -19,30 +25,6 @@ class AddressesManagementScreen extends StatefulWidget {
 }
 
 class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
-  final List<Map<String, dynamic>> addresses = [
-    {
-      'title': 'المنزل',
-      'area': 'كريتر',
-      'street': 'شارع أروى',
-      'details': 'بجانب الصيدلية، الدور الثاني',
-      'type': 'المنزل',
-      'isDefault': true,
-    },
-    {
-      'title': 'العمل',
-      'area': 'خور مكسر',
-      'street': 'شارع المطار',
-      'details': 'مبنى الأعمال، الدور الثالث',
-      'type': 'العمل',
-      'isDefault': false,
-    },
-  ];
-
-  final List<String> addressTypes = [
-    'المنزل',
-    'العمل',
-    'أخرى',
-  ];
 
   Widget _buildHeaderCard(AppCubit cubit) {
     return Container(
@@ -128,21 +110,23 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
   }
   
   Widget _buildAddressCard({
-    required AppCubit cubit,
+    required AppCubit appCubit,
     required Map<String, dynamic> address,
     required int index,
+    required LocationCubit locationCubit,
+    required String uId,
   }) {
     return Container(
       width: double.infinity,
       margin: EdgeInsetsDirectional.only(bottom: 15.h),
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
-        color: cubit.isDark ? lightDarkColor : Colors.white,
+        color: appCubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
           color: address['isDefault']
               ? mainColor
-              : cubit.isDark
+              : appCubit.isDark
                   ? const Color(0xFF30363D)
                   : Colors.grey.shade200,
           width: address['isDefault'] ? 1.3 : 1,
@@ -169,7 +153,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                     Row(
                       children: [
                         Text(
-                          address['title'],
+                          address['label'],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -202,14 +186,6 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                         ],
                       ],
                     ),
-                    SizedBox(height: 5.h),
-                    Text(
-                      address['area'],
-                      style: TextStyle(
-                        color: cubit.isDark ? darkSubTextColor : Colors.grey,
-                        fontSize: 12.sp,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -219,22 +195,16 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
             padding: EdgeInsets.symmetric(vertical: 14.h),
             child: Divider(
               color:
-                  cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200,
+                  appCubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200,
               height: 1,
             ),
           ),
-          _buildInfoRow(
-            cubit: cubit,
-            icon: Icons.signpost_outlined,
-            title: 'الشارع',
-            value: address['street'],
-          ),
           SizedBox(height: 10.h),
           _buildInfoRow(
-            cubit: cubit,
-            icon: Icons.edit_location_alt_outlined,
-            title: 'الوصف',
-            value: address['details'],
+            cubit: appCubit,
+            icon: 'assets/this_loc.svg',
+            title: 'الوصف: ',
+            value: address['addressName'],
           ),
           SizedBox(height: 15.h),
           Row(
@@ -242,25 +212,22 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
               Expanded(
                 child: _buildSmallButton(
                   title: 'تعديل',
-                  icon: Icons.edit_outlined,
+                  icon: 'assets/pen.svg',
                   color: mainColor,
-                  onTap: () {
-                    _showAddressSheet(
-                      cubit: cubit,
-                      index: index,
-                      oldAddress: address,
-                    );
-                  },
+                  onTap: ()=>move(context,  EditAddress(address: address)),
                 ),
               ),
               SizedBox(width: 10.w),
               Expanded(
                 child: _buildSmallButton(
                   title: address['isDefault'] ? 'افتراضي' : 'جعله افتراضي',
-                  icon: Icons.check_circle_outline,
+                  icon: 'assets/all.svg',
                   color: Colors.green,
                   onTap: () {
-                    _setDefaultAddress(index);
+                    locationCubit.setDefaultAddress(
+                        uId: FirebaseAuth.instance.currentUser!.uid,
+                        addressId: address['id']
+                    );
                   },
                 ),
               ),
@@ -269,9 +236,9 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
           SizedBox(height: 10.h),
           _buildSmallButton(
             title: 'حذف',
-            icon: Icons.delete_outline_rounded,
+            icon: 'assets/delete.svg',
             color: Colors.red,
-            onTap: ()=>_deleteAddress(index),
+            onTap: ()=>_showDeleteAddressDialog(appCubit,locationCubit,uId, address['id']),
           ),
         ],
       ),
@@ -280,19 +247,15 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
 
   Widget _buildInfoRow({
     required AppCubit cubit,
-    required IconData icon,
+    required String icon,
     required String title,
     required String value,
   }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(
-          icon,
-          color: cubit.isDark ? darkSubTextColor : Colors.grey,
-          size: 18.r,
-        ),
-        SizedBox(width: 8.w),
+        SvgPicture.asset(icon,color: Colors.grey,),
+        SizedBox(width: 10.w),
         SizedBox(
           width: 55.w,
           child: Text(
@@ -320,7 +283,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
 
   Widget _buildSmallButton({
     required String title,
-    required IconData icon,
+    required String icon,
     required Color color,
     required VoidCallback onTap,
   }) {
@@ -339,7 +302,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 18.r),
+            SvgPicture.asset(icon,color: color,),
             SizedBox(width: 6.w),
             Text(
               title,
@@ -355,487 +318,216 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
     );
   }
 
-  Widget _buildEmptyState(AppCubit cubit) {
-    return Padding(
-      padding: EdgeInsets.only(top: 70.h),
-      child: Center(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(25.r),
-              decoration: BoxDecoration(
-                color: mainColor.withOpacity(0.10),
-                shape: BoxShape.circle,
-              ),
-              child: SvgPicture.asset('assets/no_loc.svg',color: mainColor,width: 60.w,)
-            ),
-            SizedBox(height: 18.h),
-            Text(
-              'لا توجد عناوين محفوظة',
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge!.color,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'أضف عنوانك الأول لاستخدامه عند طلب الخدمة',
-              style: TextStyle(
-                color: cubit.isDark ? darkSubTextColor : Colors.grey,
-                fontSize: 12.sp,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _setDefaultAddress(int index) {
-    setState(() {
-      for (int i = 0; i < addresses.length; i++) {
-        addresses[i]['isDefault'] = false;
-      }
-      addresses[index]['isDefault'] = true;
-    });
-
-    showSnackBar(
-      Colors.green,
-      'تم تعيين العنوان كافتراضي',
-      context,
-    );
-  }
-
-  void _deleteAddress(int index) {
-    bool wasDefault = addresses[index]['isDefault'];
-
-    setState(() {
-      addresses.removeAt(index);
-
-      if (wasDefault && addresses.isNotEmpty) {
-        addresses[0]['isDefault'] = true;
-      }
-    });
-
-    showSnackBar(
-      Colors.red,
-      'تم حذف العنوان',
-      context,
-    );
-  }
-
-  Widget _buildSheetTextField({
-    required AppCubit cubit,
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    int maxLines = 1,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 2.h),
-      margin: EdgeInsets.only(bottom: 14.h),
-      decoration: BoxDecoration(
-        color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(
-          color: cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200,
-        ),
-      ),
-      child: TextFormField(
-        controller: controller,
-        maxLines: maxLines,
-        style: TextStyle(
-          color: Theme.of(context).textTheme.bodyLarge!.color,
-          fontSize: 14.sp,
-        ),
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          labelText: label,
-          labelStyle: TextStyle(
-            color: cubit.isDark ? darkSubTextColor : Colors.grey,
-            fontSize: 12.sp,
-          ),
-          prefixIcon: Icon(
-            icon,
-            color: mainColor,
-            size: 22.r,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showAddressSheet({
-    required AppCubit cubit,
-    int? index,
-    Map<String, dynamic>? oldAddress,
-  })
-  {
-    TextEditingController titleController = TextEditingController(
-      text: oldAddress == null ? '' : oldAddress['title'],
-    );
-    TextEditingController areaController = TextEditingController(
-      text: oldAddress == null ? '' : oldAddress['area'],
-    );
-    TextEditingController streetController = TextEditingController(
-      text: oldAddress == null ? '' : oldAddress['street'],
-    );
-    TextEditingController detailsController = TextEditingController(
-      text: oldAddress == null ? '' : oldAddress['details'],
-    );
-
-    String selectedType = oldAddress == null ? 'المنزل' : oldAddress['type'];
-
-    showModalBottomSheet(
+  void _showDeleteAddressDialog(AppCubit appCubit,LocationCubit locationCubit,String uId, String addressId) {
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: cubit.isDark ? darkBgColor : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 20.w,
-                  right: 20.w,
-                  top: 18.h,
-                  bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
-                ),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
+      barrierColor: Colors.black.withOpacity(0.25),
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Stack(
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(color: Colors.transparent),
+              ),
+              Center(
+                child: AlertDialog(
+                  backgroundColor:
+                  appCubit.isDark ? lightDarkColor : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22.r),
+                  ),
+                  contentPadding: EdgeInsets.all(22.r),
+                  content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 45.w,
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          color: cubit.isDark
-                              ? Colors.white24
-                              : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(20.r),
-                        ),
+                          padding: EdgeInsets.all(16.r),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.10),
+                            shape: BoxShape.circle,
+                          ),
+                          child: SvgPicture.asset('assets/delete.svg',color: Colors.red,width: 50.w,)
                       ),
                       SizedBox(height: 20.h),
+                      Text(
+                        'حذف العنوان',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Text(
+                        'هل أنت متأكد من حذف العنوان؟ لا يمكن التراجع عن هذه العملية بعد تنفيذها.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: appCubit.isDark
+                              ? darkSubTextColor
+                              : Colors.grey.shade700,
+                          height: 1.6,
+                        ),
+                      ),
+                      SizedBox(height: 25.h),
                       Row(
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(10.r),
-                            decoration: BoxDecoration(
-                              color: mainColor.withOpacity(0.10),
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                            child: Icon(
-                              oldAddress == null
-                                  ? Icons.add_location_alt_outlined
-                                  : Icons.edit_location_alt_outlined,
-                              color: mainColor,
-                              size: 24.r,
+                          Expanded(
+                            child: defualtButton(
+                              onPressed: () => Navigator.pop(context),
+                              text: 'إلغاء',
                             ),
                           ),
-                          SizedBox(width: 10.w),
-                          Text(
-                            oldAddress == null
-                                ? 'إضافة عنوان جديد'
-                                : 'تعديل العنوان',
-                            style: TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge!.color,
-                              fontSize: 17.sp,
-                              fontWeight: FontWeight.bold,
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: defualtOutlinedButton(
+                              onPressed: (){
+                                locationCubit.deleteAddress(uId: uId, addressId: addressId);
+                                Navigator.pop(context);
+                              },
+                              text: 'حذف',
+                              border: Colors.red,
+                              textColor: Colors.red,
                             ),
                           ),
                         ],
-                      ),
-                      SizedBox(height: 22.h),
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 14.w, vertical: 4.h),
-                        margin: EdgeInsets.only(bottom: 14.h),
-                        decoration: BoxDecoration(
-                          color: cubit.isDark ? lightDarkColor : Colors.white,
-                          borderRadius: BorderRadius.circular(15.r),
-                          border: Border.all(
-                            color: cubit.isDark
-                                ? const Color(0xFF30363D)
-                                : Colors.grey.shade200,
-                          ),
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          value: selectedType,
-                          borderRadius: BorderRadius.circular(15.r),
-                          dropdownColor:
-                              cubit.isDark ? lightDarkColor : Colors.white,
-                          decoration: InputDecoration(
-                            labelText: 'نوع العنوان',
-                            labelStyle: TextStyle(
-                              color:
-                                  cubit.isDark ? darkSubTextColor : Colors.grey,
-                              fontSize: 12.sp,
-                            ),
-                            border: InputBorder.none,
-                            prefixIcon: Icon(
-                              Icons.category_outlined,
-                              color: mainColor,
-                              size: 22.r,
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            color: cubit.isDark ? Colors.white70 : Colors.grey,
-                          ),
-                          items: addressTypes.map((type) {
-                            return DropdownMenuItem<String>(
-                              value: type,
-                              child: Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Text(
-                                    type,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .color,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setModalState(() {
-                              selectedType = value!;
-                            });
-                          },
-                        ),
-                      ),
-                      _buildSheetTextField(
-                        cubit: cubit,
-                        controller: titleController,
-                        label: 'اسم العنوان',
-                        icon: Icons.bookmark_border_rounded,
-                      ),
-                      _buildSheetTextField(
-                        cubit: cubit,
-                        controller: areaController,
-                        label: 'المنطقة',
-                        icon: Icons.map_outlined,
-                      ),
-                      _buildSheetTextField(
-                        cubit: cubit,
-                        controller: streetController,
-                        label: 'الشارع أو الحي',
-                        icon: Icons.signpost_outlined,
-                      ),
-                      _buildSheetTextField(
-                        cubit: cubit,
-                        controller: detailsController,
-                        label: 'تفاصيل إضافية',
-                        icon: Icons.edit_location_alt_outlined,
-                        maxLines: 2,
-                      ),
-                      SizedBox(height: 8.h),
-                      SizedBox(
-                        height: 50.h,
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (titleController.text.trim().isEmpty ||
-                                areaController.text.trim().isEmpty ||
-                                streetController.text.trim().isEmpty) {
-                              showSnackBar(
-                                Colors.red,
-                                'يرجى تعبئة البيانات المطلوبة',
-                                context,
-                              );
-                              return;
-                            }
-
-                            setState(() {
-                              Map<String, dynamic> newAddress = {
-                                'title': titleController.text.trim(),
-                                'area': areaController.text.trim(),
-                                'street': streetController.text.trim(),
-                                'details': detailsController.text.trim(),
-                                'type': selectedType,
-                                'isDefault':
-                                    oldAddress == null && addresses.isEmpty
-                                        ? true
-                                        : oldAddress?['isDefault'] ?? false,
-                              };
-
-                              if (index == null) {
-                                addresses.add(newAddress);
-                              } else {
-                                addresses[index] = newAddress;
-                              }
-                            });
-
-                            Navigator.pop(context);
-
-                            showSnackBar(
-                              Colors.green,
-                              oldAddress == null
-                                  ? 'تم إضافة العنوان بنجاح'
-                                  : 'تم تعديل العنوان بنجاح',
-                              context,
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: mainColor,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14.r),
-                            ),
-                          ),
-                          child: Text(
-                            oldAddress == null
-                                ? 'إضافة العنوان'
-                                : 'حفظ التعديل',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );
   }
 
   @override
+  void initState() {
+    LocationCubit.get(context).getAddresses(FirebaseAuth.instance.currentUser!.uid);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    AppCubit appCubit = AppCubit.get(context);
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              titleSpacing: 10,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(7),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(
-                        CupertinoIcons.back,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Text(
-                    'إدارة العناوين',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsetsDirectional.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderCard(cubit),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle(cubit),
-                  SizedBox(height: 15.h),
-                  addresses.isEmpty
-                      ? _buildEmptyState(cubit)
-                      : Column(
-                          children: List.generate(
-                            addresses.length,
-                            (index) => _buildAddressCard(
-                              cubit: cubit,
-                              address: addresses[index],
-                              index: index,
+        return BlocConsumer<LocationCubit,LocationStates>(
+          listener: (context, state) {},
+          builder: (context, state) {
+              LocationCubit locationCubit = LocationCubit.get(context);
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  appBar: AppBar(
+                    titleSpacing: 10,
+                    elevation: 0,
+                    scrolledUnderElevation: 0,
+                    automaticallyImplyLeading: false,
+                    title: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(7),
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () => Navigator.pop(context),
+                            child: Icon(
+                              CupertinoIcons.back,
+                              color: Theme.of(context).iconTheme.color,
                             ),
                           ),
                         ),
-                ],
-              ),
-            ),
-            bottomNavigationBar: Container(
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
-              decoration: BoxDecoration(
-                color: cubit.isDark ? darkBgColor : Colors.white,
-                boxShadow: cubit.isDark
-                    ? []
-                    : [
+                        SizedBox(width: 10.w),
+                        Text(
+                          'إدارة العناوين',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 23.sp,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  body: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsetsDirectional.all(10),
+                    child: state is GetAddressesLoadingState? AddressManagementShimmer(isDark: appCubit.isDark,)
+                        : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeaderCard(appCubit),
+                        SizedBox(height: 25.h),
+                        _buildSectionTitle(appCubit),
+                        SizedBox(height: 15.h),
+                        locationCubit.allAddresses.isEmpty? Center(
+                            child: Column(
+                              children: [
+                                SvgPicture.asset('assets/no_loc.svg',color: Colors.grey,width: 60.w,),
+                                SizedBox(height: 10.h,),
+                                Text(
+                                    'لا يوجد عناوين لديك',
+                                    style: TextStyle(
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey
+                                    )
+                                ),
+                              ],
+                            )
+                        )
+                            : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: locationCubit.allAddresses.length,
+                          itemBuilder: (context, index) {
+                            final address = locationCubit.allAddresses[index];
+                            return _buildAddressCard(
+                                appCubit: appCubit,
+                                address: address,
+                                index: index,
+                              locationCubit: locationCubit,
+                              uId: FirebaseAuth.instance.currentUser!.uid
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  bottomNavigationBar: Container(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 20.w,
+                      end: 20.w,
+                      top: 10.h,
+                      bottom: 20.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: appCubit.isDark ? darkBgColor : Colors.white,
+                      boxShadow: appCubit.isDark
+                          ? []
+                          : [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.06),
                           blurRadius: 12,
                           offset: const Offset(0, -4),
                         ),
                       ],
-              ),
-              child: SizedBox(
-                height: 50.h,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    move(context, SelectAdsress());
-                    //_showAddressSheet(cubit: cubit);
-                  },
-                  icon: Icon(
-                    Icons.add_location_alt_outlined,
-                    color: Colors.white,
-                    size: 21.r,
-                  ),
-                  label: Text(
-                    'إضافة عنوان جديد',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: mainColor,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
+                    child: defualtButtonWithIcon(
+                        onPressed: ()=>move(context, const AddAddress()),
+                        height: 50.h,
+                        text: 'إضافة عنوان جديد',
+                        icon: SvgPicture.asset('assets/add_loc.svg',color: Colors.white,)
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
+              );
+            },
         );
       },
     );

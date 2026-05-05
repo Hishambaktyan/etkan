@@ -622,9 +622,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
+                  SizedBox(height: 15.h,),
                   Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
@@ -880,24 +878,18 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 children: [
                                   Expanded(
                                     child: defualtOutlinedButtonWithIcon(
-                                      onPressed: () {
-                                        move(context,
-                                            const WorkerProfileScreen());
-                                      },
-                                      text: 'المزيد',
+                                      onPressed: () {},
+                                      text: 'إتصال',
                                       fontSize: 13.sp,
                                       height: 45.h,
-                                      textColor: cubit.isDark
-                                          ? Colors.white
-                                          : mainColor,
-                                      border: cubit.isDark
-                                          ? Colors.white
-                                          : mainColor,
+                                      textColor:
+                                      cubit.isDark ? Colors.white : mainColor,
+                                      border:
+                                      cubit.isDark ? Colors.white : mainColor,
                                       icon: SvgPicture.asset(
-                                        'assets/acc.svg',
-                                        color: cubit.isDark
-                                            ? Colors.white
-                                            : mainColor,
+                                        'assets/phone.svg',
+                                        color:
+                                        cubit.isDark ? Colors.white : mainColor,
                                         width: 20.r,
                                         height: 20.r,
                                       ),
@@ -918,30 +910,27 @@ class _BookingDetailsState extends State<BookingDetails> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 10.w),
-                                  Expanded(
-                                    child: defualtOutlinedButtonWithIcon(
-                                      onPressed: () {},
-                                      text: 'إتصال',
-                                      fontSize: 13.sp,
-                                      height: 45.h,
-                                      textColor: cubit.isDark
-                                          ? Colors.white
-                                          : mainColor,
-                                      border: cubit.isDark
-                                          ? Colors.white
-                                          : mainColor,
-                                      icon: SvgPicture.asset(
-                                        'assets/phone.svg',
-                                        color: cubit.isDark
-                                            ? Colors.white
-                                            : mainColor,
-                                        width: 20.r,
-                                        height: 20.r,
-                                      ),
-                                    ),
-                                  ),
                                 ],
+                              ),
+                              SizedBox(height: 10.h),
+                              defualtOutlinedButtonWithIcon(
+                                onPressed: () {
+                                  move(context, const WorkerProfileScreen());
+                                },
+                                text: 'المزيد',
+                                fontSize: 13.sp,
+                                height: 45.h,
+                                textColor:
+                                cubit.isDark ? Colors.white : mainColor,
+                                border:
+                                cubit.isDark ? Colors.white : mainColor,
+                                icon: SvgPicture.asset(
+                                  'assets/acc.svg',
+                                  color:
+                                  cubit.isDark ? Colors.white : mainColor,
+                                  width: 20.r,
+                                  height: 20.r,
+                                ),
                               ),
                             ],
                           ),

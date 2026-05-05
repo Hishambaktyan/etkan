@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -760,119 +761,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
-                          /*اعلان نشر حدمة*/
-                          Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 15.w),
-                            child: ClipRRect(
-                              borderRadius: BorderRadiusDirectional.only(
-                                  topStart: Radius.circular(15.r),
-                                  topEnd: Radius.circular(15.r)),
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      mainColor,
-                                      mainColor.withOpacity(0.7),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: mainColor.withOpacity(0.3),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Positioned(
-                                      right: -20,
-                                      top: -20,
-                                      child: CircleAvatar(
-                                        radius: 50,
-                                        backgroundColor:
-                                            Colors.white.withOpacity(0.1),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      left: 30,
-                                      bottom: -30,
-                                      child: CircleAvatar(
-                                        radius: 30,
-                                        backgroundColor:
-                                            Colors.white.withOpacity(0.1),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(20.r),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'لم تجد الخدمة المناسبة؟',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18.sp,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 5.h),
-                                                Text(
-                                                  'يمكنك نشر إعلان لخدمتك الآن لتصل إلى العمال المهتمين',
-                                                  style: TextStyle(
-                                                    color: Colors.white
-                                                        .withOpacity(0.9),
-                                                    fontSize: 12.sp,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 15.h),
-                                                ElevatedButton(
-                                                  onPressed: () => move(context,
-                                                      const AddService()),
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    foregroundColor: mainColor,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.r),
-                                                    ),
-                                                    elevation: 0,
-                                                  ),
-                                                  child: const Text(
-                                                      'نشر إعلان الخدمة'),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.campaign_rounded,
-                                            size: 70.r,
-                                            color:
-                                                Colors.white.withOpacity(0.3),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                          SizedBox(height: 20.h,),
                         ],
                       ),
                     ],

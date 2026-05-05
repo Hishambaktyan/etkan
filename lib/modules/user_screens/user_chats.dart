@@ -33,7 +33,8 @@ class _UserChatsState extends State<UserChats> {
     required String myId,
     required String myName,
     required String myImage,
-  }) async {
+  }) async
+  {
     try {
       List<String> ids = [myId, receiverId];
       ids.sort();
@@ -170,13 +171,8 @@ class _UserChatsState extends State<UserChats> {
             body: SingleChildScrollView(
           child: Column(
             children: [
-              headerWithSearch(
+              header(
                 title: 'الدردشة',
-                searchKeyWords: [
-                  "ابحث عن محادثة",
-                  "ابحث عن اسم الفني",
-                  "ابحث عن رسالة",
-                ],
                 context: context,
               ),
               StreamBuilder(
@@ -190,8 +186,9 @@ class _UserChatsState extends State<UserChats> {
                       ),
                     );
                   }
-                  if (snapshot.connectionState == ConnectionState.waiting)
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return ChatShimmerLoading(isDark: appCubit.isDark);
+                  }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return SizedBox(
                       height: 500.h,
@@ -254,15 +251,13 @@ class _UserChatsState extends State<UserChats> {
                                       ? NetworkImage(otherUserImage)
                                       : null,
                                   backgroundColor: Colors.grey.withOpacity(0.1),
-                                  radius: 30.r,
+                                  radius: 27.r,
                                   child: otherUserImage == null ||
                                           otherUserImage == ''
                                       ? const Icon(Icons.person)
                                       : null,
                                 ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
+                                SizedBox(width: 10.w,),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -277,7 +272,7 @@ class _UserChatsState extends State<UserChats> {
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                  fontSize: 16.sp,
+                                                  fontSize: 14.sp,
                                                   color: Theme.of(context)
                                                       .textTheme
                                                       .bodyLarge!
@@ -293,7 +288,7 @@ class _UserChatsState extends State<UserChats> {
                                                   chatData['lastUpdate']),
                                               style: TextStyle(
                                                   color: Colors.grey,
-                                                  fontSize: 12.sp),
+                                                  fontSize: 9.sp),
                                             ),
                                           ),
                                         ],
@@ -306,19 +301,17 @@ class _UserChatsState extends State<UserChats> {
                                                       ? 'assets/checks.svg'
                                                       : 'assets/check.svg',
                                                   color: Colors.grey,
-                                                  width: 15.w,
-                                                  height: 15.w,
+                                                  width: 13.w,
                                                 )
                                               : const SizedBox(),
-                                          SizedBox(
-                                            width: 5.w,
-                                          ),
+                                          SizedBox(width: 5.w,),
                                           Expanded(
                                             child: Text(
                                               lastMessage,
                                               style: TextStyle(
                                                   color: Colors.grey,
-                                                  fontSize: 12.sp),
+                                                  fontSize: 11.sp
+                                              ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                             ),

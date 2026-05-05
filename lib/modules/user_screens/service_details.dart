@@ -50,6 +50,41 @@ class ServiceDetails extends StatefulWidget {
 class _ServiceDetailsState extends State<ServiceDetails> {
   final TextEditingController commentController = TextEditingController();
   double userRating = 0;
+
+  Widget buildSectionTitle({
+    required String title,
+    required IconData icon,
+    required dynamic cubit,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsetsDirectional.all(8.w),
+          decoration: BoxDecoration(
+            color: cubit.isDark
+                ? mainColor.withOpacity(0.2)
+                : mainColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: Icon(
+            icon,
+            size: 22.r,
+            color: mainColor,
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+            color: cubit.isDark ? Colors.white : Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final category = widget.category;
@@ -59,12 +94,12 @@ class _ServiceDetailsState extends State<ServiceDetails> {
     final period = widget.period;
     final desc = widget.desc;
     final rate = widget.rate;
-    final providerName = widget.providerName;
-    final providerSpec = widget.providerSpec;
     final reviews = widget.reviews;
     final image = widget.image;
     final providerId = widget.providerId;
     AppCubit cubit = AppCubit.get(context);
+
+    final providerData = cubit.allUsers[providerId];
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -185,8 +220,9 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   ],
                                   border: cubit.isDark
                                       ? Border.all(
-                                          color: const Color(0xFF30363D))
-                                      : null),
+                                          color: const Color(0xFF30363D)
+                                  ) : null
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -200,7 +236,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       borderRadius: BorderRadius.circular(6.r),
                                     ),
                                     child: Text(
-                                      '$category  >  $subCategory',
+                                      '$category',
                                       style: TextStyle(
                                         color: cubit.isDark
                                             ? Colors.white
@@ -233,13 +269,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Icon(
-                                              Icons.payments_outlined,
-                                              size: 18.r,
-                                              color: cubit.isDark
-                                                  ? darkSubTextColor
-                                                  : Colors.grey,
-                                            ),
+                                            SvgPicture.asset('assets/money.svg',color: Colors.grey,width: 20.w,),
                                             SizedBox(width: 8.w),
                                             Column(
                                               crossAxisAlignment:
@@ -278,13 +308,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Icon(
-                                              Icons.timer_outlined,
-                                              size: 18.r,
-                                              color: cubit.isDark
-                                                  ? darkSubTextColor
-                                                  : Colors.grey,
-                                            ),
+                                            SvgPicture.asset('assets/timer.svg',color: Colors.grey,width: 20.w,),
                                             SizedBox(width: 8.w),
                                             Column(
                                               crossAxisAlignment:
@@ -316,6 +340,15 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       ),
                                     ],
                                   ),
+                                  SizedBox(height: 10.h,),
+                                  Text(
+                                    '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
+                                    style: TextStyle(
+                                        color: Colors.grey.shade400,
+                                        fontSize: 8.sp
+                                    ),
+
+                                  ),
                                 ],
                               ),
                             )
@@ -326,14 +359,14 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 10.h,
-              ),
+              SizedBox(height: 10.h,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    buildSectionTitle(title: 'وصف الخدمة', icon: Icons.notes_rounded, cubit: cubit),
+                    SizedBox(height: 10.h),
                     Container(
                       padding: EdgeInsets.all(15.r),
                       decoration: BoxDecoration(
@@ -352,31 +385,6 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                               : null),
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                  padding: const EdgeInsetsDirectional.all(8),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.r),
-                                      color: cubit.isDark
-                                          ? mainColor.withOpacity(0.2)
-                                          : mainColor.withOpacity(0.1)),
-                                  child: Icon(Icons.notes_rounded,
-                                      size: 22.r, color: mainColor)),
-                              SizedBox(width: 10.w),
-                              Text(
-                                'وصف الخدمة',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.sp,
-                                  color: cubit.isDark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.h),
                           ReadMoreText(
                             desc,
                             style: TextStyle(
@@ -396,6 +404,8 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       ),
                     ),
                     SizedBox(height: 20.h),
+                    buildSectionTitle(title: 'معلومات الفني', icon: Icons.person_pin_outlined, cubit: cubit),
+                    SizedBox(height: 10.h),
                     Container(
                       padding: EdgeInsetsDirectional.all(18.r),
                       width: double.infinity,
@@ -417,36 +427,11 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                  padding: const EdgeInsetsDirectional.all(8),
-                                  decoration: BoxDecoration(
-                                      color: cubit.isDark
-                                          ? mainColor.withOpacity(0.2)
-                                          : mainColor.withOpacity(0.1),
-                                      borderRadius:
-                                          BorderRadius.circular(10.r)),
-                                  child: Icon(Icons.person_pin_outlined,
-                                      size: 22.r, color: mainColor)),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'معلومات الفني',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.sp,
-                                    color: cubit.isDark
-                                        ? Colors.white
-                                        : Colors.black87),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.h),
-                          Row(
-                            children: [
                               CircleAvatar(
                                 radius: 25.r,
                                 backgroundColor: mainColor.withOpacity(0.1),
                                 backgroundImage: NetworkImage(
-                                  'https://i.pinimg.com/736x/0d/bc/a7/0dbca7e372766da7842528c87f693c01.jpg',
+                                  providerData['profileImage']??'',
                                 ),
                               ),
                               SizedBox(width: 12.w),
@@ -454,7 +439,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    providerName,
+                                  providerData['name']??'',
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
@@ -464,7 +449,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                     ),
                                   ),
                                   Text(
-                                    providerSpec,
+                                    providerData['specialization']?? '',
                                     style: TextStyle(
                                       fontSize: 13.sp,
                                       color: Colors.grey,
@@ -482,47 +467,23 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                     : Colors.grey.shade100,
                                 height: 1),
                           ),
-                          Row(
-                            children: [
-                              SvgPicture.asset(
-                                'assets/phone.svg',
-                                color: cubit.isDark
-                                    ? darkSubTextColor
-                                    : Colors.grey.shade600,
-                                width: 18.r,
-                                height: 18.r,
-                              ),
-                              SizedBox(width: 10.w),
-                              Text(
-                                '770770858',
-                                style: TextStyle(
-                                    color: cubit.isDark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                    fontSize: 12.sp,
-                                    letterSpacing: 7),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 10.h),
                           Row(
                             children: [
                               Expanded(
                                 child: defualtOutlinedButtonWithIcon(
-                                  onPressed: () {
-                                    move(context, const WorkerProfileScreen());
-                                  },
-                                  text: 'المزيد',
+                                  onPressed: () {},
+                                  text: 'إتصال',
                                   fontSize: 13.sp,
                                   height: 45.h,
                                   textColor:
-                                      cubit.isDark ? Colors.white : mainColor,
+                                  cubit.isDark ? Colors.white : mainColor,
                                   border:
-                                      cubit.isDark ? Colors.white : mainColor,
+                                  cubit.isDark ? Colors.white : mainColor,
                                   icon: SvgPicture.asset(
-                                    'assets/acc.svg',
+                                    'assets/phone.svg',
                                     color:
-                                        cubit.isDark ? Colors.white : mainColor,
+                                    cubit.isDark ? Colors.white : mainColor,
                                     width: 20.r,
                                     height: 20.r,
                                   ),
@@ -543,32 +504,34 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: defualtOutlinedButtonWithIcon(
-                                  onPressed: () {},
-                                  text: 'إتصال',
-                                  fontSize: 13.sp,
-                                  height: 45.h,
-                                  textColor:
-                                      cubit.isDark ? Colors.white : mainColor,
-                                  border:
-                                      cubit.isDark ? Colors.white : mainColor,
-                                  icon: SvgPicture.asset(
-                                    'assets/phone.svg',
-                                    color:
-                                        cubit.isDark ? Colors.white : mainColor,
-                                    width: 20.r,
-                                    height: 20.r,
-                                  ),
-                                ),
-                              ),
                             ],
+                          ),
+                          SizedBox(height: 10.h),
+                          defualtOutlinedButtonWithIcon(
+                            onPressed: () {
+                              move(context, const WorkerProfileScreen());
+                            },
+                            text: 'المزيد',
+                            fontSize: 13.sp,
+                            height: 45.h,
+                            textColor:
+                            cubit.isDark ? Colors.white : mainColor,
+                            border:
+                            cubit.isDark ? Colors.white : mainColor,
+                            icon: SvgPicture.asset(
+                              'assets/acc.svg',
+                              color:
+                              cubit.isDark ? Colors.white : mainColor,
+                              width: 20.r,
+                              height: 20.r,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     SizedBox(height: 20.h),
+                    buildSectionTitle(title: 'التقييمات والمراجعات', icon: Icons.star_outline_rounded, cubit: cubit),
+                    SizedBox(height: 10.h),
                     Container(
                       padding: EdgeInsetsDirectional.all(18.r),
                       width: double.infinity,
@@ -587,238 +550,37 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                             ? Border.all(color: const Color(0xFF30363D))
                             : null,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(8.r),
-                                decoration: BoxDecoration(
-                                  color: cubit.isDark
-                                      ? mainColor.withOpacity(0.2)
-                                      : mainColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: Icon(
-                                  Icons.star_outline_rounded,
-                                  size: 22.r,
-                                  color: mainColor,
-                                ),
-                              ),
-                              SizedBox(width: 10.w),
-                              Text(
-                                'التقييمات والمراجعات',
+                      child: Center(
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor:
+                                  Colors.orange.withOpacity(0.15),
+                              radius: 35.r,
+                              child: Text(
+                                '$rate',
                                 style: TextStyle(
+                                  color: Colors.orange,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16.sp,
-                                  color: cubit.isDark
-                                      ? Colors.white
-                                      : Colors.black,
+                                  fontSize: 22.sp,
                                 ),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 15.h),
-                          Center(
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor:
-                                      Colors.orange.withOpacity(0.15),
-                                  radius: 35.r,
-                                  child: Text(
-                                    '$rate',
-                                    style: TextStyle(
-                                      color: Colors.orange,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22.sp,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 8.h),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: List.generate(5, (index) {
-                                    return Icon(
-                                      Icons.star_rounded,
-                                      size: 18.r,
-                                      color: index < rate
-                                          ? Colors.orange
-                                          : Colors.grey.shade300,
-                                    );
-                                  }),
-                                ),
-                              ],
                             ),
-                          ),
-                          SizedBox(height: 20.h),
-                          Divider(color: Colors.grey.shade300),
-                          SizedBox(height: 15.h),
-                          Text(
-                            'أضف مراجعتك',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.sp,
-                              color: cubit.isDark ? Colors.white : Colors.black,
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          Center(
-                            child: Row(
+                            SizedBox(height: 8.h),
+                            Row(
                               mainAxisSize: MainAxisSize.min,
                               children: List.generate(5, (index) {
-                                return IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      userRating = index + 1;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.star_rounded,
-                                    color: index < userRating
-                                        ? Colors.orange
-                                        : Colors.grey.shade300,
-                                    size: 30,
-                                  ),
+                                return Icon(
+                                  Icons.star_rounded,
+                                  size: 18.r,
+                                  color: index < rate
+                                      ? Colors.orange
+                                      : Colors.grey.shade300,
                                 );
                               }),
                             ),
-                          ),
-                          SizedBox(height: 10.h),
-                          TextFormField(
-                            controller: commentController,
-                            maxLines: 3,
-                            decoration: InputDecoration(
-                              hintText: 'اكتب تعليقك هنا...',
-                              filled: true,
-                              fillColor: cubit.isDark
-                                  ? Colors.black.withOpacity(0.2)
-                                  : Colors.grey.shade50,
-                              contentPadding: EdgeInsets.all(12.r),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.r),
-                                borderSide:
-                                    BorderSide(color: Colors.grey.shade300),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.r),
-                                borderSide:
-                                    BorderSide(color: Colors.grey.shade300),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 12.h),
-                          Align(
-                            alignment: AlignmentDirectional.centerEnd,
-                            child: SizedBox(
-                              width: 100.w,
-                              child: defaultTextButton(
-                                onPressed: () {
-                                  if (commentController.text.isNotEmpty &&
-                                      userRating > 0) {
-                                    /*commentController.clear();
-                                    userRating = 0;*/
-                                  }
-                                },
-                                text: 'نشر',
-                                isLined: false,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20.h),
-                          ListView.separated(
-                            padding: EdgeInsetsDirectional.zero,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: reviews.length,
-                            separatorBuilder: (context, index) =>
-                                Divider(color: Colors.grey.shade300),
-                            itemBuilder: (context, index) {
-                              var review = reviews[index];
-                              Timestamp? createdAt = review['createdAt'];
-                              DateTime? date = createdAt?.toDate();
-                              String reviewDate = date != null
-                                  ? DateFormat('yyyy/MM/dd').format(date)
-                                  : '';
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 20.r,
-                                        backgroundColor: cubit.isDark
-                                            ? darkSubTextColor
-                                            : Colors.blueGrey.shade50,
-                                        child: Icon(
-                                          Icons.person_outline,
-                                          size: 20.r,
-                                          color: cubit.isDark
-                                              ? Colors.white
-                                              : Colors.blueGrey,
-                                        ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              review['userName'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 13.sp,
-                                                color: cubit.isDark
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                            Text(
-                                              reviewDate,
-                                              style: TextStyle(
-                                                color: cubit.isDark
-                                                    ? darkSubTextColor
-                                                    : Colors.grey,
-                                                fontSize: 11.sp,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Row(
-                                        children: List.generate(5, (i) {
-                                          double rating =
-                                              (review['rating'] ?? 0)
-                                                  .toDouble();
-                                          return Icon(
-                                            Icons.star_rounded,
-                                            size: 16.r,
-                                            color: i < rating
-                                                ? Colors.orange
-                                                : Colors.grey.shade300,
-                                          );
-                                        }),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    review['comment'],
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: cubit.isDark
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                      height: 1.5,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     )
                   ],

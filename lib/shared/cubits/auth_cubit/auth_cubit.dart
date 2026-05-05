@@ -1,13 +1,10 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-
-import '../../../main.dart';
-import '../../../modules/user_screens/verified_phone.dart';
-import '../../compenents/components.dart';
 
 class AuthCubit extends Cubit<AuthStates>{
   AuthCubit(): super(AuthInitSatate());
@@ -110,7 +107,9 @@ class AuthCubit extends Cubit<AuthStates>{
 
   var workerLoginPhoneController = TextEditingController();
   var workerLoginPasswordController = TextEditingController();
+
   ////////////////////////////////////////////////////////////////
+
   var userLoginPhoneController = TextEditingController();
   var userLoginPasswordController = TextEditingController();
 
@@ -190,7 +189,5 @@ class AuthCubit extends Cubit<AuthStates>{
       });
     }
   }
-
-
 
 }
