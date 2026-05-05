@@ -152,7 +152,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                 ),
                                 offset: const Offset(0, 40),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderRadius: BorderRadius.circular(25.r),
                                 ),
                                 onSelected: (String value) {
                                   if (value == 'active') {
@@ -161,31 +161,13 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   } else if (value == 'delete') {}
                                 },
                                 itemBuilder: (BuildContext context) => [
-                                  PopupMenuItem<String>(
+                                  const PopupMenuItem<String>(
                                     value: 'active',
                                     child: Directionality(
                                         textDirection: TextDirection.rtl,
                                         child: SizedBox(
                                             width: double.infinity,
-                                            child: cubit.isServicesActive
-                                                ? Text('إلغاء التفعيل')
-                                                : Text('تفعيل'))),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'edit',
-                                    child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: SizedBox(
-                                            width: double.infinity,
-                                            child: Text('تعديل'))),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: SizedBox(
-                                            width: double.infinity,
-                                            child: Text('حذف'))),
+                                            child:  Text('إبلاغ'))),
                                   ),
                                 ],
                               ),
@@ -209,7 +191,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   color: cubit.isDark
                                       ? lightDarkColor
                                       : Colors.white,
-                                  borderRadius: BorderRadius.circular(20.r),
+                                  borderRadius: BorderRadius.circular(25.r),
                                   boxShadow: [
                                     BoxShadow(
                                       color: mainColor.withOpacity(0.2),
@@ -368,10 +350,11 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                     buildSectionTitle(title: 'وصف الخدمة', icon: Icons.notes_rounded, cubit: cubit),
                     SizedBox(height: 10.h),
                     Container(
+                      width: double.infinity,
                       padding: EdgeInsets.all(15.r),
                       decoration: BoxDecoration(
                           color: cubit.isDark ? lightDarkColor : Colors.white,
-                          borderRadius: BorderRadius.circular(20.r),
+                          borderRadius: BorderRadius.circular(25.r),
                           boxShadow: [
                             BoxShadow(
                               color: mainColor.withOpacity(0.2),
@@ -411,7 +394,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                           color: cubit.isDark ? lightDarkColor : Colors.white,
-                          borderRadius: BorderRadius.circular(20.r),
+                          borderRadius: BorderRadius.circular(25.r),
                           boxShadow: [
                             BoxShadow(
                               color: mainColor.withOpacity(0.2),
@@ -537,7 +520,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: cubit.isDark ? lightDarkColor : Colors.white,
-                        borderRadius: BorderRadius.circular(20.r),
+                        borderRadius: BorderRadius.circular(25.r),
                         boxShadow: [
                           BoxShadow(
                             color: mainColor.withOpacity(0.2),

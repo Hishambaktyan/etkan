@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,7 +32,7 @@ class _ServicesListState extends State<ServicesList> {
   }
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
+    AppCubit appCubit = AppCubit.get(context);
     return BlocBuilder<AppCubit,AppStates>(
         builder: (context, state) {
           return BlocBuilder<UserServicesCubit,UserServicesStates>(
@@ -63,148 +65,152 @@ class _ServicesListState extends State<ServicesList> {
                             padding: EdgeInsetsDirectional.only(start:15.w,end: 15.w,bottom: 20.h),
                             itemBuilder: (context, index) {
                               var service = userServicesCubit.userElecServices[index];
-                              var providerData = cubit.allUsers[service['providerId']];
+                              var providerData = appCubit.allUsers[service['providerId']];
                               return InkWell(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                borderRadius: BorderRadius.circular(12.r),
-                                onTap: ()=>move(context, ServiceDetails(
-                                  category: service['category'] ,
-                                  subCategory: service['subCategory'],
-                                  name: service['name'],
-                                  image: service['serviceImage'],
-                                  price: service['price'],
-                                  period: service['period'],
-                                  desc: service['description'],
-                                  rate: service['rate'],
-                                  providerName: providerData['name'],
-                                  providerSpec: providerData['specialization'],
-                                  reviews: service['reviews'],
-                                  providerId: service['providerId'],
-                                )
-                                ),
+                                onTap: () => move(
+                                    context,
+                                    ServiceDetails(
+                                      name: service['name'],
+                                      image: service['serviceImage'],
+                                      category: service['category'],
+                                      subCategory:
+                                      service['subCategory'],
+                                      desc: service['description'],
+                                      price: service['price'],
+                                      period: service['period'],
+                                      rate: service['rate'],
+                                      providerName:
+                                      providerData['name'],
+                                      providerSpec: providerData[
+                                      'specialization'],
+                                      reviews: service['reviews'],
+                                      providerId: providerData['uid'],
+                                    )), // نفس الدالة الأصلية
+                                borderRadius: BorderRadius.circular(25.r),
                                 child: Container(
-                                  width: 300.w,
-                                  padding: EdgeInsetsDirectional.only(bottom: 10.h),
+                                  width: 280.w,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15.r),
-                                    color: AppCubit.get(context).isDark ? lightDarkColor : mainColor.withOpacity(0.1),
+                                      color: appCubit.isDark ? lightDarkColor : Colors.white,
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      boxShadow: blueShadow
                                   ),
                                   child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadiusDirectional.only(
-                                          topStart: Radius.circular(15.r),
-                                          topEnd: Radius.circular(15.r),
-                                        ),
-                                        child: Image.network(
-                                          service['serviceImage'],
-                                          height: 150.h,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) => Container(
-                                            height: 150.h,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadiusDirectional.only(
-                                                  topStart: Radius.circular(15.r),
-                                                  topEnd: Radius.circular(15.r),
-                                                ),
-                                                color: Colors.grey.shade200
+                                      Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(25.r),
+                                            child: Image.network(
+                                              '${service['serviceImage']}',
+                                              height: 180.h,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
-                                        ),
+                                          PositionedDirectional(
+                                            bottom: 12.h,
+                                            end: 12.w,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                              decoration: BoxDecoration(
+                                                color: mainColor,
+                                                borderRadius: BorderRadius.circular(15.r),
+                                                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
+                                              ),
+                                              child: Text(
+                                                '${service['price']} $reyalSymbol',
+                                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.sp),
+                                              ),
+                                            ),
+                                          ),
+                                          PositionedDirectional(
+                                            top: 12.h,
+                                            start: 12.w,
+                                            child: ClipRRect(
+                                              child: BackdropFilter(
+                                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white.withOpacity(0.7),
+                                                    borderRadius: BorderRadius.circular(10.r),
+                                                  ),
+                                                  child: Text(
+                                                    '${service['category']}',
+                                                    style: TextStyle(color: mainColor, fontWeight: FontWeight.w600, fontSize: 10.sp),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(height: 20.h,),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.only(start: 10.w,end: 10.w),
+                                        padding: EdgeInsetsDirectional.all(15.r),
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    service['name'],
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 14.sp,
-                                                      color: AppCubit.get(context).isDark ? Colors.white : Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  alignment: Alignment.center,
-                                                  padding: EdgeInsetsDirectional.symmetric(vertical: 3.h,horizontal: 7.w),
-                                                  decoration: BoxDecoration(
-                                                    color: mainColor,
-                                                    border: Border.all(color: Colors.white),
-                                                    borderRadius: BorderRadius.circular(30.r),
-                                                  ),
-                                                  child: Text(
-                                                    '${service['price']} $reyalSymbol',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 13.sp,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                            Text(
+                                              service['name'],
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.sp,
+                                                color: appCubit.isDark ? Colors.white : Colors.black,
+                                              ),
                                             ),
-                                            SizedBox(height: 5.h,),
+                                            SizedBox(height: 8.h),
                                             Row(
                                               children: [
-                                                const Icon(
-                                                  Icons.star_rounded,color: Colors.orange,
-                                                ),
-                                                SizedBox(width: 5.w,),
+                                                Icon(Icons.star_rounded, color: Colors.amber, size: 18.sp),
+                                                SizedBox(width: 5.w),
                                                 Text(
                                                   '${service['rate']}',
-                                                  style: TextStyle(
-                                                      color: Colors.grey
-                                                  ),
+                                                  style: TextStyle(color: Colors.grey, fontSize: 12.sp, fontWeight: FontWeight.w600),
                                                 ),
+                                                const Spacer(),
+                                                Icon(Icons.arrow_forward_ios_rounded, color: mainColor.withOpacity(0.2), size: 14.sp),
                                               ],
                                             ),
-                                            SizedBox(height: 10.h,),
-                                            Row(
-                                              children: [
-                                                CircleAvatar(
-                                                  foregroundImage: const NetworkImage(
-                                                      'https://i.pinimg.com/1200x/47/91/f0/4791f027dcad85f85883359daf191c5d.jpg'
+                                            SizedBox(height: 12.h),
+                                            Container(
+                                              padding: EdgeInsets.all(8.r),
+                                              decoration: BoxDecoration(
+                                                color: mainColor.withOpacity(0.05),
+                                                borderRadius: BorderRadius.circular(15.r),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 16.r,
+                                                    backgroundImage: NetworkImage(providerData['profileImage']),
                                                   ),
-                                                  radius: 20.r,
-                                                ),
-                                                SizedBox(width: 10.w,),
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(
-                                                      width: 200.w,
-                                                      child: Text(
-                                                        '${providerData['name']}',
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                            fontSize: 12.sp
+                                                  SizedBox(width: 8.w),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          '${providerData['name']}',
+                                                          maxLines: 1,
+                                                          style: TextStyle(
+                                                              fontSize: 11.sp,
+                                                              fontWeight: FontWeight.bold,
+                                                              color: Theme.of(context).textTheme.bodyLarge!.color
+                                                          ),
                                                         ),
-                                                      ),
+                                                        Text(
+                                                          '${providerData['specialization']}',
+                                                          maxLines: 1,
+                                                          style: TextStyle(fontSize: 9.sp, color: Colors.grey),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    Text(
-                                                      '${providerData['specialization']}',
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                          fontSize: 12.sp,
-                                                          color: Colors.grey
-                                                      ),
-                                                    ),
-
-                                                  ],
-                                                ),
-                                              ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),

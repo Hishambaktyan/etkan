@@ -141,12 +141,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w, top: 5.h),
-                            itemCount:bookingCubit.userRequests.length,
+                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 5.h),
+                            itemCount: bookingCubit.userRequests.length,
                             itemBuilder: (context, index) {
                               var booking = bookingCubit.userRequests[index];
                               Color statusColor;
-                              String status = booking['status'] ;
+                              String status = booking['status'];
                               switch (status) {
                                 case 'مكتمل': statusColor = Colors.green; break;
                                 case 'مقبول':
@@ -161,35 +161,44 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                 child: InkWell(
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
-                                  onTap: ()=>move(context, BookingDetails(request: booking, providerData: providerData)),
+                                  onTap: () => move(context, BookingDetails(request: booking, providerData: providerData)),
                                   child: Container(
-                                    padding: const EdgeInsetsDirectional.all(10),
+                                    padding: EdgeInsetsDirectional.all(15.r),
                                     decoration: BoxDecoration(
-                                      color: mainColor.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(15.r),
+                                      color: appCubit.isDark ? lightDarkColor : Colors.white,
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      boxShadow: blueShadow,
                                     ),
                                     child: Column(
                                       children: [
                                         Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
-                                            ClipRRect(
-                                              borderRadius: BorderRadius.circular(15.r),
-                                              child: Image.network(
-                                                booking['image'] ?? '',
-                                                width: 80.w,
-                                                height: 80.h,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (context, error, stackTrace) => Container(
-                                                  width: 80.w,
-                                                  height: 80.h,
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.grey.shade200
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(20.r),
+                                                border: Border.all(
+                                                  color: mainColor.withOpacity(0.1),
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(18.r),
+                                                child: Image.network(
+                                                  booking['image'] ?? '',
+                                                  width: 70.w,
+                                                  height: 70.h,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error, stackTrace) => Container(
+                                                    width: 70.w,
+                                                    height: 70.h,
+                                                    color: Colors.grey.shade200,
+                                                    child: Icon(Icons.image_not_supported, color: Colors.grey, size: 20.sp),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(width: 10.w),
+                                            SizedBox(width: 15.w),
                                             Expanded(
                                               child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,42 +208,39 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                                       Expanded(
                                                         child: Text(
                                                           booking['title'],
-                                                          maxLines: 2,
+                                                          maxLines: 1,
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
-                                                            fontSize: 13.sp,
+                                                            fontSize: 14.sp,
                                                             fontWeight: FontWeight.bold,
-                                                            color: Colors.black,
+                                                            color: appCubit.isDark ? Colors.white : Colors.black,
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(width: 10.w),
                                                       Container(
-                                                        height: 30.h,
-                                                        padding: EdgeInsetsDirectional.symmetric(horizontal: 7.w),
+                                                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                                         decoration: BoxDecoration(
-                                                          color: statusColor.withOpacity(0.2),
-                                                          borderRadius: BorderRadius.circular(6.r),
+                                                          color: statusColor.withOpacity(0.1),
+                                                          borderRadius: BorderRadius.circular(30.r),
+                                                          border: Border.all(color: statusColor.withOpacity(0.2)),
                                                         ),
-                                                        child: Center(
-                                                          child: Text(
-                                                            status,
-                                                            style: TextStyle(
-                                                              color: statusColor,
-                                                              fontWeight: FontWeight.bold,
-                                                              fontSize: 11.sp,
-                                                            ),
+                                                        child: Text(
+                                                          status,
+                                                          style: TextStyle(
+                                                            color: statusColor,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 10.sp,
                                                           ),
                                                         ),
                                                       ),
                                                     ],
                                                   ),
-                                                  SizedBox(height: 5.h),
+                                                  SizedBox(height: 6.h),
                                                   Text(
-                                                     '${booking['price']} $reyalSymbol',
+                                                    '${booking['price']} $reyalSymbol',
                                                     style: TextStyle(
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14.sp,
+                                                      fontWeight: FontWeight.w900,
                                                       color: mainColor,
                                                     ),
                                                   ),
@@ -243,24 +249,24 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 10.h),
+                                        SizedBox(height: 15.h),
                                         Container(
-                                          padding: const EdgeInsets.all(10),
+                                          padding: EdgeInsets.all(12.r),
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(12.r),
+                                            color: mainColor.withOpacity(0.04),
+                                            borderRadius: BorderRadius.circular(20.r),
                                           ),
                                           child: Column(
                                             children: [
                                               buildDetailRow('العنوان:', booking['address'], 'assets/loc.svg', appCubit),
                                               Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                                child: dashedDivider(Colors.grey),
+                                                padding: EdgeInsets.symmetric(vertical: 8.h),
+                                                child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                               ),
-                                              buildDetailRow('التاريخ والوقت:', appCubit.formatStatusTime(booking['scheduledAt']), 'assets/timer.svg', appCubit),
+                                              buildDetailRow('الموعد:', appCubit.formatStatusTime(booking['scheduledAt']), 'assets/timer.svg', appCubit),
                                               Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                                child: dashedDivider(Colors.grey),
+                                                padding: EdgeInsets.symmetric(vertical: 8.h),
+                                                child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                               ),
                                               buildDetailRow('الفني:', providerData['name'], 'assets/acc.svg', appCubit),
                                             ],

@@ -3,8 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
-
 import '../shared/cubits/app_cubit/app_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class ContactUsScreen extends StatefulWidget {
   const ContactUsScreen({super.key});
@@ -16,6 +17,41 @@ class ContactUsScreen extends StatefulWidget {
 class _ContactUsScreenState extends State<ContactUsScreen> {
   TextEditingController problem = TextEditingController();
   TextEditingController problemdescription = TextEditingController();
+
+  Future<void> openWhatsApp() async {
+    final Uri uri = Uri.parse("https://wa.me/967770770858");
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        throw Exception("WhatsApp not available");
+      }
+    } catch (e) {
+    }
+  }
+
+  Future<void> openEmail() async {
+    final Uri uri = Uri.parse(
+      "mailto:aboalkrm2004@gmail.com?subject=استفسار&body=مرحبًا، أحتاج مساعدة بخصوص...",
+    );
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        throw Exception("Email app not available");
+      }
+    } catch (e) {
+      // ممكن تضيف fallback أو رسالة خطأ
+    }
+  }
 
   @override
   void dispose() {
@@ -85,79 +121,85 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: mainColor.withOpacity(0.1),
-                            radius: 23.r,
-                            child: SvgPicture.asset(
-                              'assets/whats.svg',
-                              color: mainColor,
-                              width: 25.w,
+                      InkWell(
+                        onTap: ()=>openWhatsApp(),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: mainColor.withOpacity(0.1),
+                              radius: 23.r,
+                              child: SvgPicture.asset(
+                                'assets/whats.svg',
+                                color: mainColor,
+                                width: 25.w,
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 15.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children:  [
-                                Text(
-                                  'واتساب',
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.bold,
+                            SizedBox(width: 15.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:  [
+                                  Text(
+                                    'واتساب',
+                                    style: TextStyle(
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 5.h),
-                                Text(
-                                  '967770770858+',
-                                  style: TextStyle(
+                                  SizedBox(height: 5.h),
+                                  Text(
+                                    '967770770858+',
+                                    style: TextStyle(
+                                        fontSize: 13.sp,
+                                        height: 1.4,
+                                        color: Colors.grey,
+                                        letterSpacing: 5
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                      InkWell(
+                        onTap: ()=>openEmail(),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                                backgroundColor: mainColor.withOpacity(0.1),
+                                radius: 23.r,
+                                child: const Icon(Icons.alternate_email_rounded,color: mainColor,)
+                            ),
+                            SizedBox(width: 15.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:  [
+                                  Text(
+                                    'البريد الالكتروني',
+                                    style: TextStyle(
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5.h),
+                                  Text(
+                                    'aboalkrm000@gmail.com',
+                                    style: TextStyle(
                                       fontSize: 13.sp,
                                       height: 1.4,
                                       color: Colors.grey,
-                                      letterSpacing: 5
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20.h),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                              backgroundColor: mainColor.withOpacity(0.1),
-                              radius: 23.r,
-                              child: const Icon(Icons.alternate_email_rounded,color: mainColor,)
-                          ),
-                          SizedBox(width: 15.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children:  [
-                                Text(
-                                  'البريد الالكتروني',
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 5.h),
-                                Text(
-                                  'aboalkrm000@gmail.com',
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    height: 1.4,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),

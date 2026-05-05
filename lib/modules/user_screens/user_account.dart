@@ -607,7 +607,12 @@ class _UserAccountState extends State<UserAccount> {
                                   appCubit: appCubit,
                                   title: 'مشاركة التطبيق',
                                   icon: 'assets/share.svg',
-                                  onTap: () {},
+                                  onTap: () async {
+                                    const String appLink = "https://play.google.com/store/apps/details?id=com.HadiMohammed.BreakingBadHayzenberg";/*
+                                    await Share.share(
+                                      "حمّل التطبيق الآن 👇\n$appLink",
+                                    );*/
+                                  },
                                 ),
                                 _buildDivider(appCubit),
                                 _buildMenuItem(

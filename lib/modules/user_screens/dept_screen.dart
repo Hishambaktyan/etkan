@@ -9,6 +9,8 @@ import 'package:trying_homy/modules/user_screens/services_list.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 
 import '../../shared/styles/colors.dart';
 
@@ -66,84 +68,91 @@ class _DeptScreenState extends State<DeptScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            headerWithSearch(
-                title: 'الأقسام',
-                searchKeyWords: [
-                  'ابحث في الكهرباء',
-                  'ابحث في السباكة',
-                  'ابحث في التكييف',
-                ],
-              context: context
-            ),
-            SizedBox(height: 20.h,),
-            GridView.builder(
-              shrinkWrap: true,
-              padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 20.h,
-                crossAxisSpacing: 10.w,
-                childAspectRatio: 2.1,
-              ),
-              itemCount: services.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  borderRadius: BorderRadius.circular(15.r),
-                  onTap: ()=>move(context, ServicesList(categoryType: services[index]['type']!,)
-                  ),
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.all(10),
-                    decoration: BoxDecoration(
-                        color: mainColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(15.r)
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 55.w,
-                          height: 55.h,
-                          padding: const EdgeInsetsDirectional.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.r),
-                          ),
-                          child: SvgPicture.asset(
-                            services[index]['icon']!,
-                          ),
-                        ),
-                        SizedBox(width: 10.w),
-                        Text(
-                          services[index]['name']!,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14.sp,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const Spacer(),
-                        const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          color: mainColor,
-                          size: 15,
-                        ),
+      body: BlocBuilder<AppCubit,AppStates>(
+          builder: (context, state) {
+            AppCubit appCubit = AppCubit.get(context);
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  headerWithSearch(
+                      title: 'الأقسام',
+                      searchKeyWords: [
+                        'ابحث في الكهرباء',
+                        'ابحث في السباكة',
+                        'ابحث في التكييف',
                       ],
-                    ),
+                      context: context
                   ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+                  SizedBox(height: 20.h,),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 20.h,
+                      crossAxisSpacing: 10.w,
+                      childAspectRatio: 2,
+                    ),
+                    itemCount: services.length,
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        borderRadius: BorderRadius.circular(25.r),
+                        onTap: () => move(context, ServicesList(categoryType: services[index]['type']!)),
+                        child: Container(
+                          padding: EdgeInsetsDirectional.all(10.r),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            borderRadius: BorderRadius.circular(25.r),
+                            boxShadow: blueShadow,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 50.w,
+                                height: 50.h,
+                                padding: EdgeInsets.all(12.r),
+                                decoration: BoxDecoration(
+                                  color: mainColor.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(18.r),
+                                ),
+                                child: SvgPicture.asset(
+                                  services[index]['icon']!,
+                                  // ignore: deprecated_member_use
+                                  color: mainColor,
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              Expanded(
+                                child: Text(
+                                  services[index]['name']!,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.sp,
+                                    color: appCubit.isDark ? Colors.white : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: mainColor.withOpacity(0.3),
+                                size: 12.sp,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+      )
     );
   }
 }

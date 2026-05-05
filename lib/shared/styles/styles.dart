@@ -3,10 +3,10 @@ import 'colors.dart';
 
 ThemeData lightTheme = ThemeData(
     fontFamily: 'Tajawal',
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: const Color(0xFFF6FBFF),
     colorScheme: ColorScheme.fromSeed(seedColor: mainColor),
     appBarTheme: const AppBarTheme(
-      backgroundColor:  Colors.white,
+      backgroundColor:  Color(0xFFF6FBFF),
       scrolledUnderElevation: 0,
       titleSpacing: 10,
       elevation: 0,
