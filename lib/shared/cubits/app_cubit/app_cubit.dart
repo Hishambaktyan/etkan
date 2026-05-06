@@ -331,6 +331,11 @@ class AppCubit extends Cubit<AppStates>{
   List<Map<String,dynamic>> requests =[];
 
   Future<void> getAdminData()async{
+    users=[];
+    services=[];
+    requests=[];
+    providers=[];
+    emit(GetAdminDataLoadingState());
     try{
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').where('role',isEqualTo: 'user').get();
       final servicesSnapshot = await FirebaseFirestore.instance.collection('services').get();
@@ -357,8 +362,11 @@ class AppCubit extends Cubit<AppStates>{
         data['id'] = doc.id;
         providers.add(data);
       }
+      emit(GetAdminDataSuccessState());
 
-    }catch(e){}
+    }catch(e){
+      emit(GetWorkerRequestsErrorState(error: e.toString()));
+    }
   }
 
   Future<void> getWorkerRequests()

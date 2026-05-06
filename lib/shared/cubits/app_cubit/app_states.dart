@@ -67,5 +67,18 @@ class GetWorkerRequestsErrorState extends AppStates{
 
 //////////////////////////////////////
 
+//////////////////////////////////////
+
+class GetAdminDataSuccessState extends AppStates{}
+
+class GetAdminDataLoadingState extends AppStates{}
+
+class GetAdminDataErrorState extends AppStates{
+  final String error;
+
+  GetAdminDataErrorState({required this.error});
+
+}
+
 
 
