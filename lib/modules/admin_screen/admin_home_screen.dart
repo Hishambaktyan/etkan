@@ -94,6 +94,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   ];
 
   @override
+  void initState() {
+    AppCubit.get(context).getAdminData();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Directionality(
         textDirection: TextDirection.rtl,
