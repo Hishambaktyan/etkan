@@ -325,49 +325,6 @@ class AppCubit extends Cubit<AppStates>{
 
   List<Map<String,dynamic>> workerRequests=[];
 
-  List<Map<String,dynamic>> users =[];
-  List<Map<String,dynamic>> providers =[];
-  List<Map<String,dynamic>> services =[];
-  List<Map<String,dynamic>> requests =[];
-
-  Future<void> getAdminData()async{
-    users=[];
-    services=[];
-    requests=[];
-    providers=[];
-    emit(GetAdminDataLoadingState());
-    try{
-      final usersSnapshot = await FirebaseFirestore.instance.collection('users').where('role',isEqualTo: 'user').get();
-      final servicesSnapshot = await FirebaseFirestore.instance.collection('services').get();
-      final requestsSnapshot = await FirebaseFirestore.instance.collection('requests').get();
-      final providersSnapshot = await FirebaseFirestore.instance.collection('users').where('role',isEqualTo: 'provider').get();
-
-      for(var doc in usersSnapshot.docs){
-        var data = doc.data();
-        data['id'] = doc.id;
-        users.add(data);
-      }
-      for(var doc in servicesSnapshot.docs){
-        var data = doc.data();
-        data['id'] = doc.id;
-        services.add(data);
-      }
-      for(var doc in requestsSnapshot.docs){
-        var data = doc.data();
-        data['id'] = doc.id;
-        requests.add(data);
-      }
-      for(var doc in providersSnapshot.docs){
-        var data = doc.data();
-        data['id'] = doc.id;
-        providers.add(data);
-      }
-      emit(GetAdminDataSuccessState());
-
-    }catch(e){
-      emit(GetWorkerRequestsErrorState(error: e.toString()));
-    }
-  }
 
   Future<void> getWorkerRequests()
   async {
@@ -454,6 +411,90 @@ class AppCubit extends Cubit<AppStates>{
       allUsers[doc.id] = doc.data();
     }
 
+  }
+
+  List<Map<String,dynamic>> users =[];
+  List<Map<String,dynamic>> providers =[];
+  List<Map<String,dynamic>> services =[];
+  List<Map<String,dynamic>> requests =[];
+
+  Future<void> getAdminData()async{
+    users=[];
+    services=[];
+    requests=[];
+    providers=[];
+    emit(GetAdminDataLoadingState());
+    try{
+      final usersSnapshot = await FirebaseFirestore.instance.collection('users').where('role',isEqualTo: 'user').get();
+      final servicesSnapshot = await FirebaseFirestore.instance.collection('services').get();
+      final requestsSnapshot = await FirebaseFirestore.instance.collection('requests').get();
+      final providersSnapshot = await FirebaseFirestore.instance.collection('users').where('role',isEqualTo: 'provider').get();
+
+      for(var doc in usersSnapshot.docs){
+        var data = doc.data();
+        data['id'] = doc.id;
+        users.add(data);
+      }
+      for(var doc in servicesSnapshot.docs){
+        var data = doc.data();
+        data['id'] = doc.id;
+        services.add(data);
+      }
+      for(var doc in requestsSnapshot.docs){
+        var data = doc.data();
+        data['id'] = doc.id;
+        requests.add(data);
+      }
+      for(var doc in providersSnapshot.docs){
+        var data = doc.data();
+        data['id'] = doc.id;
+        providers.add(data);
+      }
+      emit(GetAdminDataSuccessState());
+
+    }catch(e){
+      emit(GetWorkerRequestsErrorState(error: e.toString()));
+    }
+  }
+
+
+  Future<void> createCategory({
+    required String title,
+    required String image,
+    required bool isActive,
+  })
+  async {
+    try{
+      emit(AddCategoryLoadingState());
+      await FirebaseFirestore.instance.collection('categories').add({
+        'title': title,
+        'image': image,
+        'isActive': isActive,
+      });
+      emit(AddCategorySuccessState());
+    }catch(e){
+      emit(AddCategoryErrorState(error: e.toString()));
+    }
+  }
+
+  List<Map<String,dynamic>> categories =[];
+
+  Future<void> getCategories()async{
+    try{
+      categories=[];
+      emit(GetCategoryLoadingState());
+      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
+
+      for(var doc in categoriesSnapshot.docs){
+        var data = doc.data();
+        data['id'] = doc.id;
+        categories.add(data);
+      }
+      emit(GetCategorySuccessState());
+
+    }catch(e){
+      emit(GetCategoryErrorState(error: e.toString()));
+    }
   }
 
 }

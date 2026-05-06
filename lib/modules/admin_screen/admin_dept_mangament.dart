@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,49 +20,11 @@ class AdminDeptMangament extends StatefulWidget {
 }
 
 class _AdminDeptMangamentState extends State<AdminDeptMangament> {
-  final List<Map<String, String>> services = [
-    {
-      "name": "الكهرباء",
-      "icon": "assets/SVGs/E.svg",
-      "type":"كهرباء"
-    },
-    {
-      "name": "السباكة",
-      "icon": "assets/SVGs/P.svg",
-      "type":"سباكة"
-    },
-    {
-      "name": "البناء",
-      "icon": "assets/SVGs/C.svg",
-      "type":"بناء"
-    },
-    {
-      "name": "التكييف",
-      "icon": "assets/SVGs/AC.svg",
-      "type":"تكييف"
-    },
-    {
-      "name": "الحدادة",
-      "icon": "assets/SVGs/A.svg",
-      "type":"حدادة"
-    },
-    {
-      "name": "الماء",
-      "icon": "assets/SVGs/WT.svg",
-      "type":"ماء"
-    },
-    {
-      "name": "النجارة",
-      "icon": "assets/SVGs/CA.svg",
-      "type":"نجارة"
-    },
-    {
-      "name": "الدهان",
-      "icon": "assets/SVGs/PA.svg",
-      "type":"دهان"
-    },
-  ];
-
+ @override
+  void initState() {
+    AppCubit.get(context).getCategories();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -91,7 +55,9 @@ class _AdminDeptMangamentState extends State<AdminDeptMangament> {
           ),
           body: BlocBuilder<AppCubit,AppStates>(
               builder: (context, state) {
-                return GridView.builder(
+                AppCubit appCubit = AppCubit.get(context);
+                return state is GetCategoryLoadingState? const Center(child: CircularProgressIndicator())
+                    :GridView.builder(
                   shrinkWrap: true,
                   padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 20.h),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -100,9 +66,10 @@ class _AdminDeptMangamentState extends State<AdminDeptMangament> {
                     crossAxisSpacing: 10.w,
                     childAspectRatio: 1.1,
                   ),
-                  itemCount: services.length,
+                  itemCount: appCubit.categories.length,
                   itemBuilder: (context, index) {
                     return InkWell(
+                      onLongPress: ()=>print(appCubit.categories),
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       onTap: (){},
@@ -110,7 +77,7 @@ class _AdminDeptMangamentState extends State<AdminDeptMangament> {
                         decoration: BoxDecoration(
                             color: mainColor.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(15.r),
-                          border: Border.all(color: mainColor.withOpacity(0.1))
+                            border: Border.all(color: mainColor.withOpacity(0.1))
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -118,28 +85,25 @@ class _AdminDeptMangamentState extends State<AdminDeptMangament> {
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsetsDirectional.all(10),
-                                child: SvgPicture.asset(
-                                  services[index]['icon']!,
-                                  width: 60.w,
-                                ),
+                                child: Image.file(File('${appCubit.categories[index]['image']}'))
                               ),
                             ),
                             Container(
                               height: 40.h,
                               padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r))
+                                  color: Colors.white,
+                                  borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r))
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Expanded(
-                                    child: services[index]['name']!.length > 10
+                                    child: appCubit.categories[index]['title']!.length > 10
                                         ? SizedBox(
                                       height: 25.h,
                                       child: Marquee(
-                                        text: services[index]['name']!,
+                                        text: appCubit.categories[index]['title']!,
                                         scrollAxis: Axis.horizontal,
                                         blankSpace: 20.w,
                                         velocity: 30,
@@ -150,7 +114,7 @@ class _AdminDeptMangamentState extends State<AdminDeptMangament> {
                                       ),
                                     )
                                         : Text(
-                                      services[index]['name']!,
+                                      appCubit.categories[index]['title']!,
                                       textAlign: TextAlign.center,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,

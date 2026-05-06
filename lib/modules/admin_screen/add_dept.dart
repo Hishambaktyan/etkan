@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -16,12 +19,33 @@ class AddDept extends StatefulWidget {
 
 class _AddDeptState extends State<AddDept> {
   TextEditingController titleController = TextEditingController();
+  bool isActive = true;
+  String catImage ='';
+  
+  Future<void> pickCategorymage() async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      setState(() {
+        catImage=image.path;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: BlocConsumer<AppCubit,AppStates>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if(state is AddCategorySuccessState){
+              showSnackBar(Colors.green,'تم الإضافة بنجاح', context);
+            }
+          },
           builder: (context, state) {
             AppCubit appCubit = AppCubit.get(context);
             return Scaffold(
@@ -55,16 +79,22 @@ class _AddDeptState extends State<AddDept> {
                             CircleAvatar(
                               radius: 45.r,
                               backgroundColor: Colors.grey.withOpacity(0.1),
-                              child: SvgPicture.asset(
+                              child: catImage.isEmpty?SvgPicture.asset(
                                 'assets/SVGs/E.svg',
                                 width: 50.w,
-                              ),
+                              ):ClipRRect(
+                                borderRadius: BorderRadius.circular(40.r),
+                                  child: Image.file(
+                                    File(catImage),
+                                    fit: BoxFit.cover,
+                                  )
+                              )
                             ),
                             CircleAvatar(
                                 radius: 16.r,
                                 backgroundColor: mainColor,
                                 child: IconButton(
-                                  onPressed: (){},
+                                  onPressed: ()=>pickCategorymage(),
                                   icon: SvgPicture.asset('assets/camera.svg',color: Colors.white,),
                                 )
                             ),
@@ -74,7 +104,7 @@ class _AddDeptState extends State<AddDept> {
                         Expanded(
                             child: defaultTextFormfeild(
                               text: 'الكهرباء',
-                              prefixIcon: 'assets/services.svg',
+                              prefixIcon: 'assets/grid.svg',
                               errorMes: 'يرجى تعبئة الحقل',
                               controller: titleController ,
                               type: TextInputType.text,
@@ -132,7 +162,21 @@ class _AddDeptState extends State<AddDept> {
                       ),
                     ),
                     SizedBox(height: 25.h),
-                    defaultButton(onPressed: (){}, text: 'حفظ',height: 55.h)
+                    state is AddCategoryLoadingState? const Center(child: CircularProgressIndicator()) : defaultButton(
+                        onPressed: () async {
+                          if(titleController.text.isEmpty && catImage.isEmpty){
+                            showSnackBar(Colors.red, 'يرجى ادخال كل الحقول', context);
+                          }else{
+                            await appCubit.createCategory(
+                                title: titleController.text,
+                                image: catImage,
+                                isActive: isActive
+                            );
+                          }
+                        },
+                        text: 'حفظ',
+                        height: 55.h
+                    )
                   ],
                 ),
               ),
