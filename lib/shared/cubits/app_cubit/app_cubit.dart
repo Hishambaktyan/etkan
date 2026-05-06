@@ -324,9 +324,9 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   List<Map<String,dynamic>> workerRequests=[];
-  bool workerRequestsLoaded = false;
 
-  Future<void> getWorkerRequests() async {
+  Future<void> getWorkerRequests()
+  async {
 
     final user = FirebaseAuth.instance.currentUser;
 
@@ -334,8 +334,6 @@ class AppCubit extends Cubit<AppStates>{
       print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
       return;
     }
-
-    if (workerRequestsLoaded) return;
 
     emit(GetWorkerRequestsLoadingState());
 
@@ -353,8 +351,6 @@ class AppCubit extends Cubit<AppStates>{
         data['id'] = doc.id;
         workerRequests.add(data);
       }
-
-      workerRequestsLoaded = true;
 
       emit(GetWorkerRequestsSuccessState());
 

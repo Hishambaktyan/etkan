@@ -14,6 +14,7 @@ import 'package:trying_homy/shared/styles/colors.dart';
 import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../notifications_screen.dart';
+import 'edit_worker_profile.dart';
 
 class WorkerProfileScreen extends StatefulWidget {
   const WorkerProfileScreen({super.key});
@@ -41,19 +42,11 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     'تمديدات كهربائية للمنازل والمكاتب',
   ];
 
-  final List<Map<String, String>> previousWorks = [
-    {
-      'title': 'تركيب إنارة منزلية كاملة',
-      'image': 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop'
-    },
-    {
-      'title': 'صيانة لوحة كهرباء',
-      'image': 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=1200&auto=format&fit=crop'
-    },
-    {
-      'title': 'تمديدات شقة سكنية',
-      'image': 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop'
-    },
+  final List<String> previousWorks = [
+
+    'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop'
   ];
 
   Widget buildSectionHeader({
@@ -96,7 +89,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       padding: padding ?? EdgeInsetsDirectional.all(18.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: cubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
             : null,
@@ -105,6 +98,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       child: child,
     );
   }
+
   Widget buildStatCard({
     required Widget icon,
     required String value,
@@ -116,7 +110,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
         padding: EdgeInsetsDirectional.all(15.w),
         decoration: BoxDecoration(
           color: cubit.isDark ? lightDarkColor : Colors.white,
-          borderRadius: BorderRadius.circular(14.r),
+          borderRadius: BorderRadius.circular(25.r),
           border: cubit.isDark
               ? Border.all(color: const Color(0xFF30363D))
               : null,
@@ -152,6 +146,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       ),
     );
   }
+
   Widget buildHeader({
     required AppCubit appCubit,
     required Map<String, dynamic> user,
@@ -245,6 +240,30 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                         ),
                       ),
                       const Spacer(),
+                      InkWell(
+                        onTap: () {
+                           move(context, const EditWorkerProfileScreen());
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.18),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                          ),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset('assets/pen.svg',color: Colors.white,),
+                              SizedBox(width: 5.w),
+                              Text(
+                                'تعديل',
+                                style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
                       InkWell(
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
@@ -397,7 +416,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
               color: cubit.isDark
                   ? mainColor.withOpacity(0.18)
                   : mainColor.withOpacity(0.06),
-              borderRadius: BorderRadius.circular(14.r),
+              borderRadius: BorderRadius.circular(20.r),
             ),
             child: Row(
               children: [
@@ -424,7 +443,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           Row(
             children: [
               Expanded(
-                child: defualtButtonWithIcon(
+                child: defaultButtonWithIcon(
                   onPressed: () {},
                   text: 'دردشة',
                   height: 45.h,
@@ -439,7 +458,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
               ),
               SizedBox(width: 12.w),
               Expanded(
-                child: defualtOutlinedButtonWithIcon(
+                child: defaultOutlinedButtonWithIcon(
                   onPressed: () {},
                   text: 'إتصال',
                   fontSize: 13.sp,
@@ -525,18 +544,27 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             ),
             child: SizedBox(
               height: 155.h,
-              child: ListView.separated(
+              child: previousWorks.isEmpty ? Column(
+                children: [
+                  Icon(Icons.inbox_rounded,color: Colors.grey.shade400,size: 60.w,),
+                  SizedBox(height: 5.h,),
+                  Text(
+                    'لا توجد أعمال سابقة لك',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.sp,
+                        color: Colors.grey.shade400
+                    ),
+                  ),
+                ],
+              ) : ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: previousWorks.length,
                 separatorBuilder: (context, index) => SizedBox(width: 12.w),
                 itemBuilder: (context, index) {
                   final work = previousWorks[index];
-
                   return InkWell(
-                    onTap: () => move(
-                      context,
-                      ImageViewerPage(imageUrl: work['image']!),
-                    ),
+                    onTap: () => move(context, ImageViewerPage(imageUrl: work),),
                     child: Container(
                       width: 175.w,
                       decoration: BoxDecoration(
@@ -547,54 +575,23 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16.r),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.network(
-                              work['image']!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: cubit.isDark
-                                      ? darkBgColor
-                                      : Colors.grey.shade200,
-                                  child: Icon(
-                                    Icons.image_not_supported_outlined,
-                                    color: cubit.isDark
-                                        ? darkSubTextColor
-                                        : Colors.grey,
-                                    size: 35.r,
-                                  ),
-                                );
-                              },
-                            ),
-                            Container(
-                              alignment: Alignment.bottomCenter,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.transparent,
-                                    Colors.black.withOpacity(0.65),
-                                  ],
-                                ),
+                        child: Image.network(
+                          work,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: cubit.isDark
+                                  ? darkBgColor
+                                  : Colors.grey.shade200,
+                              child: Icon(
+                                Icons.image_not_supported_outlined,
+                                color: cubit.isDark
+                                    ? darkSubTextColor
+                                    : Colors.grey,
+                                size: 35.r,
                               ),
-                              padding: EdgeInsetsDirectional.all(10.r),
-                              child: Text(
-                                work['title']!,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.4,
-                                ),
-                              ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ),
                     ),

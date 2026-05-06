@@ -456,7 +456,7 @@ class _ConfirmSubscriptionState extends State<ConfirmSubscription> {
                   ),
                 ],
               ),
-              child: defualtButton(
+              child: defaultButton(
                   onPressed: () {
                     if (transferImage == null) {
                       showSnackBar(Colors.red, 'يرجى رفع صورة سند التحويل', context,);

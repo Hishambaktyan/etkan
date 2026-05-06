@@ -272,7 +272,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                         style: TextStyle(fontSize: 12.sp),
                       ),
                       SizedBox(height: 30.h),
-                      defualtButton(
+                      defaultButton(
                           onPressed: () {
                             if (problem.text.isNotEmpty && problemdescription.text.isNotEmpty) {
                               showSnackBar(Colors.green, 'تم إرسال التذكرة', context);

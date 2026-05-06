@@ -85,7 +85,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                             child: Row(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.all(7),
+                                  padding:  EdgeInsetsDirectional.all(7.w),
                                   child: CircleAvatar(
                                     backgroundColor: Colors.white.withOpacity(0.8),
                                     child: InkWell(
@@ -112,7 +112,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                       ),
                                       offset: const Offset(0, 40),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12.r),
+                                        borderRadius: BorderRadius.circular(25.r),
                                       ),
                                       onSelected: (String value) {
                                         if (value == 'active') {
@@ -162,7 +162,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Padding(
-                              padding:EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                              padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -171,7 +171,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: cubit.isDark? lightDarkColor: Colors.white,
-                                      borderRadius: BorderRadius.circular(20.r),
+                                      borderRadius: BorderRadius.circular(25.r),
                                       boxShadow: blueShadow,
                                         border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                                     ),
@@ -298,7 +298,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                     ),
                     SizedBox(height: 10.h,),
                     Padding(
-                      padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 10.h),
+                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -309,7 +309,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                             padding: EdgeInsetsDirectional.all(15.r),
                             decoration: BoxDecoration(
                                 color: cubit.isDark? lightDarkColor: Colors.white,
-                                borderRadius: BorderRadius.circular(20.r),
+                                borderRadius: BorderRadius.circular(25.r),
                                 boxShadow: blueShadow,
                                 border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
 
@@ -341,7 +341,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                 decoration: BoxDecoration(
                                   color: Colors.orange.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20.r),
+                                  borderRadius: BorderRadius.circular(25.r),
                                 ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -378,15 +378,8 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                 padding: EdgeInsets.all(14.r),
                                 decoration: BoxDecoration(
                                   color: cubit.isDark? lightDarkColor: Colors.white,
-                                  borderRadius: BorderRadius.circular(16.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.03),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                  border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): Border.all(color: Colors.grey.shade100),
+                                  borderRadius: BorderRadius.circular(25.r),
+                                  boxShadow: blueShadow,
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -550,14 +550,14 @@ class _UserAccountState extends State<UserAccount> {
                       Row(
                         children: [
                           Expanded(
-                            child: defualtButton(
+                            child: defaultButton(
                               onPressed: () => Navigator.pop(context),
                               text: 'إلغاء',
                             ),
                           ),
                           SizedBox(width: 12.w),
                           Expanded(
-                            child: defualtOutlinedButton(
+                            child: defaultOutlinedButton(
                               onPressed: () async =>
                               await authCubit.logOutUser(),
                               text: 'خروج',
@@ -639,14 +639,14 @@ class _UserAccountState extends State<UserAccount> {
                       Row(
                         children: [
                           Expanded(
-                            child: defualtButton(
+                            child: defaultButton(
                               onPressed: () => Navigator.pop(context),
                               text: 'إلغاء',
                             ),
                           ),
                           SizedBox(width: 12.w),
                           Expanded(
-                            child: defualtOutlinedButton(
+                            child: defaultOutlinedButton(
                               onPressed: () {
                                 Navigator.pop(context);
                                 showSnackBar(

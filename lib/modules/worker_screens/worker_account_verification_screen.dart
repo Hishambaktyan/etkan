@@ -538,7 +538,7 @@ class _WorkerAccountVerificationScreenState extends State<WorkerAccountVerificat
                         ),
                       ],
               ),
-              child: defualtButton(
+              child: defaultButton(
                   onPressed: (){
                     if(verificationItems[0]['image']!=null && verificationItems[1]['image']!=null && verificationItems[2]['image']!=null ){
                       showSnackBar(Colors.green, 'تم إرسال طلب التوثيق بنجاح', context);

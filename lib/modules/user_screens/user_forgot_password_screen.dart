@@ -186,7 +186,7 @@ class _UserForgotPasswordScreenState extends State<UserForgotPasswordScreen> {
                       type: TextInputType.emailAddress,
                     ),
                     SizedBox(height: 25.h),
-                    defualtButton(
+                    defaultButton(
                       onPressed: () {
                         if (emailController.text.isNotEmpty) {
                           showSnackBar(

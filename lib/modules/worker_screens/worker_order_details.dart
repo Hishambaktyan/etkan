@@ -316,7 +316,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: cubit.isDark? lightDarkColor: Colors.white,
-                                    borderRadius: BorderRadius.circular(20.r),
+                                    borderRadius: BorderRadius.circular(25.r),
                                     boxShadow: blueShadow,
                                       border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                                   ),
@@ -469,7 +469,7 @@ class WorkerOrderDetails extends StatelessWidget {
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
+                            borderRadius: BorderRadius.circular(25.r),
                             boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
@@ -511,7 +511,7 @@ class WorkerOrderDetails extends StatelessWidget {
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
+                            borderRadius: BorderRadius.circular(25.r),
                             boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
@@ -626,7 +626,7 @@ class WorkerOrderDetails extends StatelessWidget {
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
+                            borderRadius: BorderRadius.circular(25.r),
                             boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
@@ -654,7 +654,7 @@ class WorkerOrderDetails extends StatelessWidget {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: cubit.isDark? lightDarkColor: Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
+                            borderRadius: BorderRadius.circular(25.r),
                             boxShadow: blueShadow,
                               border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                           ),
@@ -703,7 +703,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   SizedBox(width: 10.w),
                                   Expanded(
                                     child: Text(
-                                      request['address'],
+                                     userData['address'],
                                       style: TextStyle(
                                           color: cubit.isDark? Colors.white: Colors.black87,
                                           fontSize: 12.sp
@@ -736,7 +736,7 @@ class WorkerOrderDetails extends StatelessWidget {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: defualtButtonWithIcon(
+                                    child: defaultButtonWithIcon(
                                       onPressed: () {},
                                       text: 'دردشة',
                                       height: 45.h,
@@ -751,7 +751,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   ),
                                   SizedBox(width: 12.w),
                                   Expanded(
-                                    child: defualtOutlinedButtonWithIcon(
+                                    child: defaultOutlinedButtonWithIcon(
                                       onPressed: () {},
                                       text: 'إتصال',
                                       fontSize: 13.sp,
@@ -783,7 +783,7 @@ class WorkerOrderDetails extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: defualtButton(
+                    child: defaultButton(
                         onPressed: (){
                           showDialog(
                             context: context,
@@ -893,7 +893,7 @@ class WorkerOrderDetails extends StatelessWidget {
                     width: 15.w,
                   ),
                   Expanded(
-                    child: defualtOutlinedButton(
+                    child: defaultOutlinedButton(
                         onPressed: (){
                           showDialog(
                             context: context,

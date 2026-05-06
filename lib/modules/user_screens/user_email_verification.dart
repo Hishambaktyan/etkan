@@ -149,7 +149,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen> {
                       style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
                     ),
                     const Spacer(),
-                    defualtButton(
+                    defaultButton(
                       onPressed: () {
                         FirebaseAuth.instance.currentUser?.sendEmailVerification();
                         showSnackBar(Colors.green, 'تم إعادة إرسال الرابط', context);

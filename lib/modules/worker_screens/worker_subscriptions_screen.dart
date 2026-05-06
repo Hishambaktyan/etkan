@@ -559,7 +559,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                         ),
                       ],
               ),
-              child: defualtButton(
+              child: defaultButton(
                   onPressed: () {
                     final selectedPlanData = plans.firstWhere((plan) => plan['id'] == selectedPlan,);
                     final selectedPaymentData = paymentMethods.firstWhere((paymentMethod) => paymentMethod['id'] == selectedPaymentMethod,);

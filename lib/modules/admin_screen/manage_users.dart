@@ -150,7 +150,7 @@ class _ManageUsersState extends State<ManageUsers> {
                           ),
                         ),
                         SizedBox(height: 20.h),
-                        defualtButton(
+                        defaultButton(
                           onPressed: () {
                             if(nameController.text.isEmpty || phoneController.text.isEmpty){
                               showSnackBar(Colors.red, 'يرجى تعبئة كل الحقول', context);

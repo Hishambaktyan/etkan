@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/admin_screen/admin_home_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
@@ -282,15 +283,16 @@ class _SelectUserTypeState extends State<SelectUserType> {
         ),
         bottomNavigationBar: Padding(
           padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w,vertical: 10.h),
-          child: defualtButton(
+          child: defaultButton(
             onPressed: () {
               if(selectedIndex==0){
                 CacheHelper.setBoolen(key: 'isWorker', value: false);
-                moveAndReplace(context, const UserSignUp() );
+                moveAndReplace(context, const UserLoginScreen() );
               }else if(selectedIndex==1){
                 CacheHelper.setBoolen(key: 'isWorker', value: true);
-                moveAndReplace(context, const WorkerSignup() );
+                moveAndReplace(context, const WorkerLoginScreen() );
               }else{
+                CacheHelper.setBoolen(key: 'isWorker', value: false);
                 moveAndReplace(context, const AdminHomeScreen());
               }
             },

@@ -208,7 +208,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                                       Expanded(
                                                         child: Text(
                                                           booking['title'],
-                                                          maxLines: 1,
+                                                          maxLines: 2,
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                             fontSize: 14.sp,

@@ -19,6 +19,7 @@ const List<BoxShadow> shadow = [
     offset: Offset(2, 5),
   ),
 ];
+
  List<BoxShadow> blueShadow =  [
   BoxShadow (
     color: mainColor.withOpacity(0.1),
@@ -27,7 +28,9 @@ const List<BoxShadow> shadow = [
     offset: const Offset(2, 5),
   ),
 ];
+
 const String reyalSymbol = '\uFDFC';
+
 Widget dashedDivider(color) {
   return Padding(
     padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -385,9 +388,8 @@ Widget headerWithSearch(
     ),
   );
 }
-
 /////////////////////////////////////////////
-Widget defualtButton({
+Widget defaultButton({
   double height = 50,
   double textSize = 17,
   double width = double.infinity,
@@ -413,7 +415,7 @@ Widget defualtButton({
       ),
     );
 ////////////////////////////////////////////
-Widget defualtButtonWithIcon(
+Widget defaultButtonWithIcon(
         {double height = 50,
         double textSize = 17,
         double width = double.infinity,
@@ -446,7 +448,7 @@ Widget defualtButtonWithIcon(
       ),
     );
 ////////////////////////////////////////////
-Widget defualtOutlinedButton({
+Widget defaultOutlinedButton({
   double height = 50,
   Color border = mainColor,
   Color textColor = mainColor,
@@ -474,7 +476,7 @@ Widget defualtOutlinedButton({
       ),
     );
 ////////////////////////////////////////////
-Widget defualtOutlinedButtonWithIcon(
+Widget defaultOutlinedButtonWithIcon(
         {double height = 50,
         Color border = mainColor,
         Color textColor = mainColor,
@@ -679,160 +681,135 @@ class WorkerHomeShimmer extends StatelessWidget {
   final bool isDark;
   const WorkerHomeShimmer({super.key, required this.isDark});
 
+  Color get baseColor => isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+
+  Color get highlightColor => isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+
+  Color get containerColor => isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+
   @override
   Widget build(BuildContext context) {
-    Color baseColor = isDark ? const Color(0xFF161B22) : Colors.grey[300]!;
-    Color highlightColor = isDark ? const Color(0xFF30363D) : Colors.grey[100]!;
-
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      direction: ShimmerDirection.rtl,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 340.h,
-              child: Stack(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _shimmerBox(
+            height: 200.h,
+            width: double.infinity,
+            radius: 30.r,
+          ),
+          SizedBox(height: 15.h),
+          GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12.w,
+              mainAxisSpacing: 12.h,
+              childAspectRatio: 1.2,
+            ),
+            itemCount: 4,
+            itemBuilder: (context, index) => _shimmerBox(
+              height: 100.h,
+              width: double.infinity,
+              radius: 25,
+            ),
+          ),
+          SizedBox(height: 25.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: _shimmerBox(height: 25.h, width: 120.w, radius: 10),
+          ),
+          SizedBox(height: 10.h),
+          _shimmerBox(
+            height: 90.h,
+            width: double.infinity,
+            margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+            radius: 25,
+          ),
+          SizedBox(height: 25.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _shimmerBox(height: 25.h, width: 120.w, radius: 10),
+                _shimmerBox(height: 20.h, width: 60.w, radius: 5),
+              ],
+            ),
+          ),
+          GridView.builder(
+            itemCount: 4,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.all(10.w),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              mainAxisExtent: 250.h,
+              crossAxisCount: 2,
+              crossAxisSpacing: 12.w,
+              mainAxisSpacing: 15.h,
+            ),
+            itemBuilder: (context, index) => Container(
+              decoration: BoxDecoration(
+                color: containerColor,
+                borderRadius: BorderRadius.circular(25.r),
+              ),
+              child: Column(
                 children: [
-                  Container(
-                    height: 270.h,
-                    padding: EdgeInsetsDirectional.only(
-                        start: 15.w, end: 15.w, top: 35.h),
-                    decoration: const BoxDecoration(color: Colors.white),
+                  _shimmerBox(
+                    height: 120.h,
+                    width: double.infinity,
+                    radius: 25,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(12.r),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                                radius: 23.r, backgroundColor: Colors.white),
-                            SizedBox(width: 10.w),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                    width: 100.w,
-                                    height: 15.h,
-                                    color: Colors.white),
-                                SizedBox(height: 5.h),
-                                Container(
-                                    width: 60.w,
-                                    height: 10.h,
-                                    color: Colors.white),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Column(
-                          children: [
-                            Container(
-                                width: 120.w,
-                                height: 30.h,
-                                color: Colors.white),
-                            SizedBox(height: 10.h),
-                            Container(
-                                width: 80.w, height: 15.h, color: Colors.white),
-                            SizedBox(height: 40.h),
-                          ],
-                        ),
+                        _shimmerBox(height: 12.h, width: 40.w),
+                        SizedBox(height: 8.h),
+                        _shimmerBox(height: 14.h, width: double.infinity),
+                        SizedBox(height: 6.h),
+                        _shimmerBox(height: 10.h, width: 80.w),
                       ],
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SizedBox(
-                      height: 115.h,
-                      child: ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 10.w),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 3,
-                        itemBuilder: (context, index) => Container(
-                          margin: EdgeInsetsDirectional.only(end: 10.w),
-                          width: 170.w,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
-            SizedBox(height: 20.h),
-            Container(
-              height: 110.h,
-              width: double.infinity,
-              margin: EdgeInsets.symmetric(horizontal: 10.w),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              child: Row(
-                children: [
-                  Container(width: 120.w, height: 20.h, color: Colors.white),
-                  const Spacer(),
-                  Container(width: 60.w, height: 15.h, color: Colors.white),
-                ],
-              ),
-            ),
-            GridView.builder(
-              itemCount: 4,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.all(10.w),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200.w,
-                mainAxisExtent: 240.h,
-                crossAxisSpacing: 10.w,
-                mainAxisSpacing: 10.h,
-              ),
-              itemBuilder: (context, index) => Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 110.h,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadiusDirectional.vertical(
-                            top: Radius.circular(12.r)),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(10.r),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                              width: 60.w, height: 10.h, color: Colors.white),
-                          SizedBox(height: 10.h),
-                          Container(
-                              width: double.infinity,
-                              height: 12.h,
-                              color: Colors.white),
-                          SizedBox(height: 5.h),
-                          Container(
-                              width: 80.w, height: 10.h, color: Colors.white),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
+          SizedBox(height: 10.h),
+          _shimmerBox(
+            height: 160.h,
+            width: double.infinity,
+            margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+            radius: 30,
+          ),
+          SizedBox(height: 20.h),
+        ],
+      ),
+    );
+  }
+
+  Widget _shimmerBox({
+    required double height,
+    required double width,
+    double radius = 12,
+    EdgeInsetsDirectional? margin,
+  }) {
+    return Container(
+      margin: margin,
+      child: Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
+        child: Container(
+          height: height,
+          width: width,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(radius.r),
+          ),
         ),
       ),
     );

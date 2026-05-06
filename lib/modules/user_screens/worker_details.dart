@@ -493,7 +493,7 @@ class _Worker_detailsState extends State<Worker_details> {
       ),
       bottomNavigationBar: Padding(
           padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w,vertical: 10.h),
-        child: defualtButton(onPressed: ()=>move(context, const Worker_details()), text: 'حجز'),
+        child: defaultButton(onPressed: ()=>move(context, const Worker_details()), text: 'حجز'),
       ),
     );
   }

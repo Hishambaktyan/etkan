@@ -375,14 +375,14 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: defualtButton(
+                            child: defaultButton(
                               onPressed: () => Navigator.pop(context),
                               text: 'إلغاء',
                             ),
                           ),
                           SizedBox(width: 12.w),
                           Expanded(
-                            child: defualtOutlinedButton(
+                            child: defaultOutlinedButton(
                               onPressed: (){
                                 locationCubit.deleteAddress(uId: uId, addressId: addressId);
                                 Navigator.pop(context);
@@ -518,7 +518,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                         ),
                       ],
                     ),
-                    child: defualtButtonWithIcon(
+                    child: defaultButtonWithIcon(
                         onPressed: ()=>move(context, const AddAddress()),
                         height: 50.h,
                         text: 'إضافة عنوان جديد',

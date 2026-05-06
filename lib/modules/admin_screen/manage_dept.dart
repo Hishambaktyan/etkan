@@ -139,7 +139,7 @@ class _ManageDeptState extends State<ManageDept> {
                         ),
                       ),
                       SizedBox(height: 25.h),
-                      defualtButton(onPressed: (){}, text: 'حفظ',height: 55.h)
+                      defaultButton(onPressed: (){}, text: 'حفظ',height: 55.h)
                     ],
                   ),
                 ),

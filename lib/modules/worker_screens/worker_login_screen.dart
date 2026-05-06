@@ -256,7 +256,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                     .state is LoginLoadingState
                                     ? const Center(
                                     child: CircularProgressIndicator())
-                                    : defualtButton(
+                                    : defaultButton(
                                     onPressed: () async {
                                       if (authCubit.workerLoginPhoneController.text
                                           .isNotEmpty &&

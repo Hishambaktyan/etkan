@@ -132,7 +132,7 @@ class _AddDeptState extends State<AddDept> {
                       ),
                     ),
                     SizedBox(height: 25.h),
-                    defualtButton(onPressed: (){}, text: 'حفظ',height: 55.h)
+                    defaultButton(onPressed: (){}, text: 'حفظ',height: 55.h)
                   ],
                 ),
               ),

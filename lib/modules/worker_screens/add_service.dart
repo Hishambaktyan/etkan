@@ -351,7 +351,7 @@ class _AddServiceState extends State<AddService> {
                 bottomNavigationBar: Padding(
                   padding: EdgeInsetsDirectional.only(start: 20.w,end: 20.w,bottom: 15.h),
                   child: state is UploadServiceLoadingState? const Center(child: CircularProgressIndicator())
-                    :defualtButtonWithIcon(
+                    :defaultButtonWithIcon(
                       onPressed: (){
                         if(formKey.currentState!.validate()){
                           cubit.uploadService(

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,6 +68,12 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
   }
 
   @override
+  void initState() {
+    AppCubit.get(context).getWorkerData();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
     return BlocBuilder<AppCubit, AppStates>(
@@ -91,59 +98,66 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                           physics: const NeverScrollableScrollPhysics(),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            crossAxisSpacing: 5.w,
-                            mainAxisSpacing: 15.h,
-                            childAspectRatio: 1.5
+                            crossAxisSpacing: 12.w,
+                            mainAxisSpacing: 12.h,
+                            childAspectRatio: 1.2,
                           ),
                           shrinkWrap: true,
-                          padding: EdgeInsetsDirectional.only(end: 10.w, start: 10.w, bottom: 10.w),
+                          padding: EdgeInsetsDirectional.only(end: 10.w, start: 10.w, bottom: 15.w),
                           itemCount: info.length,
                           itemBuilder: (context, index) {
                             var data = info[index];
                             return Container(
-                              margin: EdgeInsetsDirectional.only(end: index == 3 ? 0 : 10.w),
                               decoration: BoxDecoration(
-                                  color: cubit.isDark ? lightDarkColor : Colors.white,
-                                  borderRadius: BorderRadius.circular(15.r),
-                                  boxShadow: blueShadow
+                                color: cubit.isDark ? lightDarkColor : Colors.white,
+                                borderRadius: BorderRadius.circular(25.r),
+                                boxShadow: blueShadow,
                               ),
                               child: Stack(
+                                clipBehavior: Clip.antiAlias,
                                 children: [
-                                  Positioned(
-                                    bottom: -10,
-                                    left: -10,
+                                  PositionedDirectional(
+                                    bottom: -15.h,
+                                    start: -15.w,
                                     child: Transform.rotate(
-                                      angle: 0.4,
-                                      child: SvgPicture.asset(
-                                        data['icon'],
-                                        color: cubit.isDark
-                                            ? mainColor.withOpacity(0.1)
-                                            : mainColor
-                                            .withOpacity(0.2),
-                                        width: 53.w,
-                                        height: 53.h,
+                                      angle: 0.5,
+                                      child: Container(
+                                        padding: EdgeInsets.all(10.r),
+                                        decoration: BoxDecoration(
+                                          color: mainColor.withOpacity(0.03),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          data['icon'],
+                                          // ignore: deprecated_member_use
+                                          color: mainColor.withOpacity(cubit.isDark ? 0.05 : 0.1),
+                                          width: 70.w,
+                                          height: 70.h,
+                                        ),
                                       ),
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                    const EdgeInsetsDirectional.all(10),
+                                    padding: EdgeInsets.all(15.r),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            CircleAvatar(
-                                              backgroundColor: cubit.isDark ? mainColor.withOpacity(0.2) : mainColor.withOpacity(0.1),
-                                              radius: 25.r,
+                                            Container(
+                                              padding: EdgeInsets.all(10.r),
+                                              decoration: BoxDecoration(
+                                                color: mainColor.withOpacity(0.08),
+                                                borderRadius: BorderRadius.circular(15.r),
+                                              ),
                                               child: SvgPicture.asset(
                                                 data['icon'],
+                                                // ignore: deprecated_member_use
                                                 color: mainColor,
-                                                width: 27.w,
+                                                width: 22.w,
                                               ),
                                             ),
-                                            const Spacer(),
                                             Text(
                                               index == 0
                                                   ? '${cubit.workerRequestsCount}'
@@ -155,24 +169,36 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                                   ? '${cubit.workerRating}'
                                                   : '0',
                                               style: TextStyle(
-                                                  fontWeight:
-                                                  FontWeight.bold,
-                                                  color: mainColor,
-                                                  fontSize: 20.sp),
+                                                fontWeight: FontWeight.w900,
+                                                color: cubit.isDark ? Colors.white : mainColor,
+                                                fontSize: 22.sp,
+                                                letterSpacing: -1,
+                                              ),
                                             ),
                                           ],
                                         ),
                                         const Spacer(),
-                                        Text(
-                                          data['title'],
-                                          style: TextStyle(
-                                              color: cubit.isDark
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                              fontWeight:
-                                              FontWeight.bold,
-                                              fontSize: 13.sp,
-                                              height: 1),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              data['title'],
+                                              style: TextStyle(
+                                                color: cubit.isDark ? Colors.white.withOpacity(0.9) : Colors.black87,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13.sp,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2.h),
+                                            Container(
+                                              width: 25.w,
+                                              height: 3.h,
+                                              decoration: BoxDecoration(
+                                                color: mainColor.withOpacity(0.3),
+                                                borderRadius: BorderRadius.circular(10.r),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -191,38 +217,57 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         Container(
                           width: double.infinity,
                           margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                          padding: EdgeInsetsDirectional.all(15.r),
+                          padding: EdgeInsets.all(16.r),
                           decoration: BoxDecoration(
                             color: cubit.isDark ? lightDarkColor : Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
+                            borderRadius: BorderRadius.circular(25.r),
+                            boxShadow: cubit.isDark ? [] : blueShadow,
                             border: Border.all(
                               color: cubit.amAvailable
-                                  ? mainColor.withOpacity(0.35)
-                                  : Colors.grey.withOpacity(0.25),
+                                  ? mainColor.withOpacity(0.1)
+                                  : Colors.transparent,
+                              width: 1.5,
                             ),
-                            boxShadow: cubit.isDark ? [] : blueShadow,
                           ),
                           child: Row(
                             children: [
-                              Container(
-                                width: 55.w,
-                                height: 55.w,
-                                decoration: BoxDecoration(
-                                  color: cubit.amAvailable
-                                      ? mainColor.withOpacity(0.12)
-                                      : Colors.grey.withOpacity(0.12),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: SvgPicture.asset(
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 400),
+                                    width: 58.w,
+                                    height: 58.w,
+                                    decoration: BoxDecoration(
+                                      color: cubit.amAvailable
+                                          ? mainColor.withOpacity(0.08)
+                                          : Colors.grey.withOpacity(0.08),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  SvgPicture.asset(
                                     'assets/power.svg',
-                                    width: 27.w,
-                                    height: 27.h,
+                                    width: 26.w,
+                                    height: 26.h,
                                     color: cubit.amAvailable ? mainColor : Colors.grey,
                                   ),
-                                ),
+                                  if (cubit.amAvailable)
+                                    Positioned(
+                                      top: 2,
+                                      right: 2,
+                                      child: Container(
+                                        width: 12.w,
+                                        height: 12.w,
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 2),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
-                              SizedBox(width: 12.w),
+                              SizedBox(width: 15.w),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,19 +276,19 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                       cubit.amAvailable ? 'متاح لاستقبال الطلبات' : 'غير متاح حالياً',
                                       style: TextStyle(
                                         fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                                        fontWeight: FontWeight.w900,
+                                        color: cubit.isDark ? Colors.white : Colors.black,
                                       ),
                                     ),
-                                    SizedBox(height: 5.h),
+                                    SizedBox(height: 4.h),
                                     Text(
                                       cubit.amAvailable
                                           ? 'يمكن للعملاء إرسال طلبات جديدة إليك'
                                           : 'لن تظهر للعملاء كعامل متاح حالياً',
                                       style: TextStyle(
-                                        fontSize: 12.sp,
-                                        height: 1.5,
-                                        color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                                        fontSize: 11.sp,
+                                        color: Colors.grey,
+                                        height: 1.2,
                                       ),
                                     ),
                                   ],
@@ -252,36 +297,38 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                               SizedBox(width: 10.w),
                               InkWell(
                                 onTap: () => cubit.changeAvailability(!cubit.amAvailable),
-                                borderRadius: BorderRadius.circular(30.r),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 250),
-                                  width: 75.w,
-                                  height: 36.h,
-                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 4.w),
+                                  duration: const Duration(milliseconds: 300),
+                                  width: 65.w,
+                                  height: 32.h,
+                                  padding: EdgeInsets.symmetric(horizontal: 4.w),
                                   decoration: BoxDecoration(
-                                    color: cubit.amAvailable ? mainColor : Colors.grey.shade400,
+                                    color: cubit.amAvailable
+                                        ? mainColor
+                                        : (cubit.isDark ? Colors.grey.withOpacity(0.2) : Colors.grey.shade300),
                                     borderRadius: BorderRadius.circular(30.r),
                                   ),
                                   child: AnimatedAlign(
-                                    duration: const Duration(milliseconds: 250),
+                                    duration: const Duration(milliseconds: 300),
                                     alignment: cubit.amAvailable
-                                        ? AlignmentDirectional.centerStart
-                                        : AlignmentDirectional.centerEnd,
+                                        ? AlignmentDirectional.centerEnd
+                                        : AlignmentDirectional.centerStart,
                                     child: Container(
-                                      width: 28.w,
-                                      height: 28.w,
+                                      width: 24.w,
+                                      height: 24.w,
                                       decoration: const BoxDecoration(
                                         color: Colors.white,
                                         shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+                                        ],
                                       ),
                                       child: Icon(
-                                        cubit.amAvailable
-                                            ? Icons.check_rounded
-                                            : Icons.close_rounded,
+                                        cubit.amAvailable ? Icons.check : Icons.power_settings_new_rounded,
                                         color: cubit.amAvailable ? mainColor : Colors.grey,
-                                        size: 18.r,
+                                        size: 15.r,
                                       ),
                                     ),
                                   ),
@@ -302,7 +349,8 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                             ],
                           )
                         ),
-                        cubit.workerServices.isEmpty ? Center(
+                        if (cubit.workerServices.isEmpty)
+                          Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -320,269 +368,283 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                   ],
                                 ),
                               )
-                            : GridView.builder(
-                                itemCount: cubit.workerServices.length > 4 ? 4 : cubit.workerServices.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                        mainAxisExtent: 230.h,
-                                        crossAxisCount: 2,
-                                        crossAxisSpacing: 10.w,
-                                        mainAxisSpacing: 15.h
-                                ),
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20.r),
-                                        color: mainColor.withOpacity(0.09),
-                                    ),
-                                    child: Column(
+                        else GridView.builder(
+                          itemCount: cubit.workerServices.length > 4 ? 4 : cubit.workerServices.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisExtent: 250.h,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12.w,
+                            mainAxisSpacing: 15.h,
+                          ),
+                          itemBuilder: (context, index) {
+                            var service = cubit.workerServices[index];
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: cubit.isDark ? lightDarkColor : Colors.white,
+                                borderRadius: BorderRadius.circular(25.r),
+                                boxShadow: blueShadow,
+                              ),
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 135.h,
+                                    child: Stack(
                                       children: [
-                                        SizedBox(
-                                          height: 125.h,
-                                          child: Stack(
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius: BorderRadiusDirectional.only(
-                                                    topStart: Radius.circular(20.r),
-                                                    topEnd: Radius.circular(20.r)
-                                                ),
-                                                child: Image.network(
-                                                  '${cubit.workerServices[index]['serviceImage']}',
-                                                  height: 110.h,
-                                                  width: double.infinity,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error, stackTrace) => Container(
-                                                    height: 110.h,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadiusDirectional.only(
-                                                                topStart: Radius
-                                                                    .circular(
-                                                                        12.r),
-                                                                topEnd: Radius
-                                                                    .circular(12
-                                                                        .r)),
-                                                        color: Colors
-                                                            .grey.shade100),
-                                                    child: Center(
-                                                      child: Icon(
-                                                        Icons
-                                                            .wifi_off_rounded,
-                                                        size: 50,
-                                                        color: Colors
-                                                            .grey.shade400,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment: AlignmentDirectional.bottomEnd,
-                                                child: Container(
-                                                  height: 30.h,
-                                                  width: 110.w,
-                                                  padding: EdgeInsetsDirectional.only(top: 3.h),
-                                                  alignment: Alignment.center,
-                                                  margin: EdgeInsetsDirectional.only(end: 10.w),
-                                                  decoration: BoxDecoration(
-                                                      color: mainColor,
-                                                      border: Border.all(
-                                                          color: Colors.white
-                                                      ),
-                                                      borderRadius: BorderRadius.circular(30.r)
-                                                  ),
-                                                  child: Text(
-                                                    '${cubit.workerServices[index]['price']} ﷼ ',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13.sp),
-                                                  ),
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment: AlignmentDirectional.topStart,
-                                                child: InkWell(
-                                                  onTap: (){
-                                                    setState(() {
-                                                      showSnackBar(
-                                                          Colors.green,
-                                                          cubit.isServicesActive? 'تم الغاء تفعيل الخدمة':'تم تفعيل الخدمة',
-                                                          context
-                                                      );
-                                                      cubit.isServicesActive=!cubit.isServicesActive;
-                                                    });
-                                                  },
-                                                  child: Padding(
-                                                    padding: EdgeInsetsDirectional.only(start: 10.w, top: 10.h),
-                                                    child: CircleAvatar(
-                                                        radius: 18.r,
-                                                        backgroundColor: Colors.white,
-                                                        child: SvgPicture.asset(
-                                                          'assets/power.svg',
-                                                          color: cubit.isServicesActive ? Colors.green : Colors.grey,
-                                                          width: 22.w,
-                                                          height: 22.h,
-                                                        )
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(25.r),
+                                          child: Image.network(
+                                            '${service['serviceImage']}',
+                                            height: 120.h,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) => Container(
+                                              height: 120.h,
+                                              color: Colors.grey.shade100,
+                                              child: Icon(Icons.wifi_off_rounded, color: Colors.grey.shade400, size: 30.sp),
+                                            ),
                                           ),
                                         ),
-                                        InkWell(
-                                          onTap: () => move(context, WorkerServiceDetails(serviceId: cubit.workerServices[index]['id'],)),
-                                          child: Padding(
-                                            padding: EdgeInsetsDirectional.only(start: 10.w,end: 10.w,top: 5.h),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                 Row(
-                                                   crossAxisAlignment: CrossAxisAlignment.end,
-                                                  children: [
-                                                    const Icon(Icons.star_rounded,color: Colors.orange,),
-                                                    SizedBox(width: 3.w,),
-                                                    Text(
-                                                      '${cubit.workerServices[index]['rate']}',
-                                                      style: TextStyle(
-                                                        fontSize: 11.sp,
-                                                        height: 1,
-                                                        color: Colors.grey.shade500,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 5.h,),
-                                                Text(
-                                                  '${cubit.workerServices[index]['name']}',
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 13.sp,
-                                                      color: cubit.isDark ? Colors.white : Colors.black
+                                        PositionedDirectional(
+                                          bottom: 5.h,
+                                          end: 10.w,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                            decoration: BoxDecoration(
+                                              color: mainColor,
+                                              borderRadius: BorderRadius.circular(15.r),
+                                              boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
+                                              border: Border.all(color: Colors.white, width: 1.5),
+                                            ),
+                                            child: Text(
+                                              '${service['price']} ﷼',
+                                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.sp),
+                                            ),
+                                          ),
+                                        ),
+                                        PositionedDirectional(
+                                          top: 10.h,
+                                          start: 10.w,
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                showSnackBar(
+                                                  Colors.green,
+                                                  cubit.isServicesActive ? 'تم الغاء تفعيل الخدمة' : 'تم تفعيل الخدمة',
+                                                  context,
+                                                );
+                                                cubit.isServicesActive = !cubit.isServicesActive;
+                                              });
+                                            },
+                                            child: ClipRRect(
+                                              child: BackdropFilter(
+                                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                                child: Container(
+                                                  padding: EdgeInsets.all(8.r),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white.withOpacity(0.8),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: SvgPicture.asset(
+                                                    'assets/power.svg',
+                                                    color: cubit.isServicesActive ? Colors.green : Colors.grey,
+                                                    width: 18.w,
+                                                    height: 18.h,
                                                   ),
                                                 ),
-                                                SizedBox(height: 5.h,),
-                                                Text(
-                                                  '${cubit.workerServices[index]['description']} ',
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 10.sp,
-                                                      color: cubit.isDark
-                                                          ? darkSubTextColor
-                                                          : Colors.grey),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  );
-                                },
-                              ),
-                        SizedBox(height: 20.h,),
-                        Padding(
-                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                          child: ClipRRect(
-                            borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(20.r)),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    mainColor,
-                                    mainColor.withOpacity(0.7)
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                boxShadow: blueShadow
-                              ),
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    right: -20,
-                                    top: -20,
-                                    child: CircleAvatar(
-                                      radius: 50,
-                                      backgroundColor:
-                                          Colors.white.withOpacity(0.1),
-                                    ),
                                   ),
-                                  Positioned(
-                                    left: 30,
-                                    bottom: -30,
-                                    child: CircleAvatar(
-                                      radius: 30,
-                                      backgroundColor:
-                                          Colors.white.withOpacity(0.1),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(20.r),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                  InkWell(
+                                    onTap: () => move(context, WorkerServiceDetails(serviceId: service['id'])),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
                                             children: [
+                                              Icon(Icons.star_rounded, color: Colors.amber, size: 16.sp),
+                                              SizedBox(width: 4.w),
                                               Text(
-                                                'وسع نطاق عملك',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(height: 5.h),
-                                              Text(
-                                                'أضف خدمات جديدة الآن وابدأ باستقبال المزيد من الطلبات',
-                                                style: TextStyle(
-                                                  color: Colors.white
-                                                      .withOpacity(0.9),
-                                                  fontSize: 12.sp,
-                                                ),
-                                              ),
-                                              SizedBox(height: 15.h),
-                                              ElevatedButton(
-                                                onPressed: () => move(context,
-                                                    const AddService()),
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.white,
-                                                  foregroundColor: mainColor,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.r),
-                                                  ),
-                                                  elevation: 0,
-                                                ),
-                                                child: const Text(
-                                                    'إضافة خدمة جديدة'),
+                                                '${service['rate']}',
+                                                style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        Icon(
-                                          Icons.add_business_rounded,
-                                          size: 70.r,
-                                          color: Colors.white.withOpacity(0.3),
-                                        ),
-                                      ],
+                                          SizedBox(height: 6.h),
+                                          Text(
+                                            '${service['name']}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 13.sp,
+                                              color: cubit.isDark ? Colors.white : Colors.black,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            '${service['description']}',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 9.sp,
+                                              height: 1.3,
+                                              color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
+                            );
+                          },
+                        ),
+                        SizedBox(height: 20.h,),
+                        Padding(
+                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(30.r)),
+                              boxShadow: blueShadow,
+                              gradient: LinearGradient(
+                                colors: [mainColor, const Color(0xFF1A1A2E)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  right: -15.w,
+                                  top: -15.h,
+                                  child: Container(
+                                    width: 100.r,
+                                    height: 100.r,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.05),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 40.w,
+                                  bottom: -20.h,
+                                  child: Transform.rotate(
+                                    angle: 0.8,
+                                    child: Container(
+                                      width: 80.r,
+                                      height: 80.r,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.03),
+                                        borderRadius: BorderRadius.circular(20.r),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(22.r),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.15),
+                                                borderRadius: BorderRadius.circular(10.r),
+                                              ),
+                                              child: Text(
+                                                'فرصة جديدة ✨',
+                                                style: TextStyle(
+                                                  color: Colors.white.withOpacity(0.9),
+                                                  fontSize: 10.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 12.h),
+                                            Text(
+                                              'وسع نطاق عملك',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20.sp,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+                                            SizedBox(height: 6.h),
+                                            Text(
+                                              'أضف خدمات جديدة الآن وابدأ باستقبال المزيد من الطلبات',
+                                              style: TextStyle(
+                                                color: Colors.white.withOpacity(0.7),
+                                                fontSize: 12.sp,
+                                                height: 1.3,
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            InkWell(
+                                              onTap: () => move(context, const AddService()),
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(15.r),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black.withOpacity(0.1),
+                                                      blurRadius: 10,
+                                                      offset: const Offset(0, 4),
+                                                    )
+                                                  ],
+                                                ),
+                                                child: Text(
+                                                  'إضافة خدمة جديدة',
+                                                  style: TextStyle(
+                                                    color: mainColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13.sp,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Container(
+                                            width: 80.r,
+                                            height: 80.r,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.08),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.add_business_rounded,
+                                            size: 50.r,
+                                            color: Colors.white.withOpacity(0.9),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

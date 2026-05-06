@@ -183,7 +183,7 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
                       type: TextInputType.emailAddress,
                     ),
                     SizedBox(height: 25.h),
-                    defualtButton(
+                    defaultButton(
                       onPressed: () {
                         if (emailController.text.isNotEmpty) {
                           showSnackBar(

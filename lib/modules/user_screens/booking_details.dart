@@ -831,7 +831,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: defualtOutlinedButtonWithIcon(
+                                    child: defaultOutlinedButtonWithIcon(
                                       onPressed: () {},
                                       text: 'إتصال',
                                       fontSize: 13.sp,
@@ -851,7 +851,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                   ),
                                   SizedBox(width: 10.w),
                                   Expanded(
-                                    child: defualtButtonWithIcon(
+                                    child: defaultButtonWithIcon(
                                       onPressed: () {},
                                       text: 'دردشة',
                                       height: 45.h,
@@ -867,7 +867,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 ],
                               ),
                               SizedBox(height: 10.h),
-                              defualtOutlinedButtonWithIcon(
+                              defaultOutlinedButtonWithIcon(
                                 onPressed: () {
                                   move(context, const WorkerProfileScreen());
                                 },
@@ -897,7 +897,7 @@ class _BookingDetailsState extends State<BookingDetails> {
             ),
             bottomNavigationBar: request['status']=='قيد الانتظار'? Padding(
               padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w,vertical: 10.h),
-              child: defualtButton(
+              child: defaultButton(
                   onPressed: (){},
                   background: Colors.red,
                   text: 'إلغاء الطلب'

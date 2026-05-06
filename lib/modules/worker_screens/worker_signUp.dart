@@ -314,7 +314,7 @@ import 'worker_email_verfication_screen.dart';
                                   state is WorkerSignUpLoadingState || state is SendVerficationCodeLoadingState ?const Center(
                                     child: CircularProgressIndicator(),
                                   )
-                                      : defualtButton(
+                                      : defaultButton(
                                       onPressed: ()  async {
                                         if(
                                         authCubit.workerNameController.text.isNotEmpty &&

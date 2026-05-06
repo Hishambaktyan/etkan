@@ -150,7 +150,7 @@ class _State extends State<Verified_phone> {
                       SizedBox(
                         height: 10.0,
                       ),
-                      defualtButton(
+                      defaultButton(
                         onPressed: (){
                           //if(formKey.currentState!.validate()){
                           moveAndReplace(context, const UserMainScreen());

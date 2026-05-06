@@ -145,7 +145,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         cubit: AppCubit.get(context),
                       ),
                       SizedBox(height: 24.h),
-                      defualtButton(
+                      defaultButton(
                           onPressed: () {
                             if (phoneController.text.isNotEmpty &&
                                 emailController.text.isNotEmpty &&

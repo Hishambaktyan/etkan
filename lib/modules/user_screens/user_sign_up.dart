@@ -227,7 +227,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                 state is UserSignUpLoadingState || state is SendVerficationCodeLoadingState? const Center(
                                   child: CircularProgressIndicator(),
                                 )
-                                    : defualtButton(
+                                    : defaultButton(
                                   onPressed: () async {
                                     if(
                                     authCubit.userNameController.text.isNotEmpty &&

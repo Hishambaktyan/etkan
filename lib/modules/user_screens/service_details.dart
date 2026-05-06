@@ -454,7 +454,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                           Row(
                             children: [
                               Expanded(
-                                child: defualtOutlinedButtonWithIcon(
+                                child: defaultOutlinedButtonWithIcon(
                                   onPressed: () {},
                                   text: 'إتصال',
                                   fontSize: 13.sp,
@@ -474,7 +474,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                               ),
                               SizedBox(width: 10.w),
                               Expanded(
-                                child: defualtButtonWithIcon(
+                                child: defaultButtonWithIcon(
                                   onPressed: () {},
                                   text: 'دردشة',
                                   height: 45.h,
@@ -490,7 +490,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                             ],
                           ),
                           SizedBox(height: 10.h),
-                          defualtOutlinedButtonWithIcon(
+                          defaultOutlinedButtonWithIcon(
                             onPressed: () {
                               move(context, const WorkerProfileScreen());
                             },
@@ -575,7 +575,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
         bottomNavigationBar: Padding(
           padding:
               EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 10.h),
-          child: defualtButton(
+          child: defaultButton(
               onPressed: () => move(
                   context,
                   BookingConfirmInfoScreen(

@@ -254,7 +254,7 @@ class _EditAddressState extends State<EditAddress> {
                                 ),
                                 SizedBox(height: 10.h),
                                 state is EditAddressLoadingState ? const Center( child: CircularProgressIndicator())
-                                    : defualtButton(
+                                    : defaultButton(
                                   onPressed:() async {
                                     if(titleController.text.isEmpty || detailsController.text.isEmpty){
                                       showSnackBar(Colors.red, 'يرجى تعبئة كل الحقول', context);

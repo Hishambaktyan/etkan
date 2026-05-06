@@ -241,7 +241,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       ),
                     if (currentIndex != 0) SizedBox(width: 12.w),
                     Expanded(
-                      child: defualtButton(
+                      child: defaultButton(
                         onPressed: () {
                           if (currentIndex == data.length - 1) {
                             moveAndReplace(context, const SelectUserType());

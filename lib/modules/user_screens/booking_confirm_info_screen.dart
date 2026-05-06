@@ -777,7 +777,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                             Row(
                                               children: [
                                                 Expanded(
-                                                  child: defualtButton(
+                                                  child: defaultButton(
                                                     onPressed: () =>
                                                         moveAndReplace(
                                                           context,
@@ -813,7 +813,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                             color: mainColor,
                           ),
                         )
-                            : defualtButton(
+                            : defaultButton(
                           onPressed: () async {
                             if (selectedAddress == null) {
                               showSnackBar(
