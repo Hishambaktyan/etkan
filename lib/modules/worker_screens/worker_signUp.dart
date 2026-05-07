@@ -172,7 +172,7 @@ import 'worker_email_verfication_screen.dart';
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  Container(
+                                  SizedBox(
                                     height: 50.h,
                                     child: defaultTextFormfeild(
                                       cubit: appCubit,
@@ -184,7 +184,7 @@ import 'worker_email_verfication_screen.dart';
                                     ),
                                   ),
                                   SizedBox(height: 15.h,),
-                                  Container(
+                                  SizedBox(
                                     height: 50.h,
                                     child: defaultTextFormfeild(
                                       cubit: appCubit,
@@ -195,8 +195,8 @@ import 'worker_email_verfication_screen.dart';
                                       type: TextInputType.text,
                                     ),
                                   ),
-                                  SizedBox(height: 15.0.h,),
-                                  Container(
+                                  SizedBox(height: 15.h,),
+                                  SizedBox(
                                     height: 50.h,
                                     child: defaultTextFormfeild(
                                       cubit: appCubit,
@@ -207,8 +207,8 @@ import 'worker_email_verfication_screen.dart';
                                       type: TextInputType.emailAddress,
                                     ),
                                   ),
-                                  SizedBox(height: 15.0.h,),
-                                  Container(
+                                  SizedBox(height: 15.h,),
+                                  SizedBox(
                                     height: 50.h,
                                     child: defaultTextFormfeild(
                                       cubit: appCubit,

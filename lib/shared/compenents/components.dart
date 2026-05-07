@@ -77,7 +77,16 @@ void showSnackBar(Color background, String message, context) {
 }
 
 /////////////////////////////////////////////
-Widget header({double headerHeight = 110, required String title,required context}) {
+Widget header({
+  double headerHeight = 110,
+  required String title,
+  required context,
+  bool isLeading=false,
+  bool isNotif=true,
+  bool isAction=false,
+  String? actionIcon,
+  Function? onActionPresses
+}) {
   return ClipRRect(
     borderRadius:
         BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
@@ -157,6 +166,12 @@ Widget header({double headerHeight = 110, required String title,required context
                 children: [
                   Row(
                     children: [
+                      isLeading?IconButton(
+                          onPressed: (){
+                            Navigator.pop(context);
+                            },
+                          icon: const Icon(Icons.arrow_back_ios_rounded,color: Colors.white,)
+                      ):const SizedBox(),
                       Text(
                         title,
                         style: TextStyle(
@@ -165,7 +180,7 @@ Widget header({double headerHeight = 110, required String title,required context
                             color: Colors.white),
                       ),
                       const Spacer(),
-                      InkWell(
+                      isNotif ?InkWell(
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onTap: ()=>move(context, const NotificationsScreen()),
@@ -185,7 +200,28 @@ Widget header({double headerHeight = 110, required String title,required context
                             color: Colors.white,
                           ),
                         ),
-                      ),
+                      ):const SizedBox(),
+                      isAction? InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: (){onActionPresses!();},
+                        child: Container(
+                          padding:  EdgeInsetsDirectional.all(9.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(13.r),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.18),
+                            ),
+                          ),
+                          child: SvgPicture.asset(
+                            actionIcon!,
+                            width: 23.w,
+                            height: 23.h,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ):const SizedBox()
                     ],
                   ),
                 ],
@@ -527,7 +563,10 @@ Widget defaultTextFormfeild(
         required AppCubit cubit,
         bool isCovered = false}) =>
     TextFormField(
-      style: TextStyle(fontSize: 12.sp),
+      style: TextStyle(
+        fontSize: 14.sp,
+        color: cubit.isDark ? Colors.white : Colors.black,
+      ),
       keyboardType: type,
       textDirection: TextDirection.rtl,
       validator: (value) {
@@ -540,49 +579,53 @@ Widget defaultTextFormfeild(
       obscureText: isPassword,
       decoration: InputDecoration(
         filled: true,
-        fillColor: cubit.isDark
-            ? isCovered
-                ? darkBgColor
-                : lightDarkColor
-            : isCovered
-                ? Colors.white
-                : Colors.grey.withOpacity(0.1),
+        fillColor: cubit.isDark ? lightDarkColor : Colors.white,
         labelText: text,
         labelStyle: TextStyle(
             fontSize: 12.sp,
-            color: cubit.isDark ? darkSubTextColor : Colors.grey),
+            color: Colors.grey
+        ),
         prefixIcon: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12.r),
           child: SvgPicture.asset(
             prefixIcon!,
-            width: 12.w,
-            height: 12.h,
-            color: cubit.isDark ? darkSubTextColor : Colors.grey,
+            width: 18.w,
+            height: 18.h,
+            color: mainColor,
           ),
         ),
         suffixIcon: isSuffixIcon
             ? IconButton(
-                onPressed: () {
-                  suffixPressed!();
-                },
-                icon: SvgPicture.asset(
-                  suffixIcon!,
-                  width: 22.w,
-                  height: 22.h,
-                  color: cubit.isDark ? darkSubTextColor : Colors.grey,
-                ),
-                highlightColor: Colors.transparent,
-              )
+          onPressed: () {
+            suffixPressed!();
+          },
+          icon: SvgPicture.asset(
+            suffixIcon!,
+            width: 20.w,
+            height: 20.h,
+            color: Colors.grey,
+          ),
+          highlightColor: Colors.transparent,
+        )
             : null,
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.r),
+          borderSide: BorderSide(
+            color: cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade100,
+          ),
+        ),
         focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            borderSide: const BorderSide(color: mainColor)),
+          borderRadius: BorderRadius.circular(15.r),
+          borderSide: const BorderSide(color: mainColor, width: 1.5),
+        ),
         errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            borderSide: const BorderSide(color: Colors.red)),
+          borderRadius: BorderRadius.circular(15.r),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.r),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        ),
       ),
     );
 /////////////////////////////////////////////

@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,169 +20,180 @@ class AddDept extends StatefulWidget {
 class _AddDeptState extends State<AddDept> {
   TextEditingController titleController = TextEditingController();
   bool isActive = true;
-  String catImage ='';
-  
+  String catImage = '';
+
   Future<void> pickCategorymage() async {
     final ImagePicker picker = ImagePicker();
-
     final XFile? image = await picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
     );
-
     if (image != null) {
       setState(() {
-        catImage=image.path;
+        catImage = image.path;
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
+    AppCubit appCubit = AppCubit.get(context);
     return Directionality(
-        textDirection: TextDirection.rtl,
-        child: BlocConsumer<AppCubit,AppStates>(
-          listener: (context, state) {
-            if(state is AddCategorySuccessState){
-              showSnackBar(Colors.green,'تم الإضافة بنجاح', context);
-            }
-          },
-          builder: (context, state) {
-            AppCubit appCubit = AppCubit.get(context);
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: mainColor,
-                automaticallyImplyLeading: false,
-                leading: IconButton(
-                    onPressed: ()=>Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back_ios_rounded,color: Colors.white,)
-                ),
-                title: Text(
-                  'إضافة قسم',
-                  style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white
-                  ),
-                ),
-              ),
-              body: Padding(
-                padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+      textDirection: TextDirection.rtl,
+      child: BlocConsumer<AppCubit, AppStates>(
+        listener: (context, state) {
+          if (state is AddCategorySuccessState) {
+            showSnackBar(Colors.green, 'تم الإضافة بنجاح', context);
+            Navigator.pop(context);
+            appCubit.getCategories();
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  header(title: 'إضافة قسم', context: context,isLeading: true,isNotif: false,),
+                  Padding(
+                    padding: EdgeInsetsDirectional.all(10.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Stack(
-                          alignment: AlignmentDirectional.bottomEnd,
-                          children: [
-                            CircleAvatar(
-                              radius: 45.r,
-                              backgroundColor: Colors.grey.withOpacity(0.1),
-                              child: catImage.isEmpty?SvgPicture.asset(
-                                'assets/SVGs/E.svg',
-                                width: 50.w,
-                              ):ClipRRect(
-                                borderRadius: BorderRadius.circular(40.r),
-                                  child: Image.file(
-                                    File(catImage),
-                                    fit: BoxFit.cover,
-                                  )
-                              )
-                            ),
-                            CircleAvatar(
-                                radius: 16.r,
-                                backgroundColor: mainColor,
-                                child: IconButton(
-                                  onPressed: ()=>pickCategorymage(),
-                                  icon: SvgPicture.asset('assets/camera.svg',color: Colors.white,),
-                                )
-                            ),
-                          ],
+                        Container(
+                          padding: EdgeInsetsDirectional.all(20.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25.r),
+                            boxShadow:  blueShadow,
+                          ),
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: AlignmentDirectional.bottomEnd,
+                                children: [
+                                  Container(
+                                    width: 110.r,
+                                    height: 110.r,
+                                    decoration: BoxDecoration(
+                                      color: mainColor.withOpacity(0.05),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: mainColor.withOpacity(0.2), width: 2),
+                                    ),
+                                    child: catImage.isEmpty
+                                        ? Padding(
+                                      padding: EdgeInsets.all(25.r),
+                                      child: SvgPicture.asset(
+                                        'assets/SVGs/E.svg',
+                                        color: mainColor.withOpacity(0.5),
+                                      ),
+                                    )
+                                        : ClipRRect(
+                                      borderRadius: BorderRadius.circular(55.r),
+                                      child: Image.file(
+                                        File(catImage),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () => pickCategorymage(),
+                                    child: CircleAvatar(
+                                      radius: 18.r,
+                                      backgroundColor: mainColor,
+                                      child: SvgPicture.asset(
+                                        'assets/camera.svg',
+                                        color: Colors.white,
+                                        width: 18.w,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 25.h),
+                              defaultTextFormfeild(
+                                text: 'اسم القسم (مثلاً: سباكة، كهرباء)',
+                                prefixIcon: 'assets/grid.svg',
+                                errorMes: 'يرجى تعبئة الحقل',
+                                controller: titleController,
+                                type: TextInputType.text,
+                                cubit: appCubit,
+                              ),
+                              SizedBox(height: 15.h),
+                              Container(
+                                padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w, vertical: 5.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  boxShadow: blueShadow,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(8.r),
+                                      decoration: BoxDecoration(
+                                        color: mainColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10.r),
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/work.svg',
+                                        width: 18.w,
+                                        color: mainColor,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: Text(
+                                        'حالة القسم (مفعل / معطل)',
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: appCubit.isDark ? Colors.white : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    Switch.adaptive(
+                                      value: isActive,
+                                      activeColor: mainColor,
+                                      activeTrackColor: mainColor.withOpacity(0.3),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isActive = value;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(width: 15.w),
-                        Expanded(
-                            child: defaultTextFormfeild(
-                              text: 'الكهرباء',
-                              prefixIcon: 'assets/grid.svg',
-                              errorMes: 'يرجى تعبئة الحقل',
-                              controller: titleController ,
-                              type: TextInputType.text,
-                              cubit: appCubit,
-                            )
+                        SizedBox(height: 40.h),
+                        state is AddCategoryLoadingState
+                            ? const Center(child: CircularProgressIndicator())
+                            : defaultButton(
+                          onPressed: () async {
+                            if (titleController.text.isEmpty || catImage.isEmpty) {
+                              showSnackBar(Colors.red, 'يرجى إكمال البيانات واختيار صورة', context);
+                            } else {
+                              await appCubit.createCategory(
+                                title: titleController.text,
+                                image: catImage,
+                                isActive: isActive,
+                              );
+                            }
+                          },
+                          text: 'إضافة القسم',
+                          height: 50.h,
                         ),
                       ],
                     ),
-                    SizedBox(height: 20.h),
-                    Container(
-                      padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: DropdownButtonFormField<String>(
-                        value: 'Active',
-                        isExpanded: false,
-                        borderRadius: BorderRadius.circular(15.r),
-                        decoration: InputDecoration(
-                          labelText: 'اختار الحالة',
-                          labelStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12.sp,
-                          ),
-                          border: InputBorder.none,
-                        ),
-                        icon: const Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: Colors.grey,
-                        ),
-                        items: [
-                          DropdownMenuItem(
-                            value: 'Active',
-                            child: Align(
-                              alignment: Alignment.topRight,
-                              child: Text(
-                                'مفعلة',
-                                style: TextStyle(fontSize: 14.sp),
-                              ),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Inactive',
-                            child: Align(
-                              alignment: Alignment.topRight,
-                              child: Text(
-                                'غير مفعلة',
-                                style: TextStyle(fontSize: 14.sp),
-                              ),
-                            ),
-                          ),
-                        ],
-                        onChanged: (value) {},
-                      ),
-                    ),
-                    SizedBox(height: 25.h),
-                    state is AddCategoryLoadingState? const Center(child: CircularProgressIndicator()) : defaultButton(
-                        onPressed: () async {
-                          if(titleController.text.isEmpty && catImage.isEmpty){
-                            showSnackBar(Colors.red, 'يرجى ادخال كل الحقول', context);
-                          }else{
-                            await appCubit.createCategory(
-                                title: titleController.text,
-                                image: catImage,
-                                isActive: isActive
-                            );
-                          }
-                        },
-                        text: 'حفظ',
-                        height: 55.h
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          },
-        )
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -104,5 +104,30 @@ class GetCategoryErrorState extends AppStates{
 
 }
 
+//////////////////////////////////////
+
+class DeleteCategorySuccessState extends AppStates{}
+
+class DeleteCategoryLoadingState extends AppStates{}
+
+class DeleteGetCategoryErrorState extends AppStates{
+  final String error;
+
+  DeleteGetCategoryErrorState({required this.error});
+
+}
+
+//////////////////////////////////////
+
+class EditCategorySuccessState extends AppStates{}
+
+class EditCategoryLoadingState extends AppStates{}
+
+class EditGetCategoryErrorState extends AppStates{
+  final String error;
+
+  EditGetCategoryErrorState({required this.error});
+
+}
 
 

@@ -12,6 +12,8 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
+import '../../shared/compenents/components.dart';
+
 class AdminDeptMangament extends StatefulWidget {
   const AdminDeptMangament({super.key});
 
@@ -20,126 +22,158 @@ class AdminDeptMangament extends StatefulWidget {
 }
 
 class _AdminDeptMangamentState extends State<AdminDeptMangament> {
- @override
+  @override
   void initState() {
     AppCubit.get(context).getCategories();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: mainColor,
-            automaticallyImplyLeading: false,
-            leading: IconButton(
-                  onPressed: ()=>Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios_rounded,color: Colors.white,)
-              ),
-            title: Text(
-                'إدارة الأقسام',
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white
-              ),
-            ),
-            actions: [
-              IconButton(
-                  onPressed: ()=>move(context, const AddDept()),
-                  icon:  Icon(Icons.add_rounded,color: Colors.white,size: 30.w,)
-              ),
-              SizedBox(width: 5.w,),
-            ],
-          ),
-          body: BlocBuilder<AppCubit,AppStates>(
-              builder: (context, state) {
-                AppCubit appCubit = AppCubit.get(context);
-                return state is GetCategoryLoadingState? const Center(child: CircularProgressIndicator())
-                    :GridView.builder(
-                  shrinkWrap: true,
-                  padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 20.h),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 15.h,
-                    crossAxisSpacing: 10.w,
-                    childAspectRatio: 1.1,
-                  ),
-                  itemCount: appCubit.categories.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onLongPress: ()=>print(appCubit.categories),
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: (){},
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: mainColor.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(15.r),
-                            border: Border.all(color: mainColor.withOpacity(0.1))
+          body: BlocBuilder<AppCubit, AppStates>(
+            builder: (context, state) {
+              AppCubit appCubit = AppCubit.get(context);
+              return state is GetCategoryLoadingState
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        header(
+                            title: 'إدارة الأقسام',
+                            context: context,
+                            isLeading: true,
+                            isNotif: false,
+                            isAction: true,
+                            actionIcon: 'assets/add_grid.svg',
+                            onActionPresses: ()=>move(context, const AddDept())
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsetsDirectional.all(10),
-                                child: Image.file(File('${appCubit.categories[index]['image']}'))
-                              ),
-                            ),
-                            Container(
-                              height: 40.h,
-                              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 10.w, vertical: 20.h),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 15.h,
+                            crossAxisSpacing: 10.w,
+                            childAspectRatio: 1.1,
+                          ),
+                          itemCount: appCubit.categories.length,
+                          itemBuilder: (context, index) {
+                            final category = appCubit.categories[index];
+                            return Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r))
+                                color: appCubit.isDark
+                                    ? lightDarkColor
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(25.r),
+                                boxShadow: blueShadow,
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: appCubit.categories[index]['title']!.length > 10
-                                        ? SizedBox(
-                                      height: 25.h,
-                                      child: Marquee(
-                                        text: appCubit.categories[index]['title']!,
-                                        scrollAxis: Axis.horizontal,
-                                        blankSpace: 20.w,
-                                        velocity: 30,
-                                        pauseAfterRound: const Duration(seconds: 1),
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: mainColor.withOpacity(0.05),
+                                            borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
+                                          ),
+                                          padding: EdgeInsetsDirectional.all(15.r),
+                                          child: Image.file(
+                                            File('${category['image']}'),
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
-                                      ),
-                                    )
-                                        : Text(
-                                      appCubit.categories[index]['title']!,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                      ),
+                                        PositionedDirectional(
+                                          top: 10.h,
+                                          end: 10.w,
+                                          child: InkWell(
+                                            onTap: () => move(context,  ManageDept(category: category,)),
+                                            child: Container(
+                                              padding: EdgeInsetsDirectional.all(5.w),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white
+                                                    .withOpacity(0.8),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                Icons.more_horiz_rounded,
+                                                color: mainColor,
+                                                size: 20.sp,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  IconButton(
-                                      onPressed: ()=>move(context, const ManageDept()),
-                                      icon: const Icon(Icons.more_horiz_rounded)
-                                  )
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w, vertical: 12.h),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        category['title']!.length > 10
+                                            ? SizedBox(
+                                                height: 22.h,
+                                                child: Marquee(
+                                                  text: category['title']!,
+                                                  scrollAxis: Axis.horizontal,
+                                                  blankSpace: 20.w,
+                                                  velocity: 30,
+                                                  pauseAfterRound:
+                                                      const Duration(
+                                                          seconds: 1),
+                                                  style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                  ),
+                                                ),
+                                              )
+                                            : Text(
+                                                 category['title']!,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: appCubit.isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                ),
+                                              ),
+                                        SizedBox(height: 5.h),
+                                        Container(
+                                          width: 20.w,
+                                          height: 3.h,
+                                          decoration: BoxDecoration(
+                                            color: mainColor.withOpacity(0.4),
+                                            borderRadius:
+                                                BorderRadius.circular(10.r),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
-
-                          ],
+                            );
+                          },
                         ),
-                      ),
+                      ],
                     );
-                  },
-                );
-              },
+            },
           ),
-        )
-    );
+        ));
   }
 }

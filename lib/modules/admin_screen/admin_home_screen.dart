@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -80,40 +81,74 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       'clientName': 'محمد عبد الرحمن',
     },
   ];
-  final List<Map<String, String>> services = [
-    {"name": "الكهرباء", "icon": "assets/SVGs/E.svg", "type": "كهرباء"},
-    {"name": "السباكة", "icon": "assets/SVGs/P.svg", "type": "سباكة"},
-    {"name": "البناء", "icon": "assets/SVGs/C.svg", "type": "بناء"},
-    {"name": "التكييف", "icon": "assets/SVGs/AC.svg", "type": "تكييف"},
-    {"name": "الحدادة", "icon": "assets/SVGs/A.svg", "type": "حدادة"},
-    {"name": "الماء", "icon": "assets/SVGs/WT.svg", "type": "ماء"},
-    {"name": "النجارة", "icon": "assets/SVGs/CA.svg", "type": "نجارة"},
-    {"name": "الدهان", "icon": "assets/SVGs/PA.svg", "type": "دهان"},
-  ];
+
+  Widget buildDetailRow(String label, String value, String iconPath,dynamic cubit) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsetsDirectional.all(8),
+          decoration: BoxDecoration(
+              color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10.r)
+          ),
+          child: SvgPicture.asset(
+            iconPath,
+            width: 22.w,
+            height: 22.h,
+            color: mainColor,
+          ),
+        ),
+        SizedBox(
+          width: 10.w,
+        ),
+        SizedBox(
+          width: 90.w,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: cubit.isDark? darkSubTextColor: Colors.grey,
+              fontSize: 12.sp,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+                color: cubit.isDark? darkSubTextColor: Colors.black87,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
 
   @override
   void initState() {
     AppCubit.get(context).getAdminData();
+    AppCubit.get(context).getCategories();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    AppCubit appCubit = AppCubit.get(context);
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
           body: BlocBuilder<AppCubit, AppStates>(
             builder: (context, state) {
-              AppCubit appCubit = AppCubit.get(context);
-              return SingleChildScrollView(
+              return appCubit.isGetAdminDataLoading || appCubit.isGetCategoriesLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     header(title: 'مرحبا، هشام', context: context),
-                    state is GetAdminDataLoadingState? const Center(child: CircularProgressIndicator())
-                        : appCubit.users.isEmpty || appCubit.services.isEmpty
-                        || appCubit.requests.isEmpty || appCubit.providers.isEmpty ? const Text('لا توجد بيانات للإحصائات')
-                        : GridView.builder(
+                    GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: adminCards.length,
@@ -260,8 +295,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     SizedBox(height: 10.h,),
                     GridView.builder(
                       shrinkWrap: true,
-                      padding:
-                          EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -269,54 +303,45 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         crossAxisSpacing: 10.w,
                         childAspectRatio: 2.1,
                       ),
-                      itemCount: 4,
+                      itemCount: appCubit.categories.length > 4 ? 4 : appCubit.categories.length,
                       itemBuilder: (context, index) {
-                        return InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          borderRadius: BorderRadius.circular(25.r),
-                          onTap: (){},
-                          child: Container(
-                            padding: EdgeInsetsDirectional.all(10.r),
-                            decoration: BoxDecoration(
-                              color: appCubit.isDark ? lightDarkColor : Colors.white,
-                              borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: blueShadow,
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
+                        final caterory = appCubit.categories[index];
+                        return Container(
+                          padding: EdgeInsetsDirectional.all(10.w),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            borderRadius: BorderRadius.circular(25.r),
+                            boxShadow: blueShadow,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
                                   width: 50.w,
                                   height: 50.h,
-                                  padding: EdgeInsets.all(12.r),
+                                  padding: EdgeInsetsDirectional.all(12.w),
                                   decoration: BoxDecoration(
                                     color: mainColor.withOpacity(0.08),
                                     borderRadius: BorderRadius.circular(18.r),
                                   ),
-                                  child: SvgPicture.asset(
-                                    services[index]['icon']!,
-                                    // ignore: deprecated_member_use
-                                    color: mainColor,
+                                  child: Image.file(File(caterory['image']),fit: BoxFit.cover,)
+                              ),
+                              SizedBox(width: 10.w),
+                              Expanded(
+                                child: Text(
+                                  caterory['title']!,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.sp,
+                                    color: appCubit.isDark ? Colors.white : Colors.black87,
                                   ),
                                 ),
-                                SizedBox(width: 10.w),
-                                Expanded(
-                                  child: Text(
-                                    services[index]['name']!,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12.sp,
-                                      color: appCubit.isDark ? Colors.white : Colors.black87,
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: mainColor.withOpacity(0.3),
-                                  size: 12.sp,
-                                ),
-                              ],
-                            ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: mainColor.withOpacity(0.3),
+                                size: 12.sp,
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -357,27 +382,25 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     SizedBox(height: 10.h,),
                     SizedBox(
-                      height: 320.h,
+                      height: 270.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: 5,
+                        itemCount: appCubit.providers.length > 4? 4 : appCubit.providers.length,
                         padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, bottom: 15.h),
                         separatorBuilder: (context, index) => SizedBox(width: 15.w),
                         itemBuilder: (context, index) {
+                          final provider = appCubit.providers[index];
                           return InkWell(
                             onTap: () {},
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             borderRadius: BorderRadius.circular(25.r),
                             child: Container(
-                              width: 200.w,
+                              width: 190.w,
                               decoration: BoxDecoration(
-                                color: appCubit.isDark ? lightDarkColor : Colors.white,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: appCubit.isDark ? [] : blueShadow,
-                                border: appCubit.isDark
-                                    ? Border.all(color: const Color(0xFF30363D))
-                                    : null,
+                                boxShadow: blueShadow,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,12 +410,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(25.r),
                                         child: Image.network(
-                                          'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+                                          provider['profileImage'],
                                           height: 130.h,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
                                           errorBuilder: (context, error, stackTrace) => Container(
                                             height: 130.h,
+                                            width: double.infinity,
                                             color: Colors.grey.shade200,
                                             child: Icon(Icons.person, color: Colors.grey, size: 35.r),
                                           ),
@@ -412,15 +436,21 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                 borderRadius: BorderRadius.circular(8.r),
                                               ),
                                               child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
                                                 children: [
                                                   Icon(Icons.star_rounded, color: mainColor, size: 14.sp),
                                                   SizedBox(width: 2.w),
-                                                  Text(
-                                                    '4.8',
-                                                    style: TextStyle(
-                                                      color: mainColor,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 10.sp,
+                                                  Padding(
+                                                    padding:  EdgeInsetsDirectional.only(top: 5.h),
+                                                    child: Text(
+                                                      '${provider['avgRating']}',
+                                                      style: TextStyle(
+                                                        color: mainColor,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 10.sp,
+                                                        height: 1
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
@@ -432,12 +462,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.all(12.r),
+                                    padding: EdgeInsetsDirectional.all(10.w),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'عبد الله محمد احمد',
+                                          provider['name'],
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -448,7 +478,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         ),
                                         SizedBox(height: 5.h),
                                         Text(
-                                          'كهربائي',
+                                          provider['specialization'],
                                           style: TextStyle(
                                             fontSize: 11.sp,
                                             color: Colors.grey,
@@ -456,13 +486,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         ),
                                         SizedBox(height: 10.h),
                                         Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                                          width: double.infinity,
+                                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 6.h),
                                           decoration: BoxDecoration(
                                             color: mainColor.withOpacity(0.05),
                                             borderRadius: BorderRadius.circular(12.r),
                                           ),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               Text(
                                                 'عرض الملف الشخصي',
@@ -480,38 +512,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        SizedBox(height: 10.h),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsetsDirectional.all(8.r),
-                                              decoration: BoxDecoration(
-                                                color: mainColor,
-                                                shape: BoxShape.circle,
-                                                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5)],
-                                              ),
-                                              child: SvgPicture.asset(
-                                                'assets/whats.svg',
-                                                color: Colors.white,
-                                                width: 22.w,
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsetsDirectional.all(8.r),
-                                              decoration: BoxDecoration(
-                                                color: mainColor,
-                                                shape: BoxShape.circle,
-                                                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5)],
-                                              ),
-                                              child: SvgPicture.asset(
-                                                'assets/phone.svg',
-                                                color: Colors.white,
-                                                width: 22.w,
-                                              ),
-                                            ),
-                                          ],
                                         ),
                                       ],
                                     ),
@@ -558,25 +558,25 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     SizedBox(height: 10.h,),
                     SizedBox(
-                      height: 320.h,
+                      height: 310.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: 5,
+                        itemCount: appCubit.services.length > 4 ? 4 : appCubit.services.length,
                         padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w,bottom: 10.h),
                         itemBuilder: (context, index) {
-                          // var service = userServicesCubit.userElecServices[index];
-                          // var providerData = cubit.allUsers[service['providerId']];
+                          final service = appCubit.services[index];
+                          final providerData = appCubit.providers.firstWhere((element) => element['id']==service['providerId'],);
                           return InkWell(
-                            onTap: () {},
+                            onTap: (){},
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             borderRadius: BorderRadius.circular(25.r),
                             child: Container(
                               width: 300.w,
                               decoration: BoxDecoration(
-                                color: appCubit.isDark ? lightDarkColor : Colors.white,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: appCubit.isDark ? [] : blueShadow,
+                                boxShadow: blueShadow,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -586,7 +586,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(25.r),
                                         child: Image.network(
-                                          'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
+                                          service['serviceImage'],
                                           height: 150.h,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
@@ -610,7 +610,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
                                           ),
                                           child: Text(
-                                            '25000 $reyalSymbol',
+                                            '${service['price']} $reyalSymbol',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -633,7 +633,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                 borderRadius: BorderRadius.circular(10.r),
                                               ),
                                               child: Text(
-                                                'تكييف',
+                                                service['category'],
                                                 style: TextStyle(
                                                   color: mainColor,
                                                   fontWeight: FontWeight.w600,
@@ -652,7 +652,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'تنظيف تكييف مركزي شمسي',
+                                          service['name'],
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -661,17 +661,20 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             color: appCubit.isDark ? Colors.white : Colors.black,
                                           ),
                                         ),
-                                        SizedBox(height: 8.h),
                                         Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             Icon(Icons.star_rounded, color: Colors.amber, size: 18.sp),
                                             SizedBox(width: 5.w),
-                                            Text(
-                                              '4.5',
-                                              style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w600,
+                                            Padding(
+                                              padding: EdgeInsetsDirectional.only(top: 5.h),
+                                              child: Text(
+                                                '${service['rate']}',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
                                             const Spacer(),
@@ -682,7 +685,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 12.h),
+                                        SizedBox(height: 10.h),
                                         Container(
                                           padding: EdgeInsets.all(8.r),
                                           decoration: BoxDecoration(
@@ -693,15 +696,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             children: [
                                               CircleAvatar(
                                                 radius: 16.r,
-                                                backgroundImage: const NetworkImage('https://i.pinimg.com/1200x/47/91/f0/4791f027dcad85f85883359daf191c5d.jpg'),
+                                                backgroundImage:  NetworkImage(
+                                                    providerData['profileImage']
+                                                ),
                                               ),
-                                              SizedBox(width: 8.w),
+                                              SizedBox(width: 10.w),
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      'هادي محمد',
+                                                      providerData['name'],
                                                       maxLines: 1,
                                                       overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -711,7 +716,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      'كهربائي',
+                                                      providerData['specialization'],
                                                       maxLines: 1,
                                                       overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -774,30 +779,27 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     SizedBox(height: 10.h),
                     SizedBox(
-                      height: 370.h,
+                      height: 380.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding:
-                            EdgeInsetsDirectional.only(start: 15.w, end: 15.w),
-                        itemCount: bookings.length,
+                        EdgeInsetsDirectional.only(start: 15.w, end: 15.w),
+                        itemCount: appCubit.requests.length > 4 ? 4 : appCubit.requests.length ,
                         itemBuilder: (context, index) {
-                          var booking = bookings[index];
+                          var request = appCubit.requests[index];
+                          final providerData = appCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
+                          final userData = appCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
                           Color statusColor;
-                          String status = booking['status'];
+                          String status = request['status'];
+
                           switch (status) {
-                            case 'مكتمل':
-                              statusColor = Colors.green;
-                              break;
-                            case 'مقبول':
-                            case 'في الطريق':
-                              statusColor = Colors.blueAccent;
-                              break;
-                            case 'مرفوض':
-                            case 'ملغي':
-                              statusColor = Colors.redAccent;
-                              break;
-                            default:
-                              statusColor = Colors.orangeAccent;
+                            case 'مكتمل':statusColor = Colors.green;
+                            break;
+                            case 'مقبول': case 'في الطريق':statusColor = Colors.blueAccent;
+                            break;
+                            case 'مرفوض':case 'ملغي':statusColor = Colors.redAccent;
+                            break;
+                            default:statusColor = Colors.orangeAccent;
                           }
 
                           return Padding(
@@ -805,96 +807,87 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             child: InkWell(
                               splashColor: Colors.transparent,
                               highlightColor: Colors.transparent,
-                              onTap: () {},
+                              onTap: (){print(request);},
                               child: Container(
-                                width: 320.w,
-                                padding: const EdgeInsetsDirectional.all(10),
+                                width: 330.w,
+                                padding: EdgeInsetsDirectional.all(15.r),
                                 decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(15.r),
+                                  color: appCubit.isDark ? lightDarkColor : Colors.white,
+                                  borderRadius: BorderRadius.circular(25.r),
+                                  boxShadow: blueShadow,
                                 ),
                                 child: Column(
                                   children: [
                                     Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(15.r),
-                                          child: Image.network(
-                                            booking['image'],
-                                            width: 80.w,
-                                            height: 80.h,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    Container(
-                                              width: 80.w,
-                                              height: 80.h,
-                                              decoration: BoxDecoration(
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(20.r),
+                                            border: Border.all(
+                                              color: mainColor.withOpacity(0.1),
+                                              width: 2,
+                                            ),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(18.r),
+                                            child: Image.network(
+                                              request['image'] ?? '',
+                                              width: 70.w,
+                                              height: 70.h,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => Container(
+                                                width: 70.w,
+                                                height: 70.h,
                                                 color: Colors.grey.shade200,
+                                                child: Icon(Icons.image_not_supported, color: Colors.grey, size: 20.sp),
                                               ),
                                             ),
                                           ),
                                         ),
-                                        SizedBox(width: 10.w),
+                                        SizedBox(width: 15.w),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Row(
                                                 children: [
                                                   Expanded(
                                                     child: Text(
-                                                      booking['title'],
+                                                      request['title'],
                                                       maxLines: 2,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                      overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
-                                                        fontSize: 13.sp,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black,
+                                                        fontSize: 14.sp,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: appCubit.isDark ? Colors.white : Colors.black,
                                                       ),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 10.w),
                                                   Container(
-                                                    height: 30.h,
-                                                    padding:
-                                                        EdgeInsetsDirectional
-                                                            .symmetric(
-                                                                horizontal:
-                                                                    7.w),
+                                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                                     decoration: BoxDecoration(
-                                                      color: statusColor
-                                                          .withOpacity(0.2),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6.r),
+                                                      color: statusColor.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(30.r),
+                                                      border: Border.all(color: statusColor.withOpacity(0.2)),
                                                     ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        status,
-                                                        style: TextStyle(
-                                                          color: statusColor,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 11.sp,
-                                                        ),
+                                                    child: Text(
+                                                      status,
+                                                      style: TextStyle(
+                                                        color: statusColor,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 10.sp,
                                                       ),
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                              SizedBox(height: 5.h),
+                                              SizedBox(height: 6.h),
                                               Text(
-                                                '${booking['price']} $reyalSymbol',
+                                                '${request['price']} $reyalSymbol',
                                                 style: TextStyle(
-                                                  fontSize: 13.sp,
-                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w900,
                                                   color: mainColor,
                                                 ),
                                               ),
@@ -903,155 +896,31 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 10.h),
+                                    SizedBox(height: 15.h),
                                     Container(
-                                      padding:
-                                          const EdgeInsetsDirectional.all(10),
+                                      padding: EdgeInsets.all(12.r),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(12.r),
+                                        color: mainColor.withOpacity(0.04),
+                                        borderRadius: BorderRadius.circular(20.r),
                                       ),
                                       child: Column(
                                         children: [
-                                          Row(
-                                            children: [
-                                              SvgPicture.asset(
-                                                'assets/loc.svg',
-                                                width: 22.w,
-                                                color: mainColor,
-                                              ),
-                                              SizedBox(width: 5.w),
-                                              Text(
-                                                'العنوان:',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8.w),
-                                              Expanded(
-                                                child: Text(
-                                                  booking['address'],
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 13.sp,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                          buildDetailRow('العنوان:', request['address'], 'assets/loc.svg', appCubit),
                                           Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                    horizontal: 10.w),
-                                            child: dashedDivider(Colors.grey),
+                                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                                            child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          Row(
-                                            children: [
-                                              SvgPicture.asset(
-                                                'assets/timer.svg',
-                                                width: 22.w,
-                                                color: mainColor,
-                                              ),
-                                              SizedBox(width: 5.w),
-                                              Text(
-                                                'التاريخ والوقت:',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8.w),
-                                              Expanded(
-                                                child: Text(
-                                                  booking['scheduledAt'],
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 13.sp,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                          buildDetailRow('الموعد:', appCubit.formatStatusTime(request['scheduledAt']), 'assets/timer.svg', appCubit),
                                           Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                    horizontal: 10.w),
-                                            child: dashedDivider(Colors.grey),
+                                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                                            child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          Row(
-                                            children: [
-                                              SvgPicture.asset(
-                                                'assets/acc.svg',
-                                                width: 22.w,
-                                                color: mainColor,
-                                              ),
-                                              SizedBox(width: 5.w),
-                                              Text(
-                                                'المستخدم:',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8.w),
-                                              Expanded(
-                                                child: Text(
-                                                  booking['providerName'],
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 13.sp,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                          buildDetailRow('الفني:', providerData['name'], 'assets/providers.svg', appCubit),
                                           Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                    horizontal: 10.w),
-                                            child: dashedDivider(Colors.grey),
+                                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                                            child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          Row(
-                                            children: [
-                                              SvgPicture.asset(
-                                                'assets/providers.svg',
-                                                width: 22.w,
-                                                color: mainColor,
-                                              ),
-                                              SizedBox(width: 5.w),
-                                              Text(
-                                                'الفني:',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8.w),
-                                              Expanded(
-                                                child: Text(
-                                                  booking['clientName'],
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 13.sp,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                          buildDetailRow('المستخدم:', userData['name'], 'assets/acc.svg', appCubit),
                                         ],
                                       ),
                                     ),
@@ -1061,9 +930,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             ),
                           );
                         },
-                        separatorBuilder: (context, index) => SizedBox(
-                          width: 15.w,
-                        ),
+                        separatorBuilder: (context, index) => SizedBox(width: 15.w,),
                       ),
                     ),
                     Padding(
@@ -1099,82 +966,92 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     SizedBox(height: 10.h,),
                     SizedBox(
-                      height: 220.h,
+                      height: 250.h,
                       child: ListView.separated(
-                        padding: EdgeInsetsDirectional.only(start: 15.w),
+                        padding: EdgeInsetsDirectional.only(start: 15.w,bottom: 10.h),
                         scrollDirection: Axis.horizontal,
-                        itemCount: 5,
+                        itemCount: appCubit.users.length > 4 ? 4 : appCubit.users.length,
                         itemBuilder: (context, index) {
-                          return Container(
-                            width: 170.w,
-                            decoration: BoxDecoration(
-                                color: mainColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(20.r)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                ClipRRect(
-                                  borderRadius:
-                                  BorderRadiusDirectional.vertical(
-                                      top: Radius.circular(20.r)),
-                                  child: Image.network(
-                                    'https://i.pinimg.com/736x/d1/81/e4/d181e44cf0a7d5f9190bc96939da4164.jpg',
-                                    height: 115.h,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                        Container(
-                                          height: 115.h,
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey.shade300,
-                                              borderRadius:
-                                              BorderRadius.circular(20.r)),
+                          final user = appCubit.users[index];
+                          return InkWell(
+                            onTap: () {},
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            borderRadius: BorderRadius.circular(25.r),
+                            child: Container(
+                              width: 190.w,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(25.r),
+                                boxShadow: blueShadow,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(25.r),
+                                    child: Image.network(
+                                      user['profileImage'],
+                                      height: 140.h,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        height: 140.h,
+                                        width: double.infinity,
+                                        color: Colors.grey.shade200,
+                                        child: Icon(Icons.person, color: Colors.grey, size: 35.r),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.all(10.w),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          user['name'],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14.sp,
+                                            color: appCubit.isDark ? Colors.white : Colors.black,
+                                          ),
                                         ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.all(15.w),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'عبد الله محمد احمد',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 12.sp,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      SizedBox(height: 10.h,),
-                                      Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundColor: Colors.white,
-                                            radius: 20.r,
-                                            child: IconButton(
-                                                onPressed: () {},
-                                                icon: SvgPicture.asset(
-                                                  'assets/whats.svg',
-                                                  color: mainColor,
-                                                )),
+                                        SizedBox(height: 10.h),
+                                        Container(
+                                          width: double.infinity,
+                                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 6.h),
+                                          decoration: BoxDecoration(
+                                            color: mainColor.withOpacity(0.05),
+                                            borderRadius: BorderRadius.circular(12.r),
                                           ),
-                                          CircleAvatar(
-                                            backgroundColor: Colors.white,
-                                            radius: 20.r,
-                                            child: IconButton(
-                                                onPressed: () {},
-                                                icon: SvgPicture.asset(
-                                                  'assets/phone.svg',
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'عرض الملف الشخصي',
+                                                style: TextStyle(
+                                                  fontSize: 10.sp,
+                                                  fontWeight: FontWeight.bold,
                                                   color: mainColor,
-                                                )),
+                                                ),
+                                              ),
+                                              SizedBox(width: 5.w),
+                                              Icon(
+                                                Icons.arrow_forward_ios_rounded,
+                                                color: mainColor,
+                                                size: 10.sp,
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                )
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         },

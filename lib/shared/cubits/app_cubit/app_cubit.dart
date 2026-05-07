@@ -418,11 +418,15 @@ class AppCubit extends Cubit<AppStates>{
   List<Map<String,dynamic>> services =[];
   List<Map<String,dynamic>> requests =[];
 
+  bool isGetAdminDataLoading=false;
+  bool isGetCategoriesLoading=false;
+
   Future<void> getAdminData()async{
     users=[];
     services=[];
     requests=[];
     providers=[];
+    isGetAdminDataLoading=true;
     emit(GetAdminDataLoadingState());
     try{
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').where('role',isEqualTo: 'user').get();
@@ -450,10 +454,33 @@ class AppCubit extends Cubit<AppStates>{
         data['id'] = doc.id;
         providers.add(data);
       }
+      isGetAdminDataLoading =false;
       emit(GetAdminDataSuccessState());
 
     }catch(e){
+      isGetAdminDataLoading =false;
       emit(GetWorkerRequestsErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> getCategories()async{
+    try{
+      categories=[];
+      isGetCategoriesLoading=true;
+      emit(GetCategoryLoadingState());
+      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
+
+      for(var doc in categoriesSnapshot.docs){
+        var data = doc.data();
+        data['id'] = doc.id;
+        categories.add(data);
+      }
+      isGetCategoriesLoading=false;
+      emit(GetCategorySuccessState());
+
+    }catch(e){
+      isGetCategoriesLoading=false;
+      emit(GetCategoryErrorState(error: e.toString()));
     }
   }
 
@@ -479,21 +506,35 @@ class AppCubit extends Cubit<AppStates>{
 
   List<Map<String,dynamic>> categories =[];
 
-  Future<void> getCategories()async{
+  Future<void> deleteCategory(String docId)async{
     try{
-      categories=[];
-      emit(GetCategoryLoadingState());
-      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
-
-      for(var doc in categoriesSnapshot.docs){
-        var data = doc.data();
-        data['id'] = doc.id;
-        categories.add(data);
-      }
-      emit(GetCategorySuccessState());
+      emit(DeleteCategoryLoadingState());
+      await FirebaseFirestore.instance.collection('categories').doc(docId).delete();
+      emit(DeleteCategorySuccessState());
 
     }catch(e){
-      emit(GetCategoryErrorState(error: e.toString()));
+      emit(DeleteGetCategoryErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> editCategory({
+        required String docId,
+        required String title,
+        required bool isActive,
+        required String image,
+      })
+  async {
+    try{
+      emit(EditCategoryLoadingState());
+      await FirebaseFirestore.instance.collection('categories').doc(docId).update({
+        'title':title,
+        'isActive': isActive,
+        'image': image
+      });
+      emit(EditCategorySuccessState());
+
+    }catch(e){
+      emit(EditGetCategoryErrorState(error: e.toString()));
     }
   }
 
