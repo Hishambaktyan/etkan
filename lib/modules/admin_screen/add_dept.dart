@@ -1,14 +1,15 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+
+import '../../shared/cubits/admin_cubit/admin_cubit.dart';
 
 class AddDept extends StatefulWidget {
   const AddDept({super.key});
@@ -20,7 +21,7 @@ class AddDept extends StatefulWidget {
 class _AddDeptState extends State<AddDept> {
   TextEditingController titleController = TextEditingController();
   bool isActive = true;
-  String catImage = '';
+  File? catImage;
 
   Future<void> pickCategorymage() async {
     final ImagePicker picker = ImagePicker();
@@ -28,24 +29,32 @@ class _AddDeptState extends State<AddDept> {
       source: ImageSource.gallery,
       imageQuality: 80,
     );
-    if (image != null) {
+    if(image!=null){
       setState(() {
-        catImage = image.path;
+        catImage=File(image.path);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    AppCubit appCubit = AppCubit.get(context);
+    AdminCubit adminCubit = AdminCubit.get(context);
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: BlocConsumer<AppCubit, AppStates>(
+      child: BlocConsumer<AdminCubit, AdminStates>(
         listener: (context, state) {
+          if(state is AddCategoryLoadingState){
+            showLoadingDialog(context);
+          }
           if (state is AddCategorySuccessState) {
             showSnackBar(Colors.green, 'تم الإضافة بنجاح', context);
+            hideLoadingDialog(context);
             Navigator.pop(context);
-            appCubit.getCategories();
+            adminCubit.getCategories();
+          }
+          if (state is AddCategoryErrorState) {
+            print(state.error);
+            hideLoadingDialog(context);
           }
         },
         builder: (context, state) {
@@ -79,19 +88,21 @@ class _AddDeptState extends State<AddDept> {
                                       shape: BoxShape.circle,
                                       border: Border.all(color: mainColor.withOpacity(0.2), width: 2),
                                     ),
-                                    child: catImage.isEmpty
+                                    child: catImage==null
                                         ? Padding(
-                                      padding: EdgeInsets.all(25.r),
+                                      padding: EdgeInsetsDirectional.all(25.r),
                                       child: SvgPicture.asset(
                                         'assets/SVGs/E.svg',
                                         color: mainColor.withOpacity(0.5),
                                       ),
-                                    )
-                                        : ClipRRect(
-                                      borderRadius: BorderRadius.circular(55.r),
-                                      child: Image.file(
-                                        File(catImage),
-                                        fit: BoxFit.cover,
+                                    ) : Padding(
+                                      padding:  EdgeInsetsDirectional.all(20.w),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(55.r),
+                                        child: SvgPicture.file(
+                                          catImage!,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -116,7 +127,7 @@ class _AddDeptState extends State<AddDept> {
                                 errorMes: 'يرجى تعبئة الحقل',
                                 controller: titleController,
                                 type: TextInputType.text,
-                                cubit: appCubit,
+                                cubit: AppCubit.get(context),
                               ),
                               SizedBox(height: 15.h),
                               Container(
@@ -147,7 +158,7 @@ class _AddDeptState extends State<AddDept> {
                                         style: TextStyle(
                                           fontSize: 12.sp,
                                           fontWeight: FontWeight.w600,
-                                          color: appCubit.isDark ? Colors.white : Colors.black,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ),
@@ -168,16 +179,14 @@ class _AddDeptState extends State<AddDept> {
                           ),
                         ),
                         SizedBox(height: 40.h),
-                        state is AddCategoryLoadingState
-                            ? const Center(child: CircularProgressIndicator())
-                            : defaultButton(
+                        defaultButton(
                           onPressed: () async {
-                            if (titleController.text.isEmpty || catImage.isEmpty) {
+                            if (titleController.text.isEmpty || catImage==null) {
                               showSnackBar(Colors.red, 'يرجى إكمال البيانات واختيار صورة', context);
                             } else {
-                              await appCubit.createCategory(
+                              await adminCubit.createCategory(
                                 title: titleController.text,
-                                image: catImage,
+                                imageFile: catImage!,
                                 isActive: isActive,
                               );
                             }
@@ -197,3 +206,5 @@ class _AddDeptState extends State<AddDept> {
     );
   }
 }
+
+

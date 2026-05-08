@@ -3,9 +3,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
+import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
@@ -21,7 +24,7 @@ class ManageDept extends StatefulWidget {
 class _ManageDeptState extends State<ManageDept> {
   TextEditingController titleController = TextEditingController();
   bool isActive = true;
-  String catImage = '';
+  File? catImage;
 
   Future<void> pickCategorymage() async {
     final ImagePicker picker = ImagePicker();
@@ -31,7 +34,7 @@ class _ManageDeptState extends State<ManageDept> {
     );
     if (image != null) {
       setState(() {
-        catImage = image.path;
+        catImage = File(image.path);
       });
     }
   }
@@ -116,26 +119,6 @@ class _ManageDeptState extends State<ManageDept> {
     );
   }
 
-  void showLoadingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return const Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
-    );
-  }
-
-  void hideLoadingDialog(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
-  }
-
   @override
   void initState() {
     titleController.text=widget.category['title'];
@@ -146,10 +129,10 @@ class _ManageDeptState extends State<ManageDept> {
 
   @override
   Widget build(BuildContext context) {
-    AppCubit appCubit = AppCubit.get(context);
+    AdminCubit adminCubit = AdminCubit.get(context);
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: BlocConsumer<AppCubit, AppStates>(
+      child: BlocConsumer<AdminCubit,AdminStates>(
         listener: (context, state) {
           if(state is DeleteCategoryLoadingState){
             showLoadingDialog(context);
@@ -158,7 +141,8 @@ class _ManageDeptState extends State<ManageDept> {
             showSnackBar(Colors.green, 'تم حذف القسم بنجاح', context);
             hideLoadingDialog(context);
             Navigator.pop(context);
-            appCubit.getCategories();
+            Navigator.pop(context);
+            adminCubit.getCategories();
 
           }
           if( state is EditCategoryLoadingState){
@@ -167,7 +151,7 @@ class _ManageDeptState extends State<ManageDept> {
           if(state is EditCategorySuccessState){
             showSnackBar(Colors.green, 'تم تعديل القسم بنجاح', context);
             hideLoadingDialog(context);
-            appCubit.getCategories();
+            adminCubit.getCategories();
             Navigator.pop(context);
           }
         },
@@ -185,8 +169,8 @@ class _ManageDeptState extends State<ManageDept> {
                     actionIcon: 'assets/delete.svg',
                     onActionPresses: ()=>showTheDialog(
                         context: context,
-                        appCubit: appCubit,
-                        onConfirm: ()=>appCubit.deleteCategory(widget.category['id'])
+                        appCubit: AppCubit.get(context),
+                        onConfirm: ()=>adminCubit.deleteCategory(widget.category['id'])
                     )
                   ),
                   Padding(
@@ -197,12 +181,9 @@ class _ManageDeptState extends State<ManageDept> {
                         Container(
                           padding: EdgeInsetsDirectional.all(20.w),
                           decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
-                            boxShadow: appCubit.isDark ? [] : blueShadow,
-                            border: appCubit.isDark
-                                ? Border.all(color: const Color(0xFF30363D))
-                                : null,
+                            boxShadow: blueShadow,
                           ),
                           child: Column(
                             children: [
@@ -219,19 +200,16 @@ class _ManageDeptState extends State<ManageDept> {
                                           color: mainColor.withOpacity(0.2),
                                           width: 2),
                                     ),
-                                    child: catImage.isEmpty
+                                    child: catImage==null
                                         ? Padding(
                                       padding: EdgeInsets.all(25.r),
-                                      child: SvgPicture.asset(
-                                        'assets/SVGs/E.svg',
-                                        color: mainColor.withOpacity(0.5),
+                                      child: SvgPicture.network(
+                                        widget.category['image'],
                                       ),
-                                    )
-                                        : ClipRRect(
-                                      borderRadius:
-                                      BorderRadius.circular(55.r),
-                                      child: Image.file(
-                                        File(catImage),
+                                    ) : ClipRRect(
+                                      borderRadius: BorderRadius.circular(55.r),
+                                      child: SvgPicture.file(
+                                        catImage!,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -257,7 +235,7 @@ class _ManageDeptState extends State<ManageDept> {
                                 errorMes: 'يرجى تعبئة الحقل',
                                 controller: titleController,
                                 type: TextInputType.text,
-                                cubit: appCubit,
+                                cubit: AppCubit.get(context),
                               ),
                               SizedBox(height: 15.h),
                               Container(
@@ -266,11 +244,7 @@ class _ManageDeptState extends State<ManageDept> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20.r),
-                                  boxShadow: appCubit.isDark ? [] : blueShadow,
-                                  border: appCubit.isDark
-                                      ? Border.all(
-                                      color: const Color(0xFF30363D))
-                                      : null,
+                                  boxShadow: blueShadow,
                                 ),
                                 child: Row(
                                   children: [
@@ -294,9 +268,7 @@ class _ManageDeptState extends State<ManageDept> {
                                         style: TextStyle(
                                           fontSize: 12.sp,
                                           fontWeight: FontWeight.w600,
-                                          color: appCubit.isDark
-                                              ? Colors.white
-                                              : Colors.black,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ),
@@ -320,11 +292,11 @@ class _ManageDeptState extends State<ManageDept> {
                         SizedBox(height: 40.h),
                         defaultButton(
                           onPressed: () async {
-                            await appCubit.editCategory(
+                            await adminCubit.editCategory(
                                 docId: widget.category['id'],
                                 title: titleController.text.trim(),
                                 isActive: isActive,
-                                image: catImage
+                                imageFile: catImage!
                             );
                           },
                           text: 'حفظ التغييرات',

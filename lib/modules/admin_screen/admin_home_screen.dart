@@ -1,20 +1,20 @@
-import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/modules/admin_screen/admin_bookings_management.dart';
-import 'package:trying_homy/modules/notifications_screen.dart';
+import 'package:trying_homy/modules/admin_screen/admin_services_list.dart';
+import 'package:trying_homy/modules/admin_screen/admin_provider_info.dart';
+import 'package:trying_homy/modules/admin_screen/admin_requests_list.dart';
+import 'package:trying_homy/modules/admin_screen/manage_dept.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
+import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../main.dart';
-import 'admin_dept_mangament.dart';
-import 'admin_providers_management.dart';
-import 'admin_users_managament.dart';
+import 'categories_list.dart';
+import 'admin_providers_list.dart';
+import 'admin_users_list.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -46,41 +46,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       'color': Colors.red,
     },
   ];
-  final List<Map<String, dynamic>> bookings = [
-    {
-      'title': 'تركيب فيش كهرباء',
-      'status': 'قيد الانتظار',
-      'price': '23000',
-      'image':
-          'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'address': 'عدن، المنصورة، شارع التسعين',
-      'scheduledAt': '03:18 - 15/04/2026 ص',
-      'providerName': 'هشام هاني',
-      'clientName': 'هادي محمد',
-    },
-    {
-      'title': 'إصلاح تسريب مياه',
-      'status': 'مقبول',
-      'price': '15000',
-      'image':
-          'https://i.pinimg.com/1200x/47/91/f0/4791f027dcad85f85883359daf191c5d.jpg',
-      'address': 'صنعاء، شارع الزبيري',
-      'scheduledAt': '04:30 - 18/04/2026 م',
-      'providerName': 'محمد عبدالله',
-      'clientName': 'عبد المجيد نايف',
-    },
-    {
-      'title': 'تنظيف تكييف مركزي',
-      'status': 'مكتمل',
-      'price': '25000',
-      'image':
-          'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-      'address': 'تعز، الحوبان',
-      'scheduledAt': '10:00 - 20/04/2026 ص',
-      'providerName': 'عبدالله خالد',
-      'clientName': 'محمد عبد الرحمن',
-    },
-  ];
 
   Widget buildDetailRow(String label, String value, String iconPath,dynamic cubit) {
     return Row(
@@ -88,7 +53,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         Container(
           padding: const EdgeInsetsDirectional.all(8),
           decoration: BoxDecoration(
-              color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
+              color: mainColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10.r)
           ),
           child: SvgPicture.asset(
@@ -106,7 +71,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: cubit.isDark? darkSubTextColor: Colors.grey,
+              color: Colors.grey,
               fontSize: 12.sp,
             ),
           ),
@@ -115,7 +80,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           child: Text(
             value,
             style: TextStyle(
-                color: cubit.isDark? darkSubTextColor: Colors.black87,
+                color: Colors.black,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500
             ),
@@ -125,24 +90,16 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-
-  @override
-  void initState() {
-    AppCubit.get(context).getAdminData();
-    AppCubit.get(context).getCategories();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    AppCubit appCubit = AppCubit.get(context);
+    AdminCubit adminCubit = AdminCubit.get(context);
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          body: BlocBuilder<AppCubit, AppStates>(
+          body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
-              return appCubit.isGetAdminDataLoading || appCubit.isGetCategoriesLoading
-                  ? const Center(child: CircularProgressIndicator())
+              return adminCubit.isGetAdminDataLoading
+                  ? const AdminHomeShimmer()
                   : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,10 +120,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         final card = adminCards[index];
                         return Container(
                           decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color:Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
-                            border: appCubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
-                            boxShadow: appCubit.isDark ? [] : blueShadow,
+                            boxShadow: blueShadow,
                           ),
                           child: Stack(
                             clipBehavior: Clip.antiAlias,
@@ -184,7 +140,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ),
                                     child: SvgPicture.asset(
                                       card['icon'],
-                                      color: card['color'].withOpacity(appCubit.isDark ? 0.05 : 0.1),
+                                      color: card['color'].withOpacity(0.1),
                                       width: 70.w,
                                       height: 70.h,
                                     ),
@@ -212,13 +168,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                           ),
                                         ),
                                         Text(
-                                          index==0?'${appCubit.users.length}'
-                                              :index==1?'${appCubit.services.length}'
-                                              :index==2?'${appCubit.services.length}'
-                                              :index==3?'${appCubit.providers.length}':'',
+                                          index==0?'${adminCubit.users.length}'
+                                              :index==1?'${adminCubit.services.length}'
+                                              :index==2?'${adminCubit.services.length}'
+                                              :index==3?'${adminCubit.providers.length}':'',
                                           style: TextStyle(
                                             fontWeight: FontWeight.w900,
-                                            color: appCubit.isDark ? Colors.white : card['color'],
+                                            color: card['color'],
                                             fontSize: 22.sp,
                                             letterSpacing: -1,
                                           ),
@@ -232,9 +188,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         Text(
                                           card['title'],
                                           style: TextStyle(
-                                            color: appCubit.isDark
-                                                ? Colors.white.withOpacity(0.9)
-                                                : Colors.black87,
+                                            color: Colors.black,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 13.sp,
                                           ),
@@ -286,7 +240,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           const Spacer(),
                           defaultTextButton(
                               onPressed: () =>
-                                  move(context, const AdminDeptMangament()),
+                                  move(context, const CategoriesList()),
                               text: 'عرض الكل',
                               isLined: false),
                         ],
@@ -303,45 +257,50 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         crossAxisSpacing: 10.w,
                         childAspectRatio: 2.1,
                       ),
-                      itemCount: appCubit.categories.length > 4 ? 4 : appCubit.categories.length,
+                      itemCount: adminCubit.categories.length > 4 ? 4 : adminCubit.categories.length,
                       itemBuilder: (context, index) {
-                        final caterory = appCubit.categories[index];
-                        return Container(
-                          padding: EdgeInsetsDirectional.all(10.w),
-                          decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
-                            borderRadius: BorderRadius.circular(25.r),
-                            boxShadow: blueShadow,
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                  width: 50.w,
-                                  height: 50.h,
-                                  padding: EdgeInsetsDirectional.all(12.w),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(18.r),
-                                  ),
-                                  child: Image.file(File(caterory['image']),fit: BoxFit.cover,)
-                              ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: Text(
-                                  caterory['title']!,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.sp,
-                                    color: appCubit.isDark ? Colors.white : Colors.black87,
+                        final caterory = adminCubit.categories[index];
+                        return InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: ()=>move(context, ManageDept(category: caterory)),
+                          child: Container(
+                            padding: EdgeInsetsDirectional.all(10.w),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(25.r),
+                              boxShadow: blueShadow,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                    width: 50.w,
+                                    height: 50.h,
+                                    padding: EdgeInsetsDirectional.all(12.w),
+                                    decoration: BoxDecoration(
+                                      color: mainColor.withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(18.r),
+                                    ),
+                                    child: SvgPicture.network(caterory['image'],fit: BoxFit.cover,)
+                                ),
+                                SizedBox(width: 10.w),
+                                Expanded(
+                                  child: Text(
+                                    caterory['title']!,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12.sp,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                color: mainColor.withOpacity(0.3),
-                                size: 12.sp,
-                              ),
-                            ],
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: mainColor.withOpacity(0.3),
+                                  size: 12.sp,
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -367,14 +326,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             width: 10.w,
                           ),
                           Text(
-                            'الفنييون',
+                            'الفنيين',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18.sp),
                           ),
                           const Spacer(),
                           defaultTextButton(
                               onPressed: () =>
-                                  move(context, const AdminProviderMangament()),
+                                  move(context, const AdminProvidersList()),
                               text: 'عرض الكل',
                               isLined: false),
                         ],
@@ -385,13 +344,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       height: 270.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: appCubit.providers.length > 4? 4 : appCubit.providers.length,
+                        itemCount: adminCubit.providers.length > 4? 4 : adminCubit.providers.length,
                         padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, bottom: 15.h),
                         separatorBuilder: (context, index) => SizedBox(width: 15.w),
                         itemBuilder: (context, index) {
-                          final provider = appCubit.providers[index];
+                          final provider = adminCubit.providers[index];
                           return InkWell(
-                            onTap: () {},
+                            onTap: ()=>move(context, AdminProviderInfo(provider: provider)),
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             borderRadius: BorderRadius.circular(25.r),
@@ -473,7 +432,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.sp,
-                                            color: appCubit.isDark ? Colors.white : Colors.black,
+                                            color: Colors.black,
                                           ),
                                         ),
                                         SizedBox(height: 5.h),
@@ -540,17 +499,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                               color: mainColor,
                             ),
                           ),
-                          SizedBox(
-                            width: 10.w,
-                          ),
+                          SizedBox(width: 10.w,),
                           Text(
-                            'الخدمات الحديثة',
+                            'الخدمات',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18.sp),
                           ),
                           const Spacer(),
                           defaultTextButton(
-                              onPressed: () {},
+                              onPressed: ()=>move(context, const AdminServicesList()),
                               text: 'عرض الكل',
                               isLined: false),
                         ],
@@ -561,11 +518,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       height: 310.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: appCubit.services.length > 4 ? 4 : appCubit.services.length,
+                        itemCount: adminCubit.services.length > 4 ? 4 : adminCubit.services.length,
                         padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w,bottom: 10.h),
                         itemBuilder: (context, index) {
-                          final service = appCubit.services[index];
-                          final providerData = appCubit.providers.firstWhere((element) => element['id']==service['providerId'],);
+                          final service = adminCubit.services[index];
+                          final providerData = adminCubit.providers.firstWhere((element) => element['id']==service['providerId'],);
                           return InkWell(
                             onTap: (){},
                             splashColor: Colors.transparent,
@@ -658,7 +615,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.sp,
-                                            color: appCubit.isDark ? Colors.white : Colors.black,
+                                            color: Colors.black,
                                           ),
                                         ),
                                         Row(
@@ -738,9 +695,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             ),
                           );
                         },
-                        separatorBuilder: (context, index) => SizedBox(
-                          width: 15.w,
-                        ),
+                        separatorBuilder: (context, index) => SizedBox(width: 15.w,),
                       ),
                     ),
                     SizedBox(height: 20.h,),
@@ -760,18 +715,16 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                               color: mainColor,
                             ),
                           ),
-                          SizedBox(
-                            width: 10.w,
-                          ),
+                          SizedBox(width: 10.w,),
                           Text(
-                            'الحجوزات الحديثة',
+                            'الحجوزات',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18.sp),
                           ),
                           const Spacer(),
                           defaultTextButton(
                               onPressed: () => move(
-                                  context, const AdminBookingsManagement()),
+                                  context, const AdminRequestsList()),
                               text: 'عرض الكل',
                               isLined: false),
                         ],
@@ -784,11 +737,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         scrollDirection: Axis.horizontal,
                         padding:
                         EdgeInsetsDirectional.only(start: 15.w, end: 15.w),
-                        itemCount: appCubit.requests.length > 4 ? 4 : appCubit.requests.length ,
+                        itemCount: adminCubit.requests.length > 4 ? 4 : adminCubit.requests.length ,
                         itemBuilder: (context, index) {
-                          var request = appCubit.requests[index];
-                          final providerData = appCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
-                          final userData = appCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
+                          var request = adminCubit.requests[index];
+                          final providerData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
+                          final userData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
                           Color statusColor;
                           String status = request['status'];
 
@@ -812,7 +765,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 width: 330.w,
                                 padding: EdgeInsetsDirectional.all(15.r),
                                 decoration: BoxDecoration(
-                                  color: appCubit.isDark ? lightDarkColor : Colors.white,
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(25.r),
                                   boxShadow: blueShadow,
                                 ),
@@ -860,7 +813,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                       style: TextStyle(
                                                         fontSize: 14.sp,
                                                         fontWeight: FontWeight.bold,
-                                                        color: appCubit.isDark ? Colors.white : Colors.black,
+                                                        color: Colors.black,
                                                       ),
                                                     ),
                                                   ),
@@ -905,22 +858,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       ),
                                       child: Column(
                                         children: [
-                                          buildDetailRow('العنوان:', request['address'], 'assets/loc.svg', appCubit),
+                                          buildDetailRow('العنوان:', request['address'], 'assets/loc.svg', adminCubit),
                                           Padding(
                                             padding: EdgeInsets.symmetric(vertical: 8.h),
                                             child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          buildDetailRow('الموعد:', appCubit.formatStatusTime(request['scheduledAt']), 'assets/timer.svg', appCubit),
+                                          buildDetailRow('الموعد:', formatStatusTime(request['scheduledAt']), 'assets/timer.svg', adminCubit),
                                           Padding(
                                             padding: EdgeInsets.symmetric(vertical: 8.h),
                                             child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          buildDetailRow('الفني:', providerData['name'], 'assets/providers.svg', appCubit),
+                                          buildDetailRow('الفني:', providerData['name'], 'assets/providers.svg', adminCubit),
                                           Padding(
                                             padding: EdgeInsets.symmetric(vertical: 8.h),
                                             child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          buildDetailRow('المستخدم:', userData['name'], 'assets/acc.svg', appCubit),
+                                          buildDetailRow('المستخدم:', userData['name'], 'assets/acc.svg', adminCubit),
                                         ],
                                       ),
                                     ),
@@ -933,6 +886,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         separatorBuilder: (context, index) => SizedBox(width: 15.w,),
                       ),
                     ),
+                    SizedBox(height: 20.h,),
                     Padding(
                       padding: EdgeInsetsDirectional.only(start: 15.w),
                       child: Row(
@@ -951,14 +905,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           ),
                           SizedBox(width: 10.w,),
                           Text(
-                            'المستخدمون',
+                            'المستخدمين',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18.sp),
                           ),
                           const Spacer(),
                           defaultTextButton(
                               onPressed: () =>
-                                  move(context, const AdminUsersManagament()),
+                                  move(context, const AdminUsersList()),
                               text: 'عرض الكل',
                               isLined: false),
                         ],
@@ -970,9 +924,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       child: ListView.separated(
                         padding: EdgeInsetsDirectional.only(start: 15.w,bottom: 10.h),
                         scrollDirection: Axis.horizontal,
-                        itemCount: appCubit.users.length > 4 ? 4 : appCubit.users.length,
+                        itemCount: adminCubit.users.length > 4 ? 4 : adminCubit.users.length,
                         itemBuilder: (context, index) {
-                          final user = appCubit.users[index];
+                          final user = adminCubit.users[index];
                           return InkWell(
                             onTap: () {},
                             splashColor: Colors.transparent,
@@ -991,7 +945,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(25.r),
                                     child: Image.network(
-                                      user['profileImage'],
+                                      user['profileImage'] ?? '',
                                       height: 140.h,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -1009,13 +963,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          user['name'],
+                                          user['name'] ?? '',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.sp,
-                                            color: appCubit.isDark ? Colors.white : Colors.black,
+                                            color: Colors.black,
                                           ),
                                         ),
                                         SizedBox(height: 10.h),

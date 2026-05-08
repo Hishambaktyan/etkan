@@ -135,7 +135,7 @@ class _WorkerChatState extends State<WorkerChat> {
                                             Container(
                                               alignment: AlignmentDirectional.centerEnd,
                                               child: Text(
-                                                cubit.timeFormatStatusTime(chatData['lastUpdate']),
+                                                timeFormatStatusTime(chatData['lastUpdate']),
                                                 style: TextStyle(
                                                     color:Colors.grey,
                                                     fontSize: 10.sp

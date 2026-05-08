@@ -12,6 +12,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:trying_homy/shared/cubits/chat_cubit/chat_cubit.dart';
 import 'package:trying_homy/shared/cubits/chat_cubit/chat_states.dart';
+import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
 
 class TheChat extends StatefulWidget {
@@ -305,7 +306,7 @@ class _TheChatState extends State<TheChat> {
                                                   mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      appCubit.timeFormatStatusTime(chatData['timestamp']),
+                                                      timeFormatStatusTime(chatData['timestamp']),
                                                       style: TextStyle(
                                                           color: isMe ? Colors.green.shade100 : Colors.grey,
                                                           fontSize: 8.sp),
