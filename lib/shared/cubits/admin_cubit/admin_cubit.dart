@@ -117,14 +117,16 @@ class AdminCubit extends Cubit<AdminStates>{
   }
 
   Future<void> getAdminData()async{
-    users=[];
-    services=[];
-    requests=[];
-    providers=[];
-    categories=[];
-    isGetAdminDataLoading=true;
+
     emit(GetAdminDataLoadingState());
     try{
+      users=[];
+      services=[];
+      requests=[];
+      providers=[];
+      categories=[];
+      isGetAdminDataLoading=true;
+
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').where('role',isEqualTo: 'user').get();
       final servicesSnapshot = await FirebaseFirestore.instance.collection('services').get();
       final requestsSnapshot = await FirebaseFirestore.instance.collection('requests').get();
@@ -138,9 +140,10 @@ class AdminCubit extends Cubit<AdminStates>{
         users.add(data);
       }
       for(var doc in servicesSnapshot.docs){
-        var data = doc.data();
-        data['id'] = doc.id;
-        services.add(data);
+          var data = doc.data();
+          data['id'] = doc.id;
+          services.add(data);
+
       }
       for(var doc in requestsSnapshot.docs){
         var data = doc.data();
@@ -193,14 +196,10 @@ class AdminCubit extends Cubit<AdminStates>{
     required bool isActive,
   })
   async {
-
     final dio = Dio();
     String? imageUrl;
-
     try{
-
       emit(AddCategoryLoadingState());
-
       final formData = FormData.fromMap({
         'file': await MultipartFile.fromFile(
             imageFile.path,
@@ -208,12 +207,10 @@ class AdminCubit extends Cubit<AdminStates>{
         ),
         'upload_preset': 'unsiged_upload',
       });
-
       final response = await dio.post(
         'https://api.cloudinary.com/v1_1/dxftdrzdu/image/upload',
         data: formData,
       );
-
       imageUrl = response.data['secure_url'];
 
       await FirebaseFirestore.instance.collection('categories').add({

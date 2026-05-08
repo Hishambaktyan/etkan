@@ -44,6 +44,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
               showSnackBar(Colors.green, 'تم تعديل المستخدم', context);
               hideLoadingDialog(context);
               Navigator.pop(context);
+              adminCubit.getUsers();
             }
           },
           builder: (context, state) {

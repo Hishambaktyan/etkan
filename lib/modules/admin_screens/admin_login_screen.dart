@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/admin_screen/admin_home_screen.dart';
+import 'package:trying_homy/modules/admin_screens/admin_home_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_forgot_password_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -35,12 +35,7 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
             if (state is LoginSuccessState) {
               authCubit.userLoginPhoneController.clear();
               authCubit.userLoginPasswordController.clear();
-              appCubit.workerDataLoaded = false;
-              appCubit.getWorkerData();
-              moveAndReplace(
-                context,
-                const AdminHomeScreen(),
-              );
+              moveAndReplace(context, const AdminHomeScreen(),);
             }
 
             if (state is LoginErrorState) {
@@ -178,10 +173,9 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                       child: Container(
                         height: 450.h,
                         width: double.infinity,
-                        padding: EdgeInsetsDirectional.symmetric(
-                            horizontal: 20.w, vertical: 30.h),
+                        padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
-                          color: appCubit.isDark ? darkBgColor : Colors.white,
+                          color: appCubit.isDark ? darkBgColor : bgColor,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(40.r),
                             topRight: Radius.circular(40.r),
@@ -199,37 +193,28 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                             key: formKey,
                             child: Column(
                               children: [
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: appCubit,
-                                    text: 'رقم الهاتف',
-                                    prefixIcon: 'assets/phone.svg',
-                                    errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
-                                    controller:
-                                        authCubit.userLoginPhoneController,
-                                    type: TextInputType.phone,
-                                  ),
+                                defaultTextFormfeild(
+                                  cubit: appCubit,
+                                  text: 'رقم الهاتف',
+                                  prefixIcon: 'assets/phone.svg',
+                                  errorMes: 'الرجاء إدحال رقم الهاتف',
+                                  controller: authCubit.userLoginPhoneController,
+                                  type: TextInputType.phone,
                                 ),
                                 SizedBox(height: 20.h),
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                      cubit: appCubit,
-                                      text: 'كلمة المرور',
-                                      prefixIcon: 'assets/lock.svg',
-                                      errorMes:
-                                          'كلمة المرور يجب ان لا تكون فارغ',
-                                      controller:
-                                          authCubit.userLoginPasswordController,
-                                      type: TextInputType.visiblePassword,
-                                      isPassword: authCubit.isPassword,
-                                      isSuffixIcon: true,
-                                      suffixIcon: authCubit.suffixIcon,
-                                      suffixPressed: () {
-                                        authCubit.changePasswordVisiability();
-                                      }),
-                                ),
+                                defaultTextFormfeild(
+                                    cubit: appCubit,
+                                    text: 'كلمة المرور',
+                                    prefixIcon: 'assets/lock.svg',
+                                    errorMes: 'الرجاء إدخال كلمة المرور',
+                                    controller: authCubit.userLoginPasswordController,
+                                    type: TextInputType.visiblePassword,
+                                    isPassword: authCubit.isPassword,
+                                    isSuffixIcon: true,
+                                    suffixIcon: authCubit.suffixIcon,
+                                    suffixPressed: () {
+                                      authCubit.changePasswordVisiability();
+                                    }),
                                 Align(
                                   alignment: AlignmentDirectional.centerStart,
                                   child: TextButton(
@@ -253,29 +238,17 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                                         child: CircularProgressIndicator())
                                     : defaultButton(
                                         onPressed: () async {
-                                          if (authCubit.userLoginPhoneController
-                                                  .text.isNotEmpty &&
-                                              authCubit
-                                                  .userLoginPasswordController
-                                                  .text
-                                                  .isNotEmpty) {
-                                            await authCubit.loginUser(
-                                              phone: authCubit
-                                                  .userLoginPhoneController.text
-                                                  .trim(),
-                                              password: authCubit
-                                                  .userLoginPasswordController
-                                                  .text
-                                                  .trim(),
-                                              requiredRole: 'admin',
-                                            );
-                                          } else {
-                                            showSnackBar(Colors.red,
-                                                'يرجى تعبة كل الحقول', context);
-                                          }
+                                           if(formKey.currentState!.validate()){
+                                             await authCubit.loginUser(
+                                               phone: authCubit.userLoginPhoneController.text.trim(),
+                                               password: authCubit.userLoginPasswordController.text.trim(),
+                                               requiredRole: 'admin',
+                                             );
+                                           }
                                         },
                                         text: 'دخول',
-                                        height: 50.h),
+                                        height: 50.h
+                                ),
                                 SizedBox(height: 20.h),
                               ],
                             ),

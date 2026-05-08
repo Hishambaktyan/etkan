@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/modules/admin_screen/admin_services_list.dart';
-import 'package:trying_homy/modules/admin_screen/admin_provider_info.dart';
-import 'package:trying_homy/modules/admin_screen/admin_requests_list.dart';
-import 'package:trying_homy/modules/admin_screen/manage_dept.dart';
+import 'package:trying_homy/modules/admin_screens/admin_request_details.dart';
+import 'package:trying_homy/modules/admin_screens/admin_services_list.dart';
+import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
+import 'package:trying_homy/modules/admin_screens/admin_requests_list.dart';
+import 'package:trying_homy/modules/admin_screens/manage_dept.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
@@ -46,6 +47,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       'color': Colors.red,
     },
   ];
+
+  bool hasInternet = true;
 
   Widget buildDetailRow(String label, String value, String iconPath,dynamic cubit) {
     return Row(
@@ -170,7 +173,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         Text(
                                           index==0?'${adminCubit.users.length}'
                                               :index==1?'${adminCubit.services.length}'
-                                              :index==2?'${adminCubit.services.length}'
+                                              :index==2?'${adminCubit.requests.length}'
                                               :index==3?'${adminCubit.providers.length}':'',
                                           style: TextStyle(
                                             fontWeight: FontWeight.w900,
@@ -369,7 +372,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(25.r),
                                         child: Image.network(
-                                          provider['profileImage'],
+                                          provider['profileImage'] ?? '',
                                           height: 130.h,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
@@ -403,12 +406,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                   Padding(
                                                     padding:  EdgeInsetsDirectional.only(top: 5.h),
                                                     child: Text(
-                                                      '${provider['avgRating']}',
+                                                      '${provider['avgRating'] ?? ''}',
                                                       style: TextStyle(
-                                                        color: mainColor,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 10.sp,
-                                                        height: 1
+                                                          color: mainColor,
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 10.sp,
+                                                          height: 1
                                                       ),
                                                     ),
                                                   ),
@@ -426,7 +429,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          provider['name'],
+                                          provider['name'] ?? '',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -437,7 +440,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         ),
                                         SizedBox(height: 5.h),
                                         Text(
-                                          provider['specialization'],
+                                          provider['specialization'] ?? '',
                                           style: TextStyle(
                                             fontSize: 11.sp,
                                             color: Colors.grey,
@@ -732,7 +735,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     SizedBox(height: 10.h),
                     SizedBox(
-                      height: 380.h,
+                      height: 390.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding:
@@ -741,7 +744,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         itemBuilder: (context, index) {
                           var request = adminCubit.requests[index];
                           final providerData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
-                          final userData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
+                          final userData = adminCubit.users.firstWhere((element) => element['id']==request['customerId'],orElse: () => {},);
                           Color statusColor;
                           String status = request['status'];
 
@@ -749,9 +752,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             case 'مكتمل':statusColor = Colors.green;
                             break;
                             case 'مقبول': case 'في الطريق':statusColor = Colors.blueAccent;
-                            break;
+                          break;
                             case 'مرفوض':case 'ملغي':statusColor = Colors.redAccent;
-                            break;
+                          break;
                             default:statusColor = Colors.orangeAccent;
                           }
 
@@ -760,7 +763,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             child: InkWell(
                               splashColor: Colors.transparent,
                               highlightColor: Colors.transparent,
-                              onTap: (){print(request);},
+                              onTap: ()=>move(context, AdminRequestDetails(
+                                  request: request,
+                                  providerData: providerData,
+                                  userData: userData
+                              )
+                              ),
                               child: Container(
                                 width: 330.w,
                                 padding: EdgeInsetsDirectional.all(15.r),
@@ -807,7 +815,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                 children: [
                                                   Expanded(
                                                     child: Text(
-                                                      request['title'],
+                                                      request['title'] ?? '',
                                                       maxLines: 2,
                                                       overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -837,7 +845,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                               ),
                                               SizedBox(height: 6.h),
                                               Text(
-                                                '${request['price']} $reyalSymbol',
+                                                '${request['price'] ?? ''} $reyalSymbol',
                                                 style: TextStyle(
                                                   fontSize: 14.sp,
                                                   fontWeight: FontWeight.w900,
@@ -858,22 +866,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       ),
                                       child: Column(
                                         children: [
-                                          buildDetailRow('العنوان:', request['address'], 'assets/loc.svg', adminCubit),
+                                          buildDetailRow('العنوان:', request['address'] ?? '', 'assets/loc.svg', adminCubit),
                                           Padding(
                                             padding: EdgeInsets.symmetric(vertical: 8.h),
                                             child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          buildDetailRow('الموعد:', formatStatusTime(request['scheduledAt']), 'assets/timer.svg', adminCubit),
+                                          buildDetailRow('الموعد:', formatStatusTime(request['scheduledAt'] ?? ''), 'assets/timer.svg', adminCubit),
                                           Padding(
                                             padding: EdgeInsets.symmetric(vertical: 8.h),
                                             child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          buildDetailRow('الفني:', providerData['name'], 'assets/providers.svg', adminCubit),
+                                          buildDetailRow('الفني:', providerData['name'] ?? '', 'assets/providers.svg', adminCubit),
                                           Padding(
                                             padding: EdgeInsets.symmetric(vertical: 8.h),
                                             child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                           ),
-                                          buildDetailRow('المستخدم:', userData['name'], 'assets/acc.svg', adminCubit),
+                                          buildDetailRow('المستخدم:', userData['name'] ?? '', 'assets/acc.svg', adminCubit),
                                         ],
                                       ),
                                     ),

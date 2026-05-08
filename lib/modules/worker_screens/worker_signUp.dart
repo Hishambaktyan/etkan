@@ -67,13 +67,13 @@ class _WorkerSignupState extends State<WorkerSignup> {
                               begin: Alignment.topRight,
                               end: Alignment.bottomLeft,
                               colors: [
-                            mainColor.withOpacity(0.9),
-                            const Color(0xFF0F0F1E),
-                          ],
+                                mainColor.withOpacity(0.9),
+                                const Color(0xFF0F0F1E),
+                              ],
                               stops: const [
-                            0.0,
-                            0.8,
-                          ])),
+                                0.0,
+                                0.8,
+                              ])),
                       child: Stack(
                         children: [
                           Positioned(
@@ -227,7 +227,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   prefixIcon: 'assets/lock.svg',
                                   errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
                                   controller:
-                                      authCubit.workerPasswordController,
+                                  authCubit.workerPasswordController,
                                   type: TextInputType.visiblePassword,
                                   isPassword: authCubit.isPassword,
                                   isSuffixIcon: true,
@@ -353,11 +353,12 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                 height: 20.h,
                               ),
                               state is WorkerSignUpLoadingState ||
-                                      state is SendPhoneCodeLoadingState
+                                  state is SendPhoneCodeLoadingState
                                   ? const Center(
-                                      child: CircularProgressIndicator(),
-                                    )
+                                child: CircularProgressIndicator(),
+                              )
                                   : defaultButton(
+<<<<<<< HEAD
                                       onPressed: () async {
                                         if (authCubit.workerNameController.text
                                                 .isNotEmpty &&
@@ -373,20 +374,37 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                             authCubit.workerPhoneController.text
                                                 .trim(),
                                           );
+=======
+                                  onPressed: () async {
+                                    if (authCubit.workerNameController.text
+                                        .isNotEmpty &&
+                                        authCubit.workerAddController.text
+                                            .isNotEmpty &&
+                                        authCubit.workerPhoneController.text
+                                            .isNotEmpty &&
+                                        authCubit.workerPasswordController
+                                            .text.isNotEmpty &&
+                                        authCubit.selectedDept != null) {
+                                      String phone =
+                                      authCubit.normalizePhone(
+                                        authCubit.workerPhoneController.text
+                                            .trim(),
+                                      );
+>>>>>>> 14ae4d13a103587ef2e8cb16c96d22851a9e8443
 
-                                          await authCubit.sendPhoneCode(
-                                            phone: phone,
-                                            userType: 'provider',
-                                          );
-                                        } else {
-                                          showSnackBar(
-                                              Colors.red,
-                                              'يرجى تعبئة واختيار كل الحقول',
-                                              context);
-                                        }
-                                      },
-                                      text: 'التالي',
-                                      height: 50.h),
+                                      await authCubit.sendPhoneCode(
+                                        phone: phone,
+                                        userType: 'provider',
+                                      );
+                                    } else {
+                                      showSnackBar(
+                                          Colors.red,
+                                          'يرجى تعبئة واختيار كل الحقول',
+                                          context);
+                                    }
+                                  },
+                                  text: 'التالي',
+                                  height: 50.h),
                               SizedBox(
                                 height: 10.h,
                               ),

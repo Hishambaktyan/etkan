@@ -95,29 +95,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AppCubit>(
-          create: (context) => AppCubit()
-            ..changeTheme(fromShared: isDark)
-            ..getAllUsers(),
-        ),
-        BlocProvider<UserServicesCubit>(
-          create: (context) => UserServicesCubit(),
-        ),
-        BlocProvider<BookingCubit>(
-          create: (context) => BookingCubit(),
-        ),
-        BlocProvider<AuthCubit>(
-          create: (context) => AuthCubit()..checkUser(),
-        ),
-        BlocProvider(
-          create: (context) => ChatCubit(),
-        ),
-        BlocProvider(
-          create: (context) => LocationCubit(),
-        ),
-        BlocProvider(
-          create: (context) => AdminCubit()..getAdminData(),
-        ),
+        BlocProvider<AppCubit>(create: (context) => AppCubit()..changeTheme(fromShared: isDark)..getAllUsers(),),
+        BlocProvider<UserServicesCubit>(create: (context) => UserServicesCubit(),),
+        BlocProvider<BookingCubit>(create: (context) => BookingCubit(),),
+        BlocProvider<AuthCubit>(create: (context) => AuthCubit()..checkUser(),),
+        BlocProvider<ChatCubit>(create: (context) => ChatCubit(),),
+        BlocProvider<LocationCubit>(create: (context) => LocationCubit(),),
+        BlocProvider<AdminCubit>(create: (context) => AdminCubit()..getAdminData(),),
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),

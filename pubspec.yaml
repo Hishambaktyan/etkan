@@ -46,10 +46,9 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   smooth_page_indicator: ^1.2.1
   image_picker: ^0.8.7+5
-  #dio: ^5.9.0
   bloc: ^9.0.1
   flutter_bloc: ^9.1.1
-  intl: 0.20.2
+  intl: ^0.19.0
   conditional_builder_null_safety: ^0.0.6
   lottie: ^3.3.1
   marquee: ^2.3.0
@@ -70,6 +69,7 @@ dependencies:
   google_maps_flutter: 2.13.1
   url_launcher: ^6.3.0
   dio: ^5.9.2
+  connectivity_plus: ^4.0.1
 
 
 dev_dependencies:

@@ -56,18 +56,6 @@ class LogOutErrorState extends AuthStates {
 
 //////////////////////////////////////
 
-/*class SendVerficationCodeSuccessState extends AuthStates {}
-
-class SendVerficationCodeLoadingState extends AuthStates {}
-
-class SendVerficationCodeErrorState extends AuthStates {
-  final String error;
-
-  SendVerficationCodeErrorState({required this.error});
-}*/
-
-//////////////////////////////////////
-
 class DeleteUserAccSuccessState extends AuthStates {}
 
 class DeleteUserAccLoadingState extends AuthStates {}
