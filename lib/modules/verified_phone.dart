@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/main.dart';
 
 import 'package:trying_homy/shared/compenents/components.dart';
@@ -489,10 +490,17 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                 context,
               );
 
-              moveAndReplace(
-                context,
-                const UserMainScreen(),
-              );
+              if (widget.userType == 'provider') {
+                moveAndReplace(
+                  context,
+                  const WorkerMainScreen(),
+                );
+              } else {
+                moveAndReplace(
+                  context,
+                  const UserMainScreen(),
+                );
+              }
             }
 
             if (state is CheckPhoneCodeErrorState) {

@@ -273,8 +273,10 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                                               requiredRole: 'user',
                                             );
                                           } else {
-                                            showSnackBar(Colors.red,
-                                                'يرجى تعبة كل الحقول', context);
+                                            showSnackBar(
+                                                Colors.red,
+                                                'هذا الحساب ليس حساب فني',
+                                                context);
                                           }
                                         },
                                         text: 'دخول',

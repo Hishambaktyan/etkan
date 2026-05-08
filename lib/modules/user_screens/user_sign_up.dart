@@ -239,13 +239,11 @@ class _UserSignUpState extends State<UserSignUp> {
                                                   .isNotEmpty &&
                                               authCubit.userPasswordController
                                                   .text.isNotEmpty) {
-                                            String phone = authCubit
-                                                .userPhoneController.text
-                                                .trim();
-
-                                            if (!phone.startsWith('+967')) {
-                                              phone = '+967$phone';
-                                            }
+                                            String phone =
+                                                authCubit.normalizePhone(
+                                              authCubit.userPhoneController.text
+                                                  .trim(),
+                                            );
 
                                             await authCubit.sendPhoneCode(
                                               phone: phone,

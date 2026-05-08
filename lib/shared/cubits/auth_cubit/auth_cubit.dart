@@ -309,13 +309,28 @@ class AuthCubit extends Cubit<AuthStates> {
     emit(SendPhoneCodeLoadingState());
 
     try {
+      final formattedPhone = normalizePhone(phone);
+
+      final existingUser = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: formattedPhone)
+          .limit(1)
+          .get();
+
+      if (existingUser.docs.isNotEmpty) {
+        emit(SendPhoneCodeErrorState(
+          error: 'هذا الرقم مستخدم بالفعل',
+        ));
+        return;
+      }
+
       final response = await http.post(
         Uri.parse('$baseUrl/auth/send-code'),
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'phone': phone,
+          'phone': formattedPhone,
         }),
       );
 
@@ -323,7 +338,7 @@ class AuthCubit extends Cubit<AuthStates> {
 
       if (response.statusCode == 200 && data['success'] == true) {
         emit(SendPhoneCodeSuccessState(
-          phone: phone,
+          phone: formattedPhone,
           userType: userType,
         ));
       } else {
@@ -344,14 +359,17 @@ class AuthCubit extends Cubit<AuthStates> {
     emit(CheckPhoneCodeLoadingState());
 
     try {
+      final formattedPhone = normalizePhone(phone);
+      final cleanCode = code.trim();
+
       final response = await http.post(
         Uri.parse('$baseUrl/auth/check-code'),
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'phone': phone,
-          'code': code,
+          'phone': formattedPhone,
+          'code': cleanCode,
           'userType': userType,
         }),
       );

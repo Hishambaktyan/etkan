@@ -19,7 +19,6 @@ class AddAddress extends StatefulWidget {
 }
 
 class _AddAddressState extends State<AddAddress> {
-
   TextEditingController titleController = TextEditingController();
   TextEditingController detailsController = TextEditingController();
 
@@ -30,9 +29,10 @@ class _AddAddressState extends State<AddAddress> {
         AppCubit appCubit = AppCubit.get(context);
         return BlocConsumer<LocationCubit, LocationStates>(
           listener: (context, state) {
-            if(state is AddAddressesSuccessState){
+            if (state is AddAddressesSuccessState) {
               showSnackBar(Colors.green, 'تم إضافة الموقع بنجاح', context);
-              LocationCubit.get(context).getAddresses(FirebaseAuth.instance.currentUser!.uid);
+              LocationCubit.get(context)
+                  .getAddresses(FirebaseAuth.instance.currentUser!.uid);
               Navigator.pop(context);
             }
           },
@@ -73,7 +73,7 @@ class _AddAddressState extends State<AddAddress> {
                       child: Row(
                         children: [
                           InkWell(
-                            onTap: () =>Navigator.pop(context),
+                            onTap: () => Navigator.pop(context),
                             borderRadius: BorderRadius.circular(15.r),
                             child: Container(
                               height: 45.h,
@@ -140,7 +140,8 @@ class _AddAddressState extends State<AddAddress> {
                           InkWell(
                             onTap: locationCubit.isGettingLocation
                                 ? null
-                                : () => locationCubit.getCurrentLocation(context),
+                                : () =>
+                                    locationCubit.getCurrentLocation(context),
                             borderRadius: BorderRadius.circular(15.r),
                             child: Container(
                               height: 50.h,
@@ -155,18 +156,18 @@ class _AddAddressState extends State<AddAddress> {
                               child: Center(
                                 child: locationCubit.isGettingLocation
                                     ? SizedBox(
-                                  height: 22.h,
-                                  width: 22.w,
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    color: mainColor,
-                                  ),
-                                )
+                                        height: 22.h,
+                                        width: 22.w,
+                                        child: const CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          color: mainColor,
+                                        ),
+                                      )
                                     : Icon(
-                                  Icons.my_location_rounded,
-                                  color: mainColor,
-                                  size: 25.sp,
-                                ),
+                                        Icons.my_location_rounded,
+                                        color: mainColor,
+                                        size: 25.sp,
+                                      ),
                               ),
                             ),
                           ),
@@ -225,8 +226,7 @@ class _AddAddressState extends State<AddAddress> {
                                       text: 'اسم العنوان',
                                       prefixIcon: 'assets/saved.svg',
                                       type: TextInputType.text,
-                                      errorMes: 'يرجى تعبئة الحقل'
-                                  ),
+                                      errorMes: 'الرجاء تحديد اسم العنوان'),
                                 ),
                                 SizedBox(height: 15.h),
                                 SizedBox(
@@ -237,32 +237,42 @@ class _AddAddressState extends State<AddAddress> {
                                       text: 'تفاصيل العنوان',
                                       prefixIcon: 'assets/note.svg',
                                       type: TextInputType.text,
-                                      errorMes: 'يرجى تعبئة الحقل'
-                                  ),
+                                      errorMes: 'الرجاء تحديد تفاصيل العنوان'),
                                 ),
                                 SizedBox(height: 10.h),
-                                state is AddAddressesLoadingState ? const Center( child: CircularProgressIndicator())
+                                state is AddAddressesLoadingState
+                                    ? const Center(
+                                        child: CircularProgressIndicator())
                                     : defaultButton(
-                                  onPressed:() async {
-                                    if(titleController.text.isEmpty || detailsController.text.isEmpty){
-                                      showSnackBar(Colors.red, 'يرجى تعبئة كل الحقول', context);
-                                    }else{
-                                      await locationCubit.addAddress(
-                                          uId: FirebaseAuth.instance.currentUser!.uid,
-                                          label: titleController.text.trim(),
-                                          addressDetails: detailsController.text.trim(),
-                                          lat: locationCubit.selectedLocation.latitude,
-                                          long: locationCubit.selectedLocation.longitude,
-                                        isDefault: false
-                                      );
-                                    }
-                                  },
-                                  text: 'حفظ الموقع',
-                                ),
+                                        onPressed: () async {
+                                          if (titleController.text.isEmpty ||
+                                              detailsController.text.isEmpty) {
+                                            showSnackBar(Colors.red,
+                                                'الرجاء تحديد الموقع', context);
+                                          } else {
+                                            await locationCubit.addAddress(
+                                                uId: FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                                label:
+                                                    titleController.text.trim(),
+                                                addressDetails:
+                                                    detailsController.text
+                                                        .trim(),
+                                                lat: locationCubit
+                                                    .selectedLocation.latitude,
+                                                long: locationCubit
+                                                    .selectedLocation.longitude,
+                                                isDefault: false);
+                                          }
+                                        },
+                                        text: 'حفظ الموقع',
+                                      ),
                               ],
                             ),
                           ),
-                          SizedBox(height: 10.h,),
+                          SizedBox(
+                            height: 10.h,
+                          ),
                         ],
                       ),
                     ),
