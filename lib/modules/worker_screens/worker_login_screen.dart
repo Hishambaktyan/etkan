@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +12,6 @@ import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../../shared/compenents/components.dart';
-import 'worker_email_verfication_screen.dart';
 
 class WorkerLoginScreen extends StatefulWidget {
   const WorkerLoginScreen({super.key});
@@ -31,23 +29,19 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AuthCubit authCubit = AuthCubit.get(context);
-        return BlocConsumer<AuthCubit,AuthStates>(
+        return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
             if (state is LoginSuccessState) {
-              authCubit.workerLoginPhoneController.clear();
-              authCubit.workerLoginPasswordController.clear();
+              authCubit.userLoginPhoneController.clear();
+              authCubit.userLoginPasswordController.clear();
+
               appCubit.workerDataLoaded = false;
               appCubit.getWorkerData();
-              var user = FirebaseAuth.instance.currentUser;
-              if (user != null) {
-                if (user.emailVerified) {
-                  moveAndReplace(context, const WorkerMainScreen());
-                } else {
-                  showSnackBar(
-                      Colors.orange, 'يرجى توثيق البريد الإلكتروني أولاً', context);
-                  moveAndReplace(context, const WorkerEmailVerificationScreen());
-                }
-              }
+
+              moveAndReplace(
+                context,
+                const WorkerMainScreen(),
+              );
             }
 
             if (state is LoginErrorState) {
@@ -68,13 +62,13 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                               begin: Alignment.topRight,
                               end: Alignment.bottomLeft,
                               colors: [
-                                mainColor.withOpacity(0.9),
-                                const Color(0xFF0F0F1E),
-                              ],
+                            mainColor.withOpacity(0.9),
+                            const Color(0xFF0F0F1E),
+                          ],
                               stops: const [
-                                0.0,
-                                0.8,
-                              ])),
+                            0.0,
+                            0.8,
+                          ])),
                       child: Stack(
                         children: [
                           Positioned(
@@ -210,13 +204,14 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                 Container(
                                   height: 50.h,
                                   child: defaultTextFormfeild(
-                                      cubit: appCubit,
-                                      text: 'البريد الألكتروني',
-                                      prefixIcon: 'assets/phone.svg',
-                                      errorMes:
-                                      'البريد الألكتروني يجب ان لا يكون فارغ',
-                                      controller: authCubit.workerLoginPhoneController,
-                                      type: TextInputType.emailAddress),
+                                    cubit: appCubit,
+                                    text: 'رقم الهاتف',
+                                    prefixIcon: 'assets/phone.svg',
+                                    errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
+                                    controller:
+                                        authCubit.workerLoginPhoneController,
+                                    type: TextInputType.phone,
+                                  ),
                                 ),
                                 SizedBox(height: 20.h),
                                 Container(
@@ -225,8 +220,10 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                       cubit: appCubit,
                                       text: 'كلمة المرور',
                                       prefixIcon: 'assets/lock.svg',
-                                      errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                      controller: authCubit.workerLoginPasswordController,
+                                      errorMes:
+                                          'كلمة المرور يجب ان لا تكون فارغ',
+                                      controller: authCubit
+                                          .workerLoginPasswordController,
                                       type: TextInputType.visiblePassword,
                                       isPassword: authCubit.isPassword,
                                       isSuffixIcon: true,
@@ -239,7 +236,8 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                   alignment: AlignmentDirectional.centerStart,
                                   child: TextButton(
                                     onPressed: () {
-                                      move(context, const WorkerForgotPasswordScreen());
+                                      move(context,
+                                          const WorkerForgotPasswordScreen());
                                     },
                                     child: Text(
                                       'نسيت كلمة المرور؟',
@@ -252,27 +250,37 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 20.h),
-                                authCubit
-                                    .state is LoginLoadingState
+                                authCubit.state is LoginLoadingState
                                     ? const Center(
-                                    child: CircularProgressIndicator())
+                                        child: CircularProgressIndicator())
                                     : defaultButton(
-                                    onPressed: () async {
-                                      if (authCubit.workerLoginPhoneController.text
-                                          .isNotEmpty &&
-                                          authCubit.workerLoginPasswordController.text
-                                              .isNotEmpty) {
-                                        await authCubit.loginUser(
-                                            authCubit.workerLoginPhoneController.text.trim(),
-                                            authCubit.workerLoginPasswordController.text
-                                                .trim());
-                                      } else {
-                                        showSnackBar(Colors.red,
-                                            'يرجى تعبة كل الحقول', context);
-                                      }
-                                    },
-                                    text: 'دخول',
-                                    height: 50.h),
+                                        onPressed: () async {
+                                          if (authCubit
+                                                  .workerLoginPhoneController
+                                                  .text
+                                                  .isNotEmpty &&
+                                              authCubit
+                                                  .workerLoginPasswordController
+                                                  .text
+                                                  .isNotEmpty) {
+                                            await authCubit.loginUser(
+                                              phone: authCubit
+                                                  .workerLoginPhoneController
+                                                  .text
+                                                  .trim(),
+                                              password: authCubit
+                                                  .workerLoginPasswordController
+                                                  .text
+                                                  .trim(),
+                                              requiredRole: 'provider',
+                                            );
+                                          } else {
+                                            showSnackBar(Colors.red,
+                                                'يرجى تعبة كل الحقول', context);
+                                          }
+                                        },
+                                        text: 'دخول',
+                                        height: 50.h),
                                 SizedBox(height: 20.h),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

@@ -1,12 +1,9 @@
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_email_verification.dart';
-import 'package:trying_homy/modules/user_screens/verified_phone.dart';
+import 'package:trying_homy/modules/verified_phone.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
@@ -14,7 +11,6 @@ import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/compenents/components.dart';
 import '../../main.dart';
-import '../worker_screens/worker_email_verfication_screen.dart';
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -34,26 +30,31 @@ class _UserSignUpState extends State<UserSignUp> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AuthCubit authCubit = AuthCubit.get(context);
-        return BlocConsumer<AuthCubit,AuthStates>(
+        return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
-            if(state is UserSignUpErrorState){
-              showSnackBar(Colors.red,state.error.toString(), context);
+            if (state is UserSignUpErrorState) {
+              showSnackBar(Colors.red, state.error.toString(), context);
             }
-            if (state is SendVerficationCodeSuccessState) {
-              authCubit.userPasswordController.clear();
-              authCubit.userPhoneController.clear();
-              authCubit.userNameController.clear();
-              showSnackBar(Colors.green, 'تم إنشاء حسابك بنجاح', context);
-              appCubit.changeIndex(0);
-              moveAndReplace(context, const UserVerificationScreen());
-            }
-            if(state is SendVerficationCodeErrorState){
-              showSnackBar(Colors.red, 'فشل في إرسال بريد التحقق', context);
 
+            if (state is SendPhoneCodeSuccessState) {
+              showSnackBar(
+                  Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
+
+              move(
+                context,
+                VerifiedPhone(
+                  phone: state.phone,
+                  userType: state.userType,
+                ),
+              );
+            }
+
+            if (state is SendPhoneCodeErrorState) {
+              showSnackBar(Colors.red, state.error, context);
             }
           },
           builder: (context, state) {
-            return  Directionality(
+            return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
                 body: Stack(
@@ -208,7 +209,8 @@ class _UserSignUpState extends State<UserSignUp> {
                                     text: 'كلمة المرور',
                                     prefixIcon: 'assets/lock.svg',
                                     errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                    controller: authCubit.userPasswordController,
+                                    controller:
+                                        authCubit.userPasswordController,
                                     type: TextInputType.visiblePassword,
                                     isPassword: isPassword,
                                     isSuffixIcon: true,
@@ -224,27 +226,41 @@ class _UserSignUpState extends State<UserSignUp> {
                                   ),
                                 ),
                                 SizedBox(height: 20.h),
-                                state is UserSignUpLoadingState || state is SendVerficationCodeLoadingState? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
+                                state is UserSignUpLoadingState ||
+                                        state is SendPhoneCodeLoadingState
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
                                     : defaultButton(
-                                  onPressed: () async {
-                                    if(
-                                    authCubit.userNameController.text.isNotEmpty &&
-                                        authCubit.userPhoneController.text.isNotEmpty &&
-                                        authCubit.userPasswordController.text.isNotEmpty
-                                    ){
-                                      await authCubit.signUpUser(
-                                          authCubit.userPhoneController.text.trim(),
-                                          authCubit.userPasswordController.text.trim()
-                                      );
-                                    }else{
-                                      showSnackBar(Colors.red, 'يرجى تعبئة كل الحقول', context);
-                                    }
-                                  },
-                                  text: 'تسجيل',
-                                  height: 50.h,
-                                ),
+                                        onPressed: () async {
+                                          if (authCubit.userNameController.text
+                                                  .isNotEmpty &&
+                                              authCubit.userPhoneController.text
+                                                  .isNotEmpty &&
+                                              authCubit.userPasswordController
+                                                  .text.isNotEmpty) {
+                                            String phone = authCubit
+                                                .userPhoneController.text
+                                                .trim();
+
+                                            if (!phone.startsWith('+967')) {
+                                              phone = '+967$phone';
+                                            }
+
+                                            await authCubit.sendPhoneCode(
+                                              phone: phone,
+                                              userType: 'user',
+                                            );
+                                          } else {
+                                            showSnackBar(
+                                                Colors.red,
+                                                'يرجى تعبئة كل الحقول',
+                                                context);
+                                          }
+                                        },
+                                        text: 'تسجيل',
+                                        height: 50.h,
+                                      ),
                                 SizedBox(height: 10.h),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

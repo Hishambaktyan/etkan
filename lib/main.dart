@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/admin_screen/admin_home_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -96,7 +95,9 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AppCubit>(
-          create: (context) => AppCubit()..changeTheme(fromShared: isDark)..getAllUsers(),
+          create: (context) => AppCubit()
+            ..changeTheme(fromShared: isDark)
+            ..getAllUsers(),
         ),
         BlocProvider<UserServicesCubit>(
           create: (context) => UserServicesCubit(),
