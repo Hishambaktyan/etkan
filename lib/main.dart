@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
+import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
@@ -113,6 +114,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => LocationCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AdminCubit()..getAdminData(),
         ),
       ],
       child: ScreenUtilInit(

@@ -67,42 +67,5 @@ class GetWorkerRequestsErrorState extends AppStates{
 
 //////////////////////////////////////
 
-class GetAdminDataSuccessState extends AppStates{}
-
-class GetAdminDataLoadingState extends AppStates{}
-
-class GetAdminDataErrorState extends AppStates{
-  final String error;
-
-  GetAdminDataErrorState({required this.error});
-
-}
-
-//////////////////////////////////////
-
-class AddCategorySuccessState extends AppStates{}
-
-class AddCategoryLoadingState extends AppStates{}
-
-class AddCategoryErrorState extends AppStates{
-  final String error;
-
-  AddCategoryErrorState({required this.error});
-
-}
-
-//////////////////////////////////////
-
-class GetCategorySuccessState extends AppStates{}
-
-class GetCategoryLoadingState extends AppStates{}
-
-class GetCategoryErrorState extends AppStates{
-  final String error;
-
-  GetCategoryErrorState({required this.error});
-
-}
-
 
 

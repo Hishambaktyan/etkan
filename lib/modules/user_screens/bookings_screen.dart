@@ -263,7 +263,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                                 padding: EdgeInsets.symmetric(vertical: 8.h),
                                                 child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
                                               ),
-                                              buildDetailRow('الموعد:', appCubit.formatStatusTime(booking['scheduledAt']), 'assets/timer.svg', appCubit),
+                                              buildDetailRow('الموعد:',formatStatusTime(booking['scheduledAt']), 'assets/timer.svg', appCubit),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(vertical: 8.h),
                                                 child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),

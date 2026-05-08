@@ -284,7 +284,7 @@ class _UserChatsState extends State<UserChats> {
                                             alignment:
                                                 AlignmentDirectional.centerEnd,
                                             child: Text(
-                                              appCubit.timeFormatStatusTime(
+                                             timeFormatStatusTime(
                                                   chatData['lastUpdate']),
                                               style: TextStyle(
                                                   color: Colors.grey,

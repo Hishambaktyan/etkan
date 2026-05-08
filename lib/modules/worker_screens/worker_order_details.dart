@@ -131,7 +131,7 @@ class WorkerOrderDetails extends StatelessWidget {
                         3: 'completedAt',
                       };
                       String timeKey = statusTimesKeys[index]!;
-                      String displayTime = cubit.formatStatusTime(requestData[timeKey]);
+                      String displayTime = formatStatusTime(requestData[timeKey]);
                       bool isDone;
                       bool isActive;
                       Color circleColor;
@@ -582,7 +582,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                                 width: 4.w
                                             ),
                                             Text(
-                                              cubit.dateFormatStatusTime(request['scheduledAt']),
+                                              dateFormatStatusTime(request['scheduledAt']),
                                               style: TextStyle(
                                                   fontSize: 11.sp,
                                                   color: cubit.isDark? darkSubTextColor: Colors.grey.shade600
@@ -598,7 +598,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                                 width: 4.w
                                             ),
                                             Text(
-                                              cubit.timeFormatStatusTime(request['scheduledAt']),
+                                             timeFormatStatusTime(request['scheduledAt']),
                                               style: TextStyle(
                                                   fontSize: 11.sp,
                                                   color: cubit.isDark? darkSubTextColor: Colors.grey.shade600

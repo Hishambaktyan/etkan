@@ -162,8 +162,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                         3: 'completedAt',
                       };
                       String timeKey = statusTimesKeys[index]!;
-                      String displayTime =
-                          cubit.formatStatusTime(requestData[timeKey]);
+                      String displayTime = formatStatusTime(requestData[timeKey]);
                       bool isDone;
                       bool isActive;
                       Color circleColor;
@@ -478,9 +477,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      appCubit.dateFormatStatusTime(
-                                                          request['scheduledAt'] ??
-                                                              ''),
+                                                     dateFormatStatusTime(request['scheduledAt'] ?? ''),
                                                       style: TextStyle(
                                                         color: appCubit.isDark
                                                             ? Colors.white
@@ -528,9 +525,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      appCubit.timeFormatStatusTime(
-                                                          request['scheduledAt'] ??
-                                                              ''),
+                                                      timeFormatStatusTime(request['scheduledAt'] ?? ''),
                                                       style: TextStyle(
                                                         color: appCubit.isDark
                                                             ? Colors.white
