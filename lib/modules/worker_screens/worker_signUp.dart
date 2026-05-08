@@ -358,23 +358,6 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                 child: CircularProgressIndicator(),
                               )
                                   : defaultButton(
-<<<<<<< HEAD
-                                      onPressed: () async {
-                                        if (authCubit.workerNameController.text
-                                                .isNotEmpty &&
-                                            authCubit.workerAddController.text
-                                                .isNotEmpty &&
-                                            authCubit.workerPhoneController.text
-                                                .isNotEmpty &&
-                                            authCubit.workerPasswordController
-                                                .text.isNotEmpty &&
-                                            authCubit.selectedDept != null) {
-                                          String phone =
-                                              authCubit.normalizePhone(
-                                            authCubit.workerPhoneController.text
-                                                .trim(),
-                                          );
-=======
                                   onPressed: () async {
                                     if (authCubit.workerNameController.text
                                         .isNotEmpty &&
@@ -390,7 +373,6 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                         authCubit.workerPhoneController.text
                                             .trim(),
                                       );
->>>>>>> 14ae4d13a103587ef2e8cb16c96d22851a9e8443
 
                                       await authCubit.sendPhoneCode(
                                         phone: phone,

@@ -5,12 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:marquee/marquee.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/admin_screens/add_dept.dart';
-import 'package:trying_homy/modules/admin_screens/manage_dept.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/compenents/components.dart';
+import 'add_dept.dart';
+import 'manage_dept.dart';
 
 class CategoriesList extends StatefulWidget {
   const CategoriesList({super.key});
