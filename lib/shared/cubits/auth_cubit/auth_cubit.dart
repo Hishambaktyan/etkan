@@ -21,8 +21,7 @@ class AuthCubit extends Cubit<AuthStates> {
   }
 
   bool isPassword = true;
-  String get suffixIcon =>
-      isPassword ? 'assets/eye.svg' : 'assets/eye-slash.svg';
+  String get suffixIcon => isPassword ? 'assets/eye.svg' : 'assets/eye-slash.svg';
 
   String? selectedDept;
   var workerNameController = TextEditingController();
@@ -31,6 +30,7 @@ class AuthCubit extends Cubit<AuthStates> {
   var workerPhoneController = TextEditingController();
 
   String? userId;
+
   String normalizePhone(String phone) {
     String cleanPhone = phone.trim();
 
@@ -56,6 +56,7 @@ class AuthCubit extends Cubit<AuthStates> {
   }
 
   String phoneToFakeEmail(String phone) {
+
     final formattedPhone = normalizePhone(phone);
 
     final cleanPhone = formattedPhone
@@ -121,6 +122,7 @@ class AuthCubit extends Cubit<AuthStates> {
   var userNameController = TextEditingController();
   var userPasswordController = TextEditingController();
   var userPhoneController = TextEditingController();
+
   Future<void> signUpUser(String phone, String password) async {
     try {
       emit(UserSignUpLoadingState());
@@ -178,15 +180,15 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String password,
     required String requiredRole,
-  }) async {
+  })
+  async {
     try {
       emit(LoginLoadingState());
 
       final formattedPhone = normalizePhone(phone);
       final fakeEmail = phoneToFakeEmail(formattedPhone);
 
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: fakeEmail,
         password: password,
       );
@@ -250,16 +252,6 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
-  /*Future<void> verifyEmail() async {
-    try {
-      emit(SendVerficationCodeLoadingState());
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-      emit(SendVerficationCodeSuccessState());
-    } catch (e) {
-      emit(SendVerficationCodeErrorState(error: e.toString()));
-    }
-  }*/
-
   Future<void> logOutUser() async {
     try {
       emit(LogOutLoadingState());
@@ -305,7 +297,8 @@ class AuthCubit extends Cubit<AuthStates> {
   Future<void> sendPhoneCode({
     required String phone,
     required String userType,
-  }) async {
+  })
+  async {
     emit(SendPhoneCodeLoadingState());
 
     try {
@@ -340,7 +333,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String code,
     required String userType,
-  }) async {
+  })
+  async {
     emit(CheckPhoneCodeLoadingState());
 
     try {

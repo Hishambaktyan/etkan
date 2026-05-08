@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/admin_screen/admin_provider_info.dart';
+import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';

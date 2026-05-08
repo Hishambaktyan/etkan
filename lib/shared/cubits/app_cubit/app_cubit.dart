@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart' show DateFormat;
 import '../../../modules/user_screens/bookings_screen.dart';
 import '../../../modules/user_screens/dept_screen.dart';
 import '../../../modules/user_screens/home_screen.dart';
@@ -359,21 +358,6 @@ class AppCubit extends Cubit<AppStates>{
 
     } catch (e) {
       emit(GetWorkerRequestsErrorState(error: e.toString()));
-    }
-  }
-
-  int getStepFromStatus(String status) {
-    switch (status) {
-      case "قيد الانتظار":
-        return 0; // تم الطلب
-      case "مقبول":
-        return 1; // تم القبول
-      case "جاري التنفيذ":
-        return 2; // جاري التنفيذ
-      case "مكتمل":
-        return 3; // تم اكمال الخدمة
-      default:
-        return 0;
     }
   }
 

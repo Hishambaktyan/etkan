@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/admin_screen/admin_provider_info.dart';
+import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/admin_cubit/admin_cubit.dart';
@@ -40,7 +40,7 @@ class _AdminServicesListState extends State<AdminServicesList> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       padding:  EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 20.h),
-                      itemCount: adminCubit.providers.length,
+                      itemCount: adminCubit.services.length,
                       itemBuilder:(context, index) {
                         final service = adminCubit.services[index];
                         final providerData = adminCubit.providers.firstWhere((element) => element['id']==service['providerId'],);

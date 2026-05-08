@@ -67,13 +67,13 @@ class _WorkerSignupState extends State<WorkerSignup> {
                               begin: Alignment.topRight,
                               end: Alignment.bottomLeft,
                               colors: [
-                            mainColor.withOpacity(0.9),
-                            const Color(0xFF0F0F1E),
-                          ],
+                                mainColor.withOpacity(0.9),
+                                const Color(0xFF0F0F1E),
+                              ],
                               stops: const [
-                            0.0,
-                            0.8,
-                          ])),
+                                0.0,
+                                0.8,
+                              ])),
                       child: Stack(
                         children: [
                           Positioned(
@@ -83,7 +83,6 @@ class _WorkerSignupState extends State<WorkerSignup> {
                               radius: 100.r,
                               backgroundColor: Colors.white.withOpacity(0.15),
                             ),
-<<<<<<< HEAD
                           ),
                           Positioned(
                             top: 80.h,
@@ -143,22 +142,6 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                       color: Colors.white.withOpacity(0.4),
                                       blurRadius: 20,
                                       offset: const Offset(0, 0),
-=======
-                            child: SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    height: 50.h,
-                                    child: defaultTextFormfeild(
-                                      cubit: appCubit,
-                                      text: 'الأسم الكامل',
-                                      prefixIcon: 'assets/acc.svg',
-                                      errorMes: 'يجب كتابة الأسم',
-                                      controller: authCubit.workerNameController,
-                                      type: TextInputType.text,
->>>>>>> 947a8bc9c9795d3aef345a0052c145e4fce63b6a
                                     ),
                                   ],
                                 ),
@@ -244,7 +227,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   prefixIcon: 'assets/lock.svg',
                                   errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
                                   controller:
-                                      authCubit.workerPasswordController,
+                                  authCubit.workerPasswordController,
                                   type: TextInputType.visiblePassword,
                                   isPassword: authCubit.isPassword,
                                   isSuffixIcon: true,
@@ -278,7 +261,6 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                             ? darkSubTextColor
                                             : Colors.grey.shade600),
                                   ),
-<<<<<<< HEAD
                                   fillColor: Colors.grey.withOpacity(0.06),
                                   contentPadding: EdgeInsets.symmetric(
                                       vertical: 14.h, horizontal: 10.w),
@@ -371,80 +353,40 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                 height: 20.h,
                               ),
                               state is WorkerSignUpLoadingState ||
-                                      state is SendPhoneCodeLoadingState
+                                  state is SendPhoneCodeLoadingState
                                   ? const Center(
-                                      child: CircularProgressIndicator(),
-                                    )
+                                child: CircularProgressIndicator(),
+                              )
                                   : defaultButton(
-                                      onPressed: () async {
-                                        if (authCubit.workerNameController.text
-                                                .isNotEmpty &&
-                                            authCubit.workerAddController.text
-                                                .isNotEmpty &&
-                                            authCubit.workerPhoneController.text
-                                                .isNotEmpty &&
-                                            authCubit.workerPasswordController
-                                                .text.isNotEmpty &&
-                                            authCubit.selectedDept != null) {
-                                          String phone =
-                                              authCubit.normalizePhone(
-                                            authCubit.workerPhoneController.text
-                                                .trim(),
-                                          );
-=======
-                                  SizedBox(height: 15.h,),
-                                  SizedBox(
-                                    height: 50.h,
-                                    child: defaultTextFormfeild(
-                                      cubit: appCubit,
-                                      text: 'العنوان',
-                                      prefixIcon: 'assets/loc.svg',
-                                      errorMes: 'العنوان يجب ان لا يكون فارغ',
-                                      controller: authCubit.workerAddController,
-                                      type: TextInputType.text,
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.h,),
-                                  SizedBox(
-                                    height: 50.h,
-                                    child: defaultTextFormfeild(
-                                      cubit: appCubit,
-                                      text: 'البريد الألكتروني',
-                                      prefixIcon: 'assets/phone.svg',
-                                      errorMes: 'البريد يجب ان لا يكون فارغ',
-                                      controller: authCubit.workerPhoneController,
-                                      type: TextInputType.emailAddress,
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.h,),
-                                  SizedBox(
-                                    height: 50.h,
-                                    child: defaultTextFormfeild(
-                                      cubit: appCubit,
-                                      text: 'كلمة المرور',
-                                      prefixIcon: 'assets/lock.svg',
-                                      errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                      controller: authCubit.workerPasswordController,
-                                      type: TextInputType.visiblePassword,
-                                      isPassword: authCubit.isPassword,
-                                      isSuffixIcon: true,
-                                      suffixIcon: authCubit.suffixIcon,
-                                      suffixPressed: ()=>authCubit.changePasswordVisiability(),
->>>>>>> 947a8bc9c9795d3aef345a0052c145e4fce63b6a
+                                  onPressed: () async {
+                                    if (authCubit.workerNameController.text
+                                        .isNotEmpty &&
+                                        authCubit.workerAddController.text
+                                            .isNotEmpty &&
+                                        authCubit.workerPhoneController.text
+                                            .isNotEmpty &&
+                                        authCubit.workerPasswordController
+                                            .text.isNotEmpty &&
+                                        authCubit.selectedDept != null) {
+                                      String phone =
+                                      authCubit.normalizePhone(
+                                        authCubit.workerPhoneController.text
+                                            .trim(),
+                                      );
 
-                                          await authCubit.sendPhoneCode(
-                                            phone: phone,
-                                            userType: 'provider',
-                                          );
-                                        } else {
-                                          showSnackBar(
-                                              Colors.red,
-                                              'يرجى تعبئة واختيار كل الحقول',
-                                              context);
-                                        }
-                                      },
-                                      text: 'التالي',
-                                      height: 50.h),
+                                      await authCubit.sendPhoneCode(
+                                        phone: phone,
+                                        userType: 'provider',
+                                      );
+                                    } else {
+                                      showSnackBar(
+                                          Colors.red,
+                                          'يرجى تعبئة واختيار كل الحقول',
+                                          context);
+                                    }
+                                  },
+                                  text: 'التالي',
+                                  height: 50.h),
                               SizedBox(
                                 height: 10.h,
                               ),

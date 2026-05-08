@@ -159,7 +159,8 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
     required BuildContext context,
     required AppCubit cubit,
     required AuthStates state,
-  }) {
+  })
+  {
     final bool isLoading = state is CheckPhoneCodeLoadingState ||
         state is UserSignUpLoadingState ||
         state is WorkerSignUpLoadingState;
@@ -378,7 +379,8 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
   Widget _buildHintCard({
     required BuildContext context,
     required AppCubit cubit,
-  }) {
+  })
+  {
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(14.r),
@@ -425,55 +427,41 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, appState) {
         final appCubit = AppCubit.get(context);
-
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) async {
             final authCubit = AuthCubit.get(context);
-
             if (state is SendPhoneCodeSuccessState) {
-              showSnackBar(
-                Colors.green,
-                'تم إرسال رمز تحقق جديد',
-                context,
-              );
+              showSnackBar(Colors.green, 'تم إرسال رمز تحقق جديد', context,);
             }
-
             if (state is SendPhoneCodeErrorState) {
-              showSnackBar(
-                Colors.red,
-                state.error,
-                context,
-              );
+              showSnackBar(Colors.red, state.error, context,);
             }
             if (state is WorkerSignUpErrorState) {
-              showSnackBar(
-                Colors.red,
-                state.error,
-                context,
-              );
+              showSnackBar(Colors.red, state.error,context,);
             }
-
             if (state is CheckPhoneCodeSuccessState) {
               if (widget.userType == 'provider') {
                 await authCubit.workerSignUpUser(
                   widget.phone,
                   authCubit.workerPasswordController.text.trim(),
                 );
-              } else if (widget.userType == 'admin') {
+              }
+              else if (widget.userType == 'admin') {
                 await authCubit.adminSignUpUser(
                   widget.phone,
                   authCubit.userPasswordController.text.trim(),
                 );
-              } else {
+              }
+              else {
                 await authCubit.signUpUser(
                   widget.phone,
                   authCubit.userPasswordController.text.trim(),
                 );
               }
             }
-
             if (state is UserSignUpSuccessState ||
-                state is WorkerSignUpSuccessState) {
+                state is WorkerSignUpSuccessState)
+            {
               authCubit.userPasswordController.clear();
               authCubit.userPhoneController.clear();
               authCubit.userNameController.clear();
@@ -496,19 +484,11 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
             }
 
             if (state is CheckPhoneCodeErrorState) {
-              showSnackBar(
-                Colors.red,
-                state.error,
-                context,
-              );
+              showSnackBar(Colors.red,state.error, context,);
             }
 
             if (state is UserSignUpErrorState) {
-              showSnackBar(
-                Colors.red,
-                state.error,
-                context,
-              );
+              showSnackBar(Colors.red, state.error, context,);
             }
           },
           builder: (context, state) {

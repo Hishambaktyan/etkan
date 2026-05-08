@@ -677,8 +677,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               buildHorizontalStepper(
-                                  currentStep: appCubit
-                                      .getStepFromStatus(request['status']),
+                                  currentStep: getStepFromStatus(request['status']),
                                   cubit: appCubit),
                               SizedBox(height: 10.h),
                               Center(

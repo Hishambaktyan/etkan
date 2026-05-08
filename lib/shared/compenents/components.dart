@@ -1,11 +1,13 @@
 import 'dart:ui';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/search_screen.dart';
@@ -678,6 +680,21 @@ Widget defaultTextButton({
           ),
         ));
 
+int getStepFromStatus(String status) {
+  switch (status) {
+    case "قيد الانتظار":
+      return 0; // تم الطلب
+    case "مقبول":
+      return 1; // تم القبول
+    case "جاري التنفيذ":
+      return 2; // جاري التنفيذ
+    case "مكتمل":
+      return 3; // تم اكمال الخدمة
+    default:
+      return 0;
+  }
+}
+
 bool isLoadingDialogShowing = false;
 
 void showLoadingDialog(BuildContext context) {
@@ -714,6 +731,64 @@ void hideLoadingDialog(BuildContext context) {
   if (isLoadingDialogShowing) {
     Navigator.of(context, rootNavigator: true).pop();
     isLoadingDialogShowing = false;
+  }
+}
+
+Future<bool> checkInternet() async {
+  var connectivityResult = await (Connectivity().checkConnectivity());
+  if (connectivityResult == ConnectivityResult.mobile ||
+      connectivityResult == ConnectivityResult.wifi) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+class NoInternet extends StatelessWidget {
+  final VoidCallback onRetry;
+
+  const NoInternet({super.key, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset(
+              'assets/lottie/no_internet.json',
+              width: 220.w,
+              height: 220.h,
+              fit: BoxFit.contain,
+              delegates: LottieDelegates(
+                values: [
+                  // تغيير ألوان الأنيميشن لتتناسب مع mainColor
+                  ValueDelegate.color(['**', 'Fill 1'], value: mainColor),
+                  ValueDelegate.color(['**', 'Fill 2'], value: mainColor.withOpacity(0.7)),
+                  ValueDelegate.color(['**', 'Fill 3'], value: mainColor.withOpacity(0.5)),
+                  // إخفاء النص الإنجليزي داخل الأنيميشن
+                  ValueDelegate.opacity(['LOST CONNECTION Outlines', '**'], value: 0),
+                ],
+              ),
+            ),
+            SizedBox(height: 15.h),
+            Text(
+              'لا يوجد اتصال بالإنترنت، يرجى المحاولة مرة أخرى',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 20.h),
+            defaultButton(onPressed: (){onRetry();}, text: 'إعادة المحاولة',width: 100.w)
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -1537,12 +1612,10 @@ class AdminHomeShimmer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _shimmerBox(
-            height: 80.h,
+            height: 110.h,
             width: double.infinity,
-            margin: EdgeInsetsDirectional.all(10.w),
-            radius: 20,
+            radius: 25,
           ),
-
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),

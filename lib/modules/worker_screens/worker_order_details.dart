@@ -476,7 +476,7 @@ class WorkerOrderDetails extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildHorizontalStepper(currentStep: cubit.getStepFromStatus(request['status']),cubit: cubit),
+                              buildHorizontalStepper(currentStep: getStepFromStatus(request['status']),cubit: cubit),
                               SizedBox(
                                   height: 10.h
                               ),
