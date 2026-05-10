@@ -263,7 +263,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                                   .workerLoginPasswordController
                                                   .text
                                                   .isNotEmpty) {
-                                            await authCubit.loginUser(
+                                            /*await authCubit.loginUser(
                                               phone: authCubit
                                                   .workerLoginPhoneController
                                                   .text
@@ -273,7 +273,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                                   .text
                                                   .trim(),
                                               requiredRole: 'provider',
-                                            );
+                                            );*/
                                           } else {
                                             showSnackBar(Colors.red,
                                                 'يرجى تعبة كل الحقول', context);

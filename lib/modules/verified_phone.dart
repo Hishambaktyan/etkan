@@ -325,10 +325,10 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                 onTap: resendSeconds == 0 && !isLoading
                     ? () {
                         clearCode();
-                        AuthCubit.get(context).sendPhoneCode(
+                        /*AuthCubit.get(context).sendPhoneCode(
                           phone: widget.phone,
                           userType: widget.userType,
-                        );
+                        );*/
                         startTimer();
                       }
                     : null,
@@ -363,11 +363,11 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                       return;
                     }
 
-                    AuthCubit.get(context).checkPhoneCode(
+                    /*AuthCubit.get(context).checkPhoneCode(
                       phone: widget.phone,
                       code: code,
                       userType: widget.userType,
-                    );
+                    );*/
                   },
                   text: 'تحقق من الحساب',
                   height: 50.h,
@@ -442,22 +442,22 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
             }
             if (state is CheckPhoneCodeSuccessState) {
               if (widget.userType == 'provider') {
-                await authCubit.workerSignUpUser(
+                /*await authCubit.workerSignUpUser(
                   widget.phone,
                   authCubit.workerPasswordController.text.trim(),
-                );
+                );*/
               }
               else if (widget.userType == 'admin') {
-                await authCubit.adminSignUpUser(
+               /* await authCubit.adminSignUpUser(
                   widget.phone,
                   authCubit.userPasswordController.text.trim(),
-                );
+                );*/
               }
               else {
-                await authCubit.signUpUser(
+                /*await authCubit.signUpUser(
                   widget.phone,
                   authCubit.userPasswordController.text.trim(),
-                );
+                );*/
               }
             }
             if (state is UserSignUpSuccessState ||

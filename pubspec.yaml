@@ -48,7 +48,7 @@ dependencies:
   image_picker: ^0.8.7+5
   bloc: ^9.0.1
   flutter_bloc: ^9.1.1
-  intl: ^0.19.0
+  intl: ^0.20.2
   conditional_builder_null_safety: ^0.0.6
   lottie: ^3.3.1
   marquee: ^2.3.0

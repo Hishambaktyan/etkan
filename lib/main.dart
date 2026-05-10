@@ -101,7 +101,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()..checkUser(),),
         BlocProvider<ChatCubit>(create: (context) => ChatCubit(),),
         BlocProvider<LocationCubit>(create: (context) => LocationCubit(),),
-        BlocProvider<AdminCubit>(create: (context) => AdminCubit()..getAdminData(),),
+        BlocProvider<AdminCubit>(create: (context) => AdminCubit()..getAdminData()..startListening(),),
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),

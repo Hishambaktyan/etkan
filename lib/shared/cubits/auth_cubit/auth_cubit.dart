@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,8 +13,6 @@ class AuthCubit extends Cubit<AuthStates> {
   AuthCubit() : super(AuthInitSatate());
 
   static AuthCubit get(context) => BlocProvider.of(context);
-
-  final String baseUrl = 'http://10.0.2.2:3000';
 
   void changePasswordVisiability() {
     isPassword = !isPassword;
@@ -29,9 +28,84 @@ class AuthCubit extends Cubit<AuthStates> {
   var workerAddController = TextEditingController();
   var workerPhoneController = TextEditingController();
 
-  String? userId;
+  //String? userId;
 
-  String normalizePhone(String phone) {
+  String generateCode() {
+    final random = Random();
+    return (100000 + random.nextInt(900000)).toString();
+  }
+
+  Future<void> requestCode({
+    required String phone,
+    required String userType,
+})
+  async{
+    try{
+      emit(SendPhoneCodeLoadingState());
+      final code = generateCode();
+      final now = DateTime.now();
+
+      await FirebaseFirestore.instance.collection('verification_requests').add({
+        'clientPhone': phone,
+        'code': code,
+        'status': 'pending',
+        'sentByAdmin': false,
+        'verified': false,
+        'createdAt': Timestamp.fromDate(now),
+        'expiresAt': Timestamp.fromDate(now.add(const Duration(minutes: 5))),
+        'sentAt': null,
+      });
+
+      emit(SendPhoneCodeSuccessState(phone: phone,userType: userType));
+    }catch(e){
+      emit(SendPhoneCodeErrorState(error: e.toString()));
+    }
+}
+
+  Future<bool> verifyCode({
+    required String phone,
+    required String code,
+    required String userType,
+  })
+  async {
+    emit(CheckPhoneCodeLoadingState());
+
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('verification_requests')
+          .where('clientPhone', isEqualTo: phone)
+          .where('code', isEqualTo: code)
+          .where('verified', isEqualTo: false)
+          .get();
+
+      if (query.docs.isEmpty) {
+        emit(CheckPhoneCodeErrorState(error: 'الكود غير صحيح'));
+        return false;
+      }
+
+      final doc = query.docs.first;
+      final expiresAt = doc['expiresAt'] as Timestamp;
+
+      if (expiresAt.toDate().isBefore(DateTime.now())) {
+        emit(CheckPhoneCodeErrorState(error: 'انتهت صلاحية الكود'));
+        return false;
+      }
+
+      await doc.reference.update({
+        'verified': true,
+        'status': 'verified',
+      });
+
+      emit(CheckPhoneCodeSuccessState(userType: userType,phone: phone));
+      return true;
+    } catch (e) {
+      emit(CheckPhoneCodeErrorState(error: e.toString()));
+      return false;
+    }
+  }
+
+
+/*  String normalizePhone(String phone) {
     String cleanPhone = phone.trim();
 
     cleanPhone = cleanPhone
@@ -65,10 +139,11 @@ class AuthCubit extends Cubit<AuthStates> {
         .replaceAll('-', '');
 
     return '$cleanPhone@homy.app';
-  }
+  }*/
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
+/*
   Future<void> workerSignUpUser(String phone, String password) async {
     try {
       emit(WorkerSignUpLoadingState());
@@ -118,11 +193,13 @@ class AuthCubit extends Cubit<AuthStates> {
       emit(WorkerSignUpErrorState(error: e.toString()));
     }
   }
+*/
 
   var userNameController = TextEditingController();
   var userPasswordController = TextEditingController();
   var userPhoneController = TextEditingController();
 
+/*
   Future<void> signUpUser(String phone, String password) async {
     try {
       emit(UserSignUpLoadingState());
@@ -167,6 +244,7 @@ class AuthCubit extends Cubit<AuthStates> {
       emit(UserSignUpErrorState(error: e.toString()));
     }
   }
+*/
 
   var workerLoginPhoneController = TextEditingController();
   var workerLoginPasswordController = TextEditingController();
@@ -176,6 +254,7 @@ class AuthCubit extends Cubit<AuthStates> {
   var userLoginPhoneController = TextEditingController();
   var userLoginPasswordController = TextEditingController();
 
+/*
   Future<void> loginUser({
     required String phone,
     required String password,
@@ -251,6 +330,7 @@ class AuthCubit extends Cubit<AuthStates> {
       emit(LoginErrorState(error: e.toString()));
     }
   }
+*/
 
   Future<void> logOutUser() async {
     try {
@@ -294,6 +374,7 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
+/*
   Future<void> sendPhoneCode({
     required String phone,
     required String userType,
@@ -343,7 +424,9 @@ class AuthCubit extends Cubit<AuthStates> {
       emit(SendPhoneCodeErrorState(error: e.toString()));
     }
   }
+*/
 
+/*
   Future<void> checkPhoneCode({
     required String phone,
     required String code,
@@ -384,8 +467,9 @@ class AuthCubit extends Cubit<AuthStates> {
       emit(CheckPhoneCodeErrorState(error: e.toString()));
     }
   }
+*/
 
-  Future<void> adminSignUpUser(String phone, String password) async {
+/*  Future<void> adminSignUpUser(String phone, String password) async {
     try {
       emit(UserSignUpLoadingState());
 
@@ -428,5 +512,5 @@ class AuthCubit extends Cubit<AuthStates> {
     } catch (e) {
       emit(UserSignUpErrorState(error: e.toString()));
     }
-  }
+  }*/
 }

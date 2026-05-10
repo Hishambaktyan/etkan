@@ -368,16 +368,16 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                         authCubit.workerPasswordController
                                             .text.isNotEmpty &&
                                         authCubit.selectedDept != null) {
-                                      String phone =
-                                      authCubit.normalizePhone(
+                                      /*String phone =
+                                      *//*authCubit.normalizePhone(
                                         authCubit.workerPhoneController.text
                                             .trim(),
-                                      );
+                                      );*/
 
-                                      await authCubit.sendPhoneCode(
+                                      /*await authCubit.sendPhoneCode(
                                         phone: phone,
                                         userType: 'provider',
-                                      );
+                                      );*/
                                     } else {
                                       showSnackBar(
                                           Colors.red,

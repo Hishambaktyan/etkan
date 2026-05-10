@@ -256,13 +256,9 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                                         child: CircularProgressIndicator())
                                     : defaultButton(
                                         onPressed: () async {
-                                          if (authCubit.userLoginPhoneController
-                                                  .text.isNotEmpty &&
-                                              authCubit
-                                                  .userLoginPasswordController
-                                                  .text
-                                                  .isNotEmpty) {
-                                            await authCubit.loginUser(
+                                          if (authCubit.userLoginPhoneController.text.isNotEmpty
+                                              && authCubit.userLoginPasswordController.text.isNotEmpty) {
+                                            /*await authCubit.loginUser(
                                               phone: authCubit
                                                   .userLoginPhoneController.text
                                                   .trim(),
@@ -271,7 +267,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                                                   .text
                                                   .trim(),
                                               requiredRole: 'user',
-                                            );
+                                            );*/
                                           } else {
                                             showSnackBar(
                                                 Colors.red,

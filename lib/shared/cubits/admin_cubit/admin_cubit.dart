@@ -1,14 +1,54 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
+
+import '../../networks/local/sms_bridge.dart';
 
 class AdminCubit extends Cubit<AdminStates>{
 
   AdminCubit(): super(AdminInitState());
 
   static AdminCubit get(context)=>BlocProvider.of(context);
+
+  StreamSubscription? streamSubscription ;
+
+
+  void startListening(){
+
+    streamSubscription = FirebaseFirestore.instance
+        .collection('verification_requests')
+        .where('status', isEqualTo: 'pending')
+        .where('sentByAdmin', isEqualTo: false)
+        .snapshots().listen((event) async{
+          for(final doc in event.docs){
+            final data = doc.data();
+            final phone = data['clientPhone'] ?? '';
+            final code = data['code'] ?? '';
+
+            if (phone.toString().isEmpty || code.toString().isEmpty) continue;
+
+            final sent = await SmsBridge.sendSms(
+              phone: phone,
+              message: 'رمز التحقق الخاص بك في تطبيق هومي هو: $code',
+            );
+
+            if(sent){
+              await doc.reference.update({
+                'sentByAdmin': true,
+                'sentAt': FieldValue.serverTimestamp(),
+              });
+            }
+          }
+    } ,);
+  }
+
+  void stopListening() {
+    streamSubscription?.cancel();
+  }
 
   List<Map<String,dynamic>> users =[];
   List<Map<String,dynamic>> providers =[];

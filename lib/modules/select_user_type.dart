@@ -343,7 +343,7 @@ class _SelectUserTypeState extends State<SelectUserType> {
                 CacheHelper.setBoolen(key: 'isWorker', value: false);
                 CacheHelper.saveData(key: 'role', value: 'admin');
 
-                moveAndReplace(context, const AdminLoginScreen());
+                moveAndReplace(context, const AdminHomeScreen());
               }
             },
             text: 'متابعة',

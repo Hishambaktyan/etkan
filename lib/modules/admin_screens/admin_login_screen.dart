@@ -239,11 +239,11 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                                     : defaultButton(
                                         onPressed: () async {
                                            if(formKey.currentState!.validate()){
-                                             await authCubit.loginUser(
+                                             /*await authCubit.loginUser(
                                                phone: authCubit.userLoginPhoneController.text.trim(),
                                                password: authCubit.userLoginPasswordController.text.trim(),
                                                requiredRole: 'admin',
-                                             );
+                                             );*/
                                            }
                                         },
                                         text: 'دخول',

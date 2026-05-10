@@ -40,12 +40,8 @@ class _UserSignUpState extends State<UserSignUp> {
               showSnackBar(
                   Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
 
-              move(
-                context,
-                VerifiedPhone(
-                  phone: state.phone,
-                  userType: state.userType,
-                ),
+              move(context,
+                VerifiedPhone(phone: state.phone, userType: state.userType,),
               );
             }
 
@@ -233,22 +229,24 @@ class _UserSignUpState extends State<UserSignUp> {
                                       )
                                     : defaultButton(
                                         onPressed: () async {
-                                          if (authCubit.userNameController.text
-                                                  .isNotEmpty &&
-                                              authCubit.userPhoneController.text
-                                                  .isNotEmpty &&
-                                              authCubit.userPasswordController
-                                                  .text.isNotEmpty) {
-                                            String phone =
+                                          if (authCubit.userNameController.text.isNotEmpty
+                                              && authCubit.userPhoneController.text.isNotEmpty
+                                              && authCubit.userPasswordController.text.isNotEmpty) {
+
+                                            authCubit.requestCode(
+                                                phone: authCubit.userPhoneController.text.trim(),
+                                              userType: 'user'
+                                            );
+                                          /*  String phone =
                                                 authCubit.normalizePhone(
                                               authCubit.userPhoneController.text
                                                   .trim(),
-                                            );
+                                            );*/
 
-                                            await authCubit.sendPhoneCode(
+                                           /* await authCubit.sendPhoneCode(
                                               phone: phone,
                                               userType: 'user',
-                                            );
+                                            );*/
                                           } else {
                                             showSnackBar(
                                                 Colors.red,
