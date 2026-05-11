@@ -1,19 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/admin_screens/admin_home_screen.dart';
-import 'package:trying_homy/modules/admin_screens/admin_login_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
-import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
+import '../main.dart';
+
 class SelectUserType extends StatefulWidget {
-  const SelectUserType({Key? key}) : super(key: key);
+  const SelectUserType({super.key});
 
   @override
   State<SelectUserType> createState() => _SelectUserTypeState();
@@ -24,331 +23,178 @@ class _SelectUserTypeState extends State<SelectUserType> {
 
   @override
   Widget build(BuildContext context) {
+    AppCubit appCubit = AppCubit.get(context);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: const Text(
-            'كيف ستستخدم البرنامج؟',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black87,
-        ),
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsetsDirectional.only(
-                start: 20.w, end: 20.w, bottom: 20.h, top: 25.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 0;
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: selectedIndex == 0
-                          ? const Color(0xFFE3F2FD)
-                          : const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(15.r),
-                      border: Border.all(
-                        color: selectedIndex == 0
-                            ? const Color(0xFF1976D2)
-                            : Colors.transparent,
-                        width: 2.w,
-                      ),
-                      boxShadow: selectedIndex == 0
-                          ? [
-                              BoxShadow(
-                                color: const Color(0xFF1976D2).withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              )
-                            ]
-                          : [],
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                'assets/client.jpg',
-                                height: 140,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            CircleAvatar(
-                              radius: 25,
-                              backgroundColor:
-                                  const Color(0xFF1976D2).withOpacity(0.85),
-                              child: const Icon(Icons.person_search,
-                                  color: Colors.white, size: 28),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'أنا عميل',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: selectedIndex == 0
-                                ? Colors.black87
-                                : Colors.black54,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'أبحث عن خدمات مهنية وأريد توظيف خبراء لمشاريعي القادمة.',
-                          style: TextStyle(
-                            color: selectedIndex == 0
-                                ? Colors.black54
-                                : Colors.black38,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Icon(
-                            selectedIndex == 0
-                                ? Icons.check_circle
-                                : Icons.radio_button_unchecked,
-                            color: selectedIndex == 0
-                                ? const Color(0xFF1976D2)
-                                : Colors.black38,
-                            size: 24,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 1;
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: selectedIndex == 1
-                          ? const Color(0xFFE3F2FD)
-                          : const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(15.r),
-                      border: Border.all(
-                        color: selectedIndex == 1
-                            ? const Color(0xFF1976D2)
-                            : Colors.transparent,
-                        width: 2.w,
-                      ),
-                      boxShadow: selectedIndex == 1
-                          ? [
-                              BoxShadow(
-                                color: const Color(0xFF1976D2).withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              )
-                            ]
-                          : [],
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                'assets/provider.jfif',
-                                height: 140,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            CircleAvatar(
-                              radius: 25,
-                              backgroundColor:
-                                  const Color(0xFF1976D2).withOpacity(0.85),
-                              child: const Icon(Icons.build_circle,
-                                  color: Colors.white, size: 28),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'أنا عامل',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: selectedIndex == 1
-                                ? Colors.black87
-                                : Colors.black54,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
-                          style: TextStyle(
-                            color: selectedIndex == 1
-                                ? Colors.black54
-                                : Colors.black38,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Icon(
-                            selectedIndex == 1
-                                ? Icons.check_circle
-                                : Icons.radio_button_unchecked,
-                            color: selectedIndex == 1
-                                ? const Color(0xFF1976D2)
-                                : Colors.black38,
-                            size: 24,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = 2;
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: selectedIndex == 2
-                          ? const Color(0xFFE3F2FD)
-                          : const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(15.r),
-                      border: Border.all(
-                        color: selectedIndex == 2
-                            ? const Color(0xFF1976D2)
-                            : Colors.transparent,
-                        width: 2.w,
-                      ),
-                      boxShadow: selectedIndex == 2
-                          ? [
-                              BoxShadow(
-                                color: const Color(0xFF1976D2).withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              )
-                            ]
-                          : [],
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                'assets/admin.jpg',
-                                height: 140,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            CircleAvatar(
-                              radius: 25,
-                              backgroundColor:
-                                  const Color(0xFF1976D2).withOpacity(0.85),
-                              child: const Icon(
-                                Icons.admin_panel_settings_rounded,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'أنا مسؤول',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: selectedIndex == 2
-                                ? Colors.black87
-                                : Colors.black54,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'أريد إدارة المستخدمين، الخدمات، الحجوزات، والاشتراكات داخل النظام.',
-                          style: TextStyle(
-                            color: selectedIndex == 2
-                                ? Colors.black54
-                                : Colors.black38,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Icon(
-                            selectedIndex == 2
-                                ? Icons.check_circle
-                                : Icons.radio_button_unchecked,
-                            color: selectedIndex == 2
-                                ? const Color(0xFF1976D2)
-                                : Colors.black38,
-                            size: 24,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+        body: Column(
+          children: [
+            header(
+              title: 'اختر نوع حسابك',
+              context: context,
+              isLeading: false,
+              isNotif: false,
             ),
-          ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsetsDirectional.all(20.r),
+                  child: Column(
+                    children: [
+                      buildUserTypeCard(
+                        index: 0,
+                        title: 'أنا عميل',
+                        description: 'أبحث عن خدمات مهنية وأريد توظيف خبراء لمشاريعي القادمة.',
+                        image: 'assets/client.jpg',
+                        icon: Icons.person_search_rounded,
+                        appCubit: appCubit,
+                      ),
+                      SizedBox(height: 15.h),
+                      buildUserTypeCard(
+                        index: 1,
+                        title: 'أنا فني',
+                        description: 'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
+                        image: 'assets/provider.jfif',
+                        icon: Icons.build_circle_rounded,
+                        appCubit: appCubit,
+                      ),
+                      SizedBox(height: 15.h),
+                      buildUserTypeCard(
+                        index: 2,
+                        title: 'أنا مسؤول',
+                        description: 'أريد إدارة المستخدمين، الخدمات، الحجوزات، والاشتراكات داخل النظام.',
+                        image: 'assets/admin.jpg',
+                        icon: Icons.admin_panel_settings_rounded,
+                        appCubit: appCubit,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        bottomNavigationBar: Padding(
-          padding:
-              EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 10.h),
+        bottomNavigationBar: Container(
+          padding: EdgeInsetsDirectional.all(20.w),
+          decoration: BoxDecoration(
+            color: appCubit.isDark ? lightDarkColor : Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+            boxShadow: appCubit.isDark ? [] : blueShadow,
+          ),
           child: defaultButton(
             onPressed: () {
               if (selectedIndex == 0) {
                 CacheHelper.setBoolen(key: 'isWorker', value: false);
                 CacheHelper.saveData(key: 'role', value: 'user');
-
                 moveAndReplace(context, const UserLoginScreen());
               } else if (selectedIndex == 1) {
                 CacheHelper.setBoolen(key: 'isWorker', value: true);
                 CacheHelper.saveData(key: 'role', value: 'provider');
-
                 moveAndReplace(context, const WorkerLoginScreen());
               } else {
                 CacheHelper.setBoolen(key: 'isWorker', value: false);
                 CacheHelper.saveData(key: 'role', value: 'admin');
-
                 moveAndReplace(context, const AdminHomeScreen());
               }
             },
             text: 'متابعة',
-            height: 55,
+            height: 52.h,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildUserTypeCard({
+    required int index,
+    required String title,
+    required String description,
+    required String image,
+    required IconData icon,
+    required AppCubit appCubit,
+  }) {
+    bool isSelected = selectedIndex == index;
+    return InkWell(
+      onTap: () => setState(() => selectedIndex = index),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: EdgeInsets.all(15.r),
+        decoration: BoxDecoration(
+          color: appCubit.isDark ? lightDarkColor : Colors.white,
+          borderRadius: BorderRadius.circular(25.r),
+          border: Border.all(
+            color: isSelected ? mainColor : (appCubit.isDark ? const Color(0xFF30363D) : Colors.transparent),
+            width: 2,
+          ),
+          boxShadow: isSelected ? [] : (appCubit.isDark ? [] : blueShadow),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15.r),
+                  child: Image.asset(
+                    image,
+                    height: 130.h,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Container(
+                  height: 130.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.r),
+                    color: Colors.black.withOpacity(0.2),
+                  ),
+                ),
+                CircleAvatar(
+                  radius: 28.r,
+                  backgroundColor: mainColor.withOpacity(0.9),
+                  child: Icon(icon, color: Colors.white, size: 30.sp),
+                ),
+              ],
+            ),
+            SizedBox(height: 15.h),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
+                          color: appCubit.isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 5.h),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12.sp,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  isSelected ? Icons.check_circle_rounded : Icons.radio_button_off_rounded,
+                  color: isSelected ? mainColor : Colors.grey.shade300,
+                  size: 24.sp,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

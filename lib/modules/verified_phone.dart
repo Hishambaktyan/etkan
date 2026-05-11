@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/worker_screens/worker_complete_profile.dart';
 
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -160,6 +161,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
     required BuildContext context,
     required AppCubit cubit,
     required AuthStates state,
+    required AuthCubit authCubit
   })
   {
     final bool isLoading = state is CheckPhoneCodeLoadingState ||
@@ -168,13 +170,13 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsetsDirectional.all(18.r),
+      padding: EdgeInsetsDirectional.all(10.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(22.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: cubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
+            :null,
         boxShadow: cubit.isDark ? [] : blueShadow,
       ),
       child: Column(
@@ -186,7 +188,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
               shape: BoxShape.circle,
             ),
             child: SvgPicture.asset(
-              'assets/whats.svg',
+              'assets/phone.svg',
               color: mainColor,
               width: 48.w,
             ),
@@ -202,7 +204,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
           ),
           SizedBox(height: 8.h),
           Text(
-            'لقد أرسلنا رمزًا مكونًا من 6 أرقام إلى واتساب رقمك:',
+            'لقد أرسلنا رمزًا مكونًا من 6 أرقام إلى رسائلك النصية إلى رقمك:',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
@@ -237,74 +239,78 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
           SizedBox(height: 25.h),
           Directionality(
             textDirection: TextDirection.ltr,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(length, (index) {
+            child: SizedBox(
+              height: 45.h,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: controllers.length,
+                itemBuilder: (context, index) {
                 return Padding(
-                  padding: EdgeInsetsDirectional.symmetric(horizontal: 4.w),
+                  padding: EdgeInsetsDirectional.only(start: 4.w,end: 4.w,top: 3.h),
                   child: Container(
-                    width: 43.w,
-                    height: 55.h,
+                    width: 45.w,
                     decoration: BoxDecoration(
-                      color: cubit.isDark
-                          ? darkBgColor
-                          : mainColor.withOpacity(0.08),
+                      color: cubit.isDark ? darkBgColor : mainColor.withOpacity(0.05),
+
                       borderRadius: BorderRadius.circular(14.r),
                       border: Border.all(
                         color: focusNodes[index].hasFocus
                             ? mainColor
                             : cubit.isDark
-                                ? const Color(0xFF30363D)
-                                : Colors.transparent,
+                            ? const Color(0xFF30363D)
+                            : Colors.transparent,
                       ),
                     ),
-                    child: TextFormField(
-                      controller: controllers[index],
-                      focusNode: focusNodes[index],
-                      enabled: !isLoading,
-                      textAlign: TextAlign.center,
-                      textAlignVertical: TextAlignVertical.center,
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      showCursor: false,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.bold,
+                    child: Center(
+                      child: TextFormField(
+                        controller: controllers[index],
+                        focusNode: focusNodes[index],
+                        enabled: !isLoading,
+                        textAlign: TextAlign.center,
+                        textAlignVertical: TextAlignVertical.center,
+                        keyboardType: TextInputType.number,
+                        maxLength: 1,
+                        showCursor: false,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.zero,
+                          border: InputBorder.none,
+                          counterText: '',
+                        ),
+                        onTap: () {
+                          setState(() {});
+                        },
+                        onChanged: (value) {
+                          setState(() {});
+
+                          if (value.isNotEmpty && index < length - 1) {
+                            FocusScope.of(context).requestFocus(
+                              focusNodes[index + 1],
+                            );
+                          }
+
+                          if (value.isEmpty && index > 0) {
+                            FocusScope.of(context).requestFocus(
+                              focusNodes[index - 1],
+                            );
+                          }
+
+                          if (code.length == length) {
+                            FocusScope.of(context).unfocus();
+                          }
+                        },
                       ),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        counterText: '',
-                      ),
-                      onTap: () {
-                        setState(() {});
-                      },
-                      onChanged: (value) {
-                        setState(() {});
-
-                        if (value.isNotEmpty && index < length - 1) {
-                          FocusScope.of(context).requestFocus(
-                            focusNodes[index + 1],
-                          );
-                        }
-
-                        if (value.isEmpty && index > 0) {
-                          FocusScope.of(context).requestFocus(
-                            focusNodes[index - 1],
-                          );
-                        }
-
-                        if (code.length == length) {
-                          FocusScope.of(context).unfocus();
-                        }
-                      },
                     ),
                   ),
                 );
-              }),
+              },),
             ),
           ),
           SizedBox(height: 18.h),
@@ -325,10 +331,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                 onTap: resendSeconds == 0 && !isLoading
                     ? () {
                         clearCode();
-                        /*AuthCubit.get(context).sendPhoneCode(
-                          phone: widget.phone,
-                          userType: widget.userType,
-                        );*/
+                        authCubit.requestCode(phone: widget.phone, userType: widget.userType);
                         startTimer();
                       }
                     : null,
@@ -350,24 +353,14 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
             ],
           ),
           SizedBox(height: 25.h),
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : defaultButton(
-                  onPressed: () {
+          defaultButton(
+                  onPressed: () async {
                     if (code.length != length) {
                       showSnackBar(
-                        Colors.red,
-                        'أدخل كود التحقق كامل',
-                        context,
-                      );
+                        Colors.red, 'أدخل كود التحقق كامل',context,);
                       return;
                     }
-
-                    /*AuthCubit.get(context).checkPhoneCode(
-                      phone: widget.phone,
-                      code: code,
-                      userType: widget.userType,
-                    );*/
+                    await authCubit.checkCode(phone: widget.phone, code: code, userType: widget.userType);
                   },
                   text: 'تحقق من الحساب',
                   height: 50.h,
@@ -387,11 +380,11 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
       padding: EdgeInsetsDirectional.all(14.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: cubit.isDark
             ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
+            : null,
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [
@@ -430,73 +423,65 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
         final appCubit = AppCubit.get(context);
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) async {
+            bool isCreatingAccount = false;
             final authCubit = AuthCubit.get(context);
+            if (state is CheckPhoneCodeLoadingState) {
+              showLoadingDialog(context);
+            }
+            if (state is CheckPhoneCodeSuccessState && !isCreatingAccount) {
+              isCreatingAccount = true;
+              if (widget.userType == 'provider') {
+                await authCubit.workerSignUpUser(
+                  name: authCubit.workerNameController.text.trim(),
+                  phone: widget.phone.trim(),
+                  password: authCubit.workerPasswordController.text.trim(),
+                );
+                hideLoadingDialog(context);
+              }
+              else {
+                await authCubit.signUpUser(
+                  name: authCubit.userNameController.text.trim(),
+                  phone: widget.phone.trim(),
+                  password: authCubit.userPasswordController.text.trim(),
+                );
+                hideLoadingDialog(context);
+              }
+            }
             if (state is SendPhoneCodeSuccessState) {
               showSnackBar(Colors.green, 'تم إرسال رمز تحقق جديد', context,);
             }
             if (state is SendPhoneCodeErrorState) {
               showSnackBar(Colors.red, state.error, context,);
             }
+            if (state is UserSignUpErrorState) {
+              showSnackBar(Colors.red, state.error, context,);
+            }
+            if (state is WorkerSignUpSuccessState) {
+              hideLoadingDialog(context);
+
+              authCubit.workerNameController.clear();
+              authCubit.workerPhoneController.clear();
+              authCubit.workerPasswordController.clear();
+              showSnackBar(Colors.green, 'تم إنشاء حسابك بنجاح', context,);
+              moveAndReplace(context, const WorkerCompleteProfile());
+            }
             if (state is WorkerSignUpErrorState) {
               showSnackBar(Colors.red, state.error,context,);
             }
-            if (state is CheckPhoneCodeSuccessState) {
-              if (widget.userType == 'provider') {
-                /*await authCubit.workerSignUpUser(
-                  widget.phone,
-                  authCubit.workerPasswordController.text.trim(),
-                );*/
-              }
-              else if (widget.userType == 'admin') {
-               /* await authCubit.adminSignUpUser(
-                  widget.phone,
-                  authCubit.userPasswordController.text.trim(),
-                );*/
-              }
-              else {
-                /*await authCubit.signUpUser(
-                  widget.phone,
-                  authCubit.userPasswordController.text.trim(),
-                );*/
-              }
-            }
-            if (state is UserSignUpSuccessState ||
-                state is WorkerSignUpSuccessState)
-            {
+            if (state is UserSignUpSuccessState) {
+              hideLoadingDialog(context);
+
               authCubit.userPasswordController.clear();
               authCubit.userPhoneController.clear();
               authCubit.userNameController.clear();
 
-              authCubit.workerPasswordController.clear();
-              authCubit.workerPhoneController.clear();
-              authCubit.workerNameController.clear();
-              authCubit.workerAddController.clear();
+              showSnackBar(Colors.green, 'تم إنشاء حسابك بنجاح', context,);
+              moveAndReplace(context, const UserMainScreen(),);
 
-              showSnackBar(
-                Colors.green,
-                'تم إنشاء حسابك بنجاح',
-                context,
-              );
-
-              if (widget.userType == 'provider') {
-                moveAndReplace(
-                  context,
-                  const WorkerMainScreen(),
-                );
-              } else {
-                moveAndReplace(
-                  context,
-                  const UserMainScreen(),
-                );
-              }
             }
-
             if (state is CheckPhoneCodeErrorState) {
-              showSnackBar(Colors.red,state.error, context,);
-            }
-
-            if (state is UserSignUpErrorState) {
-              showSnackBar(Colors.red, state.error, context,);
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red,state.error, context);
             }
           },
           builder: (context, state) {
@@ -556,6 +541,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                         context: context,
                         cubit: appCubit,
                         state: state,
+                        authCubit:AuthCubit.get(context)
                       ),
                       SizedBox(height: 15.h),
                       _buildHintCard(

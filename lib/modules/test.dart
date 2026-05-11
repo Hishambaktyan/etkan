@@ -1,6 +1,6 @@
+/*
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
@@ -695,7 +695,7 @@ class _UserAccountState extends State<UserAccount> {
 
             AuthCubit authCubit = AuthCubit.get(context);
 
-            Map<String, dynamic> user = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid] ?? {};
+            Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
 
             return Directionality(
               textDirection: TextDirection.rtl,
@@ -898,3 +898,4 @@ class _UserAccountState extends State<UserAccount> {
     );
   }
 }
+*/

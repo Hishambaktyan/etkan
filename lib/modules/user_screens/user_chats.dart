@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/the_chat.dart';
+import 'package:trying_homy/modules/the_chat.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+
+import '../../shared/networks/local/cache_helper.dart';
 
 class UserChats extends StatefulWidget {
   const UserChats({super.key});
@@ -19,10 +20,10 @@ class UserChats extends StatefulWidget {
 }
 
 class _UserChatsState extends State<UserChats> {
-  String myUserId = FirebaseAuth.instance.currentUser!.uid;
+  String myUserId = CacheHelper.getData(key: 'uid');
   final Stream<QuerySnapshot> chatStreamBuilder = FirebaseFirestore.instance
       .collection('chats')
-      .where('users', arrayContains: FirebaseAuth.instance.currentUser!.uid)
+      .where('users', arrayContains: CacheHelper.getData(key: 'uid'))
       .orderBy('lastUpdate', descending: true)
       .snapshots();
 

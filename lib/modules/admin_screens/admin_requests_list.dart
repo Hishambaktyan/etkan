@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/admin_screens/admin_request_details.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class AdminRequestsList extends StatefulWidget {
@@ -35,7 +36,7 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
         Container(
           padding: const EdgeInsetsDirectional.all(8),
           decoration: BoxDecoration(
-            color:  mainColor.withOpacity(0.1),
+            color: mainColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: SvgPicture.asset(
@@ -45,9 +46,7 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
             color: mainColor,
           ),
         ),
-        SizedBox(
-          width: 10.w,
-        ),
+        SizedBox(width: 10.w),
         SizedBox(
           width: 90.w,
           child: Text(
@@ -72,6 +71,64 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
     );
   }
 
+  Widget buildStatCard({
+    required String title,
+    required String value,
+    required String icon,
+  }) {
+    return Container(
+      padding: EdgeInsetsDirectional.all(10.r),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: blueShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: BoxDecoration(
+                  color: mainColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: SvgPicture.asset(
+                  icon,
+                  width: 20.w,
+                  height: 20.h,
+                  color: mainColor,
+                ),
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 17.sp,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 5.h),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     AdminCubit.get(context).getRequests();
@@ -83,225 +140,277 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
     return BlocBuilder<AdminCubit, AdminStates>(
       builder: (context, state) {
         AdminCubit adminCubit = AdminCubit.get(context);
+        AppCubit appCubit = AppCubit.get(context);
+
         List<Map<String, dynamic>> requests = selectedStatus == 'الكل'
             ? adminCubit.requests
             : adminCubit.requests
-                .where((booking) => booking['status'] == selectedStatus)
-                .toList();
+            .where((booking) => booking['status'] == selectedStatus)
+            .toList();
+
+        int pendingCount = adminCubit.requests.where((r) => r['status'] == 'قيد الانتظار').length;
+        int acceptedCount = adminCubit.requests.where((r) => r['status'] == 'مقبول').length;
+        int canceledCount = adminCubit.requests.where((r) => r['status'] == 'ملغي' || r['status'] == 'مرفوض').length;
+
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
             body: SingleChildScrollView(
-              child: state is GetRequestsLoadingState ? const AdminRequestsShimmer()
-                  :Column(
+              child: state is GetRequestsLoadingState
+                  ? const AdminRequestsShimmer()
+                  : Column(
                 children: [
-                  header(title: 'قائمة الحجوزات', context: context,isLeading: true,isNotif: false),
-                  Padding(
-                    padding:  EdgeInsetsDirectional.only(top: 15.h),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 50.h,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w,bottom: 10.h),
-                            itemCount: statusFilters.length,
-                            itemBuilder: (context, index) {
-                              bool isSelected = selectedStatus == statusFilters[index];
-                              return Padding(
-                                padding: EdgeInsetsDirectional.only(end: 10.w),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedStatus = statusFilters[index];
-                                    });
-                                  },
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 300),
-                                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: isSelected ? mainColor : Colors.white,
-                                      borderRadius: BorderRadius.circular(15.r),
-                                      boxShadow: isSelected ? [] : blueShadow,
-                                      border: Border.all(
-                                        color: isSelected ? mainColor : Colors.grey.shade100,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      statusFilters[index],
-                                      style: TextStyle(
-                                        color: isSelected ? Colors.white : Colors.grey.shade700,
-                                        fontSize: 13.sp,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
+                  header(title: 'قائمة الحجوزات', context: context, isLeading: true, isNotif: false),
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 280.h,
+                        child: GridView(
                           physics: const NeverScrollableScrollPhysics(),
-                          padding: EdgeInsetsDirectional.only(start: 20.w,end: 20.w,top: 5.h,),
-                          itemCount: requests.length,
-                          itemBuilder: (context, index) {
-                            var request = requests[index];
-                            final providerData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
-                            final userData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
-                            Color statusColor;
-                            String status = request['status'];
+                          padding: const EdgeInsetsGeometry.all(15),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                            childAspectRatio: 2,
+                            crossAxisSpacing: 10.w,
+                            mainAxisSpacing: 10.h
 
-                            switch (status) {
-                              case 'مكتمل':
-                                statusColor = Colors.green;
-                                break;
-                              case 'مقبول':
-                              case 'في الطريق':
-                                statusColor = Colors.blueAccent;
-                                break;
-                              case 'مرفوض':
-                              case 'ملغي':
-                                statusColor = Colors.redAccent;
-                                break;
-                              default:
-                                statusColor = Colors.orangeAccent;
-                            }
+                          ),
+                          children: [
+                            buildStatCard(
+                              title: 'قيد الانتظار',
+                              value: pendingCount.toString(),
+                              icon: 'assets/timer.svg',
+                            ),
+                            buildStatCard(
+                              title: 'مقبولة',
+                              value: acceptedCount.toString(),
+                              icon: 'assets/grid.svg',
+                            ),
+                            buildStatCard(
+                              title: 'في الطريق',
+                              value: pendingCount.toString(),
+                              icon: 'assets/timer.svg',
+                            ),
+                            buildStatCard(
+                              title: 'مكتملة',
+                              value: acceptedCount.toString(),
+                              icon: 'assets/grid.svg',
+                            ),
+                            buildStatCard(
+                              title: 'مرفوضة',
+                              value: canceledCount.toString(),
+                              icon: 'assets/delete.svg',
+                            ),
+                            buildStatCard(
+                              title: 'ملغية',
+                              value: canceledCount.toString(),
+                              icon: 'assets/delete.svg',
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        height: 55.h,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                          itemCount: statusFilters.length,
+                          itemBuilder: (context, index) {
+                            bool isSelected = selectedStatus == statusFilters[index];
                             return Padding(
-                              padding: EdgeInsetsDirectional.only(bottom: 20.h),
+                              padding: EdgeInsetsDirectional.only(end: 10.w,bottom: 10.h),
                               child: InkWell(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: (){},
-                                child: Container(
-                                  width: 330.w,
-                                  padding: EdgeInsetsDirectional.all(15.r),
+                                onTap: () {
+                                  setState(() {
+                                    selectedStatus = statusFilters[index];
+                                  });
+                                },
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                  alignment: Alignment.center,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow: blueShadow,
+                                    color: isSelected ? mainColor : Colors.white,
+                                    borderRadius: BorderRadius.circular(15.r),
+                                    boxShadow: isSelected ? [] : blueShadow,
                                   ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20.r),
-                                              border: Border.all(
-                                                color: mainColor.withOpacity(0.1),
-                                                width: 2,
-                                              ),
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(18.r),
-                                              child: Image.network(
-                                                request['image'] ?? '',
-                                                width: 70.w,
-                                                height: 70.h,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (context, error, stackTrace) => Container(
-                                                  width: 70.w,
-                                                  height: 70.h,
-                                                  color: Colors.grey.shade200,
-                                                  child: Icon(Icons.image_not_supported, color: Colors.grey, size: 20.sp),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 15.w),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        request['title'],
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                          fontSize: 14.sp,
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                                                      decoration: BoxDecoration(
-                                                        color: statusColor.withOpacity(0.1),
-                                                        borderRadius: BorderRadius.circular(30.r),
-                                                        border: Border.all(color: statusColor.withOpacity(0.2)),
-                                                      ),
-                                                      child: Text(
-                                                        status,
-                                                        style: TextStyle(
-                                                          color: statusColor,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 10.sp,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 6.h),
-                                                Text(
-                                                  '${request['price']} $reyalSymbol',
-                                                  style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight: FontWeight.w900,
-                                                    color: mainColor,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 15.h),
-                                      Container(
-                                        padding: EdgeInsets.all(12.r),
-                                        decoration: BoxDecoration(
-                                          color: mainColor.withOpacity(0.04),
-                                          borderRadius: BorderRadius.circular(20.r),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            buildDetailRow('العنوان:', request['address'], 'assets/loc.svg', adminCubit),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 8.h),
-                                              child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
-                                            ),
-                                            buildDetailRow('الموعد:', formatStatusTime(request['scheduledAt']), 'assets/timer.svg', adminCubit),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 8.h),
-                                              child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
-                                            ),
-                                            buildDetailRow('الفني:', providerData['name'], 'assets/providers.svg', adminCubit),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 8.h),
-                                              child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
-                                            ),
-                                            buildDetailRow('المستخدم:', userData['name'], 'assets/acc.svg', adminCubit),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                                  child: Text(
+                                    statusFilters[index],
+                                    style: TextStyle(
+                                      color: isSelected ? Colors.white : Colors.grey.shade700,
+                                      fontSize: 12.sp,
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
                             );
                           },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsetsDirectional.all(15.w),
+                    itemCount: requests.length,
+                    itemBuilder: (context, index) {
+                      var request = requests[index];
+                      final providerData = adminCubit.providers.firstWhere((element) => element['id'] == request['providerId'],
+                        orElse: () => {'name': 'غير محدد'},
+                      );
+                      final userData = adminCubit.users.firstWhere((element) => element['id'] == request['customerId'], orElse: () => {'name': 'غير محدد'},
+                      );
+                      
+                      String status = request['status'];
+                      Color statusColor;
+                      switch (request['status']) {
+                        case 'مكتمل': statusColor = Colors.green; break;
+                        case 'مقبول':
+                        case 'في الطريق': statusColor = Colors.blue; break;
+                        case 'مرفوض':
+                        case 'ملغي': statusColor = Colors.red; break;
+                        default: statusColor = Colors.orange;
+                      }
+
+                      return InkWell(
+                        onTap: ()=>move(context, AdminRequestDetails(request: request, providerData: providerData, userData: userData)),
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(bottom: 20.h),
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: ()=>move(context, AdminRequestDetails(
+                                request: request,
+                                providerData: providerData,
+                                userData: userData
+                            )
+                            ),
+                            child: Container(
+                              width: 330.w,
+                              padding: EdgeInsetsDirectional.all(15.r),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(25.r),
+                                boxShadow: blueShadow,
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(20.r),
+                                          border: Border.all(
+                                            color: mainColor.withOpacity(0.1),
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(18.r),
+                                          child: Image.network(
+                                            request['image'] ?? '',
+                                            width: 70.w,
+                                            height: 70.h,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) => Container(
+                                              width: 70.w,
+                                              height: 70.h,
+                                              color: Colors.grey.shade200,
+                                              child: Icon(Icons.image_not_supported, color: Colors.grey, size: 20.sp),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 15.w),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    request['title'] ?? '',
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                                  decoration: BoxDecoration(
+                                                    color: statusColor.withOpacity(0.1),
+                                                    borderRadius: BorderRadius.circular(30.r),
+                                                    border: Border.all(color: statusColor.withOpacity(0.2)),
+                                                  ),
+                                                  child: Text(
+                                                    status,
+                                                    style: TextStyle(
+                                                      color: statusColor,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 10.sp,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 6.h),
+                                            Text(
+                                              '${request['price'] ?? ''} $reyalSymbol',
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w900,
+                                                color: mainColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  Container(
+                                    padding: EdgeInsets.all(12.r),
+                                    decoration: BoxDecoration(
+                                      color: mainColor.withOpacity(0.04),
+                                      borderRadius: BorderRadius.circular(20.r),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        buildDetailRow('العنوان:', request['address'] ?? '', 'assets/loc.svg', adminCubit),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                                          child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
+                                        ),
+                                        buildDetailRow('الموعد:', formatStatusTime(request['scheduledAt'] ?? ''), 'assets/timer.svg', adminCubit),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                                          child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
+                                        ),
+                                        buildDetailRow('الفني:', providerData['name'] ?? '', 'assets/providers.svg', adminCubit),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                                          child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
+                                        ),
+                                        buildDetailRow('المستخدم:', userData['name'] ?? '', 'assets/acc.svg', adminCubit),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

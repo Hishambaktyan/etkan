@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +13,8 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+
+import '../../shared/networks/local/cache_helper.dart';
 
 class AddressesManagementScreen extends StatefulWidget {
   const AddressesManagementScreen({super.key});
@@ -225,7 +225,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                   color: Colors.green,
                   onTap: () {
                     locationCubit.setDefaultAddress(
-                        uId: FirebaseAuth.instance.currentUser!.uid,
+                        uId: CacheHelper.getData(key: 'uid'),
                         addressId: address['id']
                     );
                   },
@@ -407,7 +407,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
 
   @override
   void initState() {
-    LocationCubit.get(context).getAddresses(FirebaseAuth.instance.currentUser!.uid);
+    LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
     super.initState();
   }
 
@@ -492,7 +492,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                                 address: address,
                                 index: index,
                               locationCubit: locationCubit,
-                              uId: FirebaseAuth.instance.currentUser!.uid
+                              uId: CacheHelper.getData(key: 'uid')
                             );
                           },
                         ),

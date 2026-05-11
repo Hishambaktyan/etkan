@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../modules/user_screens/bookings_screen.dart';
@@ -28,16 +27,6 @@ class AppCubit extends Cubit<AppStates>{
 
   int currentIndex = 0;
 
-  bool amAvailable = true;
-
-  DocumentReference<Map<String, dynamic>>? get userData {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return null;
-    return FirebaseFirestore.instance.collection('users').doc(user.uid);
-  }
-
-  bool isServicesActive = true;
-
   List<Widget> workerScreens = [
      WorkerHomeScreen(),
     const WorkerBookingScreen(),
@@ -58,136 +47,6 @@ class AppCubit extends Cubit<AppStates>{
     emit(ChangeNavBarState());
   }
 
-  Future<void> changeAvailability(value) async {
-    if (userData == null) return;
-    amAvailable = value;
-    emit(ChangeAvailabilityState());
-
-    try {
-      await userData!.update({
-        'isAvailable': value
-      });
-
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-  void changeServiceActivity(value){
-    isServicesActive = value;
-    emit(ChangeServiceActivityState());
-  }
-
-  String? workerName;
-  String? workerDept;
-  int? workerTotalAmount;
-  int? workerRequestsCount;
-  int? workerServicesCount;
-  int? workerComplatedRequestsCount;
-  double? workerRating;
-
-  List<Map<String,dynamic>> workerServices = [];
-
-  bool workerDataLoaded = false;
-
-  Future<void> getWorkerData() async {
-
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
-      return;
-    }
-
-    if (workerDataLoaded) return;
-
-    emit(GetWorkerDataLoadingState());
-
-    final uid = user.uid;
-
-    try {
-
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
-
-      final servicesSnapshot = await FirebaseFirestore.instance
-          .collection('services')
-          .where('providerId', isEqualTo: uid)
-          .count()
-          .get();
-
-      final completedRequestSnapshot = await FirebaseFirestore.instance
-          .collection('requests')
-          .where('providerId',isEqualTo: uid)
-          .where('status',isEqualTo: 'completed')
-          .count()
-          .get();
-
-      final requestSnapshot = await FirebaseFirestore.instance
-          .collection('requests')
-          .where('providerId',isEqualTo: uid)
-          .count()
-          .get();
-
-      final getServicesSnapshot = await FirebaseFirestore.instance
-          .collection('services')
-          .where('providerId', isEqualTo: uid)
-          .get();
-
-      workerName = userSnapshot.data()?['name'];
-      workerDept = userSnapshot.data()?['specialization'];
-      workerTotalAmount = userSnapshot.data()?['totalAmount'];
-      workerRequestsCount = requestSnapshot.count;
-      workerComplatedRequestsCount = completedRequestSnapshot.count;
-      workerServicesCount = servicesSnapshot.count;
-      workerRating = userSnapshot.data()?['avgRating'];
-
-      workerServices.clear();
-
-      for (var doc in getServicesSnapshot.docs) {
-        var data = doc.data();
-        data['id'] = doc.id;
-        workerServices.add(data);
-      }
-
-      workerDataLoaded = true;
-
-      emit(GetWorkerDataSuccessState());
-
-    } catch (e) {
-      emit(GetWorkerDataErrorState(error: e.toString()));
-    }
-  }
-
-  File? serviceImage;
-  var picker = ImagePicker();
-
-  Future<void> getProfileImage({required ImageSource source,String? error})
-  async {
-    try{
-      emit(UploadServiceImagesLoadingState());
-      final pickedFile = await picker.pickImage(
-        source: source,
-      );
-      if (pickedFile != null) {
-        serviceImage=File(pickedFile.path);
-        emit(UploadServiceImagesSuccessState());
-      } else {
-        print('لم يتم اختيار صورة');
-      }
-    }catch(e){
-      emit(UploadServiceImagesErrorState(error: e.toString()));
-    }
-  }
-
-  void clearServiceImages() {
-    serviceImage=null;
-    emit(ClearUploadedImages());
-  }
-
-
   Future<String> getAccessToken() async {
 
     final jsonString = await rootBundle.loadString('assets/service-account.json');
@@ -206,7 +65,7 @@ class AppCubit extends Cubit<AppStates>{
   })
   async {
     try {
-      var uid = FirebaseAuth.instance.currentUser!.uid;
+      var uid = CacheHelper.getData(key: 'uid');
       DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -269,98 +128,6 @@ class AppCubit extends Cubit<AppStates>{
       );
     }
   }
-
-  Future<void> uploadService({
-    required String name,
-    required String description,
-    required String category,
-    required String subCategory,
-    required String price,
-    required String period,
-  })
-  async {
-    try {
-      emit(UploadServiceLoadingState());
-      Map<String, dynamic> serviceData = {
-        'name': name,
-        'description': description,
-        'category': category,
-        'price': int.parse(price),
-        'period': period,
-        'serviceImage': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-        'providerId': FirebaseAuth.instance.currentUser!.uid,
-        'isActive': true,
-        'rate': 0.0,
-        'createdAt': FieldValue.serverTimestamp(),
-        'subCategory': subCategory,
-        'reviews': FieldValue.arrayUnion(
-            [
-              {
-                'comment': 'شغله تمام بصراحة بس يهدر كثير',
-                'createdAt': DateTime.now(),
-                'rating': 3,
-                'userId': 'FeIIQoLQZuSiVK2T2q2WBcOjMsn2',
-                'userName': 'عمر نصر',
-              },
-              {
-                'comment': 'خدمة ممتازة جداً وانصح بالتعامل معه، فني محترف ومواعيده دقيقة.',
-                'createdAt': DateTime.now(),
-                'rating': 5,
-                'userId': 'j0z415zBtFWBXb1qPiCSHLWtLop2',
-                'userName': 'أحمد محمد',
-              }
-        ]),
-      };
-
-      await FirebaseFirestore.instance.collection('services').add(serviceData);
-
-      emit(UploadServiceSuccessState());
-
-    } catch (e) {
-      emit(UploadServiceErrorState(error: e.toString()));
-      print(e.toString());
-    }
-  }
-
-  List<Map<String,dynamic>> workerRequests=[];
-
-
-  Future<void> getWorkerRequests()
-  async {
-
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
-      return;
-    }
-
-    emit(GetWorkerRequestsLoadingState());
-
-    final uid = user.uid;
-    workerRequests.clear();
-
-    try {
-      final requestsSnapshot = await FirebaseFirestore.instance
-          .collection('requests')
-          .where('providerId', isEqualTo: uid)
-          .get();
-
-      final docs = requestsSnapshot.docs;
-
-      for (var doc in docs) {
-        var data = doc.data();
-        data['id'] = doc.id;
-        workerRequests.add(data);
-      }
-
-      emit(GetWorkerRequestsSuccessState());
-
-    } catch (e) {
-      emit(GetWorkerRequestsErrorState(error: e.toString()));
-    }
-  }
-
 
   Map<String,dynamic> allUsers = {};
 

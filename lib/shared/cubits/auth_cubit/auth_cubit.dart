@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
   AuthCubit() : super(AuthInitSatate());
@@ -21,14 +20,6 @@ class AuthCubit extends Cubit<AuthStates> {
 
   bool isPassword = true;
   String get suffixIcon => isPassword ? 'assets/eye.svg' : 'assets/eye-slash.svg';
-
-  String? selectedDept;
-  var workerNameController = TextEditingController();
-  var workerPasswordController = TextEditingController();
-  var workerAddController = TextEditingController();
-  var workerPhoneController = TextEditingController();
-
-  //String? userId;
 
   String generateCode() {
     final random = Random();
@@ -52,7 +43,7 @@ class AuthCubit extends Cubit<AuthStates> {
         'sentByAdmin': false,
         'verified': false,
         'createdAt': Timestamp.fromDate(now),
-        'expiresAt': Timestamp.fromDate(now.add(const Duration(minutes: 5))),
+        'expiresAt': Timestamp.fromDate(now.add(const Duration(minutes: 10))),
         'sentAt': null,
       });
 
@@ -62,7 +53,7 @@ class AuthCubit extends Cubit<AuthStates> {
     }
 }
 
-  Future<bool> verifyCode({
+  Future<bool> checkCode({
     required String phone,
     required String code,
     required String userType,
@@ -104,147 +95,186 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
-
-/*  String normalizePhone(String phone) {
-    String cleanPhone = phone.trim();
-
-    cleanPhone = cleanPhone
-        .replaceAll(' ', '')
-        .replaceAll('-', '')
-        .replaceAll('(', '')
-        .replaceAll(')', '');
-
-    if (cleanPhone.startsWith('+967')) {
-      return cleanPhone;
-    }
-
-    if (cleanPhone.startsWith('967')) {
-      return '+$cleanPhone';
-    }
-
-    if (cleanPhone.startsWith('0')) {
-      cleanPhone = cleanPhone.substring(1);
-    }
-
-    return '+967$cleanPhone';
-  }
-
-  String phoneToFakeEmail(String phone) {
-
-    final formattedPhone = normalizePhone(phone);
-
-    final cleanPhone = formattedPhone
-        .replaceAll('+', '')
-        .replaceAll(' ', '')
-        .replaceAll('-', '');
-
-    return '$cleanPhone@homy.app';
-  }*/
-
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
-
-/*
-  Future<void> workerSignUpUser(String phone, String password) async {
-    try {
-      emit(WorkerSignUpLoadingState());
-
-      final formattedPhone = normalizePhone(phone);
-      final fakeEmail = phoneToFakeEmail(formattedPhone);
-
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: fakeEmail,
-        password: password,
-      );
-
-      userId = userCredential.user!.uid;
-
-      await users.doc(userId).set({
-        'uid': userId,
-        'phone': formattedPhone,
-        'name': workerNameController.text.trim(),
-        'role': 'provider',
-        'specialization': selectedDept,
-        'address': workerAddController.text.trim(),
-        'avgRating': 0.0,
-        'isAvailable': true,
-        'profileImage':
-            'https://i.pinimg.com/736x/52/21/33/522133dfd3c48af9689f9f7c9f86f3e9.jpg',
-        'createdAt': FieldValue.serverTimestamp(),
-        'totalAmount': 0,
-      });
-
-      await saveUserToken();
-
-      emit(WorkerSignUpSuccessState());
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = 'حدث خطأ ما';
-
-      if (e.code == 'email-already-in-use') {
-        errorMessage = 'هذا الرقم مستخدم بالفعل';
-      }
-
-      if (e.code == 'weak-password') {
-        errorMessage = 'كلمة المرور ضعيفة جداً';
-      }
-
-      emit(WorkerSignUpErrorState(error: errorMessage));
-    } catch (e) {
-      emit(WorkerSignUpErrorState(error: e.toString()));
-    }
-  }
-*/
-
   var userNameController = TextEditingController();
   var userPasswordController = TextEditingController();
   var userPhoneController = TextEditingController();
 
-/*
-  Future<void> signUpUser(String phone, String password) async {
+
+  Future<void> signUpUser({
+    required String name,
+    required String phone,
+    required String password
+})
+  async {
     try {
       emit(UserSignUpLoadingState());
 
-      final formattedPhone = normalizePhone(phone);
-      final fakeEmail = phoneToFakeEmail(formattedPhone);
+      final formattedPhone = phone.trim();
+      final uid = FirebaseFirestore.instance
+          .collection('users')
+          .doc()
+          .id;
 
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: fakeEmail,
-        password: password,
-      );
+      final existingUser = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: formattedPhone)
+          .limit(1)
+          .get();
 
-      userId = userCredential.user!.uid;
+      if (existingUser.docs.isNotEmpty) {
+        emit(UserSignUpErrorState(error: 'رقم الهاتف مستخدم مسبقًا'));
+        return;
+      }
 
-      await users.doc(userId).set({
-        'uid': userId,
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'uid': uid,
+        'name': name.trim(),
         'phone': formattedPhone,
-        'name': userNameController.text.trim(),
+        'password': password,
         'role': 'user',
-        'profileImage':
-            'https://i.pinimg.com/736x/52/21/33/522133dfd3c48af9689f9f7c9f86f3e9.jpg',
+        'profileImage': '',
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await saveUserToken();
+      await saveUserToken(uid);
+
+      await CacheHelper.saveData(key: 'uid', value: uid);
 
       emit(UserSignUpSuccessState());
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = 'حدث خطأ ما';
-
-      if (e.code == 'email-already-in-use') {
-        errorMessage = 'هذا الرقم مستخدم بالفعل';
-      }
-
-      if (e.code == 'weak-password') {
-        errorMessage = 'كلمة المرور ضعيفة جداً';
-      }
-
-      emit(UserSignUpErrorState(error: errorMessage));
     } catch (e) {
       emit(UserSignUpErrorState(error: e.toString()));
     }
   }
-*/
+
+  String? selectedCategory;
+  var workerNameController = TextEditingController();
+  var workerPasswordController = TextEditingController();
+  var workerAddController = TextEditingController();
+  var workerPhoneController = TextEditingController();
+
+
+  Future<void> workerSignUpUser({
+      required String name,
+      required String phone,
+      required String password,
+})
+  async {
+    try {
+      emit(WorkerSignUpLoadingState());
+
+      final uid = FirebaseFirestore.instance.collection('users').doc().id;
+
+      final existingUser = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: phone.trim())
+          .limit(1)
+          .get();
+
+      if (existingUser.docs.isNotEmpty) {
+        emit(WorkerSignUpErrorState(error: 'رقم الهاتف مستخدم مسبقًا'));
+        return;
+      }
+
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'uid': uid,
+        'phone': phone.trim(),
+        'name': name.trim(),
+        'password': password,
+        'role': 'provider',
+        'specialization': '',
+        'address': '',
+        'avgRating': 0.0,
+        'isAvailable': true,
+        'isSubscribed': false,
+        'profileImage': '',
+        'about': '',
+        'experiences': [],
+        'previousWorks': [],
+        'subscription': {
+          'isActive': false,
+          'status': 'pending',
+        },
+        'createdAt': FieldValue.serverTimestamp(),
+        'token': '',
+      });
+
+      await saveUserToken(uid);
+
+      await CacheHelper.saveData(key: 'uid', value: uid);
+
+      emit(WorkerSignUpSuccessState());
+    }  catch (e) {
+      emit(WorkerSignUpErrorState(error: e.toString()));
+    }
+  }
+
+  Future<String> uploadImageToCloudinary(String imagePath) async {
+    final dio = Dio();
+
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        imagePath,
+        filename: '${DateTime.now().millisecondsSinceEpoch}.jpg',
+      ),
+      'upload_preset': 'unsiged_upload',
+    });
+
+    final response = await dio.post(
+      'https://api.cloudinary.com/v1_1/dxftdrzdu/image/upload',
+      data: formData,
+    );
+
+    return response.data['secure_url'];
+  }
+
+  Future<void> completeWorkerProfile({
+    required String specialization,
+    required String address,
+    required String about,
+    required List<String> experiences,
+    required List<String> previousWorks,
+    required String profileImage,
+  })
+  async {
+    try {
+      emit(CompleteWorkerProfileLoadingState());
+
+      String profileImageUrl = '';
+      List<String> previousWorksImageUrl = [];
+
+      if (profileImage.trim().isNotEmpty) {
+        profileImageUrl = await uploadImageToCloudinary(profileImage);
+      }
+
+      if (previousWorks.isNotEmpty) {
+        for (String imagePath in previousWorks) {
+          final imageUrl = await uploadImageToCloudinary(imagePath);
+          previousWorksImageUrl.add(imageUrl);
+        }
+      }
+
+      final uid = CacheHelper.getData(key: 'uid');
+
+      if (uid == null || uid.toString().isEmpty) {
+        emit(CompleteWorkerProfileErrorState(error: 'تعذر العثور على معرف المستخدم',));
+        return;
+      }
+
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'specialization': specialization.trim(),
+        'address': address.trim(),
+        'about': about.trim(),
+        'experiences': experiences,
+        'previousWorks': previousWorksImageUrl,
+        'profileImage': profileImageUrl,
+      });
+
+      emit(CompleteWorkerProfileSuccessState());
+    } catch (e) {
+      emit(CompleteWorkerProfileErrorState(error: e.toString()));
+    }
+  }
+
 
   var workerLoginPhoneController = TextEditingController();
   var workerLoginPasswordController = TextEditingController();
@@ -254,7 +284,6 @@ class AuthCubit extends Cubit<AuthStates> {
   var userLoginPhoneController = TextEditingController();
   var userLoginPasswordController = TextEditingController();
 
-/*
   Future<void> loginUser({
     required String phone,
     required String password,
@@ -264,33 +293,23 @@ class AuthCubit extends Cubit<AuthStates> {
     try {
       emit(LoginLoadingState());
 
-      final formattedPhone = normalizePhone(phone);
-      final fakeEmail = phoneToFakeEmail(formattedPhone);
-
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: fakeEmail,
-        password: password,
-      );
-
-      await userCredential.user?.reload();
-
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userCredential.user!.uid)
+          .where('phone',isEqualTo: phone.trim())
+          .where('password',isEqualTo: password.trim())
+          .limit(1)
           .get();
 
-      if (!userDoc.exists) {
-        await FirebaseAuth.instance.signOut();
-        emit(LoginErrorState(error: 'بيانات الحساب غير موجودة'));
+      if (userDoc.docs.isEmpty) {
+        emit(LoginErrorState(error: 'رقم الهاتف أو كلمة المرور غير صحيحة'));
         return;
       }
 
-      final userData = userDoc.data() as Map<String, dynamic>;
+      final userData = userDoc.docs.first.data();
       final role = userData['role'];
+      final uid = userData['uid'];
 
       if (role != requiredRole) {
-        await FirebaseAuth.instance.signOut();
-
         String message = 'ليس لديك صلاحية الدخول من هذه الصفحة';
 
         if (requiredRole == 'admin') {
@@ -305,212 +324,54 @@ class AuthCubit extends Cubit<AuthStates> {
         return;
       }
 
-      await saveUserToken();
+      await CacheHelper.saveData(key: 'uid', value: uid);
+      await saveUserToken(uid);
 
       emit(LoginSuccessState());
-    } on FirebaseAuthException catch (e) {
-      String error = 'حدث خطأ ما';
-
-      if (e.code == 'user-not-found' ||
-          e.code == 'invalid-credential' ||
-          e.code == 'invalid-login-credentials') {
-        error = 'رقم الهاتف أو كلمة المرور غير صحيحة';
-      }
-
-      if (e.code == 'wrong-password') {
-        error = 'كلمة المرور خاطئة';
-      }
-
-      if (e.code == 'too-many-requests') {
-        error = 'تم حظر المحاولة مؤقتًا بسبب كثرة المحاولات. حاول لاحقًا';
-      }
-
-      emit(LoginErrorState(error: error));
-    } catch (e) {
+    }catch (e) {
       emit(LoginErrorState(error: e.toString()));
     }
   }
-*/
 
-  Future<void> logOutUser() async {
+  Future<void> logoutUser() async {
     try {
       emit(LogOutLoadingState());
-      await FirebaseAuth.instance.signOut();
+
+      final String? uid = CacheHelper.getData(key: 'uid');
+
+      if (uid != null && uid.isNotEmpty) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .update({
+          'token': '',
+        });
+      }
+
+      await CacheHelper.removeData(key: 'uid');
+
       emit(LogOutSuccessState());
     } catch (e) {
       emit(LogOutErrorState(error: e.toString()));
-      print(e.toString());
     }
   }
 
-  Future<void> saveUserToken() async {
+  Future<void> saveUserToken(String uid) async {
     try {
       String? token = await FirebaseMessaging.instance.getToken();
-      User? user = FirebaseAuth.instance.currentUser;
 
-      if (token != null && user != null) {
+      if (token != null) {
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(user.uid)
+            .doc(uid)
             .update({
           'token': token,
         });
+
         print("تم حفظ الـ Token بنجاح: $token");
       }
     } catch (e) {
       print("خطأ أثناء حفظ الـ Token: ${e.toString()}");
     }
   }
-
-  Future<void> checkUser() async {
-    var user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      await saveUserToken();
-
-      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-        saveUserToken();
-      });
-    }
-  }
-
-/*
-  Future<void> sendPhoneCode({
-    required String phone,
-    required String userType,
-  })
-  async {
-    emit(SendPhoneCodeLoadingState());
-
-    try {
-      final formattedPhone = normalizePhone(phone);
-
-      final existingUser = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone', isEqualTo: formattedPhone)
-          .limit(1)
-          .get();
-
-      if (existingUser.docs.isNotEmpty) {
-        emit(SendPhoneCodeErrorState(
-          error: 'هذا الرقم مستخدم بالفعل',
-        ));
-        return;
-      }
-
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/send-code'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'phone': formattedPhone,
-        }),
-      );
-
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && data['success'] == true) {
-        emit(SendPhoneCodeSuccessState(
-          phone: formattedPhone,
-          userType: userType,
-        ));
-      } else {
-        emit(SendPhoneCodeErrorState(
-          error: data['message'] ?? 'فشل إرسال كود التحقق',
-        ));
-      }
-    } catch (e) {
-      emit(SendPhoneCodeErrorState(error: e.toString()));
-    }
-  }
-*/
-
-/*
-  Future<void> checkPhoneCode({
-    required String phone,
-    required String code,
-    required String userType,
-  })
-  async {
-    emit(CheckPhoneCodeLoadingState());
-
-    try {
-      final formattedPhone = normalizePhone(phone);
-      final cleanCode = code.trim();
-
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/check-code'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'phone': formattedPhone,
-          'code': cleanCode,
-          'userType': userType,
-        }),
-      );
-
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && data['success'] == true) {
-        emit(CheckPhoneCodeSuccessState(
-          phone: phone,
-          userType: userType,
-        ));
-      } else {
-        emit(CheckPhoneCodeErrorState(
-          error: data['message'] ?? 'كود التحقق غير صحيح',
-        ));
-      }
-    } catch (e) {
-      emit(CheckPhoneCodeErrorState(error: e.toString()));
-    }
-  }
-*/
-
-/*  Future<void> adminSignUpUser(String phone, String password) async {
-    try {
-      emit(UserSignUpLoadingState());
-
-      final formattedPhone = normalizePhone(phone);
-      final fakeEmail = phoneToFakeEmail(formattedPhone);
-
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: fakeEmail,
-        password: password,
-      );
-
-      userId = userCredential.user!.uid;
-
-      await users.doc(userId).set({
-        'uid': userId,
-        'phone': formattedPhone,
-        'name': userNameController.text.trim(),
-        'role': 'admin',
-        'profileImage':
-            'https://i.pinimg.com/736x/52/21/33/522133dfd3c48af9689f9f7c9f86f3e9.jpg',
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      await saveUserToken();
-
-      emit(UserSignUpSuccessState());
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = 'حدث خطأ ما';
-
-      if (e.code == 'email-already-in-use') {
-        errorMessage = 'هذا الرقم مستخدم بالفعل';
-      }
-
-      if (e.code == 'weak-password') {
-        errorMessage = 'كلمة المرور ضعيفة جداً';
-      }
-
-      emit(UserSignUpErrorState(error: errorMessage));
-    } catch (e) {
-      emit(UserSignUpErrorState(error: e.toString()));
-    }
-  }*/
 }

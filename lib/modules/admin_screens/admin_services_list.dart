@@ -2,7 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
+import 'package:trying_homy/modules/admin_screens/admin_service_details.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/admin_cubit/admin_cubit.dart';
@@ -17,6 +19,64 @@ class AdminServicesList extends StatefulWidget {
 }
 
 class _AdminServicesListState extends State<AdminServicesList> {
+
+  Widget buildStatCard({
+    required String title,
+    required String value,
+    required String icon,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.all(15.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25.r),
+          boxShadow:  blueShadow,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8.r),
+                  decoration: BoxDecoration(
+                    color: mainColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: SvgPicture.asset(
+                    icon,
+                    width: 22.w,
+                    color: mainColor,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -36,6 +96,17 @@ class _AdminServicesListState extends State<AdminServicesList> {
                       : Column(
                   children: [
                     header(title: 'قائمة الخدمات', context: context,isNotif: false,isLeading: true),
+                    SizedBox(height: 10.h,),
+                    Padding(
+                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                      child: Row(
+                        children: [
+                          buildStatCard(title: 'الخدمات المفعلة', value: '2', icon: 'assets/all.svg'),
+                          SizedBox(width: 10.w,),
+                          buildStatCard(title: 'الخدمات المعطلة', value: '2', icon: 'assets/dis.svg'),
+                        ],
+                      ),
+                    ),
                     ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -45,7 +116,7 @@ class _AdminServicesListState extends State<AdminServicesList> {
                         final service = adminCubit.services[index];
                         final providerData = adminCubit.providers.firstWhere((element) => element['id']==service['providerId'],);
                         return InkWell(
-                          onTap: (){},
+                          onTap: ()=>move(context, AdminServiceDetails(reviews: service['reviews'], service: service)),
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           borderRadius: BorderRadius.circular(25.r),

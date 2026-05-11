@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
+
+import '../../../../shared/networks/local/cache_helper.dart';
 
 class BookingCubit extends Cubit<BookingStates>{
 
@@ -16,7 +17,7 @@ class BookingCubit extends Cubit<BookingStates>{
       emit(GetUserRequestLoadingState());
       final requestSnapshot = await FirebaseFirestore.instance
           .collection('requests')
-          .where('customerId' ,isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('customerId' ,isEqualTo: CacheHelper.getData(key: 'uid'))
           .get();
 
       for (var doc in requestSnapshot.docs) {

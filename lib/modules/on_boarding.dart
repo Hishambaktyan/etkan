@@ -50,7 +50,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsetsDirectional.only(start: 18.w, end: 18.w, top: 10.h,),
+                padding: EdgeInsetsDirectional.only(start: 18.w,top: 10.h,),
                 child: Row(
                   children: [
                     Container(

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/admin_screens/admin_user_info.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/styles/colors.dart';
 
 class AdminUsersList extends StatefulWidget {
@@ -16,6 +18,66 @@ class AdminUsersList extends StatefulWidget {
 }
 
 class _AdminUsersListState extends State<AdminUsersList> {
+  
+  var searchController = TextEditingController();
+
+  Widget buildStatCard({
+    required String title,
+    required String value,
+    required String icon,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.all(15.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25.r),
+          boxShadow:  blueShadow,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8.r),
+                  decoration: BoxDecoration(
+                    color: mainColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: SvgPicture.asset(
+                    icon,
+                    width: 22.w,
+                    color: mainColor,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -30,12 +92,24 @@ class _AdminUsersListState extends State<AdminUsersList> {
           body: BlocBuilder<AdminCubit,AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
-              return SingleChildScrollView(
-                child: state is GetUsersLoadingState ? const AdminUsersShimmer(isDark: false)
-                    : Column(
-                  children: [
-                    header(title: 'إدارة المستخدمين', context: context,isLeading: true,isNotif: false),
-                    GridView.builder(
+              return state is GetUsersLoadingState ? const AdminUsersShimmer(isDark: false)
+                  : SingleChildScrollView(
+                    child: Column(
+                    children: [
+                      header(title: 'إدارة المستخدمين', context: context,isLeading: true,isNotif: false),
+                      SizedBox(height: 10.h,),
+                      Padding(
+                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                      child: Row(
+                        children: [
+                          buildStatCard(title: 'الحسابات المفعلة', value: '2', icon: 'assets/all.svg'),
+                          SizedBox(width: 10.w,),
+                          buildStatCard(title: 'الحسابات المعطلة', value: '2', icon: 'assets/dis.svg'),
+                        ],
+                      ),
+                    ),
+                      SizedBox(height: 20.h,),
+                      GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -44,7 +118,7 @@ class _AdminUsersListState extends State<AdminUsersList> {
                           crossAxisSpacing: 10.w,
                           childAspectRatio: 0.78
                       ),
-                      padding:  EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 20.h),
+                      padding:  EdgeInsetsDirectional.only(start: 10.w,end:10.w,bottom: 20.h),
                       itemCount: adminCubit.users.length,
                       itemBuilder:(context, index) {
                         final user = adminCubit.users[index];
@@ -132,8 +206,8 @@ class _AdminUsersListState extends State<AdminUsersList> {
                         );
                       },
                     ),
-                  ],
-                ),
+                    ],
+                    ),
               );
             },
           ),

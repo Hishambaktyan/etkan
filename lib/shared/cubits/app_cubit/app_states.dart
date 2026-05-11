@@ -8,64 +8,8 @@ class ChangeNavBarState extends AppStates{}
 
 //////////////////////////////////////
 
-class ChangeAvailabilityState extends AppStates{}
-
-//////////////////////////////////////
-
-class ChangeServiceActivityState extends AppStates{}
-
-//////////////////////////////////////
-
-class GetWorkerDataSuccessState extends AppStates{}
-
-class GetWorkerDataLoadingState extends AppStates{}
-
-class GetWorkerDataErrorState extends AppStates{
-  final String error;
-
-  GetWorkerDataErrorState({required this.error});
-}
-
-//////////////////////////////////////
-
 class ChangeThemeState extends AppStates {}
 
-class UploadServiceImagesLoadingState extends AppStates {}
-
-class UploadServiceImagesSuccessState extends AppStates  {}
-
-class UploadServiceImagesErrorState extends AppStates {
-  final String error;
-
-  UploadServiceImagesErrorState({required this.error});
-}
-
-//////////////////////////////////////
-
-class ClearUploadedImages extends AppStates{}
-
-//////////////////////////////////////
-
-class UploadServiceLoadingState extends AppStates{}
-class UploadServiceSuccessState extends AppStates{}
-class UploadServiceErrorState extends AppStates{
-  final String error;
-  UploadServiceErrorState({required this.error});
-}
-
-//////////////////////////////////////
-
-class GetWorkerRequestsSuccessState extends AppStates{}
-
-class GetWorkerRequestsLoadingState extends AppStates{}
-
-class GetWorkerRequestsErrorState extends AppStates{
-  final String error;
-
-  GetWorkerRequestsErrorState({required this.error});
-}
-
-//////////////////////////////////////
 
 
 

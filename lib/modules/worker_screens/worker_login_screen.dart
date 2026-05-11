@@ -31,20 +31,17 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
         AuthCubit authCubit = AuthCubit.get(context);
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
+            if (state is LoginLoadingState) {
+             showLoadingDialog(context);
+            }
             if (state is LoginSuccessState) {
+              hideLoadingDialog(context);
+              moveAndReplace(context, const WorkerMainScreen(),);
               authCubit.userLoginPhoneController.clear();
               authCubit.userLoginPasswordController.clear();
-
-              appCubit.workerDataLoaded = false;
-              appCubit.getWorkerData();
-
-              moveAndReplace(
-                context,
-                const WorkerMainScreen(),
-              );
             }
-
             if (state is LoginErrorState) {
+              hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error.toString(), context);
             }
           },
@@ -179,10 +176,9 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                       child: Container(
                         height: 450.h,
                         width: double.infinity,
-                        padding: EdgeInsetsDirectional.symmetric(
-                            horizontal: 20.w, vertical: 30.h),
+                        padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
-                          color: appCubit.isDark ? darkBgColor : Colors.white,
+                          color: appCubit.isDark ? darkBgColor : bgColor,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(40.r),
                             topRight: Radius.circular(40.r),
@@ -201,37 +197,30 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                             key: formKey,
                             child: Column(
                               children: [
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: appCubit,
-                                    text: 'رقم الهاتف',
-                                    prefixIcon: 'assets/phone.svg',
-                                    errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
-                                    controller:
-                                        authCubit.workerLoginPhoneController,
-                                    type: TextInputType.phone,
-                                  ),
+                                defaultTextFormfeild(
+                                  cubit: appCubit,
+                                  text: 'رقم الهاتف',
+                                  prefixIcon: 'assets/phone.svg',
+                                  errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
+                                  controller:
+                                      authCubit.workerLoginPhoneController,
+                                  type: TextInputType.phone,
                                 ),
                                 SizedBox(height: 20.h),
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                      cubit: appCubit,
-                                      text: 'كلمة المرور',
-                                      prefixIcon: 'assets/lock.svg',
-                                      errorMes:
-                                          'كلمة المرور يجب ان لا تكون فارغ',
-                                      controller: authCubit
-                                          .workerLoginPasswordController,
-                                      type: TextInputType.visiblePassword,
-                                      isPassword: authCubit.isPassword,
-                                      isSuffixIcon: true,
-                                      suffixIcon: authCubit.suffixIcon,
-                                      suffixPressed: () {
-                                        authCubit.changePasswordVisiability();
-                                      }),
-                                ),
+                                defaultTextFormfeild(
+                                    cubit: appCubit,
+                                    text: 'كلمة المرور',
+                                    prefixIcon: 'assets/lock.svg',
+                                    errorMes:
+                                        'كلمة المرور يجب ان لا تكون فارغ',
+                                    controller: authCubit.workerLoginPasswordController,
+                                    type: TextInputType.visiblePassword,
+                                    isPassword: authCubit.isPassword,
+                                    isSuffixIcon: true,
+                                    suffixIcon: authCubit.suffixIcon,
+                                    suffixPressed: () {
+                                      authCubit.changePasswordVisiability();
+                                    }),
                                 Align(
                                   alignment: AlignmentDirectional.centerStart,
                                   child: TextButton(
@@ -250,33 +239,14 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 20.h),
-                                authCubit.state is LoginLoadingState
-                                    ? const Center(
-                                        child: CircularProgressIndicator())
-                                    : defaultButton(
+                                defaultButton(
                                         onPressed: () async {
-                                          if (authCubit
-                                                  .workerLoginPhoneController
-                                                  .text
-                                                  .isNotEmpty &&
-                                              authCubit
-                                                  .workerLoginPasswordController
-                                                  .text
-                                                  .isNotEmpty) {
-                                            /*await authCubit.loginUser(
-                                              phone: authCubit
-                                                  .workerLoginPhoneController
-                                                  .text
-                                                  .trim(),
-                                              password: authCubit
-                                                  .workerLoginPasswordController
-                                                  .text
-                                                  .trim(),
-                                              requiredRole: 'provider',
-                                            );*/
-                                          } else {
-                                            showSnackBar(Colors.red,
-                                                'يرجى تعبة كل الحقول', context);
+                                          if (formKey.currentState!.validate()) {
+                                            await authCubit.loginUser(
+                                                phone: authCubit.workerLoginPhoneController.text.trim(),
+                                                password: authCubit.workerLoginPasswordController.text.trim(),
+                                                requiredRole: 'provider'
+                                            );
                                           }
                                         },
                                         text: 'دخول',

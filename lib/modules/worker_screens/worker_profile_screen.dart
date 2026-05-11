@@ -1,7 +1,6 @@
 import 'dart:ui';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +12,7 @@ import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
+import '../../shared/networks/local/cache_helper.dart';
 import '../notifications_screen.dart';
 import 'edit_worker_profile.dart';
 
@@ -609,7 +609,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     return BlocBuilder<AppCubit,AppStates>(
         builder: (context, state) {
           AppCubit appCubit = AppCubit.get(context);
-          Map<String, dynamic> user = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid] ?? {};
+          Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
           return Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(

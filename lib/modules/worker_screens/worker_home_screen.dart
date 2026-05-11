@@ -9,6 +9,8 @@ import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
@@ -69,19 +71,19 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
 
   @override
   void initState() {
-    AppCubit.get(context).getWorkerData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        if (state is GetWorkerDataLoadingState) {
-          return WorkerHomeShimmer(isDark: cubit.isDark);
-        } else {
-          return Directionality(
+        AppCubit appCubit = AppCubit.get(context);
+        return BlocBuilder<WorkerCubit,WorkerStates>(
+          builder: (context, state) {
+            WorkerCubit workerCubit = WorkerCubit.get(context);
+              return  state is GetWorkerDataLoadingState ? WorkerHomeShimmer(isDark: appCubit.isDark)
+            : Directionality(
                 textDirection: TextDirection.rtl,
                 child: Scaffold(
                   body: SingleChildScrollView(
@@ -89,7 +91,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         headerWithSearch(
-                            title: 'مرحبا، ${cubit.workerName}',
+                            title: 'مرحبا، ${workerCubit.workerName ?? ''}',
                             searchKeyWords:['ايحث عن خدماتك','ايحث عن حجوزاتك المكتملة','ايحث عن خدماتك الرائجة',] ,
                             context: context
                         ),
@@ -109,7 +111,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                             var data = info[index];
                             return Container(
                               decoration: BoxDecoration(
-                                color: cubit.isDark ? lightDarkColor : Colors.white,
+                                color: appCubit.isDark ? lightDarkColor : Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
                                 boxShadow: blueShadow,
                               ),
@@ -130,7 +132,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                         child: SvgPicture.asset(
                                           data['icon'],
                                           // ignore: deprecated_member_use
-                                          color: mainColor.withOpacity(cubit.isDark ? 0.05 : 0.1),
+                                          color: mainColor.withOpacity(appCubit.isDark ? 0.05 : 0.1),
                                           width: 70.w,
                                           height: 70.h,
                                         ),
@@ -160,17 +162,17 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                             ),
                                             Text(
                                               index == 0
-                                                  ? '${cubit.workerRequestsCount}'
+                                                  ? '${workerCubit.workerRequestsCount ?? ''}'
                                                   : index == 1
-                                                  ? '${cubit.workerComplatedRequestsCount}'
+                                                  ? '${workerCubit.workerCompletedRequestsCount ?? ''}'
                                                   : index == 2
-                                                  ? '${cubit.workerServicesCount}'
+                                                  ? '${workerCubit.workerServicesCount ?? ''}'
                                                   : index == 3
-                                                  ? '${cubit.workerRating}'
+                                                  ? '${workerCubit.workerRating ?? ''}'
                                                   : '0',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w900,
-                                                color: cubit.isDark ? Colors.white : mainColor,
+                                                color: appCubit.isDark ? Colors.white : mainColor,
                                                 fontSize: 22.sp,
                                                 letterSpacing: -1,
                                               ),
@@ -184,7 +186,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                             Text(
                                               data['title'],
                                               style: TextStyle(
-                                                color: cubit.isDark ? Colors.white.withOpacity(0.9) : Colors.black87,
+                                                color: appCubit.isDark ? Colors.white.withOpacity(0.9) : Colors.black87,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 13.sp,
                                               ),
@@ -211,7 +213,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         SizedBox(height: 20.h,),
                         Padding(
                             padding: EdgeInsetsDirectional.only(start: 10.w,end: 2.w),
-                            child: _buildSectionTitle(title: 'حالة الاتصال', icon: 'assets/power.svg', appCubit: cubit)
+                            child: _buildSectionTitle(title: 'حالة الاتصال', icon: 'assets/power.svg', appCubit: appCubit)
                         ),
                         SizedBox(height: 10.h,),
                         Container(
@@ -219,11 +221,11 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                           margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                           padding: EdgeInsets.all(16.r),
                           decoration: BoxDecoration(
-                            color: cubit.isDark ? lightDarkColor : Colors.white,
+                            color: appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
-                            boxShadow: cubit.isDark ? [] : blueShadow,
+                            boxShadow: appCubit.isDark ? [] : blueShadow,
                             border: Border.all(
-                              color: cubit.amAvailable
+                              color: workerCubit.amAvailable
                                   ? mainColor.withOpacity(0.1)
                                   : Colors.transparent,
                               width: 1.5,
@@ -239,7 +241,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                     width: 58.w,
                                     height: 58.w,
                                     decoration: BoxDecoration(
-                                      color: cubit.amAvailable
+                                      color: workerCubit.amAvailable
                                           ? mainColor.withOpacity(0.08)
                                           : Colors.grey.withOpacity(0.08),
                                       shape: BoxShape.circle,
@@ -249,9 +251,9 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                     'assets/power.svg',
                                     width: 26.w,
                                     height: 26.h,
-                                    color: cubit.amAvailable ? mainColor : Colors.grey,
+                                    color: workerCubit.amAvailable ? mainColor : Colors.grey,
                                   ),
-                                  if (cubit.amAvailable)
+                                  if (workerCubit.amAvailable)
                                     Positioned(
                                       top: 2,
                                       right: 2,
@@ -273,16 +275,16 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      cubit.amAvailable ? 'متاح لاستقبال الطلبات' : 'غير متاح حالياً',
+                                      workerCubit.amAvailable ? 'متاح لاستقبال الطلبات' : 'غير متاح حالياً',
                                       style: TextStyle(
                                         fontSize: 15.sp,
                                         fontWeight: FontWeight.w900,
-                                        color: cubit.isDark ? Colors.white : Colors.black,
+                                        color: appCubit.isDark ? Colors.white : Colors.black,
                                       ),
                                     ),
                                     SizedBox(height: 4.h),
                                     Text(
-                                      cubit.amAvailable
+                                      workerCubit.amAvailable
                                           ? 'يمكن للعملاء إرسال طلبات جديدة إليك'
                                           : 'لن تظهر للعملاء كعامل متاح حالياً',
                                       style: TextStyle(
@@ -296,7 +298,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                               ),
                               SizedBox(width: 10.w),
                               InkWell(
-                                onTap: () => cubit.changeAvailability(!cubit.amAvailable),
+                                // onTap: () => cubit.changeAvailability(!cubit.amAvailable),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 child: AnimatedContainer(
@@ -305,14 +307,14 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                   height: 32.h,
                                   padding: EdgeInsets.symmetric(horizontal: 4.w),
                                   decoration: BoxDecoration(
-                                    color: cubit.amAvailable
+                                    color: workerCubit.amAvailable
                                         ? mainColor
-                                        : (cubit.isDark ? Colors.grey.withOpacity(0.2) : Colors.grey.shade300),
+                                        : (appCubit.isDark ? Colors.grey.withOpacity(0.2) : Colors.grey.shade300),
                                     borderRadius: BorderRadius.circular(30.r),
                                   ),
                                   child: AnimatedAlign(
                                     duration: const Duration(milliseconds: 300),
-                                    alignment: cubit.amAvailable
+                                    alignment: workerCubit.amAvailable
                                         ? AlignmentDirectional.centerEnd
                                         : AlignmentDirectional.centerStart,
                                     child: Container(
@@ -326,8 +328,8 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                         ],
                                       ),
                                       child: Icon(
-                                        cubit.amAvailable ? Icons.check : Icons.power_settings_new_rounded,
-                                        color: cubit.amAvailable ? mainColor : Colors.grey,
+                                        workerCubit.amAvailable ? Icons.check : Icons.power_settings_new_rounded,
+                                        color: workerCubit.amAvailable ? mainColor : Colors.grey,
                                         size: 15.r,
                                       ),
                                     ),
@@ -339,37 +341,37 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                         ),
                         SizedBox(height: 20.h,),
                         Padding(
-                          padding:
-                              EdgeInsetsDirectional.only(start: 10.w,end: 2.w),
-                          child: Row(
-                            children: [
-                              _buildSectionTitle(title: 'الخدمات الحالية', icon: 'assets/services.svg', appCubit: cubit),
-                              const Spacer(),
-                              defaultTextButton(onPressed: ()=>move(context, WorkerServices()), text: 'عرض الكل',isLined: false),
-                            ],
-                          )
+                            padding:
+                            EdgeInsetsDirectional.only(start: 10.w,end: 2.w),
+                            child: Row(
+                              children: [
+                                _buildSectionTitle(title: 'الخدمات الحالية', icon: 'assets/services.svg', appCubit: appCubit),
+                                const Spacer(),
+                                defaultTextButton(onPressed: ()=>move(context, WorkerServices()), text: 'عرض الكل',isLined: false),
+                              ],
+                            )
                         ),
-                        if (cubit.workerServices.isEmpty)
-                          Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                        Icons.inbox_outlined,
-                                        size: 50,
-                                        color: Colors.grey.shade400),
-                                    SizedBox(height: 10.h),
-                                    Text(
-                                      'لا يوجد لديك خدمات حالياً',
-                                      style: TextStyle(
-                                          fontSize: 13.sp,
-                                          color: Colors.grey.shade400),
-                                    ),
-                                  ],
-                                ),
-                              )
-                        else GridView.builder(
-                          itemCount: cubit.workerServices.length > 4 ? 4 : cubit.workerServices.length,
+                        workerCubit.workerServices.isEmpty
+                            ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                  Icons.inbox_outlined,
+                                  size: 50,
+                                  color: Colors.grey.shade400),
+                              SizedBox(height: 10.h),
+                              Text(
+                                'لا يوجد لديك خدمات حالياً',
+                                style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: Colors.grey.shade400),
+                              ),
+                            ],
+                          ),
+                        )
+                            : GridView.builder(
+                          itemCount: workerCubit.workerServices.length > 4 ? 4 : workerCubit.workerServices.length,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
@@ -380,10 +382,10 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                             mainAxisSpacing: 15.h,
                           ),
                           itemBuilder: (context, index) {
-                            var service = cubit.workerServices[index];
+                            var service = workerCubit.workerServices[index];
                             return Container(
                               decoration: BoxDecoration(
-                                color: cubit.isDark ? lightDarkColor : Colors.white,
+                                color: appCubit.isDark ? lightDarkColor : Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
                                 boxShadow: blueShadow,
                               ),
@@ -396,7 +398,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                         ClipRRect(
                                           borderRadius: BorderRadius.circular(25.r),
                                           child: Image.network(
-                                            '${service['serviceImage']}',
+                                            '${service['serviceImage'] ?? ''}',
                                             height: 120.h,
                                             width: double.infinity,
                                             fit: BoxFit.cover,
@@ -419,7 +421,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                               border: Border.all(color: Colors.white, width: 1.5),
                                             ),
                                             child: Text(
-                                              '${service['price']} ﷼',
+                                              '${service['price'] ?? ''} ﷼',
                                               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.sp),
                                             ),
                                           ),
@@ -431,11 +433,12 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                             onTap: () {
                                               setState(() {
                                                 showSnackBar(
-                                                  Colors.green,
-                                                  cubit.isServicesActive ? 'تم الغاء تفعيل الخدمة' : 'تم تفعيل الخدمة',
-                                                  context,
+                                                    Colors.green,
+                                                    workerCubit.isServicesActive ?
+                                                    'تم الغاء تفعيل الخدمة' : 'تم تفعيل الخدمة',
+                                                    context
                                                 );
-                                                cubit.isServicesActive = !cubit.isServicesActive;
+                                                workerCubit.isServicesActive = !workerCubit.isServicesActive;
                                               });
                                             },
                                             child: ClipRRect(
@@ -449,7 +452,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                                   ),
                                                   child: SvgPicture.asset(
                                                     'assets/power.svg',
-                                                    color: cubit.isServicesActive ? Colors.green : Colors.grey,
+                                                    color: workerCubit.isServicesActive ? Colors.green : Colors.grey,
                                                     width: 18.w,
                                                     height: 18.h,
                                                   ),
@@ -462,7 +465,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                     ),
                                   ),
                                   InkWell(
-                                    onTap: () => move(context, WorkerServiceDetails(serviceId: service['id'])),
+                                    onTap: () => move(context, WorkerServiceDetails(service: service,)),
                                     child: Padding(
                                       padding: EdgeInsets.symmetric(horizontal: 12.w),
                                       child: Column(
@@ -473,31 +476,31 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                                               Icon(Icons.star_rounded, color: Colors.amber, size: 16.sp),
                                               SizedBox(width: 4.w),
                                               Text(
-                                                '${service['rate']}',
+                                                '${service['rate'] ?? ''}',
                                                 style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey),
                                               ),
                                             ],
                                           ),
                                           SizedBox(height: 6.h),
                                           Text(
-                                            '${service['name']}',
+                                            '${service['name'] ?? ''}',
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w900,
                                               fontSize: 13.sp,
-                                              color: cubit.isDark ? Colors.white : Colors.black,
+                                              color: appCubit.isDark ? Colors.white : Colors.black,
                                             ),
                                           ),
                                           SizedBox(height: 4.h),
                                           Text(
-                                            '${service['description']}',
+                                            '${service['description'] ?? ''}',
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontSize: 9.sp,
                                               height: 1.3,
-                                              color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                                              color: appCubit.isDark ? darkSubTextColor : Colors.grey.shade600,
                                             ),
                                           ),
                                         ],
@@ -517,8 +520,8 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(30.r)),
                               boxShadow: blueShadow,
-                              gradient: LinearGradient(
-                                colors: [mainColor, const Color(0xFF1A1A2E)],
+                              gradient: const LinearGradient(
+                                colors: [mainColor, Color(0xFF1A1A2E)],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
@@ -653,7 +656,7 @@ class _WorkerHomeScreenState extends State<WorkerHomeScreen> {
                   ),
                 ),
               );
-        }
+            },);
       },
     );
   }

@@ -164,7 +164,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         ),
                       ),
                       Text(
-                        'حساب العامل',
+                        'حساب الفني',
                         style: TextStyle(
                           fontSize: 24.sp,
                           fontWeight: FontWeight.bold,

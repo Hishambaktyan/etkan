@@ -1,7 +1,6 @@
 import 'dart:ui';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,6 +16,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
+import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 import '../aboutApp_screen.dart';
 import '../notifications_screen.dart';
@@ -234,8 +234,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                           SizedBox(width: 12.w),
                           Expanded(
                             child: defaultOutlinedButton(
-                              onPressed: () async =>
-                              await authCubit.logOutUser(),
+                              onPressed: (){},
                               text: 'خروج',
                               border: Colors.red,
                               textColor: Colors.red,
@@ -365,7 +364,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            Map<String, dynamic> user = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid] ?? {};
+            Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(

@@ -13,6 +13,7 @@ import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../main.dart';
+import 'admin_service_details.dart';
 import 'categories_list.dart';
 import 'admin_providers_list.dart';
 import 'admin_users_list.dart';
@@ -47,8 +48,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       'color': Colors.red,
     },
   ];
-
-  bool hasInternet = true;
 
   Widget buildDetailRow(String label, String value, String iconPath,dynamic cubit) {
     return Row(
@@ -525,9 +524,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         padding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w,bottom: 10.h),
                         itemBuilder: (context, index) {
                           final service = adminCubit.services[index];
-                          final providerData = adminCubit.providers.firstWhere((element) => element['id']==service['providerId'],);
+                          final providerData = adminCubit.providers.firstWhere((element) => element['id']==service['providerId'],orElse: ()=>{},);
                           return InkWell(
-                            onTap: (){},
+                            onTap: ()=>move(context, AdminServiceDetails(reviews: service['reviews'], service: service)),
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             borderRadius: BorderRadius.circular(25.r),
@@ -546,7 +545,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(25.r),
                                         child: Image.network(
-                                          service['serviceImage'],
+                                          service['serviceImage'] ?? '',
                                           height: 150.h,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
@@ -570,7 +569,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
                                           ),
                                           child: Text(
-                                            '${service['price']} $reyalSymbol',
+                                            '${service['price'] ?? ''} $reyalSymbol',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -593,7 +592,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                 borderRadius: BorderRadius.circular(10.r),
                                               ),
                                               child: Text(
-                                                service['category'],
+                                                service['category'] ?? '',
                                                 style: TextStyle(
                                                   color: mainColor,
                                                   fontWeight: FontWeight.w600,
@@ -612,7 +611,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          service['name'],
+                                          service['name'] ?? '',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -629,7 +628,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             Padding(
                                               padding: EdgeInsetsDirectional.only(top: 5.h),
                                               child: Text(
-                                                '${service['rate']}',
+                                                '${service['rate'] ?? ''}',
                                                 style: TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 12.sp,
@@ -657,7 +656,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                               CircleAvatar(
                                                 radius: 16.r,
                                                 backgroundImage:  NetworkImage(
-                                                    providerData['profileImage']
+                                                    providerData['profileImage'] ?? ''
                                                 ),
                                               ),
                                               SizedBox(width: 10.w),
@@ -666,7 +665,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      providerData['name'],
+                                                      providerData['name'] ?? '',
                                                       maxLines: 1,
                                                       overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -676,7 +675,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      providerData['specialization'],
+                                                      providerData['specialization'] ?? '',
                                                       maxLines: 1,
                                                       overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -743,7 +742,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         itemCount: adminCubit.requests.length > 4 ? 4 : adminCubit.requests.length ,
                         itemBuilder: (context, index) {
                           var request = adminCubit.requests[index];
-                          final providerData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],);
+                          final providerData = adminCubit.providers.firstWhere((element) => element['id']==request['providerId'],orElse: () => {},);
                           final userData = adminCubit.users.firstWhere((element) => element['id']==request['customerId'],orElse: () => {},);
                           Color statusColor;
                           String status = request['status'];

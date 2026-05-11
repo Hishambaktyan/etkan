@@ -1,12 +1,10 @@
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/aboutApp_screen.dart';
-import 'package:trying_homy/modules/addresses_management_screen.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
 import 'package:trying_homy/modules/edit_profile_screen.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
@@ -18,8 +16,10 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import '../../shared/compenents/components.dart';
+import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 import '../on_boarding.dart';
+import 'addresses_management_screen.dart';
 
 class UserAccount extends StatefulWidget {
   const UserAccount({super.key});
@@ -419,8 +419,7 @@ class _UserAccountState extends State<UserAccount> {
                           SizedBox(width: 12.w),
                           Expanded(
                             child: defaultOutlinedButton(
-                              onPressed: () async =>
-                                  await authCubit.logOutUser(),
+                              onPressed: ()=>authCubit.logoutUser(),
                               text: 'خروج',
                               border: Colors.red,
                               textColor: Colors.red,
@@ -538,25 +537,27 @@ class _UserAccountState extends State<UserAccount> {
       builder: (context, state) {
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
+            if (state is LogOutLoadingState) {
+              showLoadingDialog(context);
+            }
             if (state is LogOutSuccessState) {
+              hideLoadingDialog(context);
               showSnackBar(Colors.green, 'تم تسجيل خروجك بنجاح', context);
               moveAndReplace(context, const OnBoardingScreen());
               appCubit.changeIndex(0);
             }
-
             if (state is LogOutErrorState) {
+              hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            Map<String, dynamic> user = appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid] ?? {};
+            Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
-                body: state is LogOutLoadingState
-                    ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
+                body: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

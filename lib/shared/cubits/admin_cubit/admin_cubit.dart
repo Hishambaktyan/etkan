@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
-
 import '../../networks/local/sms_bridge.dart';
 
 class AdminCubit extends Cubit<AdminStates>{
@@ -18,7 +16,6 @@ class AdminCubit extends Cubit<AdminStates>{
 
 
   void startListening(){
-
     streamSubscription = FirebaseFirestore.instance
         .collection('verification_requests')
         .where('status', isEqualTo: 'pending')

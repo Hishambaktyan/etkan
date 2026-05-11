@@ -3,8 +3,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +16,7 @@ import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
 class BookingConfirmInfoScreen extends StatefulWidget {
@@ -843,7 +843,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                             );
 
                             var currentUser = appCubit.allUsers[
-                            FirebaseAuth.instance.currentUser!.uid];
+                            CacheHelper.getData(key: 'uid')];
 
                             await bookingCubit.createRequest(
                               category: serviceCategory,

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +9,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
+import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
 class EditAddress extends StatefulWidget {
@@ -43,7 +43,7 @@ class _EditAddressState extends State<EditAddress> {
         return BlocConsumer<LocationCubit, LocationStates>(
           listener: (context, state) {
             if(state is EditAddressSuccessState){
-              LocationCubit.get(context).getAddresses(FirebaseAuth.instance.currentUser!.uid);
+              LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
               Navigator.pop(context);
               showSnackBar(Colors.green, 'تم تعديل الموقع بنجاح', context);
             }
@@ -261,7 +261,7 @@ class _EditAddressState extends State<EditAddress> {
                                     }else{
                                       await locationCubit.editAddress(
                                           addressId: widget.address['id'],
-                                          uId: FirebaseAuth.instance.currentUser!.uid,
+                                          uId: CacheHelper.getData(key: 'uid'),
                                           label: titleController.text.trim(),
                                           addressDetails: detailsController.text.trim(),
                                           lat: locationCubit.selectedLocation.latitude,

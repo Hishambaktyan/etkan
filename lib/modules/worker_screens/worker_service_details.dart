@@ -8,13 +8,15 @@ import 'package:readmore/readmore.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/images_view.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class WorkerServiceDetails extends StatefulWidget {
-  final String serviceId;
-   const WorkerServiceDetails({super.key, required this.serviceId});
+  final Map<String,dynamic> service;
+   const WorkerServiceDetails({super.key, required this.service});
 
   @override
   State<WorkerServiceDetails> createState() => _WorkerServiceDetailsState();
@@ -58,401 +60,405 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
-    Map<String,dynamic> service =cubit.workerServices.firstWhere((service) =>service['id']==widget.serviceId);
-    List<dynamic> review = service['reviews'];
     return BlocBuilder<AppCubit,AppStates>(
         builder: (context, state) {
-          AppCubit cubit = AppCubit.get(context);
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: Scaffold(
-              body: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 400.h,
-                      child: Stack(
-                        children: [
-                          Image.network(
-                              'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: 300.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding:  EdgeInsetsDirectional.all(7.w),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.white.withOpacity(0.8),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: ()=>Navigator.pop(context),
-                                      child: const Icon(
-                                          CupertinoIcons.back
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.all(7),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.white.withOpacity(0.8),
-                                    child: PopupMenuButton<String>(
-                                      color: Colors.white,
-                                      icon: Icon(
-                                        Icons.more_vert,
-                                        color: Colors.black,
-                                        size: 24.r,
-                                      ),
-                                      offset: const Offset(0, 40),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25.r),
-                                      ),
-                                      onSelected: (String value) {
-                                        if (value == 'active') {
-                                          cubit.isServicesActive=!cubit.isServicesActive;
-                                          print(cubit.isServicesActive);
-                                        } else if (value == 'delete') {
-                                        }
-                                      },
-                                      itemBuilder: (BuildContext context) => [
-                                         PopupMenuItem<String>(
-                                          value: 'active',
-                                          child: Directionality(
-                                              textDirection:TextDirection.rtl,
-                                              child: SizedBox(
-                                                  width: double.infinity,
-                                                  child: cubit.isServicesActive?Text('إلغاء التفعيل'):Text('تفعيل')
-                                              )
-                                          ),
-                                        ),
-                                        const PopupMenuItem<String>(
-                                          value: 'edit',
-                                          child: Directionality(
-                                              textDirection:TextDirection.rtl,
-                                              child: SizedBox(
-                                                width: double.infinity,
-                                                  child: Text('تعديل')
-                                              )
-                                          ),
-                                        ),
-                                         const PopupMenuItem<String>(
-                                          value: 'delete',
-                                          child: Directionality(
-                                              textDirection:TextDirection.rtl,
-                                              child: SizedBox(
-                                                  width: double.infinity,
-                                                  child: Text('حذف')
-                                              )
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Padding(
-                              padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsetsDirectional.all(18.r),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: cubit.isDark? lightDarkColor: Colors.white,
-                                      borderRadius: BorderRadius.circular(25.r),
-                                      boxShadow: blueShadow,
-                                        border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 4.h),
-                                          decoration: BoxDecoration(
-                                            color: mainColor.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(6.r),
-                                          ),
-                                          child: Text(
-                                            '${service['category']}',
-                                            style: TextStyle(
-                                              color: cubit.isDark? Colors.white: Colors.grey.shade700,
-                                              fontSize: 10.sp,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 10.h),
-                                        Text(
-                                          service['name'],
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15.sp,
-                                            color: cubit.isDark? Colors.white: Colors.black,
-                                          ),
-                                        ),
-                                        SizedBox(height: 15.h),
-                                        Divider(color: cubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
-                                        SizedBox(height: 15.h),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                      Icons.payments_outlined,
-                                                      size: 18.r,
-                                                     color:  cubit.isDark? darkSubTextColor: Colors.grey,                                                  ),
-                                                  SizedBox(width: 8.w),
-                                                  Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text('السعر التقديري',
-                                                          style: TextStyle(
-                                                              fontSize: 10.sp,
-                                                            color:  cubit.isDark? darkSubTextColor: Colors.grey,
-                                                          ),
-                                                          ),
-                                                      Text(
-                                                        '${service['price']} $reyalSymbol',
-                                                        style: TextStyle(
-                                                          color: mainColor,
-                                                          fontSize: 14.sp,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                                height: 30.h,
-                                                width: 1,
-                                                color:  cubit.isDark? darkSubTextColor: Colors.grey.shade300,
-                                            ),
-                                            SizedBox(width: 15.w),
-                                            Expanded(
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                      Icons.timer_outlined,
-                                                      size: 18.r,
-                                                color:  cubit.isDark? darkSubTextColor: Colors.grey,
-                                                  ),
-                                                  SizedBox(width: 8.w),
-                                                  Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        'المدة المتوقعة',
-                                                          style: TextStyle(
-                                                              fontSize: 10.sp,
-                                                              color:  cubit.isDark? darkSubTextColor: Colors.grey,
-                                                          ),
-                                                      ),
-                                                      Text(
-                                                        '${service['period']} دقيقة',
-                                                        style: TextStyle(
-                                                          color: cubit.isDark? Colors.white: Colors.black87,
-                                                          fontSize: 14.sp,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 10.h,),
-                                        Text(
-                                          '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
-                                          style: TextStyle(
-                                              color: Colors.grey.shade400,
-                                              fontSize: 8.sp
-                                          ),
-
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10.h,),
-                    Padding(
-                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
+          AppCubit appCubit = AppCubit.get(context);
+          return BlocBuilder<WorkerCubit,WorkerStates>(
+              builder: (context, state) {
+                WorkerCubit workerCubit = WorkerCubit.get(context);
+                Map<String,dynamic> service = workerCubit.workerServices.firstWhere(
+                        (service) =>service['id']==widget.service['id']);
+                List<dynamic> reviews = service['reviews'];
+                return Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Scaffold(
+                    body: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          buildSectionTitle(title: 'وصف الخدمة', icon: Icons.notes_rounded, cubit: cubit),
-                          SizedBox(height: 10.h,),
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsetsDirectional.all(15.r),
-                            decoration: BoxDecoration(
-                                color: cubit.isDark? lightDarkColor: Colors.white,
-                                borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: blueShadow,
-                                border: cubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-
-                            ),
-                            child: Column(
+                          SizedBox(
+                            height: 400.h,
+                            child: Stack(
                               children: [
-                                ReadMoreText(
-                                  service['description'],
-                                  style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color:  cubit.isDark? Colors.white: Colors.black,
-                                      height: 1.5
-                                  ),
-                                  trimLines: 3,
-                                  colorClickableText: mainColor,
-                                  trimMode: TrimMode.Line,
-                                  trimCollapsedText: ' عرض المزيد',
-                                  trimExpandedText: ' عرض أقل',
-                                  moreStyle: TextStyle(fontSize: 12.sp,color: mainColor),
+                                Image.network(
+                                  'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 300.h,
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 20.h),
-                          Row(
-                            children: [
-                              Expanded(child: buildSectionTitle(title: 'التقييم والمراجعة', icon: Icons.star_border_rounded, cubit: cubit)),
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(25.r),
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                        '${service['rate']}',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.orange,
-                                            fontSize: 12.sp,
-                                          height: 1
-                                        )
-                                    ),
-                                    SizedBox(width: 4.w),
-                                    const Icon(Icons.star_rounded, color: Colors.orange,),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: review.length,
-                            separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                            itemBuilder: (context, index) {
-                              Timestamp? createdAt = review[index]['createdAt'];
-                              DateTime? date = createdAt?.toDate();
-                              String reviewDate = date != null
-                                  ? DateFormat('yyyy/MM/dd')
-                                  .format(date):'';
-
-                              return Container(
-                                padding: EdgeInsets.all(14.r),
-                                decoration: BoxDecoration(
-                                  color: cubit.isDark? lightDarkColor: Colors.white,
-                                  borderRadius: BorderRadius.circular(25.r),
-                                  boxShadow: blueShadow,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 20.r,
-                                          backgroundColor: cubit.isDark? darkSubTextColor: Colors.blueGrey.shade50,
-                                          child: Icon(
-                                              Icons.person_outline,
-                                              size: 20.r,
-                                              color:cubit.isDark? Colors.white: Colors.blueGrey
+                                Padding(
+                                  padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding:  EdgeInsetsDirectional.all(7.w),
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.white.withOpacity(0.8),
+                                          child: InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: ()=>Navigator.pop(context),
+                                            child: const Icon(
+                                                CupertinoIcons.back
+                                            ),
                                           ),
                                         ),
-                                        SizedBox(width: 12.w),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                review[index]['userName'],
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13.sp,
-                                                  color: cubit.isDark? Colors.white: Colors.black
+                                      ),
+                                      const Spacer(),
+                                      Padding(
+                                        padding: const EdgeInsets.all(7),
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.white.withOpacity(0.8),
+                                          child: PopupMenuButton<String>(
+                                            color: Colors.white,
+                                            icon: Icon(
+                                              Icons.more_vert,
+                                              color: Colors.black,
+                                              size: 24.r,
+                                            ),
+                                            offset: const Offset(0, 40),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(25.r),
+                                            ),
+                                            onSelected: (String value) {
+                                              if (value == 'active') {
+                                                workerCubit.isServicesActive=!workerCubit.isServicesActive;
+                                              } else if (value == 'delete') {
+                                              }
+                                            },
+                                            itemBuilder: (BuildContext context) => [
+                                              PopupMenuItem<String>(
+                                                value: 'active',
+                                                child: Directionality(
+                                                    textDirection:TextDirection.rtl,
+                                                    child: SizedBox(
+                                                        width: double.infinity,
+                                                        child: workerCubit.isServicesActive?const Text('إلغاء التفعيل'):const Text('تفعيل')
+                                                    )
                                                 ),
                                               ),
-                                              Text(
-                                                reviewDate,
-                                                style: TextStyle(
-                                                  color:  cubit.isDark? darkSubTextColor: Colors.grey,
-                                                    fontSize: 11.sp
+                                              const PopupMenuItem<String>(
+                                                value: 'edit',
+                                                child: Directionality(
+                                                    textDirection:TextDirection.rtl,
+                                                    child: SizedBox(
+                                                        width: double.infinity,
+                                                        child: Text('تعديل')
+                                                    )
+                                                ),
+                                              ),
+                                              const PopupMenuItem<String>(
+                                                value: 'delete',
+                                                child: Directionality(
+                                                    textDirection:TextDirection.rtl,
+                                                    child: SizedBox(
+                                                        width: double.infinity,
+                                                        child: Text('حذف')
+                                                    )
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                        Row(
-                                          children: List.generate(5, (i) {
-                                            double rating = (review[index]['rating'] ?? 0).toDouble();
-                                            return Icon(
-                                              Icons.star_rounded,
-                                              size: 16.r,
-                                              color: i < rating ? Colors.orange : Colors.grey.shade300,
-                                            );
-                                          }),
-                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Padding(
+                                    padding:EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsetsDirectional.all(18.r),
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                              color: appCubit.isDark? lightDarkColor: Colors.white,
+                                              borderRadius: BorderRadius.circular(25.r),
+                                              boxShadow: blueShadow,
+                                              border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 4.h),
+                                                decoration: BoxDecoration(
+                                                  color: mainColor.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(6.r),
+                                                ),
+                                                child: Text(
+                                                  '${service['category']}',
+                                                  style: TextStyle(
+                                                    color: appCubit.isDark? Colors.white: Colors.grey.shade700,
+                                                    fontSize: 10.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 10.h),
+                                              Text(
+                                                service['name'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15.sp,
+                                                  color: appCubit.isDark? Colors.white: Colors.black,
+                                                ),
+                                              ),
+                                              SizedBox(height: 15.h),
+                                              Divider(color: appCubit.isDark? darkSubTextColor: Colors.grey.shade300, height: 1),
+                                              SizedBox(height: 15.h),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.payments_outlined,
+                                                          size: 18.r,
+                                                          color:  appCubit.isDark? darkSubTextColor: Colors.grey,                                                  ),
+                                                        SizedBox(width: 8.w),
+                                                        Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text('السعر التقديري',
+                                                              style: TextStyle(
+                                                                fontSize: 10.sp,
+                                                                color:  appCubit.isDark? darkSubTextColor: Colors.grey,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              '${service['price']} $reyalSymbol',
+                                                              style: TextStyle(
+                                                                color: mainColor,
+                                                                fontSize: 14.sp,
+                                                                fontWeight: FontWeight.bold,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 30.h,
+                                                    width: 1,
+                                                    color:  appCubit.isDark? darkSubTextColor: Colors.grey.shade300,
+                                                  ),
+                                                  SizedBox(width: 15.w),
+                                                  Expanded(
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.timer_outlined,
+                                                          size: 18.r,
+                                                          color:  appCubit.isDark? darkSubTextColor: Colors.grey,
+                                                        ),
+                                                        SizedBox(width: 8.w),
+                                                        Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              'المدة المتوقعة',
+                                                              style: TextStyle(
+                                                                fontSize: 10.sp,
+                                                                color:  appCubit.isDark? darkSubTextColor: Colors.grey,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              '${service['period']} دقيقة',
+                                                              style: TextStyle(
+                                                                color: appCubit.isDark? Colors.white: Colors.black87,
+                                                                fontSize: 14.sp,
+                                                                fontWeight: FontWeight.bold,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 10.h,),
+                                              Text(
+                                                '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
+                                                style: TextStyle(
+                                                    color: Colors.grey.shade400,
+                                                    fontSize: 8.sp
+                                                ),
+
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
-                                    SizedBox(height: 10.h),
-                                    Text(
-                                      review[index]['comment'],
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: cubit.isDark? Colors.white70: Colors.black54,
-                                        height: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10.h,),
+                          Padding(
+                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildSectionTitle(title: 'وصف الخدمة', icon: Icons.notes_rounded, cubit: appCubit),
+                                SizedBox(height: 10.h,),
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsetsDirectional.all(15.r),
+                                  decoration: BoxDecoration(
+                                      color: appCubit.isDark? lightDarkColor: Colors.white,
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      boxShadow: blueShadow,
+                                      border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
+
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      ReadMoreText(
+                                        service['description'],
+                                        style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color:  appCubit.isDark? Colors.white: Colors.black,
+                                            height: 1.5
+                                        ),
+                                        trimLines: 3,
+                                        colorClickableText: mainColor,
+                                        trimMode: TrimMode.Line,
+                                        trimCollapsedText: ' عرض المزيد',
+                                        trimExpandedText: ' عرض أقل',
+                                        moreStyle: TextStyle(fontSize: 12.sp,color: mainColor),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 20.h),
+                                Row(
+                                  children: [
+                                    Expanded(child: buildSectionTitle(title: 'التقييم والمراجعة', icon: Icons.star_border_rounded, cubit: appCubit)),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(25.r),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                              '${service['rate']}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.orange,
+                                                  fontSize: 12.sp,
+                                                  height: 1
+                                              )
+                                          ),
+                                          SizedBox(width: 4.w),
+                                          const Icon(Icons.star_rounded, color: Colors.orange,),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
+                                ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: reviews.length,
+                                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                                  itemBuilder: (context, index) {
+                                    Timestamp? createdAt = reviews[index]['createdAt'];
+                                    DateTime? date = createdAt?.toDate();
+                                    String reviewDate = date != null
+                                        ? DateFormat('yyyy/MM/dd')
+                                        .format(date):'';
+
+                                    return Container(
+                                      padding: EdgeInsets.all(14.r),
+                                      decoration: BoxDecoration(
+                                        color: appCubit.isDark? lightDarkColor: Colors.white,
+                                        borderRadius: BorderRadius.circular(25.r),
+                                        boxShadow: blueShadow,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 20.r,
+                                                backgroundColor: appCubit.isDark? darkSubTextColor: Colors.blueGrey.shade50,
+                                                child: Icon(
+                                                    Icons.person_outline,
+                                                    size: 20.r,
+                                                    color:appCubit.isDark? Colors.white: Colors.blueGrey
+                                                ),
+                                              ),
+                                              SizedBox(width: 12.w),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      reviews[index]['userName'],
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 13.sp,
+                                                          color: appCubit.isDark? Colors.white: Colors.black
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      reviewDate,
+                                                      style: TextStyle(
+                                                          color:  appCubit.isDark? darkSubTextColor: Colors.grey,
+                                                          fontSize: 11.sp
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Row(
+                                                children: List.generate(5, (i) {
+                                                  double rating = (reviews[index]['rating'] ?? 0).toDouble();
+                                                  return Icon(
+                                                    Icons.star_rounded,
+                                                    size: 16.r,
+                                                    color: i < rating ? Colors.orange : Colors.grey.shade300,
+                                                  );
+                                                }),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          Text(
+                                            reviews[index]['comment'],
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: appCubit.isDark? Colors.white70: Colors.black54,
+                                              height: 1.5,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          )
+
                         ],
                       ),
-                    )
-
-                  ],
-                ),
-              ),
-            ),
-          ) ;
+                    ),
+                  ),
+                );
+              },
+          );
         },
     );
   }

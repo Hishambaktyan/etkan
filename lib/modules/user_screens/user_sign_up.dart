@@ -21,7 +21,7 @@ class UserSignUp extends StatefulWidget {
 
 class _UserSignUpState extends State<UserSignUp> {
   bool isPassword = true;
-  var formKey_userSignUp = GlobalKey<FormState>();
+  var userSignupFormKey = GlobalKey<FormState>();
   String suffixIcon = 'assets/eye.svg';
 
   @override
@@ -32,20 +32,17 @@ class _UserSignUpState extends State<UserSignUp> {
         AuthCubit authCubit = AuthCubit.get(context);
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
-            if (state is UserSignUpErrorState) {
-              showSnackBar(Colors.red, state.error.toString(), context);
+            if (state is SendPhoneCodeLoadingState) {
+              showLoadingDialog(context);
             }
-
             if (state is SendPhoneCodeSuccessState) {
-              showSnackBar(
-                  Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
-
-              move(context,
-                VerifiedPhone(phone: state.phone, userType: state.userType,),
+              hideLoadingDialog(context);
+              showSnackBar(Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
+              move(context, VerifiedPhone(phone: state.phone, userType: state.userType,),
               );
             }
-
             if (state is SendPhoneCodeErrorState) {
+              hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
           },
@@ -155,7 +152,7 @@ class _UserSignUpState extends State<UserSignUp> {
                         padding: EdgeInsetsDirectional.symmetric(
                             horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
-                          color: appCubit.isDark ? darkBgColor : Colors.white,
+                          color: appCubit.isDark ? darkBgColor : bgColor,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(40.r),
                             topRight: Radius.circular(40.r),
@@ -169,89 +166,56 @@ class _UserSignUpState extends State<UserSignUp> {
                           ],
                         ),
                         child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
                           child: Form(
-                            key: formKey_userSignUp,
+                            key: userSignupFormKey,
                             child: Column(
                               children: [
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: appCubit,
-                                    text: 'الاسم الكامل',
-                                    prefixIcon: 'assets/acc.svg',
-                                    errorMes: 'يجب كتابة الاسم',
-                                    controller: authCubit.userNameController,
-                                    type: TextInputType.text,
-                                  ),
+                                defaultTextFormfeild(
+                                  cubit: appCubit,
+                                  text: 'الاسم الكامل',
+                                  prefixIcon: 'assets/acc.svg',
+                                  errorMes: 'الاسم يجب ان لا يكون فارغ',
+                                  controller: authCubit.userNameController,
+                                  type: TextInputType.text,
                                 ),
                                 SizedBox(height: 15.h),
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: appCubit,
-                                    text: 'رقم الهاتف',
-                                    prefixIcon: 'assets/phone.svg',
-                                    errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
-                                    controller: authCubit.userPhoneController,
-                                    type: TextInputType.text,
-                                  ),
+                                defaultTextFormfeild(
+                                  cubit: appCubit,
+                                  text: 'رقم الهاتف',
+                                  prefixIcon: 'assets/phone.svg',
+                                  errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
+                                  controller: authCubit.userPhoneController,
+                                  type: TextInputType.phone,
                                 ),
                                 SizedBox(height: 15.h),
-                                Container(
-                                  height: 50.h,
-                                  child: defaultTextFormfeild(
-                                    cubit: appCubit,
-                                    text: 'كلمة المرور',
-                                    prefixIcon: 'assets/lock.svg',
-                                    errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                    controller:
-                                        authCubit.userPasswordController,
-                                    type: TextInputType.visiblePassword,
-                                    isPassword: isPassword,
-                                    isSuffixIcon: true,
-                                    suffixIcon: suffixIcon,
-                                    suffixPressed: () {
-                                      isPassword = !isPassword;
-                                      setState(() {
-                                        suffixIcon = isPassword
-                                            ? 'assets/eye.svg'
-                                            : 'assets/eye-slash.svg';
-                                      });
-                                    },
-                                  ),
+                                defaultTextFormfeild(
+                                  cubit: appCubit,
+                                  text: 'كلمة المرور',
+                                  prefixIcon: 'assets/lock.svg',
+                                  errorMes: 'كلمة المرور يجب ان لا تكون فارغة',
+                                  controller:
+                                      authCubit.userPasswordController,
+                                  type: TextInputType.visiblePassword,
+                                  isPassword: isPassword,
+                                  isSuffixIcon: true,
+                                  suffixIcon: suffixIcon,
+                                  suffixPressed: () {
+                                    isPassword = !isPassword;
+                                    setState(() {
+                                      suffixIcon = isPassword
+                                          ? 'assets/eye.svg'
+                                          : 'assets/eye-slash.svg';
+                                    });
+                                  },
                                 ),
                                 SizedBox(height: 20.h),
-                                state is UserSignUpLoadingState ||
-                                        state is SendPhoneCodeLoadingState
-                                    ? const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    : defaultButton(
+                                 defaultButton(
                                         onPressed: () async {
-                                          if (authCubit.userNameController.text.isNotEmpty
-                                              && authCubit.userPhoneController.text.isNotEmpty
-                                              && authCubit.userPasswordController.text.isNotEmpty) {
-
+                                          if (userSignupFormKey.currentState!.validate()) {
                                             authCubit.requestCode(
                                                 phone: authCubit.userPhoneController.text.trim(),
-                                              userType: 'user'
+                                                userType: 'user'
                                             );
-                                          /*  String phone =
-                                                authCubit.normalizePhone(
-                                              authCubit.userPhoneController.text
-                                                  .trim(),
-                                            );*/
-
-                                           /* await authCubit.sendPhoneCode(
-                                              phone: phone,
-                                              userType: 'user',
-                                            );*/
-                                          } else {
-                                            showSnackBar(
-                                                Colors.red,
-                                                'يرجى تعبئة كل الحقول',
-                                                context);
                                           }
                                         },
                                         text: 'تسجيل',

@@ -1,8 +1,7 @@
 import 'dart:ui';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +13,7 @@ import 'package:trying_homy/modules/user_screens/service_details.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
@@ -393,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                               SizedBox(height: 10.h),
                                               Text(
-                                                'أهلاً بك، ${appCubit.allUsers[FirebaseAuth.instance.currentUser!.uid]['name']} 👋',
+                                                'أهلاً بك، ${appCubit.allUsers[CacheHelper.getData(key: 'uid')]['name']} 👋',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 17.sp,
@@ -583,7 +583,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ClipRRect(
                                                     borderRadius: BorderRadius.circular(25.r),
                                                     child: Image.network(
-                                                      '${service['serviceImage']}',
+                                                      '${service['serviceImage'] ?? ''}',
                                                       height: 180.h,
                                                       width: double.infinity,
                                                       fit: BoxFit.cover,
@@ -600,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
                                                       ),
                                                       child: Text(
-                                                        '${service['price']} $reyalSymbol',
+                                                        '${service['price'] ?? ''} $reyalSymbol',
                                                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.sp),
                                                       ),
                                                     ),
@@ -618,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             borderRadius: BorderRadius.circular(10.r),
                                                           ),
                                                           child: Text(
-                                                            '${service['category']}',
+                                                            '${service['category'] ?? ''}',
                                                             style: TextStyle(color: mainColor, fontWeight: FontWeight.w600, fontSize: 10.sp),
                                                           ),
                                                         ),
@@ -633,7 +633,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      service['name'],
+                                                      service['name'] ?? '',
                                                       maxLines: 1,
                                                       overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -648,7 +648,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         Icon(Icons.star_rounded, color: Colors.amber, size: 18.sp),
                                                         SizedBox(width: 5.w),
                                                         Text(
-                                                          '${service['rate']}',
+                                                          '${service['rate'] ?? ''}',
                                                           style: TextStyle(color: Colors.grey, fontSize: 12.sp, fontWeight: FontWeight.w600),
                                                         ),
                                                         const Spacer(),
@@ -666,7 +666,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         children: [
                                                           CircleAvatar(
                                                             radius: 16.r,
-                                                            backgroundImage: NetworkImage(providerData['profileImage']),
+                                                            backgroundImage: NetworkImage(providerData['profileImage'] ?? ''),
                                                           ),
                                                           SizedBox(width: 8.w),
                                                           Expanded(
@@ -674,7 +674,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
                                                                 Text(
-                                                                  '${providerData['name']}',
+                                                                  '${providerData['name'] ?? ''}',
                                                                   maxLines: 1,
                                                                   style: TextStyle(
                                                                     fontSize: 11.sp,
@@ -683,7 +683,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   ),
                                                                 ),
                                                                 Text(
-                                                                  '${providerData['specialization']}',
+                                                                  '${providerData['specialization'] ?? ''}',
                                                                   maxLines: 1,
                                                                   style: TextStyle(fontSize: 9.sp, color: Colors.grey),
                                                                 ),

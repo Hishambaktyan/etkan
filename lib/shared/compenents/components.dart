@@ -1000,6 +1000,164 @@ class WorkerHomeShimmer extends StatelessWidget {
   }
 }
 
+class WorkerServicesShimmer extends StatelessWidget {
+  final bool isDark;
+
+  const WorkerServicesShimmer({super.key, required this.isDark});
+
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+
+  Color get containerColor =>
+      isDark ? lightDarkColor : Colors.white;
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: isDark ? darkBgColor : bgColor,
+        body: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              // Header Shimmer
+              _shimmerBox(
+                height: 160.h,
+                width: double.infinity,
+                radius: 30,
+              ),
+
+              Padding(
+                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 6,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisExtent: 230.h,
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10.w,
+                      mainAxisSpacing: 15.h
+                  ),
+                  itemBuilder: (context, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: containerColor,
+                        borderRadius: BorderRadius.circular(25.r),
+                        boxShadow: isDark ? [] : blueShadow,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Image Area Shimmer
+                          Stack(
+                            children: [
+                              _shimmerBox(
+                                height: 120.h,
+                                width: double.infinity,
+                                radius: 25,
+                              ),
+                              // Price Badge Shimmer
+                              PositionedDirectional(
+                                bottom: 5.h,
+                                end: 10.w,
+                                child: _shimmerBox(
+                                  width: 50.w,
+                                  height: 25.h,
+                                  radius: 15,
+                                ),
+                              ),
+                              // Power Icon Shimmer
+                              PositionedDirectional(
+                                top: 10.h,
+                                start: 10.w,
+                                child: _shimmerBox(
+                                  width: 35.r,
+                                  height: 35.r,
+                                  radius: 50,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Rating Shimmer
+                                Row(
+                                  children: [
+                                    _shimmerBox(width: 15.r, height: 15.r, radius: 4),
+                                    SizedBox(width: 5.w),
+                                    _shimmerBox(width: 30.w, height: 10.h),
+                                  ],
+                                ),
+                                SizedBox(height: 10.h),
+                                // Title Shimmer
+                                _shimmerBox(height: 14.h, width: 100.w),
+                                SizedBox(height: 8.h),
+                                // Description Shimmer
+                                _shimmerBox(height: 8.h, width: double.infinity),
+                                SizedBox(height: 4.h),
+                                _shimmerBox(height: 8.h, width: 80.w),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        // FAB Shimmer
+        floatingActionButton: Shimmer.fromColors(
+          baseColor: baseColor,
+          highlightColor: highlightColor,
+          child: Container(
+            height: 50.h,
+            width: 130.w,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30.r),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerBox({
+    required double height,
+    required double width,
+    double radius = 12,
+    EdgeInsetsDirectional? margin,
+  }) {
+    return Container(
+      margin: margin,
+      child: Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
+        child: Container(
+          height: height,
+          width: width,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(radius.r),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class UserHomeShimmer extends StatelessWidget {
   final bool isDark;
 
@@ -1012,7 +1170,6 @@ class UserHomeShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
       child: Column(
         children: [
 
@@ -1278,10 +1435,9 @@ class UserBookingsShimmer extends StatelessWidget {
       child: Column(
         children: [
           _shimmerBox(
-            height: 55.h,
+            height: 160.h,
             width: double.infinity,
-            margin: EdgeInsetsDirectional.all(10.w),
-            radius: 15,
+            radius: 30,
           ),
           SizedBox(height: 15.h),
 

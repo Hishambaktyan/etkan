@@ -703,7 +703,7 @@ class WorkerOrderDetails extends StatelessWidget {
                                   SizedBox(width: 10.w),
                                   Expanded(
                                     child: Text(
-                                     userData['address'],
+                                     userData['address'] ?? '',
                                       style: TextStyle(
                                           color: cubit.isDark? Colors.white: Colors.black87,
                                           fontSize: 12.sp

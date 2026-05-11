@@ -20,6 +20,18 @@ class WorkerSignUpErrorState extends AuthStates {
 
 //////////////////////////////////////
 
+class CompleteWorkerProfileLoadingState extends AuthStates {}
+
+class CompleteWorkerProfileSuccessState extends AuthStates {}
+
+class CompleteWorkerProfileErrorState extends AuthStates {
+  final String error;
+
+  CompleteWorkerProfileErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
 class UserSignUpSuccessState extends AuthStates {}
 
 class UserSignUpLoadingState extends AuthStates {}

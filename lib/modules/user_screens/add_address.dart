@@ -1,5 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +8,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
+import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
 class AddAddress extends StatefulWidget {
@@ -29,11 +29,18 @@ class _AddAddressState extends State<AddAddress> {
         AppCubit appCubit = AppCubit.get(context);
         return BlocConsumer<LocationCubit, LocationStates>(
           listener: (context, state) {
+            if (state is AddAddressesLoadingState) {
+              showLoadingDialog(context);
+            }
             if (state is AddAddressesSuccessState) {
+              hideLoadingDialog(context);
               showSnackBar(Colors.green, 'تم إضافة الموقع بنجاح', context);
-              LocationCubit.get(context)
-                  .getAddresses(FirebaseAuth.instance.currentUser!.uid);
+              LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
               Navigator.pop(context);
+            }
+            if (state is AddAddressesErrorState) {
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red, state.error, context);
             }
           },
           builder: (context, state) {
@@ -240,10 +247,7 @@ class _AddAddressState extends State<AddAddress> {
                                       errorMes: 'الرجاء تحديد تفاصيل العنوان'),
                                 ),
                                 SizedBox(height: 10.h),
-                                state is AddAddressesLoadingState
-                                    ? const Center(
-                                        child: CircularProgressIndicator())
-                                    : defaultButton(
+                                defaultButton(
                                         onPressed: () async {
                                           if (titleController.text.isEmpty ||
                                               detailsController.text.isEmpty) {
@@ -251,8 +255,7 @@ class _AddAddressState extends State<AddAddress> {
                                                 'الرجاء تحديد الموقع', context);
                                           } else {
                                             await locationCubit.addAddress(
-                                                uId: FirebaseAuth
-                                                    .instance.currentUser!.uid,
+                                                uId: CacheHelper.getData(key: 'uid'),
                                                 label:
                                                     titleController.text.trim(),
                                                 addressDetails:
