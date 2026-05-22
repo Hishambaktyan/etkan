@@ -47,7 +47,7 @@ class UserServicesCubit extends Cubit<UserServicesStates>{
 
   }
 
-  Future<void> getUserSevices()async{
+  Future<void> getUserServices()async{
     try{
       emit(GetUserAllServicesLoadingState());
       final servicesSnapshot = await FirebaseFirestore.instance

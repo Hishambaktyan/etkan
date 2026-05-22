@@ -231,7 +231,7 @@ class _EditAddressState extends State<EditAddress> {
                                 SizedBox(height: 15.h),
                                 SizedBox(
                                   height: 50.h,
-                                  child: defaultTextFormfeild(
+                                  child: defaultTextFormField(
                                       cubit: appCubit,
                                       controller: titleController,
                                       text: 'اسم العنوان',
@@ -243,7 +243,7 @@ class _EditAddressState extends State<EditAddress> {
                                 SizedBox(height: 15.h),
                                 SizedBox(
                                   height: 50.h,
-                                  child: defaultTextFormfeild(
+                                  child: defaultTextFormField(
                                       cubit: appCubit,
                                       controller: detailsController,
                                       text: 'تفاصيل العنوان',

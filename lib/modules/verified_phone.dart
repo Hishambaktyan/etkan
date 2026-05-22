@@ -458,7 +458,6 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
             }
             if (state is WorkerSignUpSuccessState) {
               hideLoadingDialog(context);
-
               authCubit.workerNameController.clear();
               authCubit.workerPhoneController.clear();
               authCubit.workerPasswordController.clear();

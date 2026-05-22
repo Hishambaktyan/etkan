@@ -118,7 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   SizedBox(height: 30.h),
                   Column(
                     children: [
-                      defaultTextFormfeild(
+                      defaultTextFormField(
                         text: "الإسم الكامل",
                         prefixIcon: 'assets/acc.svg',
                         errorMes: 'الأسم يجب ان لا يكون فارغ',
@@ -127,7 +127,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         cubit: AppCubit.get(context),
                       ),
                       SizedBox(height: 24.h),
-                      defaultTextFormfeild(
+                      defaultTextFormField(
                         text: 'رقم الهاتف',
                         prefixIcon: 'assets/phone.svg',
                         errorMes: 'رقم الهاتف يجب ان لا تكون فارغ',
@@ -136,7 +136,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         cubit: AppCubit.get(context),
                       ),
                       SizedBox(height: 24.h),
-                      defaultTextFormfeild(
+                      defaultTextFormField(
                         text: 'البريد الألكتروني',
                         prefixIcon: 'assets/phone.svg',
                         errorMes: 'البريد الألكتروني يجب ان لا يكون فارغ',

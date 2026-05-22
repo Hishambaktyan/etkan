@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/confirm_Subscription.dart';
+import 'package:trying_homy/modules/worker_screens/worker_confirm_Subscription.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -563,7 +563,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                   onPressed: () {
                     final selectedPlanData = plans.firstWhere((plan) => plan['id'] == selectedPlan,);
                     final selectedPaymentData = paymentMethods.firstWhere((paymentMethod) => paymentMethod['id'] == selectedPaymentMethod,);
-                    move(context, ConfirmSubscription(
+                    move(context, WorkerConfirmSubscription(
                       plan: selectedPlanData,
                       paymentMethod: selectedPaymentData,
                     ),

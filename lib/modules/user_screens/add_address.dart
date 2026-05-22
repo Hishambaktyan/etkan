@@ -198,17 +198,18 @@ class _AddAddressState extends State<AddAddress> {
                                   decoration: BoxDecoration(
                                     color: appCubit.isDark
                                         ? Colors.white.withOpacity(0.06)
-                                        : Colors.grey.withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(12.r),
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(15.r),
+                                    border: Border.all(color: Colors.grey.shade100)
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         Icons.my_location_rounded,
-                                        color: Colors.grey,
+                                        color:mainColor,
                                         size: 20.sp,
                                       ),
-                                      SizedBox(width: 8.w),
+                                      SizedBox(width: 10.w),
                                       Expanded(
                                         child: Text(
                                           '${locationCubit.selectedLocation.latitude.toStringAsFixed(5)}, ${locationCubit.selectedLocation.longitude.toStringAsFixed(5)}',
@@ -227,7 +228,7 @@ class _AddAddressState extends State<AddAddress> {
                                 SizedBox(height: 15.h),
                                 SizedBox(
                                   height: 45.h,
-                                  child: defaultTextFormfeild(
+                                  child: defaultTextFormField(
                                       cubit: appCubit,
                                       controller: titleController,
                                       text: 'اسم العنوان',
@@ -238,7 +239,7 @@ class _AddAddressState extends State<AddAddress> {
                                 SizedBox(height: 15.h),
                                 SizedBox(
                                   height: 45.h,
-                                  child: defaultTextFormfeild(
+                                  child: defaultTextFormField(
                                       cubit: appCubit,
                                       controller: detailsController,
                                       text: 'تفاصيل العنوان',

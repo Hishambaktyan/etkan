@@ -694,47 +694,6 @@ class WorkerOrderDetails extends StatelessWidget {
                               ),
                               Row(
                                 children: [
-                                  SvgPicture.asset(
-                                    'assets/loc.svg',
-                                    color: cubit.isDark? darkSubTextColor: Colors.grey.shade600,
-                                    width: 18.r,
-                                    height: 18.r,
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Expanded(
-                                    child: Text(
-                                     userData['address'] ?? '',
-                                      style: TextStyle(
-                                          color: cubit.isDark? Colors.white: Colors.black87,
-                                          fontSize: 12.sp
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.h),
-                              Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/phone.svg',
-                                    color: cubit.isDark? darkSubTextColor: Colors.grey.shade600,
-                                    width: 18.r,
-                                    height: 18.r,
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Text(
-                                    userData['phone'] ?? '',
-                                    style: TextStyle(
-                                        color: cubit.isDark? Colors.white: Colors.black87,
-                                        fontSize: 12.sp,
-                                      letterSpacing: 7
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20.h),
-                              Row(
-                                children: [
                                   Expanded(
                                     child: defaultButtonWithIcon(
                                       onPressed: () {},

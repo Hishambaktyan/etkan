@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../modules/user_screens/bookings_screen.dart';
 import '../../../modules/user_screens/dept_screen.dart';
-import '../../../modules/user_screens/home_screen.dart';
+import '../../../modules/user_screens/user_home_screen.dart';
 import '../../../modules/user_screens/user_account.dart';
 import '../../../modules/user_screens/user_chats.dart';
 import '../../../modules/worker_screens/worker_account_screeen.dart';
@@ -35,7 +35,7 @@ class AppCubit extends Cubit<AppStates>{
   ];
 
   List<Widget> userScreen = [
-    const HomeScreen(),
+    const UserHomeScreen(),
     const DeptScreen(),
     const BookingsScreen(),
     const UserChats(),
@@ -143,5 +143,7 @@ class AppCubit extends Cubit<AppStates>{
     }
 
   }
+
+
 
 }

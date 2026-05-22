@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 
 import '../../networks/local/cache_helper.dart';
@@ -14,26 +16,41 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
   static WorkerCubit get(context)=>BlocProvider.of(context);
 
+  Map<String,dynamic> allUsers = {};
+
+  Future<void> getAllUsers() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .get();
+
+    allUsers={};
+
+    for (var doc in snapshot.docs) {
+      allUsers[doc.id] = doc.data();
+    }
+
+  }
+
   bool amAvailable = true;
 
   bool isServicesActive = true;
 
-  /*
-  Future<void> changeAvailability(value) async {
-    if (userData == null) return;
-    amAvailable = value;
-    emit(ChangeAvailabilityState());
 
+  Future<void> changeAvailability(bool value) async {
     try {
-      await userData!.update({
-        'isAvailable': value
-      });
+      amAvailable = value;
+      emit(ChangeAvailabilityState());
 
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(CacheHelper.getData(key: 'uid'))
+          .update({
+        'isAvailable': value,
+      });
     } catch (e) {
       print(e.toString());
     }
   }
-*/
 
   void changeServiceActivity(value){
     isServicesActive = value;
@@ -50,19 +67,10 @@ class WorkerCubit extends Cubit<WorkerStates>{
   List<Map<String,dynamic>> workerServices = [];
   List<Map<String,dynamic>> workerRequests=[];
 
+  bool isWorkerDataLoaded = false;
+  bool isWorkerRequestsLoaded = false;
 
-  Future<void> getWorkerData() async {
-
-    workerName='';
-    workerDept='';
-    workerRequestsCount=0;
-    workerServicesCount=0;
-    workerCompletedRequestsCount=0;
-    workerRating=0.0;
-    workerServices=[];
-
-    emit(GetWorkerDataLoadingState());
-
+  Future<void> getWorkerData({bool forceRefresh = false}) async {
     final uid = CacheHelper.getData(key: 'uid');
 
     if (uid == null || uid.toString().isEmpty) {
@@ -70,59 +78,80 @@ class WorkerCubit extends Cubit<WorkerStates>{
       return;
     }
 
-    try {
+    if (isWorkerDataLoaded && !forceRefresh) {
+      return;
+    }
 
-      final userSnapshot = await FirebaseFirestore.instance
+    emit(GetWorkerDataLoadingState());
+
+    try {
+      workerName = '';
+      workerDept = '';
+      workerRequestsCount = 0;
+      workerServicesCount = 0;
+      workerCompletedRequestsCount = 0;
+      workerRating = 0.0;
+
+      final userFuture = FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
           .get();
 
+      final completedRequestsCountFuture = FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId', isEqualTo: uid)
+          .where('status', isEqualTo: 'مكتمل')
+          .count()
+          .get();
+
+      final requestsCountFuture = FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId', isEqualTo: uid)
+          .count()
+          .get();
+
+      final servicesFuture = FirebaseFirestore.instance
+          .collection('services')
+          .where('providerId', isEqualTo: uid)
+          .get();
+
+       await Future.wait([
+        userFuture,
+        completedRequestsCountFuture,
+        requestsCountFuture,
+        servicesFuture,
+      ]);
+
+      final userSnapshot = await userFuture;
+      final completedRequestSnapshot = await completedRequestsCountFuture;
+      final requestSnapshot = await requestsCountFuture;
+      final getServicesSnapshot = await servicesFuture;
+
       if (!userSnapshot.exists || userSnapshot.data() == null) {
-        emit(GetWorkerDataErrorState(error: 'بيانات العامل غير موجودة'));
+        emit(GetWorkerDataErrorState(error: 'بيانات الفني غير موجودة'));
         return;
       }
 
-      final servicesSnapshot = await FirebaseFirestore.instance
-          .collection('services')
-          .where('providerId', isEqualTo: uid)
-          .count()
-          .get();
+      final userData = userSnapshot.data()!;
 
-      final completedRequestSnapshot = await FirebaseFirestore.instance
-          .collection('requests')
-          .where('providerId',isEqualTo: uid)
-          .where('status',isEqualTo: 'completed')
-          .count()
-          .get();
+      workerName = userData['name'] ?? '';
+      workerDept = userData['specialization'] ?? '';
+      workerRequestsCount = requestSnapshot.count ?? 0;
+      workerCompletedRequestsCount = completedRequestSnapshot.count ?? 0;
+      workerRating = (userData['avgRating'] ?? 0.0).toDouble();
 
-      final requestSnapshot = await FirebaseFirestore.instance
-          .collection('requests')
-          .where('providerId',isEqualTo: uid)
-          .count()
-          .get();
-
-      final getServicesSnapshot = await FirebaseFirestore.instance
-          .collection('services')
-          .where('providerId', isEqualTo: uid)
-          .get();
-
-      workerName = userSnapshot.data()?['name'];
-      workerDept = userSnapshot.data()?['specialization'];
-      workerRequestsCount = requestSnapshot.count;
-      workerCompletedRequestsCount = completedRequestSnapshot.count;
-      workerServicesCount = servicesSnapshot.count;
-      workerRating = userSnapshot.data()?['avgRating'];
-
-
-
+      workerServices=[];
       for (var doc in getServicesSnapshot.docs) {
         var data = doc.data();
         data['id'] = doc.id;
         workerServices.add(data);
       }
 
-      emit(GetWorkerDataSuccessState());
+      workerServicesCount = workerServices.length;
 
+      isWorkerDataLoaded = true;
+
+      emit(GetWorkerDataSuccessState());
     } catch (e) {
       emit(GetWorkerDataErrorState(error: e.toString()));
     }
@@ -158,29 +187,34 @@ class WorkerCubit extends Cubit<WorkerStates>{
     }
   }
 
-  Future<void> getWorkerRequests() async {
+  Future<void> getWorkerRequests({bool forceRefresh = false}) async {
 
     final uid = CacheHelper.getData(key: 'uid');
     if (uid == null) {
-      print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
+      emit(GetWorkerRequestsErrorState(error: 'لا يوجد مستخدم، تم إلغاء جلب البيانات'));
+      return;
+    }
+    if (isWorkerRequestsLoaded && !forceRefresh) {
       return;
     }
 
-    workerRequests=[];
 
     emit(GetWorkerRequestsLoadingState());
 
     try {
+      workerRequests=[];
       final requestsSnapshot = await FirebaseFirestore.instance
           .collection('requests')
           .where('providerId', isEqualTo: uid)
           .get();
 
+      workerRequests=[];
       for (var doc in requestsSnapshot.docs) {
         var data = doc.data();
         data['id'] = doc.id;
         workerRequests.add(data);
       }
+      isWorkerRequestsLoaded = true;
 
       emit(GetWorkerRequestsSuccessState());
 
@@ -199,6 +233,36 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
   TextEditingController serviceDesc = TextEditingController();
 
+  Future<String> uploadImageToCloudinary(String imagePath) async {
+    final dio = Dio();
+
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        imagePath,
+        filename: '${DateTime.now().millisecondsSinceEpoch}.jpg',
+      ),
+      'upload_preset': 'unsiged_upload',
+    });
+
+    final response = await dio.post(
+      'https://api.cloudinary.com/v1_1/dxftdrzdu/image/upload',
+      data: formData,
+    );
+
+    return response.data['secure_url'];
+  }
+
+  Future<List<String>> uploadImagesToCloudinary(List<String> imagePaths)
+  async {
+    List<String> uploadedUrls = [];
+
+    for (String path in imagePaths) {
+      final url = await uploadImageToCloudinary(path);
+      uploadedUrls.add(url);
+    }
+
+    return uploadedUrls;
+  }
 
   Future<void> uploadService({
     required String name,
@@ -231,6 +295,74 @@ class WorkerCubit extends Cubit<WorkerStates>{
     } catch (e) {
       emit(UploadServiceErrorState(error: e.toString()));
       print(e.toString());
+    }
+  }
+
+  Future<void> editWorkerData({
+    required String name,
+    required String phone,
+    required String about,
+    required List<String> experiences,
+    String? profileImagePath,
+    String? oldProfileImage,
+    required List<String> previousWorks,
+  })
+  async {
+    emit(EditWorkerDataLoadingState());
+
+    try {
+      final uid = CacheHelper.getData(key: 'uid');
+
+      if (uid == null || uid.toString().isEmpty) {
+        emit(EditWorkerDataErrorState(
+          error: 'تعذر العثور على معرف المستخدم',
+        ));
+        return;
+      }
+
+      String finalProfileImage = oldProfileImage ?? '';
+
+      if (profileImagePath != null && profileImagePath.trim().isNotEmpty) {
+        finalProfileImage = await uploadImageToCloudinary(profileImagePath);
+      }
+
+      List<String> oldImages = previousWorks
+          .where((image) => image.startsWith('http'))
+          .toList();
+
+      List<String> newImages = previousWorks
+          .where((image) => !image.startsWith('http'))
+          .toList();
+
+      List<String> uploadedNewImages = await Future.wait(
+        newImages.map((imagePath) => uploadImageToCloudinary(imagePath)),
+      );
+
+      List<String> finalPreviousWorks = [
+        ...oldImages,
+        ...uploadedNewImages,
+      ];
+
+      List<String> finalExperiences = experiences
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'name': name.trim(),
+        'phone': phone.trim(),
+        'about': about.trim(),
+        'experiences': finalExperiences,
+        'previousWorks': finalPreviousWorks,
+        'profileImage': finalProfileImage,
+      });
+
+      workerName = name.trim();
+
+      isWorkerDataLoaded = false;
+      emit(EditWorkerDataSuccessState());
+    } catch (e) {
+      emit(EditWorkerDataErrorState(error: e.toString()));
     }
   }
 

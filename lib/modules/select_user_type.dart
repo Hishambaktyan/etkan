@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/admin_screens/admin_home_screen.dart';
@@ -10,6 +9,7 @@ import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../main.dart';
+import 'admin_screens/admin_login_screen.dart';
 
 class SelectUserType extends StatefulWidget {
   const SelectUserType({super.key});
@@ -20,6 +20,7 @@ class SelectUserType extends StatefulWidget {
 
 class _SelectUserTypeState extends State<SelectUserType> {
   int selectedIndex = 0;
+  int adminTapCount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +30,21 @@ class _SelectUserTypeState extends State<SelectUserType> {
       child: Scaffold(
         body: Column(
           children: [
-            header(
-              title: 'اختر نوع حسابك',
-              context: context,
-              isLeading: false,
-              isNotif: false,
+            GestureDetector(
+              onTap: () {
+                adminTapCount++;
+
+                if (adminTapCount >= 5) {
+                  adminTapCount = 0;
+                  move(context, const AdminLoginScreen());
+                }
+              },
+              child: header(
+                title: 'اختر نوع حسابك',
+                context: context,
+                isLeading: false,
+                isNotif: false,
+              ),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -58,15 +69,6 @@ class _SelectUserTypeState extends State<SelectUserType> {
                         icon: Icons.build_circle_rounded,
                         appCubit: appCubit,
                       ),
-                      SizedBox(height: 15.h),
-                      buildUserTypeCard(
-                        index: 2,
-                        title: 'أنا مسؤول',
-                        description: 'أريد إدارة المستخدمين، الخدمات، الحجوزات، والاشتراكات داخل النظام.',
-                        image: 'assets/admin.jpg',
-                        icon: Icons.admin_panel_settings_rounded,
-                        appCubit: appCubit,
-                      ),
                     ],
                   ),
                 ),
@@ -84,17 +86,11 @@ class _SelectUserTypeState extends State<SelectUserType> {
           child: defaultButton(
             onPressed: () {
               if (selectedIndex == 0) {
-                CacheHelper.setBoolen(key: 'isWorker', value: false);
                 CacheHelper.saveData(key: 'role', value: 'user');
-                moveAndReplace(context, const UserLoginScreen());
+                move(context, const UserLoginScreen());
               } else if (selectedIndex == 1) {
-                CacheHelper.setBoolen(key: 'isWorker', value: true);
                 CacheHelper.saveData(key: 'role', value: 'provider');
-                moveAndReplace(context, const WorkerLoginScreen());
-              } else {
-                CacheHelper.setBoolen(key: 'isWorker', value: false);
-                CacheHelper.saveData(key: 'role', value: 'admin');
-                moveAndReplace(context, const AdminHomeScreen());
+                move(context, const WorkerLoginScreen());
               }
             },
             text: 'متابعة',

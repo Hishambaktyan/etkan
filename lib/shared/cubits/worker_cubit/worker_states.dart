@@ -58,3 +58,13 @@ class UploadServiceErrorState extends WorkerStates{
 }
 
 //////////////////////////////////////
+
+class EditWorkerDataLoadingState extends WorkerStates {}
+
+class EditWorkerDataSuccessState extends WorkerStates {}
+
+class EditWorkerDataErrorState extends WorkerStates {
+  final String error;
+
+  EditWorkerDataErrorState({required this.error});
+}

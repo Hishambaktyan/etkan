@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,21 +8,20 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../../main.dart';
 
-class AddService extends StatefulWidget {
-  const AddService({super.key});
+class WorkerAddService extends StatefulWidget {
+  const WorkerAddService({super.key});
 
   @override
-  State<AddService> createState() => _AddServiceState();
+  State<WorkerAddService> createState() => _WorkerAddServiceState();
 }
 
-class _AddServiceState extends State<AddService> {
+class _WorkerAddServiceState extends State<WorkerAddService> {
   var formKey = GlobalKey<FormState>();
   File? serviceImage;
   var picker = ImagePicker();
@@ -144,7 +142,7 @@ class _AddServiceState extends State<AddService> {
                               key: formKey,
                               child: Column(
                                 children: [
-                                  defaultTextFormfeild(
+                                  defaultTextFormField(
                                     cubit: appCubit,
                                     text: 'اسم الخدمة',
                                     prefixIcon: 'assets/pen.svg',
@@ -156,7 +154,7 @@ class _AddServiceState extends State<AddService> {
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: defaultTextFormfeild(
+                                        child: defaultTextFormField(
                                           cubit: appCubit,
                                           text: 'السعر',
                                           prefixIcon: 'assets/money.svg',
@@ -167,7 +165,7 @@ class _AddServiceState extends State<AddService> {
                                       ),
                                       SizedBox(width: 12.w),
                                       Expanded(
-                                        child: defaultTextFormfeild(
+                                        child: defaultTextFormField(
                                           cubit: appCubit,
                                           text: 'المدة (دقيقة)',
                                           prefixIcon: 'assets/timer.svg',

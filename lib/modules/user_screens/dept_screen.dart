@@ -122,8 +122,6 @@ class _DeptScreenState extends State<DeptScreen> {
                                 ),
                                 child: SvgPicture.asset(
                                   services[index]['icon']!,
-                                  // ignore: deprecated_member_use
-                                  color: mainColor,
                                 ),
                               ),
                               SizedBox(width: 10.w),

@@ -176,7 +176,7 @@ class _UserForgotPasswordScreenState extends State<UserForgotPasswordScreen> {
                 ),
                 child: Column(
                   children: [
-                    defaultTextFormfeild(
+                    defaultTextFormField(
                       cubit: cubit,
                       text: 'البريد الألكتروني',
                       prefixIcon: 'assets/phone.svg',

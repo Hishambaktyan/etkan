@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/booking_confirm_info_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../main.dart';
@@ -450,49 +451,9 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                     : Colors.grey.shade100,
                                 height: 1),
                           ),
-                          SizedBox(height: 10.h),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: defaultOutlinedButtonWithIcon(
-                                  onPressed: () {},
-                                  text: 'إتصال',
-                                  fontSize: 13.sp,
-                                  height: 45.h,
-                                  textColor:
-                                  cubit.isDark ? Colors.white : mainColor,
-                                  border:
-                                  cubit.isDark ? Colors.white : mainColor,
-                                  icon: SvgPicture.asset(
-                                    'assets/phone.svg',
-                                    color:
-                                    cubit.isDark ? Colors.white : mainColor,
-                                    width: 20.r,
-                                    height: 20.r,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: defaultButtonWithIcon(
-                                  onPressed: () {},
-                                  text: 'دردشة',
-                                  height: 45.h,
-                                  textSize: 13.sp,
-                                  icon: SvgPicture.asset(
-                                    'assets/chat.svg',
-                                    color: Colors.white,
-                                    width: 20.r,
-                                    height: 20.r,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.h),
                           defaultOutlinedButtonWithIcon(
                             onPressed: () {
-                              move(context, const WorkerProfileScreen());
+                              move(context, const UserWorkerProfile());
                             },
                             text: 'المزيد',
                             fontSize: 13.sp,

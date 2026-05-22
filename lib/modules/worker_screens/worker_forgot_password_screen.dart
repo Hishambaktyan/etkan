@@ -173,7 +173,7 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
                 ),
                 child: Column(
                   children: [
-                    defaultTextFormfeild(
+                    defaultTextFormField(
                       cubit: cubit,
                       text: 'البريد الألكتروني',
                       prefixIcon: 'assets/phone.svg',

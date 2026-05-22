@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/add_service.dart';
+import 'package:trying_homy/modules/worker_screens/worker_add_service.dart';
 import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
@@ -205,7 +205,7 @@ class _WorkerServicesState extends State<WorkerServices> {
                     ),
                   ),
                   floatingActionButton: FloatingActionButton.extended(
-                    onPressed: ()=>move(context,  const AddService()),
+                    onPressed: ()=>move(context,  const WorkerAddService()),
                     backgroundColor: mainColor,
                     label: const Text(
                       'إضافة خدمة',

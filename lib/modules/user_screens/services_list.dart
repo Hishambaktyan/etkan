@@ -9,7 +9,7 @@ import 'package:marquee/marquee.dart';
 import 'package:trying_homy/modules/user_screens/service_details.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
-import 'package:trying_homy/modules/user_screens/worker_details.dart';
+import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import '../../shared/compenents/components.dart';
@@ -59,12 +59,12 @@ class _ServicesListState extends State<ServicesList> {
                           ),
                           SizedBox(height: 15.h,),
                           ListView.separated(
-                            itemCount: userServicesCubit.userElecServices.length,
+                            itemCount: userServicesCubit.userElecServices.length*3,
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             padding: EdgeInsetsDirectional.only(start:15.w,end: 15.w,bottom: 20.h),
                             itemBuilder: (context, index) {
-                              var service = userServicesCubit.userElecServices[index];
+                              var service = userServicesCubit.userElecServices[0];
                               var providerData = appCubit.allUsers[service['providerId']];
                               return InkWell(
                                 onTap: () => move(

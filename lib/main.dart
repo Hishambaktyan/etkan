@@ -18,6 +18,7 @@ import 'package:trying_homy/shared/styles/styles.dart';
 import 'firebase_options.dart';
 import 'layout/user_layout/user_main_screen.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
+import 'modules/admin_screens/admin_home_screen.dart';
 import 'modules/on_boarding.dart';
 import 'modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
 
@@ -52,7 +53,10 @@ void moveAndReplace(BuildContext context, Widget screen) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+ Widget startWidget = const OnBoardingScreen();
+
 Future<void> main() async {
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
@@ -68,18 +72,29 @@ Future<void> main() async {
 
   await CacheHelper.init();
   bool? isDark = CacheHelper.getBoolen(key: 'isDark');
-  bool? isWorker = CacheHelper.getBoolen(key: 'isWorker') ?? false;
+  bool isLoggedIn = CacheHelper.getBoolen(key: 'isLoggedIn') ?? false;
+  String role = CacheHelper.getData(key: 'role') ?? '';
 
-  runApp(MyApp(
-    isDark: isDark,
-    isWorker: isWorker,
-  ));
+  if (isLoggedIn) {
+    if (role == 'user') {
+      startWidget = const UserMainScreen();
+    } else if (role == 'provider') {
+      startWidget = const WorkerMainScreen();
+    } else if (role == 'admin') {
+      startWidget = const AdminHomeScreen();
+    } else {
+      startWidget = const OnBoardingScreen();
+    }
+  } else {
+    startWidget = const OnBoardingScreen();
+  }
+
+  runApp(MyApp(isDark: isDark,));
 }
 
 class MyApp extends StatelessWidget {
   final bool? isDark;
-  final bool? isWorker;
-  const MyApp({super.key, this.isWorker, this.isDark});
+  const MyApp({super.key,this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +123,7 @@ class MyApp extends StatelessWidget {
                 theme: lightTheme,
                 darkTheme: darkTheme,
                 debugShowCheckedModeBanner: false,
-                home: const SelectUserType()
+                home: startWidget
               );
             },
           );

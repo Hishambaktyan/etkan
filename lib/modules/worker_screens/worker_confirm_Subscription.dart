@@ -11,21 +11,21 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class ConfirmSubscription extends StatefulWidget {
+class WorkerConfirmSubscription extends StatefulWidget {
   final Map<String, dynamic> plan;
   final Map<String, dynamic> paymentMethod;
 
-  const ConfirmSubscription({
+  const WorkerConfirmSubscription({
     super.key,
     required this.plan,
     required this.paymentMethod,
   });
 
   @override
-  State<ConfirmSubscription> createState() => _ConfirmSubscriptionState();
+  State<WorkerConfirmSubscription> createState() => _WorkerConfirmSubscriptionState();
 }
 
-class _ConfirmSubscriptionState extends State<ConfirmSubscription> {
+class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
   File? transferImage;
 
   Future<void> pickTransferImage() async {

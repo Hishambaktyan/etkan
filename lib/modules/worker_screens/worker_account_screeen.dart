@@ -234,7 +234,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                           SizedBox(width: 12.w),
                           Expanded(
                             child: defaultOutlinedButton(
-                              onPressed: (){},
+                              onPressed: ()=>authCubit.logoutUser(),
                               text: 'خروج',
                               border: Colors.red,
                               textColor: Colors.red,
@@ -352,12 +352,14 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
       builder: (context, state) {
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
+            if(state is LogOutLoadingState){
+              showLoadingDialog(context);
+            }
             if (state is LogOutSuccessState) {
               showSnackBar(Colors.green, 'تم تسجيل خروجك بنجاح', context);
               moveAndReplace(context, const OnBoardingScreen());
               appCubit.changeIndex(0);
             }
-
             if (state is LogOutErrorState) {
               showSnackBar(Colors.red, state.error, context);
             }

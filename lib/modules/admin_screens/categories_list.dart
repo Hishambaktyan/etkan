@@ -9,7 +9,7 @@ import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/compenents/components.dart';
-import 'add_dept.dart';
+import 'add_category.dart';
 import 'manage_dept.dart';
 
 class CategoriesList extends StatefulWidget {
@@ -47,7 +47,7 @@ class _CategoriesListState extends State<CategoriesList> {
                               isNotif: false,
                               isAction: true,
                               actionIcon: 'assets/add_grid.svg',
-                              onActionPresses: ()=>move(context, const AddDept())
+                              onActionPresses: ()=>move(context, const AddCategory())
                           ),
                           GridView.builder(
                             physics: const NeverScrollableScrollPhysics(),

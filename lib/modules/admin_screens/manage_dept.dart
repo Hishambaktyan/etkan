@@ -24,9 +24,9 @@ class ManageDept extends StatefulWidget {
 class _ManageDeptState extends State<ManageDept> {
   TextEditingController titleController = TextEditingController();
   bool isActive = true;
-  File? catImage;
+  String? catImage;
 
-  Future<void> pickCategorymage() async {
+  Future<void> pickCategoryImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(
       source: ImageSource.gallery,
@@ -34,7 +34,7 @@ class _ManageDeptState extends State<ManageDept> {
     );
     if (image != null) {
       setState(() {
-        catImage = File(image.path);
+        catImage = image.path;
       });
     }
   }
@@ -200,36 +200,36 @@ class _ManageDeptState extends State<ManageDept> {
                                           color: mainColor.withOpacity(0.2),
                                           width: 2),
                                     ),
-                                    child: catImage==null
-                                        ? Padding(
-                                      padding: EdgeInsets.all(25.r),
-                                      child: SvgPicture.network(
-                                        widget.category['image'],
-                                      ),
-                                    ) : ClipRRect(
+                                    child: ClipRRect(
                                       borderRadius: BorderRadius.circular(55.r),
-                                      child: SvgPicture.file(
-                                        catImage!,
-                                        fit: BoxFit.cover,
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional.all(25),
+                                        child: SvgPicture.network(
+                                          catImage!,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                                   ),
                                   InkWell(
-                                    onTap: () => pickCategorymage(),
+                                    onTap: () => pickCategoryImage(),
                                     child: CircleAvatar(
                                       radius: 18.r,
                                       backgroundColor: mainColor,
-                                      child: SvgPicture.asset(
-                                        'assets/camera.svg',
-                                        color: Colors.white,
-                                        width: 18.w,
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional.all(8.0),
+                                        child: SvgPicture.asset(
+                                          'assets/camera.svg',
+                                          color: Colors.white,
+                                          width: 18.w,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: 25.h),
-                              defaultTextFormfeild(
+                              defaultTextFormField(
                                 text: 'الكهرباء',
                                 prefixIcon: 'assets/grid.svg',
                                 errorMes: 'يرجى تعبئة الحقل',
@@ -296,7 +296,7 @@ class _ManageDeptState extends State<ManageDept> {
                                 docId: widget.category['id'],
                                 title: titleController.text.trim(),
                                 isActive: isActive,
-                                imageFile: catImage!
+                                imageFile: File(catImage!)
                             );
                           },
                           text: 'حفظ التغييرات',

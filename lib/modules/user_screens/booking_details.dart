@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
+import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
 
 import '../../main.dart';
@@ -43,7 +44,6 @@ class _BookingDetailsState extends State<BookingDetails> {
       'جاري التنفيذ',
       'تم اكمال الخدمة'
     ];
-
     return Row(
       children: List.generate(steps.length, (index) {
         bool isDone = index < currentStep;
@@ -333,15 +333,13 @@ class _BookingDetailsState extends State<BookingDetails> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.only(
-                              top: 30.h, start: 10.w, end: 10.w),
+                          padding: EdgeInsetsDirectional.only(top: 30.h, start: 10.w, end: 10.w),
                           child: Row(
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(7),
                                 child: CircleAvatar(
-                                  backgroundColor:
-                                      Colors.white.withOpacity(0.8),
+                                  backgroundColor: Colors.white.withOpacity(0.8),
                                   child: InkWell(
                                     splashColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
@@ -754,8 +752,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                           padding: EdgeInsetsDirectional.all(18.r),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                              color:
-                                  appCubit.isDark ? lightDarkColor : Colors.white,
+                              color: appCubit.isDark ? lightDarkColor : Colors.white,
                               borderRadius: BorderRadius.circular(25.r),
                               boxShadow: [
                                 BoxShadow(
@@ -774,104 +771,53 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 children: [
                                   CircleAvatar(
                                     radius: 25.r,
+                                    backgroundColor: mainColor.withOpacity(0.1),
                                     backgroundImage: NetworkImage(
-                                        providerData['profileImage'] ?? ''),
+                                      providerData['profileImage']??'',
+                                    ),
                                   ),
                                   SizedBox(width: 12.w),
-                                  Text(
-                                    providerData['name'] ?? '',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: appCubit.isDark
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        providerData['name']??'',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: appCubit.isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        providerData['specialization']?? '',
+                                        style: TextStyle(
+                                          fontSize: 13.sp,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                               Padding(
-                                padding: EdgeInsetsDirectional.symmetric(
-                                    vertical: 15.h),
+                                padding: EdgeInsets.symmetric(vertical: 15.h),
                                 child: Divider(
                                     color: appCubit.isDark
                                         ? darkSubTextColor
-                                        : Colors.grey.shade300,
+                                        : Colors.grey.shade100,
                                     height: 1),
                               ),
-                              Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/phone.svg',
-                                    color: appCubit.isDark
-                                        ? darkSubTextColor
-                                        : Colors.grey.shade600,
-                                    width: 18.r,
-                                    height: 18.r,
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Text(
-                                    providerData['phone'] ?? '',
-                                    style: TextStyle(
-                                        color: appCubit.isDark
-                                            ? Colors.white
-                                            : Colors.black87,
-                                        fontSize: 12.sp,
-                                        letterSpacing: 7),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20.h),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: defaultOutlinedButtonWithIcon(
-                                      onPressed: () {},
-                                      text: 'إتصال',
-                                      fontSize: 13.sp,
-                                      height: 45.h,
-                                      textColor:
-                                      appCubit.isDark ? Colors.white : mainColor,
-                                      border:
-                                      appCubit.isDark ? Colors.white : mainColor,
-                                      icon: SvgPicture.asset(
-                                        'assets/phone.svg',
-                                        color:
-                                        appCubit.isDark ? Colors.white : mainColor,
-                                        width: 20.r,
-                                        height: 20.r,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Expanded(
-                                    child: defaultButtonWithIcon(
-                                      onPressed: () {},
-                                      text: 'دردشة',
-                                      height: 45.h,
-                                      textSize: 13.sp,
-                                      icon: SvgPicture.asset(
-                                        'assets/chat.svg',
-                                        color: Colors.white,
-                                        width: 20.r,
-                                        height: 20.r,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.h),
                               defaultOutlinedButtonWithIcon(
                                 onPressed: () {
-                                  move(context, const WorkerProfileScreen());
+                                  move(context, const UserWorkerProfile());
                                 },
                                 text: 'المزيد',
                                 fontSize: 13.sp,
                                 height: 45.h,
-                                textColor:
-                                appCubit.isDark ? Colors.white : mainColor,
-                                border:
-                                appCubit.isDark ? Colors.white : mainColor,
+                                textColor: appCubit.isDark ? Colors.white : mainColor,
+                                border: appCubit.isDark ? Colors.white : mainColor,
                                 icon: SvgPicture.asset(
                                   'assets/acc.svg',
                                   color:

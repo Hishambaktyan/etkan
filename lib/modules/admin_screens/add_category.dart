@@ -11,14 +11,14 @@ import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../../shared/cubits/admin_cubit/admin_cubit.dart';
 
-class AddDept extends StatefulWidget {
-  const AddDept({super.key});
+class AddCategory extends StatefulWidget {
+  const AddCategory({super.key});
 
   @override
-  State<AddDept> createState() => _AddDeptState();
+  State<AddCategory> createState() => _AddCategoryState();
 }
 
-class _AddDeptState extends State<AddDept> {
+class _AddCategoryState extends State<AddCategory> {
   TextEditingController titleController = TextEditingController();
   bool isActive = true;
   File? catImage;
@@ -121,7 +121,7 @@ class _AddDeptState extends State<AddDept> {
                                 ],
                               ),
                               SizedBox(height: 25.h),
-                              defaultTextFormfeild(
+                              defaultTextFormField(
                                 text: 'اسم القسم (مثلاً: سباكة، كهرباء)',
                                 prefixIcon: 'assets/grid.svg',
                                 errorMes: 'يرجى تعبئة الحقل',

@@ -170,7 +170,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'الأسم الكامل',
                                   prefixIcon: 'assets/acc.svg',
@@ -179,7 +179,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   type: TextInputType.text,
                                 ),
                                 SizedBox(height: 15.0.h,),
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
@@ -188,7 +188,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   type: TextInputType.phone,
                                 ),
                                 SizedBox(height: 15.0.h,),
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'كلمة المرور',
                                   prefixIcon: 'assets/lock.svg',

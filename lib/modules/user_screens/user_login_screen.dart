@@ -1,5 +1,6 @@
 import 'dart:ui';
- import 'package:flutter/material.dart';
+ import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
@@ -12,6 +13,7 @@ import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../../shared/compenents/components.dart';
 import '../../layout/user_layout/user_main_screen.dart';
+import '../../shared/networks/local/cache_helper.dart';
 
 class UserLoginScreen extends StatefulWidget {
   const UserLoginScreen({super.key});
@@ -119,9 +121,40 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                           Align(
                             alignment: AlignmentDirectional.topCenter,
                             child: Padding(
-                              padding: EdgeInsetsDirectional.only(top: 70.h),
+                              padding: EdgeInsetsDirectional.only(top: 30.h),
                               child: Column(
                                 children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(7),
+                                          child: Container(
+                                            width: 40.r,
+                                            height: 40.r,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.1),
+                                              shape: BoxShape.circle,
+                                              border:  Border.all(
+                                                color: Colors.white.withOpacity(0.2),
+                                              ),
+                                            ),
+                                            child: InkWell(
+                                              borderRadius: BorderRadius.circular(50.r),
+                                              splashColor: Colors.transparent,
+                                              highlightColor: Colors.transparent,
+                                              onTap: () => Navigator.pop(context),
+                                              child: const Icon(
+                                                CupertinoIcons.back,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                   Align(
                                     alignment: AlignmentDirectional.topCenter,
                                     child: Container(
@@ -196,7 +229,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                             key: formKey,
                             child: Column(
                               children: [
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
@@ -205,7 +238,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                                   type: TextInputType.phone,
                                 ),
                                 SizedBox(height: 20.h),
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                     cubit: appCubit,
                                     text: 'كلمة المرور',
                                     prefixIcon: 'assets/lock.svg',

@@ -90,7 +90,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                                 ),
                               ),
                               SizedBox(height: 25.h),
-                              defaultTextFormfeild(
+                              defaultTextFormField(
                                 text: 'اسم المستخدم',
                                 prefixIcon: 'assets/acc.svg',
                                 errorMes: '',
@@ -100,7 +100,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                                 isReadOnly: true
                               ),
                               SizedBox(height: 15.h),
-                              defaultTextFormfeild(
+                              defaultTextFormField(
                                 text: 'رقم المستخدم',
                                 prefixIcon: 'assets/phone.svg',
                                 errorMes: '',

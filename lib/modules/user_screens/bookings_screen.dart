@@ -98,46 +98,45 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           ),
                           SizedBox(height: 15.h,),
                           SizedBox(
-                            height: 40.h,
+                            height: 55.h,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              padding: EdgeInsetsDirectional.only(start: 10.w),
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                               itemCount: statusFilters.length,
                               itemBuilder: (context, index) {
-                                return  Padding(
-                                  padding:  EdgeInsetsDirectional.only(end:index==6?0: 15.w,),
-                                  child: ChoiceChip(
-                                    backgroundColor: appCubit.isDark ? const Color(0xFF161B22) : Colors.grey.shade100,
-                                    selectedColor: appCubit.isDark ? mainColor.withOpacity(0.15) : mainColor.withOpacity(0.2),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.r),
-                                      side: BorderSide(
-                                        color: appCubit.isDark
-                                            ? (selectedStatus == statusFilters[index] ? mainColor : const Color(0xFF30363D))
-                                            : Colors.transparent,
-                                      ),
-                                    ),
-                                    label: Text(statusFilters[index]),
-                                    selected: selectedStatus == statusFilters[index],
-                                    onSelected: (value) {
+                                bool isSelected = selectedStatus == statusFilters[index];
+                                return Padding(
+                                  padding: EdgeInsetsDirectional.only(end: 10.w,bottom: 10.h),
+                                  child: InkWell(
+                                    onTap: () {
                                       setState(() {
                                         selectedStatus = statusFilters[index];
                                       });
                                     },
-                                    labelStyle: TextStyle(
-                                      color: appCubit.isDark
-                                          ? (selectedStatus == statusFilters[index] ? mainColor : const Color(0xFFC9D1D9))
-                                          : Colors.black,
-                                      fontSize: 12.sp,
-                                      fontWeight: selectedStatus == statusFilters[index] ? FontWeight.bold : FontWeight.normal,
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 300),
+                                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: isSelected ? mainColor : Colors.white,
+                                        borderRadius: BorderRadius.circular(15.r),
+                                        boxShadow: isSelected ? [] : blueShadow,
+                                      ),
+                                      child: Text(
+                                        statusFilters[index],
+                                        style: TextStyle(
+                                          color: isSelected ? Colors.white : Colors.grey.shade700,
+                                          fontSize: 12.sp,
+                                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                        ),
+                                      ),
                                     ),
-                                    showCheckmark: false,
                                   ),
                                 );
                               },
                             ),
                           ),
-                          SizedBox(height: 20.h,),
+                          SizedBox(height: 10.h,),
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),

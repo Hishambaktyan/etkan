@@ -390,7 +390,7 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
                                       },
                                     ),
                                     SizedBox(height: 15.h),
-                                    defaultTextFormfeild(
+                                    defaultTextFormField(
                                       text: 'العنوان',
                                       prefixIcon: 'assets/loc.svg',
                                       errorMes: '',
@@ -441,7 +441,7 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: defaultTextFormfeild(
+                                          child: defaultTextFormField(
                                             text: 'أضف خبرة',
                                             prefixIcon: 'assets/subs.svg',
                                             errorMes: '',

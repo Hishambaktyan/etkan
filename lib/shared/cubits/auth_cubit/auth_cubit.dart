@@ -139,6 +139,8 @@ class AuthCubit extends Cubit<AuthStates> {
       await saveUserToken(uid);
 
       await CacheHelper.saveData(key: 'uid', value: uid);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
+      CacheHelper.saveData(key: 'role', value: 'user');
 
       emit(UserSignUpSuccessState());
     } catch (e) {
@@ -201,6 +203,8 @@ class AuthCubit extends Cubit<AuthStates> {
       await saveUserToken(uid);
 
       await CacheHelper.saveData(key: 'uid', value: uid);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
+      await CacheHelper.saveData(key: 'role', value: 'provider');
 
       emit(WorkerSignUpSuccessState());
     }  catch (e) {
@@ -275,7 +279,6 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
-
   var workerLoginPhoneController = TextEditingController();
   var workerLoginPasswordController = TextEditingController();
 
@@ -314,10 +317,13 @@ class AuthCubit extends Cubit<AuthStates> {
 
         if (requiredRole == 'admin') {
           message = 'هذا الحساب ليس حساب مسؤول';
+          await CacheHelper.saveData(key: 'role', value: 'admin');
         } else if (requiredRole == 'provider') {
           message = 'هذا الحساب ليس حساب عامل';
+          await CacheHelper.saveData(key: 'role', value: 'provider');
         } else if (requiredRole == 'user') {
           message = 'هذا الحساب ليس حساب مستخدم';
+          await CacheHelper.saveData(key: 'role', value: 'user');
         }
 
         emit(LoginErrorState(error: message));
@@ -325,6 +331,7 @@ class AuthCubit extends Cubit<AuthStates> {
       }
 
       await CacheHelper.saveData(key: 'uid', value: uid);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true,);
       await saveUserToken(uid);
 
       emit(LoginSuccessState());
@@ -349,6 +356,8 @@ class AuthCubit extends Cubit<AuthStates> {
       }
 
       await CacheHelper.removeData(key: 'uid');
+      await CacheHelper.removeData(key: 'isLoggedIn');
+      await CacheHelper.removeData(key: 'role');
 
       emit(LogOutSuccessState());
     } catch (e) {

@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +78,8 @@ void showSnackBar(Color background, String message, context) {
     ),
   ));
 }
+
+
 
 String formatStatusTime(dynamic timestamp) {
   if (timestamp == null) return "";
@@ -574,7 +575,7 @@ Widget defaultOutlinedButtonWithIcon(
       ),
     );
 ////////////////////////////////////////////
-Widget defaultTextFormfeild(
+Widget defaultTextFormField(
     {
   required String? text,
         required String? prefixIcon,
@@ -623,8 +624,7 @@ Widget defaultTextFormfeild(
             color: mainColor,
           ),
         ),
-        suffixIcon: isSuffixIcon
-            ? IconButton(
+        suffixIcon: isSuffixIcon ? IconButton(
           onPressed: () {
             suffixPressed!();
           },
@@ -635,8 +635,7 @@ Widget defaultTextFormfeild(
             color: Colors.grey,
           ),
           highlightColor: Colors.transparent,
-        )
-            : null,
+        ) : null,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.r),
           borderSide: BorderSide(
@@ -758,17 +757,15 @@ class NoInternet extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Lottie.asset(
-              'assets/lottie/no_internet.json',
+              'assets/animations/noCon.json',
               width: 220.w,
               height: 220.h,
               fit: BoxFit.contain,
               delegates: LottieDelegates(
                 values: [
-                  // تغيير ألوان الأنيميشن لتتناسب مع mainColor
                   ValueDelegate.color(['**', 'Fill 1'], value: mainColor),
                   ValueDelegate.color(['**', 'Fill 2'], value: mainColor.withOpacity(0.7)),
                   ValueDelegate.color(['**', 'Fill 3'], value: mainColor.withOpacity(0.5)),
-                  // إخفاء النص الإنجليزي داخل الأنيميشن
                   ValueDelegate.opacity(['LOST CONNECTION Outlines', '**'], value: 0),
                 ],
               ),
@@ -778,13 +775,15 @@ class NoInternet extends StatelessWidget {
               'لا يوجد اتصال بالإنترنت، يرجى المحاولة مرة أخرى',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
                 color: Colors.black87,
               ),
             ),
             SizedBox(height: 20.h),
-            defaultButton(onPressed: (){onRetry();}, text: 'إعادة المحاولة',width: 100.w)
+            Padding(
+              padding: EdgeInsetsDirectional.symmetric(horizontal: 30.w),
+              child: defaultOutlinedButton(onPressed: (){onRetry();}, text: 'إعادة المحاولة',border: mainColor,textColor: mainColor),
+            )
           ],
         ),
       ),

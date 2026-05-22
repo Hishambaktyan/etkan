@@ -415,46 +415,6 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                     : Colors.grey.shade100,
                                 height: 1),
                           ),
-                          SizedBox(height: 10.h),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: defaultOutlinedButtonWithIcon(
-                                  onPressed: () {},
-                                  text: 'إتصال',
-                                  fontSize: 13.sp,
-                                  height: 45.h,
-                                  textColor:
-                                  cubit.isDark ? Colors.white : mainColor,
-                                  border:
-                                  cubit.isDark ? Colors.white : mainColor,
-                                  icon: SvgPicture.asset(
-                                    'assets/phone.svg',
-                                    color:
-                                    cubit.isDark ? Colors.white : mainColor,
-                                    width: 20.r,
-                                    height: 20.r,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: defaultButtonWithIcon(
-                                  onPressed: () {},
-                                  text: 'دردشة',
-                                  height: 45.h,
-                                  textSize: 13.sp,
-                                  icon: SvgPicture.asset(
-                                    'assets/chat.svg',
-                                    color: Colors.white,
-                                    width: 20.r,
-                                    height: 20.r,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.h),
                           defaultOutlinedButtonWithIcon(
                             onPressed: () {
                               move(context, const WorkerProfileScreen());

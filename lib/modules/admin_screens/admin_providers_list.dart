@@ -90,6 +90,8 @@ class _AdminProvidersListState extends State<AdminProvidersList> {
           body: BlocBuilder<AdminCubit,AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
+              final activeProviders = adminCubit.providers.where((element) => element['isActive']==true,).toList();
+              final inactiveProviders = adminCubit.providers.where((element) => element['isActive']==false,).toList();
               return SingleChildScrollView(
                 child: state is GetProvidersLoadingState ? const AdminProvidersShimmer()
                     :Column(
@@ -100,9 +102,9 @@ class _AdminProvidersListState extends State<AdminProvidersList> {
                       padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                       child: Row(
                         children: [
-                          buildStatCard(title: 'الحسابات المفعلة', value: '2', icon: 'assets/all.svg'),
+                          buildStatCard(title: 'الحسابات المفعلة', value: '${activeProviders.length}', icon: 'assets/all.svg'),
                           SizedBox(width: 10.w,),
-                          buildStatCard(title: 'الحسابات المعطلة', value: '2', icon: 'assets/dis.svg'),
+                          buildStatCard(title: 'الحسابات المعطلة', value: '${inactiveProviders.length}', icon: 'assets/dis.svg'),
                         ],
                       ),
                     ),

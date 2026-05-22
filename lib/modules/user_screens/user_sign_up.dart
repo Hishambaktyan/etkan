@@ -170,7 +170,7 @@ class _UserSignUpState extends State<UserSignUp> {
                             key: userSignupFormKey,
                             child: Column(
                               children: [
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'الاسم الكامل',
                                   prefixIcon: 'assets/acc.svg',
@@ -179,7 +179,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                   type: TextInputType.text,
                                 ),
                                 SizedBox(height: 15.h),
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
@@ -188,7 +188,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                   type: TextInputType.phone,
                                 ),
                                 SizedBox(height: 15.h),
-                                defaultTextFormfeild(
+                                defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'كلمة المرور',
                                   prefixIcon: 'assets/lock.svg',
