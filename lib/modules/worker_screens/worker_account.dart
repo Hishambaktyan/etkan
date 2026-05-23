@@ -1,12 +1,12 @@
 import 'dart:ui';
 
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
-import 'package:trying_homy/modules/edit_profile_screen.dart';
+import 'package:trying_homy/modules/user_edit_profile_screen.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
@@ -32,14 +32,17 @@ class WorkerAccount extends StatefulWidget {
 }
 
 class _WorkerAccountState extends State<WorkerAccount> {
-
   Widget _buildSectionTitle({
     required String title,
     required String icon,
     required AppCubit appCubit,
   }) {
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 10.h,),
+      padding: EdgeInsetsDirectional.only(
+        start: 10.w,
+        end: 10.w,
+        bottom: 10.h,
+      ),
       child: Row(
         children: [
           Container(
@@ -48,8 +51,11 @@ class _WorkerAccountState extends State<WorkerAccount> {
                 color: mainColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(10.r),
               ),
-              child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
-          ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 20.w,
+              )),
           SizedBox(width: 8.w),
           Text(
             title,
@@ -70,12 +76,19 @@ class _WorkerAccountState extends State<WorkerAccount> {
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h,),
-      padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 5.h,),
+      margin: EdgeInsetsDirectional.only(
+        start: 10.w,
+        end: 10.w,
+        bottom: 20.h,
+      ),
+      padding: EdgeInsetsDirectional.symmetric(
+        horizontal: 15.w,
+        vertical: 5.h,
+      ),
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
-        boxShadow:  blueShadow,
+        boxShadow: blueShadow,
       ),
       child: Column(
         children: children,
@@ -118,8 +131,11 @@ class _WorkerAccountState extends State<WorkerAccount> {
                       : mainColor.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                child: SvgPicture.asset(icon,color: isDanger?Colors.red: mainColor,width: 20.w,)
-            ),
+                child: SvgPicture.asset(
+                  icon,
+                  color: isDanger ? Colors.red : mainColor,
+                  width: 20.w,
+                )),
             SizedBox(width: 10.w),
             Expanded(
               child: Text(
@@ -150,8 +166,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                 color: isDanger
                     ? Colors.red.withOpacity(0.5)
                     : appCubit.isDark
-                    ? Colors.white.withOpacity(0.45)
-                    : Colors.grey.withOpacity(0.7),
+                        ? Colors.white.withOpacity(0.45)
+                        : Colors.grey.withOpacity(0.7),
               ),
           ],
         ),
@@ -167,7 +183,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
       builder: (context, state) {
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
-            if(state is LogOutLoadingState){
+            if (state is LogOutLoadingState) {
               showLoadingDialog(context);
             }
             if (state is LogOutSuccessState) {
@@ -181,7 +197,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
+            Map<String, dynamic> user =
+                appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
@@ -189,8 +206,10 @@ class _WorkerAccountState extends State<WorkerAccount> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      header(title: 'الحساب',context: context),
-                      SizedBox(height: 20.h,),
+                      header(title: 'الحساب', context: context),
+                      SizedBox(
+                        height: 20.h,
+                      ),
                       _buildSectionTitle(
                         title: 'الحساب الشخصي',
                         icon: 'assets/acc.svg',
@@ -289,7 +308,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
                             title: 'سياسة الخصوصية',
                             icon: 'assets/reports.svg',
                             onTap: () {
-                              move(context,  PrivacyPolicyScreen());
+                              move(context, PrivacyPolicyScreen());
                             },
                           ),
                           _buildDivider(appCubit),
@@ -298,8 +317,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
                             title: 'الشروط والأحكام',
                             icon: 'assets/hammer.svg',
                             onTap: () {
-                              move(
-                                  context, const TermsConditionsScreen());
+                              move(context, const TermsConditionsScreen());
                             },
                           ),
                         ],
@@ -364,11 +382,11 @@ class _WorkerAccountState extends State<WorkerAccount> {
                                 icon: 'assets/delete.svg',
                                 iconColor: Colors.red,
                                 title: 'حذف الخدمة',
-                                body: 'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+                                body:
+                                    'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
                                 cancelText: 'إلغاء',
                                 confirmText: 'حذف',
-                                onConfirm: () {
-                                },
+                                onConfirm: () {},
                               );
                             },
                           ),

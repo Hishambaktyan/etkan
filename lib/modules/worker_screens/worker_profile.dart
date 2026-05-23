@@ -1,6 +1,6 @@
 import 'dart:ui';
 
- import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,11 +11,9 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
-
 import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/networks/local/cache_helper.dart';
-import '../notifications_screen.dart';
 import 'worker_edit_profile.dart';
 
 class WorkerProfile extends StatefulWidget {
@@ -26,74 +24,99 @@ class WorkerProfile extends StatefulWidget {
 }
 
 class _WorkerProfileState extends State<WorkerProfile> {
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit,AppStates>(
-        builder: (context, state) {
-          AppCubit appCubit = AppCubit.get(context);
-          return BlocBuilder<WorkerCubit,WorkerStates>(
-              builder: (context, state) {
-                WorkerCubit workerCubit = WorkerCubit.get(context);
-                Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
-                return Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Scaffold(
-                    body: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          buildHeader(appCubit:appCubit,user: user ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
-                            child: Column(
-                              children: [
-                                buildQuickStats(cubit: appCubit,user: user,workerCubit:workerCubit ),
-                                SizedBox(height: 25.h),
-                                buildSectionHeader(
-                                    title: 'معلومات التواصل',
-                                    icon: SvgPicture.asset('assets/contact.svg',color: mainColor,width: 25.w,),
-                                    cubit: appCubit
+    return BlocBuilder<AppCubit, AppStates>(
+      builder: (context, state) {
+        AppCubit appCubit = AppCubit.get(context);
+        return BlocBuilder<WorkerCubit, WorkerStates>(
+          builder: (context, state) {
+            WorkerCubit workerCubit = WorkerCubit.get(context);
+            Map<String, dynamic> user =
+                appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      buildHeader(appCubit: appCubit, user: user),
+                      Padding(
+                        padding: EdgeInsetsDirectional.only(
+                          start: 10.w,
+                          end: 10.w,
+                          top: 20.h,
+                          bottom: 20.h,
+                        ),
+                        child: Column(
+                          children: [
+                            buildQuickStats(
+                                cubit: appCubit,
+                                user: user,
+                                workerCubit: workerCubit),
+                            SizedBox(height: 25.h),
+                            buildSectionHeader(
+                                title: 'معلومات التواصل',
+                                icon: SvgPicture.asset(
+                                  'assets/contact.svg',
+                                  color: mainColor,
+                                  width: 25.w,
                                 ),
-                                SizedBox(height: 10.h),
-                                buildContactCard(user: user,cubit: appCubit),
-                                SizedBox(height: 20.h),
-                                buildSectionHeader(
-                                    title: 'نبذة عن العامل',
-                                    icon: SvgPicture.asset('assets/info.svg',color: mainColor,width: 25.w,),
-                                    cubit: appCubit
+                                cubit: appCubit),
+                            SizedBox(height: 10.h),
+                            buildContactCard(user: user, cubit: appCubit),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                                title: 'نبذة عن العامل',
+                                icon: SvgPicture.asset(
+                                  'assets/info.svg',
+                                  color: mainColor,
+                                  width: 25.w,
                                 ),
-                                SizedBox(height: 10.h),
-                                buildAboutCard(cubit: appCubit,user: user),
-                                SizedBox(height: 20.h),
-                                buildSectionHeader(
-                                    title: 'الخبرات',
-                                    icon: SvgPicture.asset('assets/subs.svg',color: mainColor,width: 25.w,),
-                                    cubit: appCubit
+                                cubit: appCubit),
+                            SizedBox(height: 10.h),
+                            buildAboutCard(cubit: appCubit, user: user),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                                title: 'الخبرات',
+                                icon: SvgPicture.asset(
+                                  'assets/subs.svg',
+                                  color: mainColor,
+                                  width: 25.w,
                                 ),
-                                SizedBox(height: 10.h),
-                                buildExperiencesCard(user: user,cubit:appCubit,experiences: user['experiences'] ??[] ),
-                                SizedBox(height: 20.h),
-                                buildSectionHeader(
-                                    title: 'الأعمال السابقة',
-                                    icon: SvgPicture.asset('assets/image.svg',color: mainColor,width: 25.w,),
-                                    cubit: appCubit
+                                cubit: appCubit),
+                            SizedBox(height: 10.h),
+                            buildExperiencesCard(
+                                user: user,
+                                cubit: appCubit,
+                                experiences: user['experiences'] ?? []),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                                title: 'الأعمال السابقة',
+                                icon: SvgPicture.asset(
+                                  'assets/image.svg',
+                                  color: mainColor,
+                                  width: 25.w,
                                 ),
-                                SizedBox(height: 10.h),
-                                buildPreviousWorksCard(user: user,cubit: appCubit,previousWorks: user['previousWorks'] ?? []),
-                              ],
-                            ),
-                          ),
-                        ],
+                                cubit: appCubit),
+                            SizedBox(height: 10.h),
+                            buildPreviousWorksCard(
+                                user: user,
+                                cubit: appCubit,
+                                previousWorks: user['previousWorks'] ?? []),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                );
-              },
-          );
-        },
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
-
 
   Widget buildSectionHeader({
     required String title,
@@ -154,7 +177,7 @@ class _WorkerProfileState extends State<WorkerProfile> {
         decoration: BoxDecoration(
           color: cubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow:  blueShadow,
+          boxShadow: blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,15 +285,21 @@ class _WorkerProfileState extends State<WorkerProfile> {
               ),
             ),
             Padding(
-              padding: EdgeInsetsDirectional.only(top: 35.h, start: 5.w, end: 18.w,),
+              padding: EdgeInsetsDirectional.only(
+                top: 35.h,
+                start: 5.w,
+                end: 18.w,
+              ),
               child: Column(
                 children: [
                   Row(
                     children: [
                       IconButton(
-                          onPressed:()=>Navigator.pop(context),
-                          icon: const Icon(CupertinoIcons.back,color: Colors.white,)
-                      ),
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(
+                            CupertinoIcons.back,
+                            color: Colors.white,
+                          )),
                       Text(
                         'الحساب',
                         style: TextStyle(
@@ -282,22 +311,34 @@ class _WorkerProfileState extends State<WorkerProfile> {
                       const Spacer(),
                       InkWell(
                         onTap: () {
-                          move(context,  WorkerEditProfileScreen(worker: user,));
+                          move(
+                              context,
+                              WorkerEditProfileScreen(
+                                worker: user,
+                              ));
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12.w, vertical: 8.h),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.18),
                             borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.1)),
                           ),
                           child: Row(
                             children: [
-                              SvgPicture.asset('assets/pen.svg',color: Colors.white,),
+                              SvgPicture.asset(
+                                'assets/pen.svg',
+                                color: Colors.white,
+                              ),
                               SizedBox(width: 5.w),
                               Text(
                                 'تعديل',
-                                style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -329,13 +370,14 @@ class _WorkerProfileState extends State<WorkerProfile> {
                           child: CircleAvatar(
                             radius: 48.r,
                             backgroundColor: Colors.white.withOpacity(0.12),
-                            backgroundImage: NetworkImage('${user['profileImage'] ?? ''}'),
-                            child: user['profileImage']==null
+                            backgroundImage:
+                                NetworkImage('${user['profileImage'] ?? ''}'),
+                            child: user['profileImage'] == null
                                 ? Icon(
-                              Icons.person_rounded,
-                              color: Colors.white,
-                              size: 48.r,
-                            )
+                                    Icons.person_rounded,
+                                    color: Colors.white,
+                                    size: 48.r,
+                                  )
                                 : null,
                           ),
                         ),
@@ -350,7 +392,8 @@ class _WorkerProfileState extends State<WorkerProfile> {
                         ),
                         SizedBox(height: 7.h),
                         Container(
-                          padding: EdgeInsetsDirectional.only(start: 12.w,end: 15.w,top: 5.h),
+                          padding: EdgeInsetsDirectional.only(
+                              start: 12.w, end: 15.w, top: 5.h),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.14),
                             borderRadius: BorderRadius.circular(30.r),
@@ -375,11 +418,10 @@ class _WorkerProfileState extends State<WorkerProfile> {
     );
   }
 
-  Widget buildQuickStats({
-    required Map<String, dynamic> user,
-    required WorkerCubit workerCubit,
-    required AppCubit cubit
-  }) {
+  Widget buildQuickStats(
+      {required Map<String, dynamic> user,
+      required WorkerCubit workerCubit,
+      required AppCubit cubit}) {
     return Row(
       children: [
         buildStatCard(
@@ -407,11 +449,8 @@ class _WorkerProfileState extends State<WorkerProfile> {
     );
   }
 
-  Widget buildAboutCard({
-    required Map<String, dynamic> user,
-    required AppCubit cubit
-  })
-  {
+  Widget buildAboutCard(
+      {required Map<String, dynamic> user, required AppCubit cubit}) {
     return buildWhiteCard(
       cubit: cubit,
       child: Column(
@@ -430,11 +469,8 @@ class _WorkerProfileState extends State<WorkerProfile> {
     );
   }
 
-  Widget buildContactCard({
-    required Map<String, dynamic> user,
-    required AppCubit cubit
-  })
-  {
+  Widget buildContactCard(
+      {required Map<String, dynamic> user, required AppCubit cubit}) {
     return buildWhiteCard(
       cubit: cubit,
       child: Column(
@@ -474,146 +510,158 @@ class _WorkerProfileState extends State<WorkerProfile> {
     );
   }
 
-  Widget buildExperiencesCard({
-    required Map<String, dynamic> user,
-    required AppCubit cubit,
-    required List experiences
-  })
-  {
+  Widget buildExperiencesCard(
+      {required Map<String, dynamic> user,
+      required AppCubit cubit,
+      required List experiences}) {
+    return buildWhiteCard(
+        cubit: cubit,
+        child: experiences.isEmpty
+            ? Column(
+                children: [
+                  Icon(
+                    Icons.inbox_rounded,
+                    color: Colors.grey.shade400,
+                    size: 60.w,
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Text(
+                    'لا توجد خبرات سابقة لك',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.sp,
+                        color: Colors.grey.shade400),
+                  ),
+                ],
+              )
+            : ListView.builder(
+                padding: EdgeInsetsDirectional.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: experiences.length,
+                itemBuilder: (context, index) {
+                  final experience = experiences[index];
+                  return Padding(
+                    padding: EdgeInsetsDirectional.only(bottom: 10.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsetsDirectional.all(3.r),
+                          decoration: BoxDecoration(
+                            color: cubit.isDark
+                                ? mainColor.withOpacity(0.20)
+                                : mainColor.withOpacity(0.10),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check_rounded,
+                            color: mainColor,
+                            size: 14.r,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: Text(
+                            experience,
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge!.color,
+                              height: 1.6,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ));
+  }
+
+  Widget buildPreviousWorksCard(
+      {required Map<String, dynamic> user,
+      required List previousWorks,
+      required AppCubit cubit}) {
     return buildWhiteCard(
       cubit: cubit,
-      child: experiences.isEmpty? Column(
-        children: [
-          Icon(Icons.inbox_rounded,color: Colors.grey.shade400,size: 60.w,),
-          SizedBox(height: 5.h,),
-          Text(
-            'لا توجد خبرات سابقة لك',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15.sp,
-                color: Colors.grey.shade400
-            ),
-          ),
-        ],
-      ) :ListView.builder(
-        padding: EdgeInsetsDirectional.zero,
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: experiences.length ,
-        itemBuilder: (context, index) {
-          final experience = experiences[index];
-          return Padding(
-            padding: EdgeInsetsDirectional.only(bottom: 10.h),
-            child: Row(
+      child: previousWorks.isEmpty
+          ? Center(
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.inbox_rounded,
+                    color: Colors.grey.shade400,
+                    size: 60.w,
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Text(
+                    'لا توجد أعمال سابقة لك',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.sp,
+                        color: Colors.grey.shade400),
+                  ),
+                ],
+              ),
+            )
+          : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: EdgeInsetsDirectional.all(3.r),
-                  decoration: BoxDecoration(
-                    color: cubit.isDark
-                        ? mainColor.withOpacity(0.20)
-                        : mainColor.withOpacity(0.10),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.check_rounded,
-                    color: mainColor,
-                    size: 14.r,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(
-                    experience,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      height: 1.6,
-                    ),
+                SizedBox(
+                  height: 165.h,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsetsDirectional.all(10.w),
+                    itemCount: previousWorks.length,
+                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    itemBuilder: (context, index) {
+                      final work = previousWorks[index];
+                      return InkWell(
+                        onTap: () => move(
+                          context,
+                          ImageViewerPage(imageUrl: work),
+                        ),
+                        child: Container(
+                          width: 175.w,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.r),
+                            color: cubit.isDark
+                                ? darkBgColor
+                                : Colors.grey.shade100,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16.r),
+                            child: Image.network(
+                              work,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: cubit.isDark
+                                      ? darkBgColor
+                                      : Colors.grey.shade200,
+                                  child: Icon(
+                                    Icons.image_not_supported_outlined,
+                                    color: cubit.isDark
+                                        ? darkSubTextColor
+                                        : Colors.grey,
+                                    size: 35.r,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
-          );
-        },
-      )
-    );
-  }
-
-  Widget buildPreviousWorksCard({
-    required Map<String, dynamic> user,
-    required List previousWorks,
-    required AppCubit cubit
-  })
-  {
-    return buildWhiteCard(
-      cubit: cubit,
-      child: previousWorks.isEmpty ? Center(
-        child: Column(
-          children: [
-            Icon(Icons.inbox_rounded,color: Colors.grey.shade400,size: 60.w,),
-            SizedBox(height: 5.h,),
-            Text(
-              'لا توجد أعمال سابقة لك',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.sp,
-                  color: Colors.grey.shade400
-              ),
-            ),
-          ],
-        ),
-      )
-          :Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 165.h,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsetsDirectional.all(10.w),
-              itemCount: previousWorks.length,
-              separatorBuilder: (context, index) => SizedBox(width: 12.w),
-              itemBuilder: (context, index) {
-                final work = previousWorks[index];
-                return InkWell(
-                  onTap: () => move(context, ImageViewerPage(imageUrl: work),),
-                  child: Container(
-                    width: 175.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r),
-                      color: cubit.isDark
-                          ? darkBgColor
-                          : Colors.grey.shade100,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16.r),
-                      child: Image.network(
-                        work,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: cubit.isDark
-                                ? darkBgColor
-                                : Colors.grey.shade200,
-                            child: Icon(
-                              Icons.image_not_supported_outlined,
-                              color: cubit.isDark
-                                  ? darkSubTextColor
-                                  : Colors.grey,
-                              size: 35.r,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

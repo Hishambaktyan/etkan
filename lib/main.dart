@@ -1,9 +1,8 @@
- import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/select_user_type.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -53,10 +52,9 @@ void moveAndReplace(BuildContext context, Widget screen) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
- Widget startWidget = const OnBoardingScreen();
+Widget startWidget = const OnBoardingScreen();
 
 Future<void> main() async {
-
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
@@ -89,25 +87,46 @@ Future<void> main() async {
     startWidget = const OnBoardingScreen();
   }
 
-  runApp(MyApp(isDark: isDark,));
+  runApp(MyApp(
+    isDark: isDark,
+  ));
 }
 
 class MyApp extends StatelessWidget {
   final bool? isDark;
-  const MyApp({super.key,this.isDark});
+  const MyApp({super.key, this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AppCubit>(create: (context) => AppCubit()..changeTheme(fromShared: isDark)..getAllUsers(),),
-        BlocProvider<UserServicesCubit>(create: (context) => UserServicesCubit(),),
-        BlocProvider<BookingCubit>(create: (context) => BookingCubit(),),
-        BlocProvider<AuthCubit>(create: (context) => AuthCubit(),),
-        BlocProvider<ChatCubit>(create: (context) => ChatCubit(),),
-        BlocProvider<LocationCubit>(create: (context) => LocationCubit(),),
-        BlocProvider<AdminCubit>(create: (context) => AdminCubit()..getAdminData()..startListening(),),
-        BlocProvider<WorkerCubit>(create: (context) => WorkerCubit()..getWorkerData()),
+        BlocProvider<AppCubit>(
+          create: (context) => AppCubit()
+            ..changeTheme(fromShared: isDark)
+            ..getAllUsers(),
+        ),
+        BlocProvider<UserServicesCubit>(
+          create: (context) => UserServicesCubit(),
+        ),
+        BlocProvider<BookingCubit>(
+          create: (context) => BookingCubit(),
+        ),
+        BlocProvider<AuthCubit>(
+          create: (context) => AuthCubit(),
+        ),
+        BlocProvider<ChatCubit>(
+          create: (context) => ChatCubit(),
+        ),
+        BlocProvider<LocationCubit>(
+          create: (context) => LocationCubit(),
+        ),
+        BlocProvider<AdminCubit>(
+          create: (context) => AdminCubit()
+            ..getAdminData()
+            ..startListening(),
+        ),
+        BlocProvider<WorkerCubit>(
+            create: (context) => WorkerCubit()..getWorkerData()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),
@@ -118,13 +137,12 @@ class MyApp extends StatelessWidget {
             builder: (context, state) {
               var cubit = AppCubit.get(context);
               return MaterialApp(
-                navigatorKey: navigatorKey,
-                themeMode: cubit.isDark ? ThemeMode.dark : ThemeMode.light,
-                theme: lightTheme,
-                darkTheme: darkTheme,
-                debugShowCheckedModeBanner: false,
-                home: startWidget
-              );
+                  navigatorKey: navigatorKey,
+                  themeMode: cubit.isDark ? ThemeMode.dark : ThemeMode.light,
+                  theme: lightTheme,
+                  darkTheme: darkTheme,
+                  debugShowCheckedModeBanner: false,
+                  home: startWidget);
             },
           );
         },

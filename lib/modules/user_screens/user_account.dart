@@ -1,16 +1,17 @@
 import 'dart:ui';
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/aboutApp_screen.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
-import 'package:trying_homy/modules/edit_profile_screen.dart';
+import 'package:trying_homy/modules/user_edit_profile_screen.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/privacy_policy_screen.dart';
 import 'package:trying_homy/modules/terms_conditions_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_profile_screen.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
@@ -107,7 +108,11 @@ class _UserAccountState extends State<UserAccount> {
               ),
             ),
             Padding(
-              padding: EdgeInsetsDirectional.only(top: 35.h, start: 18.w, end: 18.w,),
+              padding: EdgeInsetsDirectional.only(
+                top: 35.h,
+                start: 18.w,
+                end: 18.w,
+              ),
               child: Column(
                 children: [
                   Row(
@@ -139,8 +144,10 @@ class _UserAccountState extends State<UserAccount> {
                             ),
                           ),
                           child: Center(
-                              child: SvgPicture.asset('assets/not.svg',color: Colors.white,)
-                          ),
+                              child: SvgPicture.asset(
+                            'assets/not.svg',
+                            color: Colors.white,
+                          )),
                         ),
                       ),
                     ],
@@ -191,7 +198,11 @@ class _UserAccountState extends State<UserAccount> {
                         ),
                         SizedBox(height: 7.h),
                         Container(
-                          padding: EdgeInsetsDirectional.only(start: 12.w,end: 15.w, top: 5.h,),
+                          padding: EdgeInsetsDirectional.only(
+                            start: 12.w,
+                            end: 15.w,
+                            top: 5.h,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.14),
                             borderRadius: BorderRadius.circular(30.r),
@@ -199,11 +210,10 @@ class _UserAccountState extends State<UserAccount> {
                           child: Text(
                             phone,
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13.sp,
-                              letterSpacing: 5,
-                              height: 1.7
-                            ),
+                                color: Colors.white,
+                                fontSize: 13.sp,
+                                letterSpacing: 5,
+                                height: 1.7),
                           ),
                         ),
                       ],
@@ -224,17 +234,24 @@ class _UserAccountState extends State<UserAccount> {
     required AppCubit appCubit,
   }) {
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 10.h,),
+      padding: EdgeInsetsDirectional.only(
+        start: 10.w,
+        end: 10.w,
+        bottom: 10.h,
+      ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsetsDirectional.all(10.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
-          ),
+              padding: EdgeInsetsDirectional.all(10.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 20.w,
+              )),
           SizedBox(width: 8.w),
           Text(
             title,
@@ -255,8 +272,15 @@ class _UserAccountState extends State<UserAccount> {
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h,),
-      padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 5.h,),
+      margin: EdgeInsetsDirectional.only(
+        start: 10.w,
+        end: 10.w,
+        bottom: 20.h,
+      ),
+      padding: EdgeInsetsDirectional.symmetric(
+        horizontal: 15.w,
+        vertical: 5.h,
+      ),
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -297,17 +321,20 @@ class _UserAccountState extends State<UserAccount> {
         child: Row(
           children: [
             Container(
-              width: 38.r,
-              height: 38.r,
-              padding: const EdgeInsetsDirectional.all(9),
-              decoration: BoxDecoration(
-                color: isDanger
-                    ? Colors.red.withOpacity(0.10)
-                    : mainColor.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: SvgPicture.asset(icon,color: isDanger?Colors.red: mainColor,width: 20.w,)
-            ),
+                width: 38.r,
+                height: 38.r,
+                padding: const EdgeInsetsDirectional.all(9),
+                decoration: BoxDecoration(
+                  color: isDanger
+                      ? Colors.red.withOpacity(0.10)
+                      : mainColor.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: SvgPicture.asset(
+                  icon,
+                  color: isDanger ? Colors.red : mainColor,
+                  width: 20.w,
+                )),
             SizedBox(width: 10.w),
             Expanded(
               child: Text(
@@ -346,11 +373,11 @@ class _UserAccountState extends State<UserAccount> {
       ),
     );
   }
+
   void _showLogoutDialog({
     required AppCubit appCubit,
     required AuthCubit authCubit,
-  })
-  {
+  }) {
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.25),
@@ -419,7 +446,7 @@ class _UserAccountState extends State<UserAccount> {
                           SizedBox(width: 12.w),
                           Expanded(
                             child: defaultOutlinedButton(
-                              onPressed: ()=>authCubit.logoutUser(),
+                              onPressed: () => authCubit.logoutUser(),
                               text: 'خروج',
                               border: Colors.red,
                               textColor: Colors.red,
@@ -463,13 +490,16 @@ class _UserAccountState extends State<UserAccount> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(16.r),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.10),
-                          shape: BoxShape.circle,
-                        ),
-                        child: SvgPicture.asset('assets/delete.svg',color: Colors.red,width: 50.w,)
-                      ),
+                          padding: EdgeInsets.all(16.r),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.10),
+                            shape: BoxShape.circle,
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/delete.svg',
+                            color: Colors.red,
+                            width: 50.w,
+                          )),
                       SizedBox(height: 20.h),
                       Text(
                         'حذف الحساب',
@@ -553,169 +583,175 @@ class _UserAccountState extends State<UserAccount> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
+            Map<String, dynamic> user =
+                appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
                 body: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildHeader(
-                              appCubit: appCubit,
-                              user: user,
-                            ),
-                            SizedBox(height: 20.h,),
-                            _buildSectionTitle(
-                              title: 'الحساب الشخصي',
-                              icon: 'assets/acc.svg',
-                              appCubit: appCubit,
-                            ),
-                            _buildMenuCard(
-                              appCubit: appCubit,
-                              children: [
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'عرض الحساب',
-                                  icon: 'assets/eye.svg',
-                                  onTap: () {
-                                    move(context, const EditProfileScreen());
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'إدارة العناوين',
-                                  icon: 'assets/loc.svg',
-                                  onTap: () {
-                                    move(
-                                      context,
-                                      const AddressesManagementScreen(),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            _buildSectionTitle(
-                              title: 'الدعم والمعلومات',
-                              icon: 'assets/support.svg',
-                              appCubit: appCubit,
-                            ),
-                            _buildMenuCard(
-                              appCubit: appCubit,
-                              children: [
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'مشاركة التطبيق',
-                                  icon: 'assets/share.svg',
-                                  onTap: () async {
-                                    const String appLink = "https://play.google.com/store/apps/details?id=com.HadiMohammed.BreakingBadHayzenberg";/*
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(
+                        appCubit: appCubit,
+                        user: user,
+                      ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      _buildSectionTitle(
+                        title: 'الحساب الشخصي',
+                        icon: 'assets/acc.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
+                        children: [
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'عرض الحساب',
+                            icon: 'assets/eye.svg',
+                            onTap: () {
+                              move(
+                                context,
+                                UserProfileScreen(user: user),
+                              );
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'إدارة العناوين',
+                            icon: 'assets/loc.svg',
+                            onTap: () {
+                              move(
+                                context,
+                                const AddressesManagementScreen(),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      _buildSectionTitle(
+                        title: 'الدعم والمعلومات',
+                        icon: 'assets/support.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
+                        children: [
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'مشاركة التطبيق',
+                            icon: 'assets/share.svg',
+                            onTap: () async {
+                              const String appLink =
+                                  "https://play.google.com/store/apps/details?id=com.HadiMohammed.BreakingBadHayzenberg"; /*
                                     await Share.share(
                                       "حمّل التطبيق الآن 👇\n$appLink",
                                     );*/
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'تواصل معنا',
-                                  icon: 'assets/chat.svg',
-                                  onTap: () {
-                                    move(context, const ContactUsScreen());
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'الأسئلة الشائعة',
-                                  icon: 'assets/ques.svg',
-                                  onTap: () {
-                                    move(context, const FaqScreen());
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'حول التطبيق',
-                                  icon: 'assets/info.svg',
-                                  onTap: () {
-                                    move(context, const AboutAppScreen());
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'سياسة الخصوصية',
-                                  icon: 'assets/reports.svg',
-                                  onTap: () {
-                                    move(context,  PrivacyPolicyScreen());
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'الشروط والأحكام',
-                                  icon: 'assets/hammer.svg',
-                                  onTap: () {
-                                    move(
-                                        context, const TermsConditionsScreen());
-                                  },
-                                ),
-                              ],
-                            ),
-                            _buildSectionTitle(
-                              title: 'الإعدادات',
-                              icon: 'assets/setting.svg',
-                              appCubit: appCubit,
-                            ),
-                            _buildMenuCard(
-                              appCubit: appCubit,
-                              children: [
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'الوضع المظلم',
-                                  icon: 'assets/moon.svg',
-                                  isSwitch: true,
-                                  onTap: () {},
-                                ),
-                              ],
-                            ),
-                            _buildSectionTitle(
-                              title: 'إدارة الحساب',
-                              icon: 'assets/acc_setting.svg',
-                              appCubit: appCubit,
-                            ),
-                            _buildMenuCard(
-                              appCubit: appCubit,
-                              children: [
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'تسجيل خروج',
-                                  icon: 'assets/login.svg',
-                                  isDanger: true,
-                                  onTap: () {
-                                    _showLogoutDialog(
-                                      appCubit: appCubit,
-                                      authCubit: authCubit,
-                                    );
-                                  },
-                                ),
-                                _buildDivider(appCubit),
-                                _buildMenuItem(
-                                  appCubit: appCubit,
-                                  title: 'حذف الحساب',
-                                  icon: 'assets/delete.svg',
-                                  isDanger: true,
-                                  onTap: () {
-                                    _showDeleteAccountDialog(appCubit);
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20.h),
-                          ],
-                        ),
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'تواصل معنا',
+                            icon: 'assets/chat.svg',
+                            onTap: () {
+                              move(context, const ContactUsScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'الأسئلة الشائعة',
+                            icon: 'assets/ques.svg',
+                            onTap: () {
+                              move(context, const FaqScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'حول التطبيق',
+                            icon: 'assets/info.svg',
+                            onTap: () {
+                              move(context, const AboutAppScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'سياسة الخصوصية',
+                            icon: 'assets/reports.svg',
+                            onTap: () {
+                              move(context, PrivacyPolicyScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'الشروط والأحكام',
+                            icon: 'assets/hammer.svg',
+                            onTap: () {
+                              move(context, const TermsConditionsScreen());
+                            },
+                          ),
+                        ],
                       ),
+                      _buildSectionTitle(
+                        title: 'الإعدادات',
+                        icon: 'assets/setting.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
+                        children: [
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'الوضع المظلم',
+                            icon: 'assets/moon.svg',
+                            isSwitch: true,
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                      _buildSectionTitle(
+                        title: 'إدارة الحساب',
+                        icon: 'assets/acc_setting.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
+                        children: [
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'تسجيل خروج',
+                            icon: 'assets/login.svg',
+                            isDanger: true,
+                            onTap: () {
+                              _showLogoutDialog(
+                                appCubit: appCubit,
+                                authCubit: authCubit,
+                              );
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'حذف الحساب',
+                            icon: 'assets/delete.svg',
+                            isDanger: true,
+                            onTap: () {
+                              _showDeleteAccountDialog(appCubit);
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20.h),
+                    ],
+                  ),
+                ),
               ),
             );
           },
