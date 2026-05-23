@@ -101,6 +101,22 @@ class UpdateRequestStatusErrorState extends WorkerStates {
 
 //////////////////////////////////////
 
+class CreateOrGetChatLoadingState extends WorkerStates {}
+
+class CreateOrGetChatSuccessState extends WorkerStates {
+  final String chatId;
+
+  CreateOrGetChatSuccessState({required this.chatId});
+}
+
+class CreateOrGetChatErrorState extends WorkerStates {
+  final String error;
+
+  CreateOrGetChatErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
 class EditWorkerDataLoadingState extends WorkerStates {}
 
 class EditWorkerDataSuccessState extends WorkerStates {}

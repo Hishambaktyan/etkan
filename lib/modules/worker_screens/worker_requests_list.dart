@@ -119,13 +119,18 @@ class _WorkerRequestsListState extends State<WorkerRequestsList> {
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 child: Column(
                                   children: [
-                                    headerWithSearch(title: 'الحجوزات',searchKeyWords: ['حجوزات مكتملة','حجوزات قيد الانتظار','حجوزات مقبولة'], context: context),
+                                    headerWithSearch(
+                                        title: 'الحجوزات',
+                                        searchKeyWords: ['حجوزات مكتملة','حجوزات قيد الانتظار','حجوزات مقبولة'],
+                                        context: context,
+                                      appCubit: appCubit
+                                    ),
                                     SizedBox(height: 20.h,),
                                     SizedBox(
                                       height: 55.h,
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
-                                        padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                                        padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                         itemCount: statusFilters.length,
                                         itemBuilder: (context, index) {
                                           bool isSelected = selectedStatus == statusFilters[index];

@@ -94,7 +94,7 @@ class _WorkerHomeState extends State<WorkerHome> {
   @override
   void initState() {
     super.initState();
-    checkConnectionAndGetData();
+      checkConnectionAndGetData();
   }
 
   @override
@@ -132,7 +132,8 @@ class _WorkerHomeState extends State<WorkerHome> {
                                 headerWithSearch(
                                     title: 'مرحبا، ${workerCubit.workerName!.split(' ')[0] ?? ''}',
                                     searchKeyWords:['ايحث عن خدماتك','ايحث عن حجوزاتك المكتملة','ايحث عن خدماتك الرائجة',] ,
-                                    context: context
+                                    context: context,
+                                  appCubit: appCubit
                                 ),
                                 SizedBox(height: 10.h,),
                                 GridView.builder(

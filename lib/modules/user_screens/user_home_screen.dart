@@ -129,7 +129,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                         "ابحث عن أقسام",
                                         "ابحث عن كهربائي",
                                       ],
-                                      context: context
+                                      context: context,
+                                      appCubit: appCubit
                                   ),
                                   SizedBox(height: 20.h,),
                                   Column(

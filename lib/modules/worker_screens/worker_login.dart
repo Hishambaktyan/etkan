@@ -13,6 +13,7 @@ import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../../shared/compenents/components.dart';
+import '../../shared/cubits/worker_cubit/worker_cubit.dart';
 import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerLogin extends StatefulWidget {
@@ -38,8 +39,9 @@ class _WorkerLoginState extends State<WorkerLogin> {
             }
             if (state is LoginSuccessState) {
               hideLoadingDialog(context);
-              authCubit.userLoginPhoneController.clear();
-              authCubit.userLoginPasswordController.clear();
+              authCubit.workerLoginPhoneController.clear();
+              authCubit.workerLoginPasswordController.clear();
+              WorkerCubit.get(context).isWorkerDataLoaded = false;
               moveAndReplace(context, const WorkerMainScreen(),);
             }
             if (state is LoginErrorState) {

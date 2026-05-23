@@ -55,7 +55,8 @@ class _ServicesListState extends State<ServicesList> {
                                 'ابحث عن تركيب مروحة',
                                 'ابحث عن تركيب شاحن',
                               ],
-                              context: context
+                              context: context,
+                              appCubit: appCubit
                           ),
                           SizedBox(height: 15.h,),
                           ListView.separated(

@@ -162,7 +162,8 @@ class _SearchScreenState extends State<SearchScreen> {
     required List<dynamic> highPriority,
     List<dynamic> mediumPriority = const [],
     List<dynamic> lowPriority = const [],
-  }) {
+  })
+  {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return 0;
 
@@ -214,7 +215,8 @@ class _SearchScreenState extends State<SearchScreen> {
   int getServiceSearchScore(
     Map<String, dynamic> service,
     Map<dynamic, dynamic> providers,
-  ) {
+  )
+  {
     final providerData = providers[service['providerId']] ?? {};
 
     return calculateSearchScore(
@@ -245,7 +247,8 @@ class _SearchScreenState extends State<SearchScreen> {
   int getBookingSearchScore(
     Map<String, dynamic> booking,
     Map<dynamic, dynamic> providers,
-  ) {
+  )
+  {
     final providerData = providers[booking['providerId']] ?? {};
     final status = '${booking['status'] ?? ''}';
 
@@ -404,7 +407,8 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Map<String, dynamic>> getFilteredServices({
     required List<Map<String, dynamic>> services,
     required Map<dynamic, dynamic> providers,
-  }) {
+  })
+  {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return [];
 
@@ -442,7 +446,8 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Map<String, dynamic>> getFilteredBookings({
     required List<Map<String, dynamic>> bookings,
     required Map<dynamic, dynamic> providers,
-  }) {
+  })
+  {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return [];
 
@@ -487,7 +492,8 @@ class _SearchScreenState extends State<SearchScreen> {
     required Map<dynamic, dynamic> providers,
     required List<Map<String, dynamic>> services,
     required List<Map<String, dynamic>> bookings,
-  }) {
+  })
+  {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return [];
 
@@ -549,7 +555,6 @@ class _SearchScreenState extends State<SearchScreen> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         final appCubit = AppCubit.get(context);
-
         return Scaffold(
           resizeToAvoidBottomInset: true,
           body: Directionality(
@@ -596,18 +601,14 @@ class _SearchScreenState extends State<SearchScreen> {
 
                     return SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
-                      ),
+                      padding: EdgeInsetsDirectional.only(bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildSearchHeader(appCubit),
                           SizedBox(height: 20.h),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                              horizontal: 10.w,
-                            ),
+                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,),
                             child: hasQuery
                                 ? buildSearchResults(
                                     appCubit: appCubit,
@@ -906,7 +907,7 @@ class _SearchScreenState extends State<SearchScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildSectionTitle(
-          title: 'عمليات البحث الأخيرة',
+          title: 'سجل البحث',
           icon: 'assets/update.svg',
           cubit: appCubit,
           trailing: defaultTextButton(

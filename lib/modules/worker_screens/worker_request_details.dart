@@ -8,8 +8,10 @@ import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
+import '../the_chat.dart';
 
 class WorkerRequestDetails extends StatelessWidget {
   final Map<String,dynamic> request;
@@ -314,6 +316,7 @@ class WorkerRequestDetails extends StatelessWidget {
                     confirmText: 'رفض',
                     cancelText: 'إلغاء',
                     onConfirm: () async {
+                      Navigator.pop(context);
                       await workerCubit.updateRequestStatus(
                         requestId: request['id'],
                         status: 'مرفوض',
@@ -383,6 +386,7 @@ class WorkerRequestDetails extends StatelessWidget {
               confirmColor: Colors.green,
               onConfirm: () => Navigator.pop(context),
               onCancel: () async {
+                Navigator.pop(context);
                 await workerCubit.updateRequestStatus(
                   requestId: request['id'],
                   status: 'مكتمل',
@@ -403,6 +407,7 @@ class WorkerRequestDetails extends StatelessWidget {
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
         var userData = appCubit.allUsers[request['customerId']] ?? {};
+        var providerData = appCubit.allUsers[request['providerId']] ?? {};
         WorkerCubit workerCubit = WorkerCubit.get(context);
         return BlocConsumer<WorkerCubit,WorkerStates>(
           listener: (context, state) async {
@@ -418,6 +423,27 @@ class WorkerRequestDetails extends StatelessWidget {
             if (state is UpdateRequestStatusErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
+            }
+
+            if (state is CreateOrGetChatLoadingState) {
+              showLoadingDialog(context);
+            }
+            if (state is CreateOrGetChatSuccessState) {
+              hideLoadingDialog(context);
+              move(
+                context,
+                TheChat(
+                  otherUsername: userData['name'] ?? 'مستخدم',
+                  otherUserImage: userData['profileImage'] ?? '',
+                  otherUserId: request['customerId'],
+                  myId: request['providerId'],
+                  chatId: state.chatId,
+                ),
+              );
+            }
+            if (state is CreateOrGetChatErrorState) {
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red, state.error, context,);
             }
           },
           builder: (context, state) {
@@ -435,6 +461,10 @@ class WorkerRequestDetails extends StatelessWidget {
                 break;
               default:statusColor = Colors.orangeAccent;
             }
+            final String status = request['status'] ?? '';
+
+            final bool canContact = status == 'مقبول' || status == 'في الطريق' || status == 'مكتمل';
+
               return Directionality(
                 textDirection: TextDirection.rtl,
                 child: Scaffold(
@@ -885,39 +915,71 @@ class WorkerRequestDetails extends StatelessWidget {
                                       ],
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                                      padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
                                       child: Divider(color: appCubit.isDark? darkSubTextColor: Colors.grey.shade100, height: 1),
                                     ),
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: defaultButtonWithIcon(
-                                            onPressed: () {},
-                                            text: 'دردشة',
-                                            height: 45.h,
-                                            textSize: 13.sp,
-                                            icon: SvgPicture.asset(
-                                              'assets/chat.svg',
-                                              color: Colors.white,
-                                              width: 20.r,
-                                              height: 20.r,
+                                          child: AbsorbPointer(
+                                            absorbing: !canContact,
+                                            child: Opacity(
+                                              opacity: canContact ? 1.0 : 0.45,
+                                              child: defaultButtonWithIcon(
+                                                onPressed: () async {
+                                                  await workerCubit.createOrGetChat(
+                                                    customerId: request['customerId'],
+                                                    providerId: request['providerId'],
+                                                    customerData: userData,
+                                                    providerData: providerData,
+                                                  );
+                                                },
+                                                text: 'دردشة',
+                                                height: 45.h,
+                                                textSize: 13.sp,
+                                                background: canContact ? mainColor : Colors.grey,
+                                                icon: SvgPicture.asset(
+                                                  'assets/chat.svg',
+                                                  color: Colors.white,
+                                                  width: 20.r,
+                                                  height: 20.r,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                         SizedBox(width: 12.w),
                                         Expanded(
-                                          child: defaultOutlinedButtonWithIcon(
-                                            onPressed: () {},
-                                            text: 'إتصال',
-                                            fontSize: 13.sp,
-                                            height: 45.h,
-                                            textColor: appCubit.isDark? Colors.white: mainColor,
-                                            border: appCubit.isDark? Colors.white: mainColor,
-                                            icon: SvgPicture.asset(
-                                              'assets/phone.svg',
-                                              color: appCubit.isDark? Colors.white: mainColor,
-                                              width: 20.r,
-                                              height: 20.r,
+                                          child: AbsorbPointer(
+                                            absorbing: !canContact,
+                                            child: Opacity(
+                                              opacity: canContact ? 1.0 : 0.45,
+                                              child: defaultOutlinedButtonWithIcon(
+                                                onPressed: () {},
+                                                text: 'إتصال',
+                                                fontSize: 13.sp,
+                                                height: 45.h,
+                                                textColor: canContact
+                                                    ? appCubit.isDark
+                                                    ? Colors.white
+                                                    : mainColor
+                                                    : Colors.grey,
+                                                border: canContact
+                                                    ? appCubit.isDark
+                                                    ? Colors.white
+                                                    : mainColor
+                                                    : Colors.grey,
+                                                icon: SvgPicture.asset(
+                                                  'assets/phone.svg',
+                                                  color: canContact
+                                                      ? appCubit.isDark
+                                                      ? Colors.white
+                                                      : mainColor
+                                                      : Colors.grey,
+                                                  width: 20.r,
+                                                  height: 20.r,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),

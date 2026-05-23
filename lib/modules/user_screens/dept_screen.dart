@@ -83,7 +83,8 @@ class _DeptScreenState extends State<DeptScreen> {
                         'ابحث في السباكة',
                         'ابحث في التكييف',
                       ],
-                      context: context
+                      context: context,
+                      appCubit: appCubit
                   ),
                   SizedBox(height: 20.h,),
                   GridView.builder(

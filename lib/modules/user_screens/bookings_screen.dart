@@ -94,7 +94,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                 "ابحث عن حجوزات مكتملة",
                                 "ابحث عن حجوزات قيد الأنتظار"
                               ],
-                              context: context
+                              context: context,
+                            appCubit: appCubit
                           ),
                           SizedBox(height: 15.h,),
                           SizedBox(

@@ -591,4 +591,61 @@ class WorkerCubit extends Cubit<WorkerStates>{
     }
   }
 
+  Future<void> createOrGetChat({
+    required String customerId,
+    required String providerId,
+    required Map<String, dynamic> customerData,
+    required Map<String, dynamic> providerData,
+  })
+  async {
+    try {
+      emit(CreateOrGetChatLoadingState());
+      final String chatId = '${customerId}_$providerId';
+
+      final chatRef = FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId);
+
+      final chatDoc = await chatRef.get();
+
+      if (!chatDoc.exists) {
+        await chatRef.set({
+          'chatId': chatId,
+          'users': [
+            customerId,
+            providerId,
+          ],
+          'userInfo': {
+            customerId: {
+              'name': customerData['name'] ?? 'مستخدم',
+              'image': customerData['profileImage'] ?? '',
+            },
+            providerId: {
+              'name': providerData['name'] ?? 'فني',
+              'image': providerData['profileImage'] ?? '',
+            },
+          },
+          'lastMessage': '',
+          'lastMessageType': 'text',
+          'lastSenderId': '',
+          'lastUpdate': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+          'typingStatus': {
+            customerId: false,
+            providerId: false,
+          },
+          'unreadCount': {
+            customerId: 0,
+            providerId: 0,
+          },
+        });
+      }
+
+      emit(CreateOrGetChatSuccessState(chatId: chatId));
+
+    } catch (error) {
+      emit(CreateOrGetChatErrorState(error: error.toString()));
+    }
+  }
+
   }
