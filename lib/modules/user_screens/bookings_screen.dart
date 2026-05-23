@@ -9,6 +9,7 @@ import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booki
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
@@ -75,6 +76,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
     return BlocBuilder<AppCubit,AppStates>(
         builder: (context, state) {
           AppCubit appCubit = AppCubit.get(context);
+          BookingCubit bookingCubit = BookingCubit.get(context);
+          List<Map<String, dynamic>> filteredList = selectedStatus == 'الكل' ? bookingCubit.userRequests
+              : bookingCubit.userRequests.where((item) => item['status'] == selectedStatus).toList();
           return Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(
@@ -102,7 +106,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                             height: 55.h,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                               itemCount: statusFilters.length,
                               itemBuilder: (context, index) {
                                 bool isSelected = selectedStatus == statusFilters[index];
@@ -119,14 +123,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                       padding: EdgeInsets.symmetric(horizontal: 20.w),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
-                                        color: isSelected ? mainColor : Colors.white,
+                                        color: isSelected ? mainColor : appCubit.isDark?lightDarkColor:Colors.white,
                                         borderRadius: BorderRadius.circular(15.r),
                                         boxShadow: isSelected ? [] : blueShadow,
                                       ),
                                       child: Text(
                                         statusFilters[index],
                                         style: TextStyle(
-                                          color: isSelected ? Colors.white : Colors.grey.shade700,
+                                          color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge!.color,
                                           fontSize: 12.sp,
                                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                         ),
@@ -138,7 +142,30 @@ class _BookingsScreenState extends State<BookingsScreen> {
                             ),
                           ),
                           SizedBox(height: 10.h,),
-                          ListView.builder(
+                          filteredList.isEmpty?SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.55,
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.inbox_rounded,
+                                  color: appCubit.isDark? Colors.grey.shade700: Colors.grey.shade400,
+                                  size: 100.w,
+                                ),
+                                SizedBox(height: 5.h,),
+                                Text(
+                                  'لا توجد حجوزات لك',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.sp,
+                                      color: appCubit.isDark? Colors.grey.shade700: Colors.grey.shade400
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ):ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 5.h),

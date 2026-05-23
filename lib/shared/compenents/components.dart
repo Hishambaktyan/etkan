@@ -909,47 +909,68 @@ class ChatShimmerLoading extends StatelessWidget {
   const ChatShimmerLoading({super.key, required this.isDark});
 
   Color get baseColor =>
-      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+      isDark ? const Color(0xFF2A2F36) : const Color(0xFFE3F2FD);
 
   Color get highlightColor =>
-      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+      isDark ? const Color(0xFF3A414A) : const Color(0xFFF8FCFF);
 
-  Color get containerColor =>
-      isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  Color get cardColor =>
+      isDark ? const Color(0xFF161B22) : Colors.white;
+
+  Color get chipColor =>
+      isDark ? const Color(0xFF1E2A36) : const Color(0xFFEAF5FF);
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            header(title: 'الدردشة', context: context),
+      child: Column(
+        children: [
+          header(title: 'الدردشة', context: context),
 
-            SizedBox(height: 20.h),
-
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+          Expanded(
+            child: ListView.separated(
+              padding: EdgeInsetsDirectional.only(
+                start: 10.w,
+                top: 20.h,
+                bottom: 20.h,
+                end: 10.w,
+              ),
               itemCount: 8,
-              separatorBuilder: (context, index) => SizedBox(height: 15.h),
+              separatorBuilder: (context, index) => SizedBox(height: 17.h),
               itemBuilder: (context, index) {
                 return Container(
-                  padding: EdgeInsetsDirectional.all(15.r),
+                  margin: EdgeInsetsDirectional.symmetric(horizontal: 2.w),
+                  padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
                   decoration: BoxDecoration(
-                    color: containerColor,
-                    borderRadius: BorderRadius.circular(25.r),
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(18.r),
+                    boxShadow: blueShadow,
                   ),
                   child: Row(
                     children: [
-                      _shimmerBox(
-                        width: 46.w,
-                        height: 46.h,
-                        radius: 50,
+                      Stack(
+                        alignment: AlignmentDirectional.bottomStart,
+                        children: [
+                          _shimmerBox(
+                            width: 50.w,
+                            height: 50.h,
+                            radius: 50,
+                          ),
+
+                          if (index % 3 == 0)
+                            _shimmerBox(
+                              width: 18.w,
+                              height: 18.h,
+                              radius: 50,
+                            ),
+                        ],
                       ),
 
-                      SizedBox(width: 12.w),
+                      SizedBox(width: 15.w),
 
                       Expanded(
                         child: Column(
@@ -957,50 +978,62 @@ class ChatShimmerLoading extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                _shimmerBox(
-                                  height: 13.h,
-                                  width: 120.w,
-                                  radius: 8,
-                                ),
-
-                                const Spacer(),
-
-                                _shimmerBox(
-                                  height: 9.h,
-                                  width: 45.w,
-                                  radius: 8,
-                                ),
-                              ],
-                            ),
-
-                            SizedBox(height: 12.h),
-
-                            Row(
-                              children: [
-                                _shimmerBox(
-                                  height: 10.h,
-                                  width: 18.w,
-                                  radius: 6,
-                                ),
-
-                                SizedBox(width: 6.w),
-
                                 Expanded(
                                   child: _shimmerBox(
-                                    height: 10.h,
+                                    height: 14.h,
                                     width: double.infinity,
                                     radius: 8,
                                   ),
                                 ),
 
-                                SizedBox(width: 10.w),
+                                SizedBox(width: 45.w),
 
-                                if (index % 3 == 0)
+                                _shimmerBox(
+                                  height: 9.h,
+                                  width: 42.w,
+                                  radius: 8,
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 7.h),
+
+                            Container(
+                              padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 8.w,
+                                vertical: 4.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: chipColor,
+                                borderRadius: BorderRadius.circular(20.r),
+                              ),
+                              child: _shimmerBox(
+                                height: 9.h,
+                                width: index % 2 == 0 ? 95.w : 120.w,
+                                radius: 8,
+                              ),
+                            ),
+
+                            SizedBox(height: 8.h),
+
+                            Row(
+                              children: [
+                                if (index % 2 == 0) ...[
                                   _shimmerBox(
-                                    height: 17.h,
-                                    width: 17.w,
-                                    radius: 50,
+                                    height: 14.h,
+                                    width: 14.w,
+                                    radius: 5,
                                   ),
+                                  SizedBox(width: 5.w),
+                                ],
+
+                                Expanded(
+                                  child: _shimmerBox(
+                                    height: 11.h,
+                                    width: double.infinity,
+                                    radius: 8,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -1011,10 +1044,8 @@ class ChatShimmerLoading extends StatelessWidget {
                 );
               },
             ),
-
-            SizedBox(height: 20.h),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1023,20 +1054,16 @@ class ChatShimmerLoading extends StatelessWidget {
     required double height,
     required double width,
     double radius = 12,
-    EdgeInsetsDirectional? margin,
   }) {
-    return Container(
-      margin: margin,
-      child: Shimmer.fromColors(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
-        child: Container(
-          height: height,
-          width: width,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(radius.r),
-          ),
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(radius.r),
         ),
       ),
     );

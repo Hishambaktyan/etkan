@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +10,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+
+import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerAccountVerification extends StatefulWidget {
   const WorkerAccountVerification({super.key});
@@ -57,8 +62,10 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
     final ImagePicker picker = ImagePicker();
 
     final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
+      source: ImageSource.camera,
+      imageQuality: 55,
+      maxWidth: 1200,
+      maxHeight: 1200,
     );
 
     if (image != null) {
@@ -71,24 +78,69 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
 
   String verificationStatus = 'not_submitted';
 
-  String getVerificationStatusText() {
-    if (verificationStatus == 'not_submitted') {
-      return 'حالة التوثيق الحالية: لم يتم الإرسال';
-    } else if (verificationStatus == 'pending') {
+  String getVerificationStatusTextFromFirebase(String status) {
+    if (status == 'pending') {
       return 'حالة التوثيق الحالية: قيد المراجعة';
-    } else if (verificationStatus == 'approved') {
+    } else if (status == 'approved') {
       return 'حالة التوثيق الحالية: موثق';
-    } else {
+    } else if (status == 'rejected') {
       return 'حالة التوثيق الحالية: مرفوض';
+    } else {
+      return 'حالة التوثيق الحالية: لم يتم الإرسال';
     }
   }
 
-  Widget _buildStatusCard(AppCubit cubit) {
+  Color getVerificationStatusColor(String status) {
+    if (status == 'approved') {
+      return Colors.green;
+    } else if (status == 'pending') {
+      return Colors.orange;
+    } else if (status == 'rejected') {
+      return Colors.red;
+    } else {
+      return Colors.grey;
+    }
+  }
+
+  IconData getVerificationStatusIcon(String status) {
+    if (status == 'approved') {
+      return Icons.verified_rounded;
+    } else if (status == 'pending') {
+      return Icons.access_time_rounded;
+    } else if (status == 'rejected') {
+      return Icons.cancel_rounded;
+    } else {
+      return Icons.info_outline_rounded;
+    }
+  }
+
+  Widget _buildStatusCard(AppCubit cubit, Map<String, dynamic> verificationData) {
+    final String status = verificationData['status']?.toString() ?? 'not_submitted';
+    final String documentType = verificationData['documentType']?.toString() ?? '';
+
+    String title = 'توثيق حساب العامل';
+    String subtitle = 'أكمل بيانات التوثيق لزيادة ثقة العملاء وظهور حسابك بشكل أفضل.';
+
+    if (status == 'pending') {
+      title = 'طلب التوثيق قيد المراجعة';
+      subtitle = documentType.isNotEmpty
+          ? 'تم إرسال طلب توثيق $documentType، وسيتم مراجعته من قبل الإدارة.'
+          : 'تم إرسال طلب التوثيق، وسيتم مراجعته من قبل الإدارة.';
+    } else if (status == 'approved') {
+      title = 'حسابك موثق';
+      subtitle = documentType.isNotEmpty
+          ? 'تم توثيق حسابك باستخدام $documentType، ويمكن للعملاء رؤية علامة التوثيق.'
+          : 'تم توثيق حسابك، ويمكن للعملاء رؤية علامة التوثيق.';
+    } else if (status == 'rejected') {
+      title = 'تم رفض طلب التوثيق';
+      subtitle = 'يمكنك مراجعة بياناتك ورفع صور أوضح ثم إرسال الطلب مرة أخرى.';
+    }
+
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(30.r),
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
@@ -110,7 +162,11 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                 color: Colors.white.withOpacity(0.25),
               ),
             ),
-            child: SvgPicture.asset('assets/verf.svg',color: Colors.white,width: 40.w,)
+            child: Icon(
+              getVerificationStatusIcon(status),
+              color: Colors.white,
+              size: 40.r,
+            ),
           ),
           SizedBox(width: 14.w),
           Expanded(
@@ -118,7 +174,7 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'توثيق حساب العامل',
+                  title,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17.sp,
@@ -127,7 +183,7 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'أكمل بيانات التوثيق لزيادة ثقة العملاء وظهور حسابك بشكل أفضل.',
+                  subtitle,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.88),
                     fontSize: 12.sp,
@@ -177,10 +233,7 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(
-          color: cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200,
-        ),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: DropdownButtonFormField<String>(
@@ -238,10 +291,7 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(
-          color: cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200,
-        ),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Row(
@@ -326,9 +376,9 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
       padding: EdgeInsets.all(15.r),
       decoration: BoxDecoration(
         color: Colors.orange.shade800.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(18.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: Border.all(
-          color: cubit.isDark ? const Color(0xFF30363D) : Colors.orange.withOpacity(0.25),
+          color:  Colors.orange.withOpacity(0.25),
         )
       ),
       child: Column(
@@ -395,15 +445,24 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
     );
   }
 
-  Widget _buildReviewStatus(BuildContext context, AppCubit cubit) {
+  Widget _buildReviewStatus(
+      BuildContext context,
+      AppCubit cubit,
+      Map<String, dynamic> verificationData,
+      )
+  {
+    final String status = verificationData['status']?.toString() ?? 'not_submitted';
+    final String documentType = verificationData['documentType']?.toString() ?? '';
+    final Color statusColor = getVerificationStatusColor(status);
+
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(16.r),
+        color: statusColor.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(25.r),
         border: Border.all(
-          color: Colors.orange.withOpacity(0.25),
+          color: statusColor.withOpacity(0.25),
         ),
       ),
       child: Row(
@@ -411,22 +470,39 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
           Container(
             padding: EdgeInsets.all(9.r),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.15),
+              color: statusColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
-            child: SvgPicture.asset('assets/sand_clock.svg',color: Colors.orange.shade800,)
+            child: Icon(
+              getVerificationStatusIcon(status),
+              color: statusColor,
+              size: 22.r,
+            ),
           ),
           SizedBox(width: 10.w),
           Expanded(
-            child: Text(
-              getVerificationStatusText(),
-              style: TextStyle(
-                color: cubit.isDark
-                    ? Colors.orange.shade200
-                    : Colors.orange.shade900,
-                fontSize: 13.sp,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getVerificationStatusTextFromFirebase(status),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (documentType.isNotEmpty) ...[
+                  SizedBox(height: 4.h),
+                  Text(
+                    'نوع الوثيقة: $documentType',
+                    style: TextStyle(
+                      color: cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
+                      fontSize: 11.sp,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
@@ -437,119 +513,154 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
   @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
-
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              titleSpacing: 10,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(7),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(
-                        CupertinoIcons.back,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Text(
-                    'توثيق الحساب',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStatusCard(cubit),
-                  SizedBox(height: 18.h),
-                  _buildReviewStatus(context, cubit),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle(
-                    context: context,
-                    cubit: cubit,
-                    title: 'نوع وثيقة التوثيق',
-                    icon: 'assets/doc_type.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildDocumentTypeCard(cubit),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle(
-                    context: context,
-                    cubit: cubit,
-                    title: 'المستندات المطلوبة',
-                    icon: 'assets/upload.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  Column(
-                    children: List.generate(
-                      verificationItems.length,
-                          (index) {
-                        return _buildUploadItem(
-                          context: context,
-                          cubit: cubit,
-                          item: verificationItems[index],
-                          index: index,
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  _buildNotesCard(context, cubit),
-                ],
-              ),
-            ),
-            bottomNavigationBar: Container(
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
-              decoration: BoxDecoration(
-                color: cubit.isDark ? darkBgColor : Colors.white,
-                boxShadow: cubit.isDark
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 12,
-                          offset: const Offset(0, -4),
+        return BlocConsumer<WorkerCubit,WorkerStates>(
+          listener: (context, state) {
+            if(state is SendVerificationRequestLoadingState){
+              showLoadingDialog(context);
+            }
+            if(state is SendVerificationRequestSuccessState){
+              hideLoadingDialog(context);
+              Navigator.pop(context);
+              showSnackBar(Colors.green, 'تم ارسال طلب التوثيق بنجاح', context);
+            }
+            if(state is SendVerificationRequestErrorState){
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red, state.error, context);
+            }
+          },
+          builder: (context, state) {
+              WorkerCubit workerCubit = WorkerCubit.get(context);
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  appBar: AppBar(
+                    titleSpacing: 10,
+                    elevation: 0,
+                    scrolledUnderElevation: 0,
+                    automaticallyImplyLeading: false,
+                    title: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(7),
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () => Navigator.pop(context),
+                            child: Icon(
+                              CupertinoIcons.back,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        Text(
+                          'توثيق الحساب',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 23.sp,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
                         ),
                       ],
-              ),
-              child: defaultButton(
-                  onPressed: (){
-                    if(verificationItems[0]['image']!=null && verificationItems[1]['image']!=null && verificationItems[2]['image']!=null ){
-                      showSnackBar(Colors.green, 'تم إرسال طلب التوثيق بنجاح', context);
-                    }else{
-                      showSnackBar(Colors.red, 'يرجى رفع كل الوثائق المطلوبة', context);
-                    }
-                  },
-                  text: 'إرسال طلب التوثيث'
-              )
-            ),
-          ),
+                    ),
+                  ),
+                  body: SingleChildScrollView(
+                    padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(CacheHelper.getData(key: 'uid'))
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            Map<String, dynamic> verificationData = {};
+
+                            if (snapshot.hasData && snapshot.data!.exists) {
+                              final userData = snapshot.data!.data() ?? {};
+                              verificationData = Map<String, dynamic>.from(
+                                userData['verification'] ?? {},
+                              );
+                            }
+
+                            return Column(
+                              children: [
+                                _buildStatusCard(cubit, verificationData),
+                                SizedBox(height: 18.h),
+                                _buildReviewStatus(context, cubit, verificationData),
+                              ],
+                            );
+                          },
+                        ),
+                        SizedBox(height: 25.h),
+                        _buildSectionTitle(
+                          context: context,
+                          cubit: cubit,
+                          title: 'نوع وثيقة التوثيق',
+                          icon: 'assets/doc_type.svg',
+                        ),
+                        SizedBox(height: 15.h),
+                        _buildDocumentTypeCard(cubit),
+                        SizedBox(height: 25.h),
+                        _buildSectionTitle(
+                          context: context,
+                          cubit: cubit,
+                          title: 'المستندات المطلوبة',
+                          icon: 'assets/upload.svg',
+                        ),
+                        SizedBox(height: 15.h),
+                        Column(
+                          children: List.generate(
+                            verificationItems.length,
+                                (index) {
+                              return _buildUploadItem(
+                                context: context,
+                                cubit: cubit,
+                                item: verificationItems[index],
+                                index: index,
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        _buildNotesCard(context, cubit),
+                      ],
+                    ),
+                  ),
+                  bottomNavigationBar: Container(
+                      padding: EdgeInsetsDirectional.only(
+                        start: 20.w,
+                        end: 20.w,
+                        top: 10.h,
+                        bottom: 20.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cubit.isDark ? darkBgColor : Colors.white,
+                        boxShadow: blueShadow
+                      ),
+                      child: defaultButton(
+                          onPressed: (){
+                            if(verificationItems[0]['image']!=null && verificationItems[1]['image']!=null && verificationItems[2]['image']!=null ){
+                              workerCubit.sendVerificationRequest(
+                                  documentType: selectedDocumentType,
+                                  frontImage: verificationItems[0]['image'] ,
+                                  backImage: verificationItems[1]['image'],
+                                  personalImage: verificationItems[2]['image']
+                              );
+                            }else{
+                              showSnackBar(Colors.red, 'يرجى رفع كل الوثائق المطلوبة', context);
+                            }
+                          },
+                          text: 'إرسال طلب التوثيث'
+                      )
+                  ),
+                ),
+              );
+            },
         );
       },
     );

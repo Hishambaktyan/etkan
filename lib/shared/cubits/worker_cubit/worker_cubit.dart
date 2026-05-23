@@ -594,6 +594,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
   Future<void> createOrGetChat({
     required String customerId,
     required String providerId,
+    required String requestTitle,
     required String requestId,
     required Map<String, dynamic> customerData,
     required Map<String, dynamic> providerData,
@@ -614,6 +615,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
         await chatRef.set({
           'chatId': chatId,
           'requestId': requestId,
+          'requestTitle' : requestTitle,
           'users': [
             customerId,
             providerId,
@@ -651,4 +653,163 @@ class WorkerCubit extends Cubit<WorkerStates>{
     }
   }
 
+  Future<void> sendSubscriptionRequest({
+    required File transferImage,
+    required Map<String, dynamic> plan,
+    required Map<String, dynamic> paymentMethod,
+  })
+  async {
+    try {
+      emit(SendSubscriptionRequestLoadingState());
+
+      final uid = CacheHelper.getData(key: 'uid');
+
+      if (uid == null || uid.toString().isEmpty) {
+        emit(SendSubscriptionRequestErrorState(error: 'لم يتم العثور على معرف الفني'));
+        return;
+      }
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (!userDoc.exists || userDoc.data() == null) {
+        emit(SendSubscriptionRequestErrorState(error: 'بيانات الفني غير موجودة'));
+        return;
+      }
+
+      final userData = userDoc.data()!;
+
+      final String transferImageUrl = await uploadImageToCloudinary(transferImage.path);
+
+      final requestRef = FirebaseFirestore.instance
+          .collection('subscriptionRequests')
+          .doc();
+
+      await requestRef.set({
+        'requestId': requestRef.id,
+
+        'providerId': uid,
+        'providerName': userData['name'] ?? '',
+        'providerPhone': userData['phone'] ?? '',
+        'providerImage': userData['profileImage'] ?? '',
+        'planId': plan['id'] ?? '',
+        'packageName': plan['title'] ?? '',
+        'period': plan['period'] ?? '',
+        'price': int.tryParse(plan['price'].toString()) ?? 0,
+        'paymentMethodId': paymentMethod['id'] ?? '',
+        'paymentMethodTitle': paymentMethod['title'] ?? '',
+        'transferImage': transferImageUrl,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({
+        'isSubscribed': false,
+        'subscription': {
+          'isActive': false,
+          'status': 'pending',
+          'requestId': requestRef.id,
+          'planId': plan['id'] ?? '',
+          'packageName': plan['title'] ?? '',
+          'period': plan['period'] ?? '',
+          'price': int.tryParse(plan['price'].toString()) ?? 0,
+          'paymentMethodId': paymentMethod['id'] ?? '',
+          'paymentMethodTitle': paymentMethod['title'] ?? '',
+          'transferImage': transferImageUrl,
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+      });
+
+      emit(SendSubscriptionRequestSuccessState());
+    } catch (error) {
+      emit(SendSubscriptionRequestErrorState(error: error.toString()));
+    }
+  }
+
+  Future<void> sendVerificationRequest({
+    required String documentType,
+    required File frontImage,
+    required File backImage,
+    required File personalImage,
+  })
+  async {
+    try {
+      emit(SendVerificationRequestLoadingState());
+
+      final uid = CacheHelper.getData(key: 'uid');
+
+      if (uid == null || uid.toString().isEmpty) {
+        emit(SendVerificationRequestErrorState(error: 'لم يتم العثور على معرف الفني',));
+        return;
+      }
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (!userDoc.exists || userDoc.data() == null) {
+        emit(SendVerificationRequestErrorState(
+          error: 'بيانات الفني غير موجودة',
+        ));
+        return;
+      }
+
+      final userData = userDoc.data()!;
+
+      final uploadedImages = await Future.wait([
+        uploadImageToCloudinary(frontImage.path),
+        uploadImageToCloudinary(backImage.path),
+        uploadImageToCloudinary(personalImage.path),
+      ]);
+
+      final frontImageUrl = uploadedImages[0];
+      final backImageUrl = uploadedImages[1];
+      final personalImageUrl = uploadedImages[2];
+
+      final requestRef = FirebaseFirestore.instance
+          .collection('profile_verification_requests')
+          .doc();
+
+      await requestRef.set({
+        'requestId': requestRef.id,
+        'providerId': uid,
+        'providerName': userData['name'] ?? '',
+        'providerPhone': userData['phone'] ?? '',
+        'providerImage': userData['profileImage'] ?? '',
+        'documentType': documentType,
+        'frontDocumentImage': frontImageUrl,
+        'backDocumentImage': backImageUrl,
+        'personalImage': personalImageUrl,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({
+        'verificationStatus': 'pending',
+        'verificationRequestId': requestRef.id,
+        'verification': {
+          'status': 'pending',
+          'requestId': requestRef.id,
+          'documentType': documentType,
+          'frontDocumentImage': frontImageUrl,
+          'backDocumentImage': backImageUrl,
+          'personalImage': personalImageUrl,
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+      });
+
+      emit(SendVerificationRequestSuccessState());
+    } catch (error) {
+      emit(SendVerificationRequestErrorState(error: error.toString()));
+    }
+  }
   }

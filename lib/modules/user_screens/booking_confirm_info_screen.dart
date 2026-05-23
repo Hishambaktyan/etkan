@@ -40,8 +40,7 @@ class BookingConfirmInfoScreen extends StatefulWidget {
   });
 
   @override
-  State<BookingConfirmInfoScreen> createState() =>
-      _BookingConfirmInfoScreenState();
+  State<BookingConfirmInfoScreen> createState() =>_BookingConfirmInfoScreenState();
 }
 
 class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
@@ -116,7 +115,8 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
     required int servicePrice,
     required String servicePeriod,
     required String serviceImage,
-  }) {
+  })
+  {
     return buildCard(
       appCubit: appCubit,
       padding: EdgeInsets.all(18.r),
@@ -711,7 +711,11 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                     SizedBox(height: 20.h),
                     BlocConsumer<BookingCubit, BookingStates>(
                       listener: (context, state) {
+                        if (state is CreateRequestLoadingState) {
+                          showLoadingDialog(context);
+                        }
                         if (state is CreateRequestSuccessState) {
+                          hideLoadingDialog(context);
                           appCubit.changeIndex(0);
                           showDialog(
                             context: context,
@@ -806,14 +810,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                       },
                       builder: (context, state) {
                         BookingCubit bookingCubit = BookingCubit.get(context);
-
-                        return state is CreateRequestLoadingState
-                            ? Center(
-                          child: CircularProgressIndicator(
-                            color: mainColor,
-                          ),
-                        )
-                            : defaultButton(
+                        return defaultButton(
                           onPressed: () async {
                             if (selectedAddress == null) {
                               showSnackBar(

@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class WorkerConfirmSubscription extends StatefulWidget {
@@ -86,10 +88,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
       margin: EdgeInsetsDirectional.only(bottom: 15.h),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Row(
@@ -137,10 +136,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Column(
@@ -184,7 +180,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
   Widget _buildTransferImageCard(AppCubit cubit) {
     return InkWell(
       onTap: pickTransferImage,
-      borderRadius: BorderRadius.circular(20.r),
+      borderRadius: BorderRadius.circular(25.r),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       child: Container(
@@ -193,7 +189,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
         padding: EdgeInsetsDirectional.all(15.r),
         decoration: BoxDecoration(
           color: cubit.isDark ? lightDarkColor : Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
+          borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
             color: transferImage == null
                 ? mainColor.withOpacity(0.30)
@@ -252,7 +248,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
       padding: EdgeInsetsDirectional.all(14.r),
       decoration: BoxDecoration(
         color: Colors.orange.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(15.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: Border.all(color: Colors.orange.withOpacity(0.25)),
       ),
       child: Row(
@@ -282,7 +278,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: mainColor.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(15.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: Border.all(color: mainColor.withOpacity(0.20)),
       ),
       child: Column(
@@ -341,136 +337,143 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
   @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
-
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              titleSpacing: 10,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  Padding(
-                    padding:  EdgeInsetsDirectional.all(10.w),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(
-                        CupertinoIcons.back,
-                        color: Theme.of(context).iconTheme.color,
+        return BlocConsumer<WorkerCubit,WorkerStates>(
+          listener: (context, state) {
+            if(state is SendSubscriptionRequestLoadingState){
+              showLoadingDialog(context);
+            }
+            if(state is SendSubscriptionRequestSuccessState){
+              hideLoadingDialog(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
+              showSnackBar(Colors.green, 'تم إرسال طلب اشتراكك بنجاح', context);
+            }
+            if(state is SendSubscriptionRequestErrorState){
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red, state.toString(), context);
+              Navigator.pop(context);
+            }
+          },
+          builder: (context, state) {
+            WorkerCubit workerCubit = WorkerCubit.get(context);
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  appBar: AppBar(
+                    titleSpacing: 10,
+                    elevation: 0,
+                    scrolledUnderElevation: 0,
+                    automaticallyImplyLeading: false,
+                    title: Row(
+                      children: [
+                        Padding(
+                          padding:  EdgeInsetsDirectional.all(10.w),
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () => Navigator.pop(context),
+                            child: Icon(
+                              CupertinoIcons.back,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        Text(
+                          'تأكيد الاشتراك',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 23.sp,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  body: SingleChildScrollView(
+                    padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle(
+                          'ملخص الاشتراك',
+                          'assets/card.svg',
+                          cubit,
+                        ),
+                        SizedBox(height: 15.h),
+                        _buildInfoRow(
+                          title: 'الباقة',
+                          value: widget.plan['title'],
+                          icon: 'assets/subs.svg',
+                          cubit: cubit,
+                        ),
+                        _buildInfoRow(
+                          title: 'السعر',
+                          value: '${widget.plan['price']} ﷼',
+                          icon: 'assets/money.svg',
+                          cubit: cubit,
+                        ),
+                        _buildInfoRow(
+                          title: 'المدة',
+                          value: widget.plan['period'],
+                          icon: 'assets/date.svg',
+                          cubit: cubit,
+                        ),
+                        _buildInfoRow(
+                          title: 'طريقة الدفع',
+                          value: widget.paymentMethod['title'],
+                          icon: widget.paymentMethod['icon'],
+                          cubit: cubit,
+                        ),
+                        SizedBox(height: 15.h),
+                        _buildSectionTitle(
+                          'بيانات الدفع',
+                          'assets/bank.svg',
+                          cubit,
+                        ),
+                        SizedBox(height: 15.h),
+                        _buildBankInfoCard(cubit),
+                        SizedBox(height: 20.h),
+                        _buildSectionTitle(
+                          'سند التحويل',
+                          'assets/upload.svg',
+                          cubit,
+                        ),
+                        SizedBox(height: 15.h),
+                        _buildTransferImageCard(cubit),
+                        SizedBox(height: 15.h),
+                        _buildUploadInstructionsCard(cubit),
+                        SizedBox(height: 15.h),
+                        _buildNoteCard(cubit),
+                      ],
+                    ),
+                  ),
+                  bottomNavigationBar: Container(
+                      padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w, top: 10.h, bottom: 20.h,),
+                      decoration: BoxDecoration(
+                          color: cubit.isDark ? darkBgColor : Colors.white,
+                          boxShadow: blueShadow
                       ),
-                    ),
+                      child: defaultButton(
+                          onPressed: () {
+                            if (transferImage == null) {
+                              showSnackBar(Colors.red, 'يرجى رفع صورة سند التحويل', context,);
+                              return;
+                            }
+                            workerCubit.sendSubscriptionRequest(
+                                transferImage: File(transferImage!.path),
+                                plan: widget.plan,
+                                paymentMethod: widget.paymentMethod
+                            );
+                          },
+                          text: 'إرسال طلب التفعيل'
+                      )
                   ),
-                  SizedBox(width: 10.w),
-                  Text(
-                    'تأكيد الاشتراك',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(
-                    'ملخص الاشتراك',
-                    'assets/card.svg',
-                    cubit,
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildInfoRow(
-                    title: 'الباقة',
-                    value: widget.plan['title'],
-                    icon: 'assets/subs.svg',
-                    cubit: cubit,
-                  ),
-                  _buildInfoRow(
-                    title: 'السعر',
-                    value: '${widget.plan['price']} ﷼',
-                    icon: 'assets/money.svg',
-                    cubit: cubit,
-                  ),
-                  _buildInfoRow(
-                    title: 'المدة',
-                    value: widget.plan['period'],
-                    icon: 'assets/date.svg',
-                    cubit: cubit,
-                  ),
-                  _buildInfoRow(
-                    title: 'طريقة الدفع',
-                    value: widget.paymentMethod['title'],
-                    icon: widget.paymentMethod['icon'],
-                    cubit: cubit,
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildSectionTitle(
-                    'بيانات الدفع',
-                    'assets/bank.svg',
-                    cubit,
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildBankInfoCard(cubit),
-                  SizedBox(height: 20.h),
-                  _buildSectionTitle(
-                    'سند التحويل',
-                    'assets/upload.svg',
-                    cubit,
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildTransferImageCard(cubit),
-                  SizedBox(height: 15.h),
-                  _buildUploadInstructionsCard(cubit),
-                  SizedBox(height: 15.h),
-                  _buildNoteCard(cubit),
-                ],
-              ),
-            ),
-            bottomNavigationBar: Container(
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
-              decoration: BoxDecoration(
-                color: cubit.isDark ? darkBgColor : Colors.white,
-                boxShadow: cubit.isDark
-                    ? []
-                    : [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 12,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-              ),
-              child: defaultButton(
-                  onPressed: () {
-                    if (transferImage == null) {
-                      showSnackBar(Colors.red, 'يرجى رفع صورة سند التحويل', context,);
-                      return;
-                    }
-
-                    showSnackBar(Colors.green, 'تم إرسال طلب الاشتراك بنجاح', context,);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  text: 'إرسال طلب التفعيل'
-              )
-            ),
-          ),
+                ),
+              );
+            },
         );
       },
     );

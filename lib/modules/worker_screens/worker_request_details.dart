@@ -465,6 +465,8 @@ class WorkerRequestDetails extends StatelessWidget {
 
             final bool canContact = status == 'مقبول' || status == 'في الطريق' || status == 'مكتمل';
 
+            final requestId = request['id'];
+
               return Directionality(
                 textDirection: TextDirection.rtl,
                 child: Scaffold(
@@ -931,6 +933,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                     customerId: request['customerId'],
                                                     providerId: request['providerId'],
                                                     requestId: request['id'],
+                                                    requestTitle: request['title'],
                                                     customerData: userData,
                                                     providerData: providerData,
                                                   );
@@ -956,7 +959,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                             child: Opacity(
                                               opacity: canContact ? 1.0 : 0.45,
                                               child: defaultOutlinedButtonWithIcon(
-                                                onPressed: () {},
+                                                onPressed: (){},
                                                 text: 'إتصال',
                                                 fontSize: 13.sp,
                                                 height: 45.h,

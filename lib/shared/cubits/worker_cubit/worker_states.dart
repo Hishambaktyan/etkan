@@ -126,3 +126,27 @@ class EditWorkerDataErrorState extends WorkerStates {
 
   EditWorkerDataErrorState({required this.error});
 }
+
+//////////////////////////////////////
+
+class SendSubscriptionRequestLoadingState extends WorkerStates {}
+
+class SendSubscriptionRequestSuccessState extends WorkerStates {}
+
+class SendSubscriptionRequestErrorState extends WorkerStates {
+  final String error;
+
+  SendSubscriptionRequestErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
+class SendVerificationRequestLoadingState extends WorkerStates {}
+
+class SendVerificationRequestSuccessState extends WorkerStates {}
+
+class SendVerificationRequestErrorState extends WorkerStates {
+  final String error;
+
+  SendVerificationRequestErrorState({required this.error});
+}

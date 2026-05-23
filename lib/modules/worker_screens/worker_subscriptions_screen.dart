@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,8 @@ import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+
+import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerSubscriptionsScreen extends StatefulWidget {
   const WorkerSubscriptionsScreen({super.key});
@@ -75,11 +78,123 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
   ];
 
   Widget _buildHeaderCard(AppCubit cubit) {
+    final uid = CacheHelper.getData(key: 'uid');
+
+    if (uid == null || uid.toString().isEmpty) {
+      return _buildSubscriptionHeaderContent(
+        cubit: cubit,
+        statusText: 'غير معروف',
+        packageName: 'تعذر جلب بيانات الفني',
+        endDateText: '',
+        icon: Icons.error_outline_rounded,
+        showEndDate: false,
+      );
+    }
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildSubscriptionHeaderContent(
+            cubit: cubit,
+            statusText: 'جاري التحميل',
+            packageName: 'يتم فحص حالة الاشتراك...',
+            endDateText: '',
+            icon: Icons.hourglass_top_rounded,
+            showEndDate: false,
+          );
+        }
+
+        if (!snapshot.hasData || !snapshot.data!.exists) {
+          return _buildSubscriptionHeaderContent(
+            cubit: cubit,
+            statusText: 'غير مشترك',
+            packageName: 'لا توجد بيانات اشتراك',
+            endDateText: '',
+            icon: Icons.cancel_outlined,
+            showEndDate: false,
+          );
+        }
+
+        final userData = snapshot.data!.data() ?? {};
+        final Map<String, dynamic> subscription =
+        Map<String, dynamic>.from(userData['subscription'] ?? {});
+
+        final bool isSubscribed = userData['isSubscribed'] == true;
+        final bool isActive = subscription['isActive'] == true;
+        final String status = subscription['status']?.toString() ?? '';
+
+        final String packageName =
+            subscription['packageName']?.toString() ??
+                subscription['planName']?.toString() ??
+                subscription['period']?.toString() ??
+                'لا توجد باقة حالية';
+
+        final String endDateText = _formatSubscriptionDate(
+          subscription['endAt'] ?? subscription['endDate'] ?? subscription['expiresAt'],
+        );
+
+        if (isSubscribed || isActive || status == 'active' || status == 'approved') {
+          return _buildSubscriptionHeaderContent(
+            cubit: cubit,
+            statusText: 'نشط',
+            packageName: packageName,
+            endDateText: endDateText.isEmpty ? 'غير محدد' : endDateText,
+            icon: Icons.verified_rounded,
+            showEndDate: true,
+          );
+        }
+
+        if (status == 'pending') {
+          return _buildSubscriptionHeaderContent(
+            cubit: cubit,
+            statusText: 'قيد المراجعة',
+            packageName: packageName,
+            endDateText: '',
+            icon: Icons.access_time_rounded,
+            showEndDate: false,
+          );
+        }
+
+        if (status == 'rejected') {
+          return _buildSubscriptionHeaderContent(
+            cubit: cubit,
+            statusText: 'مرفوض',
+            packageName: 'تم رفض طلب الاشتراك',
+            endDateText: '',
+            icon: Icons.cancel_outlined,
+            showEndDate: false,
+          );
+        }
+
+        return _buildSubscriptionHeaderContent(
+          cubit: cubit,
+          statusText: 'غير مشترك',
+          packageName: 'لا توجد باقة مفعلة حالياً',
+          endDateText: '',
+          icon: Icons.info_outline_rounded,
+          showEndDate: false,
+        );
+      },
+    );
+  }
+
+  Widget _buildSubscriptionHeaderContent({
+    required AppCubit cubit,
+    required String statusText,
+    required String packageName,
+    required String endDateText,
+    required IconData icon,
+    required bool showEndDate,
+  }) {
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(30.r),
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
@@ -88,7 +203,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
             mainColor.withOpacity(0.75),
           ],
         ),
-        boxShadow: blueShadow
+        boxShadow: blueShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,12 +216,16 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                   color: Colors.white.withOpacity(0.18),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                child:SvgPicture.asset('assets/subs.svg',color: Colors.white,width: 25.w,)
+                child: SvgPicture.asset(
+                  'assets/subs.svg',
+                  color: Colors.white,
+                  width: 25.w,
+                ),
               ),
               SizedBox(width: 15.w),
               Expanded(
                 child: Text(
-                  'اشتراك العامل',
+                  'اشتراك الفني',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18.sp,
@@ -114,7 +233,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                   ),
                 ),
               ),
-              SizedBox(width: 5.w,),
+              SizedBox(width: 5.w),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
@@ -124,10 +243,14 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                 ),
                 child: Row(
                   children: [
-                    SvgPicture.asset('assets/all.svg',color: Colors.white,width: 20.w,),
-                    SizedBox(width: 5.w,),
+                    Icon(
+                      icon,
+                      color: Colors.white,
+                      size: 18.r,
+                    ),
+                    SizedBox(width: 5.w),
                     Text(
-                      'نشط',
+                      statusText,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 11.sp,
@@ -139,40 +262,86 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
               ),
             ],
           ),
+
           SizedBox(height: 20.h),
+
           Text(
-            'الباقة الحالية',
+            showEndDate ? 'الباقة الحالية' : 'حالة الاشتراك',
             style: TextStyle(
               color: Colors.white.withOpacity(0.8),
               fontSize: 12.sp,
             ),
           ),
+
           SizedBox(height: 5.h),
+
           Text(
-            'الباقة الشهرية',
+            packageName,
             style: TextStyle(
               color: Colors.white,
               fontSize: 22.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 14.h),
-          Row(
-            children: [
-              SvgPicture.asset('assets/date.svg',color: Colors.white.withOpacity(0.9),width: 20.w,),
-              SizedBox(width: 10.w),
-              Text(
-                'ينتهي الاشتراك في: 20 مايو 2026',
-                style: TextStyle(
+
+          if (showEndDate) ...[
+            SizedBox(height: 14.h),
+            Row(
+              children: [
+                SvgPicture.asset(
+                  'assets/date.svg',
                   color: Colors.white.withOpacity(0.9),
-                  fontSize: 12.sp,
+                  width: 20.w,
                 ),
-              ),
-            ],
-          ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Text(
+                    'ينتهي الاشتراك في: $endDateText',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12.sp,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  String _formatSubscriptionDate(dynamic date) {
+    if (date == null) return '';
+
+    DateTime? dateTime;
+
+    if (date is Timestamp) {
+      dateTime = date.toDate();
+    } else if (date is DateTime) {
+      dateTime = date;
+    } else if (date is String) {
+      dateTime = DateTime.tryParse(date);
+    }
+
+    if (dateTime == null) return '';
+
+    final months = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+
+    return '${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.year}';
   }
 
   Widget _buildSectionTitle(String title, String icon, AppCubit cubit) {
@@ -220,14 +389,10 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
         padding: EdgeInsetsDirectional.all(15.r),
         decoration: BoxDecoration(
           color: cubit.isDark ? lightDarkColor : Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
+          borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
-            color: isSelected
-                ? mainColor
-                : cubit.isDark
-                    ? const Color(0xFF30363D)
-                    : Colors.grey.shade200,
-            width: isSelected ? 1.5 : 1,
+            color: isSelected ? mainColor : Colors.transparent,
+            width: isSelected ? 1.5 :0,
           ),
           boxShadow: blueShadow,
         ),
@@ -369,7 +534,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
           selectedPaymentMethod = paymentMethod['id'];
         });
       },
-      borderRadius: BorderRadius.circular(15.r),
+      borderRadius: BorderRadius.circular(25.r),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       child: Container(
@@ -378,7 +543,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
         margin: EdgeInsetsDirectional.only(bottom: 15.h),
         decoration: BoxDecoration(
           color: cubit.isDark ? lightDarkColor : Colors.white,
-          borderRadius: BorderRadius.circular(15.r),
+          borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
             color: isSelected
                 ? mainColor
@@ -458,6 +623,67 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
     );
   }
 
+  Widget _buildSubscribeButton(AppCubit cubit) {
+    return Container(
+      padding: EdgeInsetsDirectional.only(
+        start: 20.w,
+        end: 20.w,
+        top: 10.h,
+        bottom: 20.h,
+      ),
+      decoration: BoxDecoration(
+        color: cubit.isDark ? darkBgColor : Colors.white,
+        boxShadow: cubit.isDark
+            ? []
+            : [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: defaultButton(
+        onPressed: () {
+          final selectedPlanData = plans.firstWhere(
+                (plan) => plan['id'] == selectedPlan,
+          );
+
+          final selectedPaymentData = paymentMethods.firstWhere(
+                (paymentMethod) => paymentMethod['id'] == selectedPaymentMethod,
+          );
+
+          move(
+            context,
+            WorkerConfirmSubscription(
+              plan: selectedPlanData,
+              paymentMethod: selectedPaymentData,
+            ),
+          );
+        },
+        text: 'متابعة الإشتراك',
+      ),
+    );
+  }
+
+  bool _isSubscriptionExpired(dynamic endDate) {
+    if (endDate == null) return false;
+
+    DateTime? dateTime;
+
+    if (endDate is Timestamp) {
+      dateTime = endDate.toDate();
+    } else if (endDate is DateTime) {
+      dateTime = endDate;
+    } else if (endDate is String) {
+      dateTime = DateTime.tryParse(endDate);
+    }
+
+    if (dateTime == null) return false;
+
+    return DateTime.now().isAfter(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
@@ -499,7 +725,6 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
               ),
             ),
             body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
               padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -540,37 +765,41 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                 ],
               ),
             ),
-            bottomNavigationBar: Container(
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
-              decoration: BoxDecoration(
-                color: cubit.isDark ? darkBgColor : Colors.white,
-                boxShadow: cubit.isDark
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 12,
-                          offset: const Offset(0, -4),
-                        ),
-                      ],
-              ),
-              child: defaultButton(
-                  onPressed: () {
-                    final selectedPlanData = plans.firstWhere((plan) => plan['id'] == selectedPlan,);
-                    final selectedPaymentData = paymentMethods.firstWhere((paymentMethod) => paymentMethod['id'] == selectedPaymentMethod,);
-                    move(context, WorkerConfirmSubscription(
-                      plan: selectedPlanData,
-                      paymentMethod: selectedPaymentData,
-                    ),
-                    );
-                  },
-                  text: 'متابعة الإشتراك'
-              )
+            bottomNavigationBar: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(CacheHelper.getData(key: 'uid'))
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  return _buildSubscribeButton(cubit);
+                }
+
+                final userData = snapshot.data!.data() ?? {};
+
+                final Map<String, dynamic> subscription =
+                Map<String, dynamic>.from(userData['subscription'] ?? {});
+
+                final bool isSubscribed = userData['isSubscribed'] == true;
+                final bool isActive = subscription['isActive'] == true;
+                final String status = subscription['status']?.toString() ?? '';
+
+                final bool isExpired = _isSubscriptionExpired(
+                  subscription['endAt'] ?? subscription['endDate'] ?? subscription['expiresAt'],
+                );
+
+                final bool showButton =
+                    status.isEmpty ||
+                        status == 'rejected' ||
+                        isExpired ||
+                        (!isSubscribed && !isActive && status != 'pending');
+
+                if (!showButton) {
+                  return const SizedBox.shrink();
+                }
+
+                return _buildSubscribeButton(cubit);
+              },
             ),
           ),
         );
