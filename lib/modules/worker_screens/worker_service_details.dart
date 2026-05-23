@@ -3,10 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/images_view.dart';
+import 'package:trying_homy/modules/worker_screens/worker_edit_service.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
@@ -58,12 +60,216 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
     );
   }
 
+  Widget buildServiceActionItem({
+    required BuildContext context,
+    required AppCubit appCubit,
+    required String icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20.r),
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsetsDirectional.all(14.r),
+        decoration: BoxDecoration(
+          color: appCubit.isDark
+              ? darkBgColor.withOpacity(0.8)
+              : Colors.grey.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: blueShadow
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44.r,
+              height: 44.r,
+              padding: EdgeInsetsDirectional.all(10.w),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(14.r),
+              ),
+              child: SvgPicture.asset(icon,color: iconColor,)
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
+                  ),
+                  SizedBox(height: 3.h),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: appCubit.isDark
+                          ? darkSubTextColor
+                          : Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14.r,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showServiceActionsSheet({
+    required BuildContext context,
+    required Map<String, dynamic> service,
+    required AppCubit appCubit,
+    required WorkerCubit workerCubit,
+  })
+  {
+    final bool isActive = service['isActive'] ?? true;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Container(
+            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 25.h,),
+            decoration: BoxDecoration(
+              color: appCubit.isDark ? lightDarkColor : Colors.white,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(30.r),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 45.w,
+                  height: 5.h,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                ),
+                SizedBox(height: 10.h),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsetsDirectional.all(10.r),
+                      decoration: BoxDecoration(
+                        color: mainColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      child: SvgPicture.asset('assets/setting.svg',color: mainColor,)
+                    ),
+                    SizedBox(width: 10.w),
+                    Text(
+                      'إجراءات الخدمة',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.h),
+                buildServiceActionItem(
+                  context: context,
+                  appCubit: appCubit,
+                  icon: isActive ?'assets/eye-slash.svg': 'assets/eye.svg',
+                  iconColor: isActive ? Colors.orange : Colors.green,
+                  title: isActive ? 'إلغاء تفعيل الخدمة' : 'تفعيل الخدمة',
+                  subtitle: isActive
+                      ? 'لن تظهر هذه الخدمة للعملاء'
+                      : 'ستظهر هذه الخدمة للعملاء',
+                  onTap: () {
+                    Navigator.pop(context);
+                    workerCubit.changeServiceActivity(serviceId: service['id'], value: !isActive,);
+                  },
+                ),
+                SizedBox(height: 10.h),
+                buildServiceActionItem(
+                  context: context,
+                  appCubit: appCubit,
+                  icon: 'assets/pen.svg',
+                  iconColor: mainColor,
+                  title: 'تعديل الخدمة',
+                  subtitle: 'تعديل الاسم، السعر، المدة أو الصورة',
+                  onTap: () {
+                    Navigator.pop(context);
+                    move(context, WorkerEditService(service: service),);
+                  },
+                ),
+                SizedBox(height: 10.h),
+                buildServiceActionItem(
+                  context: context,
+                  appCubit: appCubit,
+                  icon: 'assets/delete.svg',
+                  iconColor: Colors.red,
+                  title: 'حذف الخدمة',
+                  subtitle: 'حذف الخدمة نهائيًا من قائمة خدماتك',
+                  onTap: () {
+                    Navigator.pop(context);
+                    defaultConfirmDialog(
+                        context: context,
+                        isDark: appCubit.isDark,
+                        icon: 'assets/delete.svg',
+                        iconColor: Colors.red,
+                        title:'حذف الخدمة',
+                        body: 'هل أنت متأكد أنك تريد حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.',
+                        confirmText: 'حذف',
+                        cancelText: 'إلغاء',
+                        onConfirm: () {
+                          workerCubit.deleteService(
+                            serviceId: service['id'],
+                          );
+                        },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit,AppStates>(
         builder: (context, state) {
           AppCubit appCubit = AppCubit.get(context);
-          return BlocBuilder<WorkerCubit,WorkerStates>(
+          return BlocConsumer<WorkerCubit,WorkerStates>(
+            listener: (context, state) {
+              if (state is DeleteServiceLoadingState) {
+                showLoadingDialog(context);
+              }
+              if (state is DeleteServiceSuccessState) {
+                hideLoadingDialog(context);
+                showSnackBar(Colors.green, 'تم حذف الخدمة بنجاح', context);
+
+                Navigator.pop(context);
+              }
+              if (state is DeleteServiceErrorState) {
+                hideLoadingDialog(context);
+                showSnackBar(Colors.red, state.error, context);
+              }
+            },
               builder: (context, state) {
                 WorkerCubit workerCubit = WorkerCubit.get(context);
                 Map<String,dynamic> service = workerCubit.workerServices.firstWhere(
@@ -79,11 +285,14 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                             height: 400.h,
                             child: Stack(
                               children: [
-                                Image.network(
-                                  'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: 300.h,
+                                ClipRRect(
+                                  borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(15.r)),
+                                  child: Image.network(
+                                    'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 300.h,
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
@@ -91,72 +300,65 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                     children: [
                                       Padding(
                                         padding:  EdgeInsetsDirectional.all(7.w),
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.white.withOpacity(0.8),
-                                          child: InkWell(
-                                            splashColor: Colors.transparent,
-                                            highlightColor: Colors.transparent,
-                                            onTap: ()=>Navigator.pop(context),
-                                            child: const Icon(
-                                                CupertinoIcons.back
+                                        child: InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Container(
+                                            width: 42.r,
+                                            height: 42.r,
+                                            decoration: BoxDecoration(
+                                              color: appCubit.isDark
+                                                  ? darkBgColor.withOpacity(0.8)
+                                                  : Colors.white.withOpacity(0.8),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white.withOpacity(0.6),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Icon(
+                                              CupertinoIcons.back,
+                                              color: Theme.of(context).iconTheme.color,
+                                              size: 24.r,
                                             ),
                                           ),
                                         ),
                                       ),
                                       const Spacer(),
                                       Padding(
-                                        padding: const EdgeInsets.all(7),
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.white.withOpacity(0.8),
-                                          child: PopupMenuButton<String>(
-                                            color: Colors.white,
-                                            icon: Icon(
-                                              Icons.more_vert,
-                                              color: Colors.black,
+                                        padding:  EdgeInsetsDirectional.all(7.w),
+                                        child: InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () {
+                                            showServiceActionsSheet(
+                                              context: context,
+                                              service: service,
+                                              appCubit: appCubit,
+                                              workerCubit: workerCubit,
+                                            );
+                                          },
+                                          child: Container(
+                                            width: 42.r,
+                                            height: 42.r,
+                                            decoration: BoxDecoration(
+                                              color: appCubit.isDark
+                                                  ? darkBgColor.withOpacity(0.8)
+                                                  : Colors.white.withOpacity(0.8),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white.withOpacity(0.6),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Icon(
+                                              Icons.more_vert_rounded,
+                                              color: Theme.of(context).iconTheme.color,
                                               size: 24.r,
                                             ),
-                                            offset: const Offset(0, 40),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(25.r),
-                                            ),
-                                            onSelected: (String value) {
-                                              if (value == 'active') {
-                                                workerCubit.isServicesActive=!workerCubit.isServicesActive;
-                                              } else if (value == 'delete') {
-                                              }
-                                            },
-                                            itemBuilder: (BuildContext context) => [
-                                              PopupMenuItem<String>(
-                                                value: 'active',
-                                                child: Directionality(
-                                                    textDirection:TextDirection.rtl,
-                                                    child: SizedBox(
-                                                        width: double.infinity,
-                                                        child: workerCubit.isServicesActive?const Text('إلغاء التفعيل'):const Text('تفعيل')
-                                                    )
-                                                ),
-                                              ),
-                                              const PopupMenuItem<String>(
-                                                value: 'edit',
-                                                child: Directionality(
-                                                    textDirection:TextDirection.rtl,
-                                                    child: SizedBox(
-                                                        width: double.infinity,
-                                                        child: Text('تعديل')
-                                                    )
-                                                ),
-                                              ),
-                                              const PopupMenuItem<String>(
-                                                value: 'delete',
-                                                child: Directionality(
-                                                    textDirection:TextDirection.rtl,
-                                                    child: SizedBox(
-                                                        width: double.infinity,
-                                                        child: Text('حذف')
-                                                    )
-                                                ),
-                                              ),
-                                            ],
                                           ),
                                         ),
                                       ),
@@ -177,7 +379,6 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                               color: appCubit.isDark? lightDarkColor: Colors.white,
                                               borderRadius: BorderRadius.circular(25.r),
                                               boxShadow: blueShadow,
-                                              border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
                                           ),
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,10 +514,8 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                   padding: EdgeInsetsDirectional.all(15.r),
                                   decoration: BoxDecoration(
                                       color: appCubit.isDark? lightDarkColor: Colors.white,
-                                      borderRadius: BorderRadius.circular(25.r),
+                                      borderRadius: BorderRadius.circular(15.r),
                                       boxShadow: blueShadow,
-                                      border: appCubit.isDark? Border.all(color: const Color(0xFF30363D)): null
-
                                   ),
                                   child: Column(
                                     children: [

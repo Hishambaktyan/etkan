@@ -1,10 +1,12 @@
 import 'dart:io';
+
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:dotted_border/dotted_border.dart';
+import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services_list.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -12,22 +14,28 @@ import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-import '../../main.dart';
-
-class WorkerAddService extends StatefulWidget {
-  const WorkerAddService({super.key});
+class WorkerEditService extends StatefulWidget {
+  final Map<String, dynamic> service;
+  const WorkerEditService({super.key, required this.service,});
 
   @override
-  State<WorkerAddService> createState() => _WorkerAddServiceState();
+  State<WorkerEditService> createState() => _WorkerEditServiceState();
 }
 
-class _WorkerAddServiceState extends State<WorkerAddService> {
+class _WorkerEditServiceState extends State<WorkerEditService> {
   var formKey = GlobalKey<FormState>();
+
   File? serviceImage;
-  var picker = ImagePicker();
+  final picker = ImagePicker();
+
+  final TextEditingController serviceNameController = TextEditingController();
+  final TextEditingController servicePriceController = TextEditingController();
+  final TextEditingController serviceDurationController = TextEditingController();
+  final TextEditingController serviceDescController = TextEditingController();
 
   Future<void> getServiceImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
     if (pickedFile != null) {
       setState(() {
         serviceImage = File(pickedFile.path);
@@ -36,8 +44,20 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    serviceNameController.text = widget.service['name'] ?? '';
+    servicePriceController.text = '${widget.service['price'] ?? ''}';
+    serviceDurationController.text = '${widget.service['period'] ?? ''}';
+    serviceDescController.text = widget.service['description'] ?? '';
+  }
+
+  @override
   void dispose() {
-    serviceImage = null;
+    serviceNameController.dispose();
+    servicePriceController.dispose();
+    serviceDurationController.dispose();
+    serviceDescController.dispose();
     super.dispose();
   }
 
@@ -46,15 +66,15 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
     AppCubit appCubit = AppCubit.get(context);
     return BlocConsumer<WorkerCubit, WorkerStates>(
       listener: (context, state) {
-        if (state is UploadServiceLoadingState) {
+        if (state is EditServiceLoadingState) {
           showLoadingDialog(context);
         }
-        if (state is UploadServiceSuccessState) {
+        if (state is EditServiceSuccessState) {
           hideLoadingDialog(context);
-          showSnackBar(Colors.green, 'تم إضافة الخدمة بنجاح', context);
-          moveAndReplace(context,  const WorkerServicesList());
+          showSnackBar(Colors.green, 'تم تعديل الخدمة بنجاح', context);
+          moveAndReplace(context, const WorkerServicesList());
         }
-        if (state is UploadServiceErrorState) {
+        if (state is EditServiceErrorState) {
           hideLoadingDialog(context);
           showSnackBar(Colors.red, state.error, context);
         }
@@ -71,17 +91,17 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                   icon: Icon(Icons.arrow_back_ios,color: Theme.of(context).iconTheme.color,)
               ),
               title: Text(
-                'إضافة الخدمة',
+                  'تعديل الخدمة',
                 style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold
                 ),
               ),
             ),
             body: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsetsDirectional.all(20.r),
+                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 20.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -99,43 +119,51 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                           height: 160.h,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color: appCubit.isDark
+                                ? lightDarkColor
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
-                            image: serviceImage != null
-                                ? DecorationImage(
+                            image: DecorationImage(
                               fit: BoxFit.cover,
-                              image: FileImage(serviceImage!),
-                            )
-                                : null,
+                              image: serviceImage != null
+                                  ? FileImage(serviceImage!) as ImageProvider
+                                  : NetworkImage(
+                                widget.service['serviceImage'] ?? '',
+                              ) as ImageProvider,
+                            ),
                           ),
-                          child: serviceImage == null
-                              ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(12.r),
-                                decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25.r),
+                              color: Colors.black.withOpacity(0.15),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(12.r),
+                                  decoration: BoxDecoration(
+                                    color:appCubit.isDark? lightDarkColor.withOpacity(0.9): Colors.white.withOpacity(0.9),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/image.svg',
+                                    color: mainColor,
+                                    width: 30.w,
+                                  ),
                                 ),
-                                child: SvgPicture.asset(
-                                  'assets/image.svg',
-                                  color: mainColor,
-                                  width: 30.w,
+                                SizedBox(height: 10.h),
+                                Text(
+                                  'اضغط لتغيير صورة الخدمة',
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 10.h),
-                              Text(
-                                'اضغط لرفع صورة الخدمة',
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          )
-                              : const SizedBox(),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -143,7 +171,9 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                     Container(
                       padding: EdgeInsetsDirectional.all(20.r),
                       decoration: BoxDecoration(
-                        color: appCubit.isDark ? lightDarkColor : Colors.white,
+                        color: appCubit.isDark
+                            ? lightDarkColor
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(25.r),
                         boxShadow: blueShadow,
                       ),
@@ -156,7 +186,7 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                               text: 'اسم الخدمة',
                               prefixIcon: 'assets/pen.svg',
                               errorMes: 'يرجى إدخال اسم الخدمة',
-                              controller: workerCubit.serviceName,
+                              controller: serviceNameController,
                               type: TextInputType.text,
                             ),
                             SizedBox(height: 15.h),
@@ -168,7 +198,7 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                                     text: 'السعر',
                                     prefixIcon: 'assets/money.svg',
                                     errorMes: 'مطلوب',
-                                    controller: workerCubit.servicePrice,
+                                    controller: servicePriceController,
                                     type: TextInputType.number,
                                   ),
                                 ),
@@ -179,39 +209,51 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                                     text: 'المدة (دقيقة)',
                                     prefixIcon: 'assets/timer.svg',
                                     errorMes: 'مطلوب',
-                                    controller: workerCubit.serviceDuration,
+                                    controller: serviceDurationController,
                                     type: TextInputType.number,
                                   ),
-                                )
+                                ),
                               ],
                             ),
                             SizedBox(height: 15.h),
                             TextFormField(
                               style: TextStyle(
                                 fontSize: 13.sp,
-                                color: appCubit.isDark ? Colors.white : Colors.black,
+                                color: Theme.of(context).textTheme.bodyLarge!.color,
                               ),
                               maxLines: 5,
-                              controller: workerCubit.serviceDesc,
-                              validator: (value) => value!.isEmpty ? 'يرجى إدخال الوصف' : null,
+                              controller: serviceDescController,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'يرجى إدخال الوصف';
+                                }
+                                return null;
+                              },
                               decoration: InputDecoration(
                                 hintText: 'وصف الخدمة بالتفصيل...',
-                                hintStyle: TextStyle(fontSize: 12.sp, color: Colors.grey),
-                                filled: true,
-                                fillColor: appCubit.isDark ? darkBgColor : bgColor,
+                                hintStyle: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: Colors.grey,
+                                ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.r),
+                                  borderRadius:
+                                  BorderRadius.circular(15.r),
                                   borderSide: BorderSide.none,
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.r),
+                                  borderRadius:
+                                  BorderRadius.circular(15.r),
                                   borderSide: BorderSide(
-                                    color: appCubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade100,
+                                    color: appCubit.isDark
+                                        ? const Color(0xFF30363D)
+                                        : Colors.grey.shade100,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.r),
-                                  borderSide: const BorderSide(color: mainColor),
+                                  borderRadius:
+                                  BorderRadius.circular(15.r),
+                                  borderSide:
+                                  const BorderSide(color: mainColor),
                                 ),
                               ),
                             ),
@@ -221,7 +263,7 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                     ),
                     SizedBox(height: 20.h),
                     Text(
-                      '* ملاحظة: الصورة تساعد العملاء على فهم جودة خدمتك بشكل أفضل.',
+                      '* يمكنك تعديل بيانات الخدمة أو تغيير الصورة عند الحاجة.',
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 10.sp,
@@ -233,29 +275,29 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
               ),
             ),
             bottomNavigationBar: Container(
-              padding: EdgeInsets.all(20.r),
+              padding: EdgeInsetsDirectional.all(20.r),
               decoration: BoxDecoration(
                 color: appCubit.isDark ? lightDarkColor : Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(30.r),
+                ),
                 boxShadow:  blueShadow,
               ),
               child: defaultButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    if (serviceImage == null) {
-                      showSnackBar(Colors.red, 'يرجى اختيار صورة للخدمة', context);
-                    } else {
-                      workerCubit.uploadService(
-                        serviceName: workerCubit.serviceName.text.trim(),
-                        serviceDescription: workerCubit.serviceDesc.text.trim(),
-                        servicePrice: workerCubit.servicePrice.text.trim(),
-                        servicePeriod: workerCubit.serviceDuration.text.trim(),
-                        serviceImage: serviceImage!.path
-                      );
-                    }
+                    workerCubit.editService(
+                      serviceId: widget.service['id'],
+                      serviceName: serviceNameController.text.trim(),
+                      serviceDescription: serviceDescController.text.trim(),
+                      servicePrice: servicePriceController.text.trim(),
+                      servicePeriod: serviceDurationController.text.trim(),
+                      newServiceImagePath: serviceImage?.path,
+                      oldServiceImageUrl: widget.service['serviceImage'] ?? '',
+                    );
                   }
                 },
-                text: 'إضافة الخدمة الآن',
+                text: 'حفظ التعديلات',
                 height: 52.h,
               ),
             ),

@@ -33,8 +33,6 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
   bool amAvailable = true;
 
-  bool isServicesActive = true;
-
 
   Future<void> changeAvailability(bool value) async {
     try {
@@ -52,9 +50,28 @@ class WorkerCubit extends Cubit<WorkerStates>{
     }
   }
 
-  void changeServiceActivity(value){
-    isServicesActive = value;
-    emit(ChangeServiceActivityState());
+  Future<void> changeServiceActivity({
+    required bool value,
+    required String serviceId,
+  })
+  async {
+    try {
+      final index = workerServices.indexWhere((service) => service['id'] == serviceId,);
+
+      if (index != -1) {
+        workerServices[index]['isActive'] = value;
+        emit(ChangeServiceActivitySuccessState());
+      }
+
+      await FirebaseFirestore.instance
+          .collection('services')
+          .doc(serviceId)
+          .update({
+        'isActive': value,
+      });
+    } catch (e) {
+      emit(ChangeServiceActivityErrorState(error: e.toString()));
+    }
   }
 
   String? workerName;
@@ -69,6 +86,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
   bool isWorkerDataLoaded = false;
   bool isWorkerRequestsLoaded = false;
+  bool isWorkerServicesLoaded = false;
 
   Future<void> getWorkerData({bool forceRefresh = false}) async {
     final uid = CacheHelper.getData(key: 'uid');
@@ -157,13 +175,17 @@ class WorkerCubit extends Cubit<WorkerStates>{
     }
   }
 
-  Future<void> getWorkerServices() async {
+  Future<void> getWorkerServices({bool forceRefresh = false}) async {
 
     final uid = CacheHelper.getData(key: 'uid');
     if (uid == null) {
       print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
       return;
     }
+    if (isWorkerServicesLoaded && !forceRefresh) {
+      return;
+    }
+
 
     workerServices=[];
 
@@ -179,6 +201,8 @@ class WorkerCubit extends Cubit<WorkerStates>{
         data['id'] = doc.id;
         workerServices.add(data);
       }
+
+      isWorkerServicesLoaded = true;
 
       emit(GetWorkerServicesSuccessState());
 
@@ -225,8 +249,6 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
   TextEditingController serviceName = TextEditingController();
 
-  TextEditingController serviceDept = TextEditingController();
-
   TextEditingController servicePrice = TextEditingController();
 
   TextEditingController serviceDuration = TextEditingController();
@@ -264,37 +286,185 @@ class WorkerCubit extends Cubit<WorkerStates>{
     return uploadedUrls;
   }
 
+  String getCategoryFromSpecialization(String specialization) {
+    switch (specialization.trim()) {
+      case 'كهربائي':
+        return 'الكهرباء';
+
+      case 'سباك':
+        return 'السباكة';
+
+      case 'فني تكييف':
+      case 'تكييف':
+        return 'التكييف';
+
+      case 'بناء':
+      case 'بنّاء':
+        return 'البناء';
+
+      case 'حداد':
+        return 'الحدادة';
+
+      case 'نجار':
+        return 'النجارة';
+
+      case 'دهان':
+        return 'الدهان';
+
+      case 'فني مياه':
+      case 'مياه':
+        return 'الماء';
+
+      default:
+        return specialization;
+    }
+  }
+
   Future<void> uploadService({
-    required String name,
-    required String description,
-    required String category,
-    required String price,
-    required String period,
+    required String serviceName,
+    required String serviceDescription,
+    required String servicePrice,
+    required String servicePeriod,
+    required String serviceImage,
   })
   async {
     try {
+      String serviceImageLink = '';
       emit(UploadServiceLoadingState());
+      final uid = CacheHelper.getData(key: 'uid');
+
+      if (uid == null || uid.toString().isEmpty) {
+        emit(UploadServiceErrorState(error: 'لم يتم العثور على معرف الفني'));
+        return;
+      }
+
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (!userSnapshot.exists || userSnapshot.data() == null) {
+        emit(UploadServiceErrorState(error: 'بيانات الفني غير موجودة'));
+        return;
+      }
+
+      final userData = userSnapshot.data()!;
+      final specialization = userData['specialization'] ?? '';
+
+      final serviceCategory = getCategoryFromSpecialization(specialization);
+
+      if(serviceImage.trim().isNotEmpty){
+        serviceImageLink = await uploadImageToCloudinary(serviceImage);
+      }
+
+      final price = int.tryParse(servicePrice.trim());
+
+      if (price == null) {
+        emit(UploadServiceErrorState(error: 'السعر غير صحيح'));
+        return;
+      }
+
       Map<String, dynamic> serviceData = {
-        'name': name,
-        'description': description,
-        'category': category,
-        'price': int.parse(price),
-        'period': period,
-        'serviceImage': 'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
-        'providerId': CacheHelper.getData(key: 'uid'),
+        'name': serviceName.trim(),
+        'description': serviceDescription.trim(),
+        'category': serviceCategory,
+        'price': price,
+        'period': servicePeriod.trim(),
+        'serviceImage': serviceImageLink,
+        'providerId': uid,
         'isActive': true,
         'rate': 0.0,
         'createdAt': FieldValue.serverTimestamp(),
-        'reviews': '',
+        'reviews': [],
       };
 
-      await FirebaseFirestore.instance.collection('services').add(serviceData);
+      final docRef = await FirebaseFirestore.instance.collection('services').add(serviceData);
+      serviceData['id'] = docRef.id;
+
+      workerServices.add(serviceData);
+      workerServicesCount = workerServices.length;
+
+      isWorkerServicesLoaded = true;
 
       emit(UploadServiceSuccessState());
 
     } catch (e) {
       emit(UploadServiceErrorState(error: e.toString()));
-      print(e.toString());
+    }
+  }
+
+  Future<void> editService({
+    required String serviceId,
+    required String serviceName,
+    required String serviceDescription,
+    required String servicePrice,
+    required String servicePeriod,
+    String? newServiceImagePath,
+    required String oldServiceImageUrl,
+  })
+  async {
+    emit(EditServiceLoadingState());
+
+    try {
+      String finalServiceImage = oldServiceImageUrl;
+
+      if (newServiceImagePath != null && newServiceImagePath.trim().isNotEmpty) {
+        finalServiceImage = await uploadImageToCloudinary(newServiceImagePath);
+      }
+
+      final price = int.tryParse(servicePrice.trim());
+
+      if (price == null) {
+        emit(EditServiceErrorState(error: 'السعر غير صحيح'));
+        return;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('services')
+          .doc(serviceId)
+          .update({
+        'name': serviceName.trim(),
+        'description': serviceDescription.trim(),
+        'price': price,
+        'period': servicePeriod.trim(),
+        'serviceImage': finalServiceImage,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      final index = workerServices.indexWhere((service) => service['id'] == serviceId,);
+
+      if (index != -1) {
+        workerServices[index]['name'] = serviceName.trim();
+        workerServices[index]['description'] = serviceDescription.trim();
+        workerServices[index]['price'] = price;
+        workerServices[index]['period'] = servicePeriod.trim();
+        workerServices[index]['serviceImage'] = finalServiceImage;
+      }
+
+      emit(EditServiceSuccessState());
+    } catch (e) {
+      emit(EditServiceErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> deleteService({
+    required String serviceId,
+  })
+  async {
+    emit(DeleteServiceLoadingState());
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('services')
+          .doc(serviceId)
+          .delete();
+
+      workerServices.removeWhere((service) => service['id'] == serviceId,);
+      workerServicesCount = workerServices.length;
+
+      emit(DeleteServiceSuccessState());
+    } catch (e) {
+      emit(DeleteServiceErrorState(error: e.toString()));
     }
   }
 
@@ -363,6 +533,61 @@ class WorkerCubit extends Cubit<WorkerStates>{
       emit(EditWorkerDataSuccessState());
     } catch (e) {
       emit(EditWorkerDataErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> updateRequestStatus({
+    required String requestId,
+    required String status,
+  })
+  async {
+    try {
+      emit(UpdateRequestStatusLoadingState());
+
+      String? timeField;
+
+      if (status == 'مقبول') {
+        timeField = 'acceptedAt';
+      } else if (status == 'في الطريق') {
+        timeField = 'onWayAt';
+      } else if (status == 'مكتمل') {
+        timeField = 'completedAt';
+      } else if (status == 'مرفوض') {
+        timeField = 'rejectedAt';
+      } else if (status == 'ملغي') {
+        timeField = 'cancelledAt';
+      }
+
+      final requestRef = FirebaseFirestore.instance
+          .collection('requests')
+          .doc(requestId);
+
+      final Map<String, dynamic> requestData = {
+        'status': status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+
+      if (timeField != null) {
+        requestData[timeField] = FieldValue.serverTimestamp();
+      }
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.update(requestRef, requestData);
+
+      batch.set(
+        requestRef.collection('statusHistory').doc(),
+        {
+          'status': status,
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+      );
+
+      await batch.commit();
+
+      emit(UpdateRequestStatusSuccessState());
+    } catch (error) {
+      emit(UpdateRequestStatusErrorState(error: error.toString()));
     }
   }
 

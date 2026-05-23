@@ -11,14 +11,14 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class WorkerAccountVerificationScreen extends StatefulWidget {
-  const WorkerAccountVerificationScreen({super.key});
+class WorkerAccountVerification extends StatefulWidget {
+  const WorkerAccountVerification({super.key});
 
   @override
-  State<WorkerAccountVerificationScreen> createState() => _WorkerAccountVerificationScreenState();
+  State<WorkerAccountVerification> createState() => _WorkerAccountVerificationState();
 }
 
-class _WorkerAccountVerificationScreenState extends State<WorkerAccountVerificationScreen> {
+class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
   String selectedDocumentType = 'بطاقة شخصية';
 
   final List<String> documentTypes = [

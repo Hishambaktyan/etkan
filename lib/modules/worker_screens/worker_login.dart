@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_forgot_password_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_forgot_password.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
@@ -15,14 +15,14 @@ import 'package:trying_homy/shared/styles/colors.dart';
 import '../../../shared/compenents/components.dart';
 import '../../shared/networks/local/cache_helper.dart';
 
-class WorkerLoginScreen extends StatefulWidget {
-  const WorkerLoginScreen({super.key});
+class WorkerLogin extends StatefulWidget {
+  const WorkerLogin({super.key});
 
   @override
-  State<WorkerLoginScreen> createState() => _WorkerLoginScreenState();
+  State<WorkerLogin> createState() => _WorkerLoginState();
 }
 
-class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
+class _WorkerLoginState extends State<WorkerLogin> {
   var formKey = GlobalKey<FormState>();
 
   @override
@@ -38,9 +38,9 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
             }
             if (state is LoginSuccessState) {
               hideLoadingDialog(context);
-              moveAndReplace(context, const WorkerMainScreen(),);
               authCubit.userLoginPhoneController.clear();
               authCubit.userLoginPasswordController.clear();
+              moveAndReplace(context, const WorkerMainScreen(),);
             }
             if (state is LoginErrorState) {
               hideLoadingDialog(context);
@@ -259,7 +259,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                                   child: TextButton(
                                     onPressed: () {
                                       move(context,
-                                          const WorkerForgotPasswordScreen());
+                                          const WorkerForgotPassword());
                                     },
                                     child: Text(
                                       'نسيت كلمة المرور؟',

@@ -8,10 +8,10 @@ import '../../../modules/user_screens/dept_screen.dart';
 import '../../../modules/user_screens/user_home_screen.dart';
 import '../../../modules/user_screens/user_account.dart';
 import '../../../modules/user_screens/user_chats.dart';
-import '../../../modules/worker_screens/worker_account_screeen.dart';
-import '../../../modules/worker_screens/worker_booking_screen.dart';
-import '../../../modules/worker_screens/worker_chat.dart';
-import '../../../modules/worker_screens/worker_home_screen.dart';
+import '../../../modules/worker_screens/worker_account.dart';
+import '../../../modules/worker_screens/worker_requests_list.dart';
+import '../../../modules/worker_screens/worker_chats.dart';
+import '../../../modules/worker_screens/worker_home.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart';
@@ -28,10 +28,10 @@ class AppCubit extends Cubit<AppStates>{
   int currentIndex = 0;
 
   List<Widget> workerScreens = [
-     WorkerHomeScreen(),
-    const WorkerBookingScreen(),
-    const WorkerChat(),
-    const WorkerAccountScreeen(),
+     WorkerHome(),
+    const WorkerRequestsList(),
+    const WorkerChats(),
+    const WorkerAccount(),
   ];
 
   List<Widget> userScreen = [

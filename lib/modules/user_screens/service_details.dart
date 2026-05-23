@@ -7,7 +7,7 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/booking_confirm_info_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -193,18 +193,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       ? lightDarkColor
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(25.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: mainColor.withOpacity(0.2),
-                                      spreadRadius: 1.0,
-                                      blurRadius: 7.0,
-                                      offset: const Offset(2, 5),
-                                    ),
-                                  ],
-                                  border: cubit.isDark
-                                      ? Border.all(
-                                          color: const Color(0xFF30363D)
-                                  ) : null
+                                  boxShadow: blueShadow
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,18 +344,9 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       padding: EdgeInsets.all(15.r),
                       decoration: BoxDecoration(
                           color: cubit.isDark ? lightDarkColor : Colors.white,
-                          borderRadius: BorderRadius.circular(25.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: mainColor.withOpacity(0.2),
-                              spreadRadius: 1.0,
-                              blurRadius: 7.0,
-                              offset: const Offset(2, 5),
-                            ),
-                          ],
-                          border: cubit.isDark
-                              ? Border.all(color: const Color(0xFF30363D))
-                              : null),
+                          borderRadius: BorderRadius.circular(20.r),
+                          boxShadow: blueShadow
+                      ),
                       child: Column(
                         children: [
                           ReadMoreText(
@@ -396,17 +376,8 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       decoration: BoxDecoration(
                           color: cubit.isDark ? lightDarkColor : Colors.white,
                           borderRadius: BorderRadius.circular(25.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: mainColor.withOpacity(0.2),
-                              spreadRadius: 1.0,
-                              blurRadius: 7.0,
-                              offset: const Offset(2, 5),
-                            ),
-                          ],
-                          border: cubit.isDark
-                              ? Border.all(color: const Color(0xFF30363D))
-                              : null),
+                          boxShadow: blueShadow
+                      ),
                       child: Column(
                         children: [
                           Row(
@@ -482,17 +453,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       decoration: BoxDecoration(
                         color: cubit.isDark ? lightDarkColor : Colors.white,
                         borderRadius: BorderRadius.circular(25.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: mainColor.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 7,
-                            offset: const Offset(2, 5),
-                          ),
-                        ],
-                        border: cubit.isDark
-                            ? Border.all(color: const Color(0xFF30363D))
-                            : null,
+                        boxShadow: blueShadow
                       ),
                       child: Center(
                         child: Column(

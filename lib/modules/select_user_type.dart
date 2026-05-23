@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/admin_screens/admin_home_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_login.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
@@ -90,7 +90,7 @@ class _SelectUserTypeState extends State<SelectUserType> {
                 move(context, const UserLoginScreen());
               } else if (selectedIndex == 1) {
                 CacheHelper.saveData(key: 'role', value: 'provider');
-                move(context, const WorkerLoginScreen());
+                move(context, const WorkerLogin());
               }
             },
             text: 'متابعة',

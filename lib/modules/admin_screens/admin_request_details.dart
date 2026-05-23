@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
 
@@ -750,7 +750,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                 SizedBox(height: 20.h),
                                 defaultOutlinedButtonWithIcon(
                                   onPressed: () {
-                                    move(context, const WorkerProfileScreen());
+                                    move(context, const WorkerProfile());
                                   },
                                   text: 'المزيد',
                                   fontSize: 13.sp,
@@ -826,7 +826,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                 SizedBox(height: 20.h),
                                 defaultOutlinedButtonWithIcon(
                                   onPressed: () {
-                                    move(context, const WorkerProfileScreen());
+                                    move(context, const WorkerProfile());
                                   },
                                   text: 'المزيد',
                                   fontSize: 13.sp,

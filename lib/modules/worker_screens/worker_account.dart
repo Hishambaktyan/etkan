@@ -8,8 +8,8 @@ import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
 import 'package:trying_homy/modules/edit_profile_screen.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
-import 'package:trying_homy/modules/worker_screens/worker_account_verification_screen.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
+import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -24,14 +24,14 @@ import '../on_boarding.dart';
 import '../privacy_policy_screen.dart';
 import '../terms_conditions_screen.dart';
 
-class WorkerAccountScreeen extends StatefulWidget {
-  const WorkerAccountScreeen({super.key});
+class WorkerAccount extends StatefulWidget {
+  const WorkerAccount({super.key});
 
   @override
-  State<WorkerAccountScreeen> createState() => _WorkerAccountScreeenState();
+  State<WorkerAccount> createState() => _WorkerAccountState();
 }
 
-class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
+class _WorkerAccountState extends State<WorkerAccount> {
 
   Widget _buildSectionTitle({
     required String title,
@@ -75,10 +75,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
-        border: appCubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade100),
-        boxShadow: appCubit.isDark ? [] : blueShadow,
+        boxShadow:  blueShadow,
       ),
       child: Column(
         children: children,
@@ -161,188 +158,6 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
       ),
     );
   }
-  void _showLogoutDialog({
-    required AppCubit appCubit,
-    required AuthCubit authCubit,
-  })
-  {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.25),
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Stack(
-            children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(color: Colors.transparent),
-              ),
-              Center(
-                child: AlertDialog(
-                  backgroundColor:
-                  appCubit.isDark ? lightDarkColor : Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(22.r),
-                  ),
-                  contentPadding: EdgeInsetsDirectional.all(22.r),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: EdgeInsetsDirectional.all(16.r),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.10),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.logout_rounded,
-                          color: Colors.red,
-                          size: 48.r,
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        'تأكيد تسجيل الخروج',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: appCubit.isDark
-                              ? darkSubTextColor
-                              : Colors.grey.shade700,
-                          height: 1.6,
-                        ),
-                      ),
-                      SizedBox(height: 25.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: defaultButton(
-                              onPressed: () => Navigator.pop(context),
-                              text: 'إلغاء',
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: defaultOutlinedButton(
-                              onPressed: ()=>authCubit.logoutUser(),
-                              text: 'خروج',
-                              border: Colors.red,
-                              textColor: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showDeleteAccountDialog(AppCubit appCubit) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.25),
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Stack(
-            children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(color: Colors.transparent),
-              ),
-              Center(
-                child: AlertDialog(
-                  backgroundColor:
-                  appCubit.isDark ? lightDarkColor : Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22.r),
-                  ),
-                  contentPadding: EdgeInsets.all(22.r),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                          padding: EdgeInsets.all(16.r),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.10),
-                            shape: BoxShape.circle,
-                          ),
-                          child: SvgPicture.asset('assets/delete.svg',color: Colors.red,width: 50.w,)
-                      ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        'حذف الحساب',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'هل أنت متأكد من حذف الحساب؟ لا يمكن التراجع عن هذه العملية بعد تنفيذها.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: appCubit.isDark
-                              ? darkSubTextColor
-                              : Colors.grey.shade700,
-                          height: 1.6,
-                        ),
-                      ),
-                      SizedBox(height: 25.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: defaultButton(
-                              onPressed: () => Navigator.pop(context),
-                              text: 'إلغاء',
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: defaultOutlinedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                showSnackBar(
-                                  Colors.red,
-                                  'سيتم ربط حذف الحساب لاحقاً',
-                                  context,
-                                );
-                              },
-                              text: 'حذف',
-                              border: Colors.red,
-                              textColor: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -370,9 +185,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
-                body: state is LogOutLoadingState
-                    ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
+                body: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -391,7 +204,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                             title: 'عرض الحساب',
                             icon: 'assets/eye.svg',
                             onTap: () {
-                              move(context, const WorkerProfileScreen());
+                              move(context, const WorkerProfile());
                             },
                           ),
                         ],
@@ -423,7 +236,7 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                             onTap: () {
                               move(
                                 context,
-                                const WorkerAccountVerificationScreen(),
+                                const WorkerAccountVerification(),
                               );
                             },
                           ),
@@ -519,12 +332,22 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                           _buildMenuItem(
                             appCubit: appCubit,
                             title: 'تسجيل خروج',
-                            icon: 'assets/login.svg',
+                            icon: 'assets/out.svg',
                             isDanger: true,
                             onTap: () {
-                              _showLogoutDialog(
-                                appCubit: appCubit,
-                                authCubit: authCubit,
+                              defaultConfirmDialog(
+                                context: context,
+                                isDark: appCubit.isDark,
+                                icon: 'assets/out.svg',
+                                iconColor: Colors.red,
+                                title: 'تأكيد تسجيل الخروج',
+                                body: 'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                                cancelText: 'إلغاء',
+                                confirmText: 'خروج',
+                                onConfirm: () {
+                                  Navigator.pop(context);
+                                  authCubit.logoutUser();
+                                },
                               );
                             },
                           ),
@@ -535,7 +358,18 @@ class _WorkerAccountScreeenState extends State<WorkerAccountScreeen> {
                             icon: 'assets/delete.svg',
                             isDanger: true,
                             onTap: () {
-                              _showDeleteAccountDialog(appCubit);
+                              defaultConfirmDialog(
+                                context: context,
+                                isDark: appCubit.isDark,
+                                icon: 'assets/delete.svg',
+                                iconColor: Colors.red,
+                                title: 'حذف الخدمة',
+                                body: 'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+                                cancelText: 'إلغاء',
+                                confirmText: 'حذف',
+                                onConfirm: () {
+                                },
+                              );
                             },
                           ),
                         ],

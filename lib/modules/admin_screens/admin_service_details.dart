@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -417,7 +417,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                           ),
                           defaultOutlinedButtonWithIcon(
                             onPressed: () {
-                              move(context, const WorkerProfileScreen());
+                              move(context, const WorkerProfile());
                             },
                             text: 'المزيد',
                             fontSize: 13.sp,

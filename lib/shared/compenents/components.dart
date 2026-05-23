@@ -685,8 +685,8 @@ int getStepFromStatus(String status) {
       return 0; // تم الطلب
     case "مقبول":
       return 1; // تم القبول
-    case "جاري التنفيذ":
-      return 2; // جاري التنفيذ
+    case "في الطريق":
+      return 2; // في الطريق
     case "مكتمل":
       return 3; // تم اكمال الخدمة
     default:
@@ -695,6 +695,106 @@ int getStepFromStatus(String status) {
 }
 
 bool isLoadingDialogShowing = false;
+
+void defaultConfirmDialog({
+  required BuildContext context,
+  required bool isDark,
+  required String icon,
+  required Color iconColor,
+  required String title,
+  required String body,
+  required String confirmText,
+  required String cancelText,
+  required VoidCallback onConfirm,
+  VoidCallback? onCancel,
+  Color? confirmColor,
+  Color? cancelColor,
+}) {
+  showDialog(
+    context: context,
+    barrierColor: Colors.black.withOpacity(0.25),
+    builder: (BuildContext dialogContext) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(color: Colors.transparent),
+            ),
+            Center(
+              child: AlertDialog(
+                backgroundColor: isDark ? lightDarkColor : Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusDirectional.circular(22.r),
+                ),
+                contentPadding: EdgeInsetsDirectional.all(22.r),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: EdgeInsetsDirectional.all(16.r),
+                      decoration: BoxDecoration(
+                        color: iconColor.withOpacity(0.10),
+                        shape: BoxShape.circle,
+                      ),
+                      child: SvgPicture.asset(icon,color: iconColor,width: 50.w,)
+                    ),
+                    SizedBox(height: 20.h),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                    Text(
+                      body,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: isDark ? darkSubTextColor : Colors.grey.shade700,
+                        height: 1.6,
+                      ),
+                    ),
+                    SizedBox(height: 25.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: defaultButton(
+                            onPressed: onCancel ??
+                                    () {
+                                  Navigator.pop(dialogContext);
+                                },
+                            text: cancelText,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: defaultOutlinedButton(
+                            onPressed: () {
+                              onConfirm();
+                            },
+                            text: confirmText,
+                            border: confirmColor ?? iconColor,
+                            textColor: confirmColor ?? iconColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
 void showLoadingDialog(BuildContext context) {
   if (isLoadingDialogShowing) return;
@@ -1004,14 +1104,11 @@ class WorkerServicesShimmer extends StatelessWidget {
 
   const WorkerServicesShimmer({super.key, required this.isDark});
 
-  Color get baseColor =>
-      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  Color get baseColor => isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
 
-  Color get highlightColor =>
-      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  Color get highlightColor => isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
 
-  Color get containerColor =>
-      isDark ? lightDarkColor : Colors.white;
+  Color get containerColor => isDark ? lightDarkColor : Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -1025,7 +1122,7 @@ class WorkerServicesShimmer extends StatelessWidget {
             children: [
               // Header Shimmer
               _shimmerBox(
-                height: 160.h,
+                height: 110.h,
                 width: double.infinity,
                 radius: 30,
               ),

@@ -200,12 +200,14 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                     elevation: 0,
                     leading: IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(CupertinoIcons.back),
+                      icon: Icon(CupertinoIcons.back,color: Theme.of(context).iconTheme.color,),
                     ),
                     title: Text(
                       'تعديل الملف الشخصي',
                       style: TextStyle(
-                          fontSize: 18.sp, fontWeight: FontWeight.bold),
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontSize: 18.sp, fontWeight: FontWeight.bold
+                      ),
                     ),
                     centerTitle: true,
                   ),
@@ -358,6 +360,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                               child: Text(
                                                   experience,
                                                   style: TextStyle(
+                                                      color:Theme.of(context).textTheme.bodyLarge!.color ,
                                                       fontSize: 13.sp
                                                   )
                                               )

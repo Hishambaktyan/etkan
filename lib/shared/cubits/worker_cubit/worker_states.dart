@@ -20,7 +20,13 @@ class ChangeAvailabilityState extends WorkerStates{}
 
 //////////////////////////////////////
 
-class ChangeServiceActivityState extends WorkerStates{}
+class ChangeServiceActivitySuccessState extends WorkerStates{}
+
+class ChangeServiceActivityErrorState extends WorkerStates{
+  final String error;
+
+  ChangeServiceActivityErrorState({required this.error});
+}
 
 //////////////////////////////////////
 
@@ -55,6 +61,42 @@ class UploadServiceSuccessState extends WorkerStates{}
 class UploadServiceErrorState extends WorkerStates{
   final String error;
   UploadServiceErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
+class EditServiceLoadingState extends WorkerStates {}
+
+class EditServiceSuccessState extends WorkerStates {}
+
+class EditServiceErrorState extends WorkerStates {
+  final String error;
+
+  EditServiceErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
+class DeleteServiceLoadingState extends WorkerStates {}
+
+class DeleteServiceSuccessState extends WorkerStates {}
+
+class DeleteServiceErrorState extends WorkerStates {
+  final String error;
+
+  DeleteServiceErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
+class UpdateRequestStatusLoadingState extends WorkerStates {}
+
+class UpdateRequestStatusSuccessState extends WorkerStates {}
+
+class UpdateRequestStatusErrorState extends WorkerStates {
+  final String error;
+
+  UpdateRequestStatusErrorState({required this.error});
 }
 
 //////////////////////////////////////

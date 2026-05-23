@@ -216,6 +216,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                                           ),
                                                         ),
                                                       ),
+                                                      SizedBox(width: 5.w,),
                                                       Container(
                                                         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                                         decoration: BoxDecoration(

@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -30,7 +30,7 @@ class _BookingDetailsState extends State<BookingDetails> {
   final List<String> stepperSteps = [
     "قيد الانتظار",
     "مقبول",
-    "جاري التنفيذ",
+    "في الطريق",
     "مكتمل"
   ];
 
@@ -41,7 +41,7 @@ class _BookingDetailsState extends State<BookingDetails> {
     List<String> steps = [
       'تم الطلب',
       'تم القبول',
-      'جاري التنفيذ',
+      'في الطريق',
       'تم اكمال الخدمة'
     ];
     return Row(
@@ -123,8 +123,7 @@ class _BookingDetailsState extends State<BookingDetails> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            padding: EdgeInsetsDirectional.only(
-                start: 20.w, end: 20.w, bottom: 20.h, top: 10.h),
+            padding: EdgeInsetsDirectional.only(start: 20.w, end: 20.w, bottom: 20.h, top: 10.h),
             height: MediaQuery.of(context).size.height * 0.51,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +157,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                       Map<int, String> statusTimesKeys = {
                         0: 'createdAt',
                         1: 'acceptedAt',
-                        2: 'processingAt',
+                        2: 'onWayAt',
                         3: 'completedAt',
                       };
                       String timeKey = statusTimesKeys[index]!;
@@ -307,6 +306,20 @@ class _BookingDetailsState extends State<BookingDetails> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
+        Color statusColor;
+        switch (request['status']) {
+          case 'مكتمل':statusColor = Colors.green;
+          break;
+          case 'مقبول':statusColor = Colors.blueAccent;
+          break;
+          case 'في الطريق':statusColor = Colors.blueAccent;
+          break;
+          case 'مرفوض':statusColor = Colors.redAccent;
+          break;
+          case 'ملغي':statusColor = Colors.redAccent;
+          break;
+          default:statusColor = Colors.orangeAccent;
+        }
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -420,7 +433,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                                 horizontal: 12.w,
                                                 vertical: 5.h),
                                             decoration: BoxDecoration(
-                                              color: Colors.orange
+                                              color: statusColor
                                                   .withOpacity(0.1),
                                               borderRadius:
                                                   BorderRadius.circular(7.r),
@@ -428,7 +441,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                             child: Text(
                                               request['status'] ?? '',
                                               style: TextStyle(
-                                                color: Colors.orange.shade800,
+                                                color: statusColor,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 11.sp,
                                               ),

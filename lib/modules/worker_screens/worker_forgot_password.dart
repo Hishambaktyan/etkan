@@ -2,19 +2,19 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_login.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class WorkerForgotPasswordScreen extends StatefulWidget {
-  const WorkerForgotPasswordScreen({super.key});
+class WorkerForgotPassword extends StatefulWidget {
+  const WorkerForgotPassword({super.key});
 
   @override
-  State<WorkerForgotPasswordScreen> createState() => _WorkerForgotPasswordScreenState();
+  State<WorkerForgotPassword> createState() => _WorkerForgotPasswordState();
 }
 
-class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen> {
+class _WorkerForgotPasswordState extends State<WorkerForgotPassword> {
   final TextEditingController emailController =
   TextEditingController();
 
@@ -203,7 +203,7 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
                     SizedBox(height: 20.h),
                     TextButton(
                       onPressed: () =>
-                          move(context, const WorkerLoginScreen()),
+                          move(context, const WorkerLogin()),
                       child: Text(
                         "العودة لتسجيل الدخول",
                         style: TextStyle(

@@ -11,14 +11,14 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 
 import '../../shared/networks/local/cache_helper.dart';
 
-class WorkerChat extends StatefulWidget {
-  const WorkerChat({super.key});
+class WorkerChats extends StatefulWidget {
+  const WorkerChats({super.key});
 
   @override
-  State<WorkerChat> createState() => _WorkerChatState();
+  State<WorkerChats> createState() => _WorkerChatsState();
 }
 
-class _WorkerChatState extends State<WorkerChat> {
+class _WorkerChatsState extends State<WorkerChats> {
 
   String myUserId = CacheHelper.getData(key: 'uid');
   final Stream<QuerySnapshot> chatStreamBuilder = FirebaseFirestore.instance

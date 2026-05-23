@@ -18,14 +18,14 @@ import '../../shared/networks/local/cache_helper.dart';
 import '../notifications_screen.dart';
 import 'worker_edit_profile.dart';
 
-class WorkerProfileScreen extends StatefulWidget {
-  const WorkerProfileScreen({super.key});
+class WorkerProfile extends StatefulWidget {
+  const WorkerProfile({super.key});
 
   @override
-  State<WorkerProfileScreen> createState() => _WorkerProfileScreenState();
+  State<WorkerProfile> createState() => _WorkerProfileState();
 }
 
-class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
+class _WorkerProfileState extends State<WorkerProfile> {
 
   @override
   Widget build(BuildContext context) {
@@ -136,10 +136,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(25.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : null,
-        boxShadow: cubit.isDark ? [] : blueShadow,
+        boxShadow: blueShadow,
       ),
       child: child,
     );
@@ -157,10 +154,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
         decoration: BoxDecoration(
           color: cubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
-          border: cubit.isDark
-              ? Border.all(color: const Color(0xFF30363D))
-              : null,
-          boxShadow: cubit.isDark ? [] : blueShadow,
+          boxShadow:  blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -427,7 +421,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             '${user['about'] ?? 'لا توجد لديك نبذة'}',
             style: TextStyle(
               fontSize: 12.sp,
-              color: cubit.isDark ? darkSubTextColor : Colors.black87,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
               height: 1.8,
             ),
           ),
@@ -533,7 +527,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                     experience,
                     style: TextStyle(
                       fontSize: 13.sp,
-                      color: cubit.isDark ? darkSubTextColor : Colors.black87,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                       height: 1.6,
                     ),
                   ),

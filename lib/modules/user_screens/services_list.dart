@@ -59,12 +59,12 @@ class _ServicesListState extends State<ServicesList> {
                           ),
                           SizedBox(height: 15.h,),
                           ListView.separated(
-                            itemCount: userServicesCubit.userElecServices.length*3,
+                            itemCount: userServicesCubit.userElecServices.length,
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             padding: EdgeInsetsDirectional.only(start:15.w,end: 15.w,bottom: 20.h),
                             itemBuilder: (context, index) {
-                              var service = userServicesCubit.userElecServices[0];
+                              var service = userServicesCubit.userElecServices[index];
                               var providerData = appCubit.allUsers[service['providerId']];
                               return InkWell(
                                 onTap: () => move(
