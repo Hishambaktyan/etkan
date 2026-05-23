@@ -33,7 +33,8 @@ class _UserAccountState extends State<UserAccount> {
   Widget _buildHeader({
     required AppCubit appCubit,
     required Map<String, dynamic> user,
-  }) {
+  })
+  {
     String name = user['name'] ?? 'مستخدم';
     String phone = user['phone'] ?? '';
     String image = user['profileImage'] ?? '';
@@ -232,7 +233,8 @@ class _UserAccountState extends State<UserAccount> {
     required String title,
     required String icon,
     required AppCubit appCubit,
-  }) {
+  })
+  {
     return Padding(
       padding: EdgeInsetsDirectional.only(
         start: 10.w,
@@ -266,7 +268,8 @@ class _UserAccountState extends State<UserAccount> {
     );
   }
 
-  Widget _buildMenuCard({
+  Widget _buildMenuCard(
+      {
     required AppCubit appCubit,
     required List<Widget> children,
   }) {
@@ -371,191 +374,6 @@ class _UserAccountState extends State<UserAccount> {
           ],
         ),
       ),
-    );
-  }
-
-  void _showLogoutDialog({
-    required AppCubit appCubit,
-    required AuthCubit authCubit,
-  }) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.25),
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Stack(
-            children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(color: Colors.transparent),
-              ),
-              Center(
-                child: AlertDialog(
-                  backgroundColor:
-                      appCubit.isDark ? lightDarkColor : Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(22.r),
-                  ),
-                  contentPadding: EdgeInsetsDirectional.all(22.r),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: EdgeInsetsDirectional.all(16.r),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.10),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.logout_rounded,
-                          color: Colors.red,
-                          size: 48.r,
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        'تأكيد تسجيل الخروج',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: appCubit.isDark
-                              ? darkSubTextColor
-                              : Colors.grey.shade700,
-                          height: 1.6,
-                        ),
-                      ),
-                      SizedBox(height: 25.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: defaultButton(
-                              onPressed: () => Navigator.pop(context),
-                              text: 'إلغاء',
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: defaultOutlinedButton(
-                              onPressed: () => authCubit.logoutUser(),
-                              text: 'خروج',
-                              border: Colors.red,
-                              textColor: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showDeleteAccountDialog(AppCubit appCubit) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.25),
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Stack(
-            children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(color: Colors.transparent),
-              ),
-              Center(
-                child: AlertDialog(
-                  backgroundColor:
-                      appCubit.isDark ? lightDarkColor : Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22.r),
-                  ),
-                  contentPadding: EdgeInsets.all(22.r),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                          padding: EdgeInsets.all(16.r),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.10),
-                            shape: BoxShape.circle,
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/delete.svg',
-                            color: Colors.red,
-                            width: 50.w,
-                          )),
-                      SizedBox(height: 20.h),
-                      Text(
-                        'حذف الحساب',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'هل أنت متأكد من حذف الحساب؟ لا يمكن التراجع عن هذه العملية بعد تنفيذها.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: appCubit.isDark
-                              ? darkSubTextColor
-                              : Colors.grey.shade700,
-                          height: 1.6,
-                        ),
-                      ),
-                      SizedBox(height: 25.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: defaultButton(
-                              onPressed: () => Navigator.pop(context),
-                              text: 'إلغاء',
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: defaultOutlinedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                showSnackBar(
-                                  Colors.red,
-                                  'سيتم ربط حذف الحساب لاحقاً',
-                                  context,
-                                );
-                              },
-                              text: 'حذف',
-                              border: Colors.red,
-                              textColor: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -730,9 +548,19 @@ class _UserAccountState extends State<UserAccount> {
                             icon: 'assets/login.svg',
                             isDanger: true,
                             onTap: () {
-                              _showLogoutDialog(
-                                appCubit: appCubit,
-                                authCubit: authCubit,
+                              defaultConfirmDialog(
+                                context: context,
+                                isDark: appCubit.isDark,
+                                icon: 'assets/out.svg',
+                                iconColor: Colors.red,
+                                title: 'تأكيد تسجيل الخروج',
+                                body: 'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                                cancelText: 'إلغاء',
+                                confirmText: 'خروج',
+                                onConfirm: () {
+                                  Navigator.pop(context);
+                                  authCubit.logoutUser();
+                                },
                               );
                             },
                           ),
@@ -743,7 +571,18 @@ class _UserAccountState extends State<UserAccount> {
                             icon: 'assets/delete.svg',
                             isDanger: true,
                             onTap: () {
-                              _showDeleteAccountDialog(appCubit);
+                              defaultConfirmDialog(
+                                context: context,
+                                isDark: appCubit.isDark,
+                                icon: 'assets/delete.svg',
+                                iconColor: Colors.red,
+                                title: 'حذف الخدمة',
+                                body:
+                                'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+                                cancelText: 'إلغاء',
+                                confirmText: 'حذف',
+                                onConfirm: () {},
+                              );
                             },
                           ),
                         ],

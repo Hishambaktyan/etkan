@@ -430,14 +430,14 @@ class WorkerRequestDetails extends StatelessWidget {
             }
             if (state is CreateOrGetChatSuccessState) {
               hideLoadingDialog(context);
-              move(
-                context,
+              move(context,
                 TheChat(
                   otherUsername: userData['name'] ?? 'مستخدم',
                   otherUserImage: userData['profileImage'] ?? '',
                   otherUserId: request['customerId'],
                   myId: request['providerId'],
                   chatId: state.chatId,
+                  requestId: request['id'],
                 ),
               );
             }
@@ -930,6 +930,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                   await workerCubit.createOrGetChat(
                                                     customerId: request['customerId'],
                                                     providerId: request['providerId'],
+                                                    requestId: request['id'],
                                                     customerData: userData,
                                                     providerData: providerData,
                                                   );

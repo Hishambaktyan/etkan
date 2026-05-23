@@ -78,7 +78,6 @@ class _WorkerChatsState extends State<WorkerChats> {
                         header(title: 'الدردشة',context: context),
                         Expanded(
                           child: ListView.separated(
-                            physics: const BouncingScrollPhysics(),
                             padding: EdgeInsetsDirectional.only(start:10.w,top: 20.h,bottom: 20.h,end:10.w),
                             itemCount: docs.length,
                             itemBuilder: (context, index) {
@@ -116,11 +115,20 @@ class _WorkerChatsState extends State<WorkerChats> {
                               int otherUnread = unreadMap[otherUser] ?? 0;
 
                               bool otherHasRead = otherUnread == 0;
+
+                              final requestId = chatData['requestId'] ?? '';
                               return InkWell(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-                                onTap: ()=>move(context, TheChat(otherUsername: otherUsername, otherUserImage: otherUserImage,
-                                  otherUserId: otherUser, myId: myUserId,chatId: doc.id,)),
+                                onTap: ()=>move(context, TheChat(
+                                  otherUsername: otherUsername,
+                                  otherUserImage: otherUserImage,
+                                  otherUserId: otherUser,
+                                  myId: myUserId,
+                                  chatId: doc.id,
+                                  requestId: requestId,
+                                )
+                                ),
                                 child:  Row(
                                   children: [
                                     CircleAvatar(

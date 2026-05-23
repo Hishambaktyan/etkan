@@ -26,13 +26,14 @@ import '../shared/compenents/components.dart';
     final String otherUserId;
     final String myId;
     static String? currentChatId;
+    final String requestId;
     const TheChat(
         {super.key,
         required this.otherUsername,
         required this.otherUserImage,
         required this.otherUserId,
         required this.myId,
-        required this.chatId});
+        required this.chatId, required this.requestId});
   
     @override
     State<TheChat> createState() => _TheChatState();
@@ -183,12 +184,17 @@ import '../shared/compenents/components.dart';
     }
   
     String? uploadingImagePath;
+
+    late ChatCubit chatCubit;
   
   
     @override
     void initState() {
-  
-      ChatCubit.get(context).resetUnreadCount(widget.chatId, widget.myId);
+      super.initState();
+
+      chatCubit = context.read<ChatCubit>();
+
+      chatCubit.resetUnreadCount(widget.chatId, widget.myId);
   
       scrollController.addListener(() {
         if (scrollController.position.pixels > 100) {
@@ -207,14 +213,13 @@ import '../shared/compenents/components.dart';
           .collection('messages')
           .orderBy('timestamp',descending: true)
           .snapshots();
-      ChatCubit.get(context).markAsSeen(widget.chatId, widget.myId);
+      chatCubit.markAsSeen(widget.chatId, widget.myId);
       TheChat.currentChatId = widget.chatId;
-      super.initState();
     }
   
     @override
     void dispose() {
-      ChatCubit.get(context).markAsSeen(widget.chatId, widget.myId);
+      chatCubit.markAsSeen(widget.chatId, widget.myId);
       clearTypingStatus();
       typingTimer?.cancel();
       messageFocus.dispose();
@@ -612,183 +617,274 @@ import '../shared/compenents/components.dart';
                                   return const SizedBox();
                                 },
                               ),
-                              Container(
-                                color: Colors.transparent,
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.only(start: 13.w, end: 13.w, bottom: 13.h, top: 5.h,),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('requests')
+                                    .doc(widget.requestId)
+                                    .snapshots(),
+                                builder: (context, requestSnapshot) {
+                                  String requestStatus = '';
+                                  if (requestSnapshot.hasData && requestSnapshot.data!.exists) {
+                                    final requestData =
+                                    requestSnapshot.data!.data() as Map<String, dynamic>;
+
+                                    requestStatus = requestData['status'] ?? '';
+                                  }
+                                  final bool canSendMessage =
+                                      requestStatus == 'مقبول' ||
+                                          requestStatus == 'في الطريق' ||
+                                          requestStatus == 'مكتمل';
+
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Expanded(
-                                        child: Container(
-                                          clipBehavior: Clip.antiAlias,
+                                      if (!canSendMessage)
+                                        Container(
+                                          width: double.infinity,
+                                          margin: EdgeInsetsDirectional.symmetric(horizontal: 13.w),
+                                          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
                                           decoration: BoxDecoration(
-                                            color: appCubit.isDark ? const Color(0xFF161B22) : Colors.grey.withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(17.r),
+                                            color: Colors.orange.withOpacity(0.12),
+                                            borderRadius: BorderRadius.circular(12.r),
                                           ),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              if (replyMessage != null)
-                                                Container(
-                                                  width: double.infinity,
-                                                  padding: EdgeInsets.all(8.r),
-                                                  margin: EdgeInsets.all(5.r),
-                                                  decoration: BoxDecoration(
-                                                    color: appCubit.isDark ? Colors.black.withOpacity(0.3) : Colors.white.withOpacity(0.5),
-                                                    borderRadius: BorderRadius.circular(12.r),
-                                                    border: Border(
-                                                      right: BorderSide(color: mainColor, width: 4.w),
-                                                    ),
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(
-                                                              replyMessage!['senderId']==myId?
-                                                              'أنت'
-                                                                  : otherUsername,
-                                                              style: TextStyle(
-                                                                color: mainColor,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 12.sp,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              replyMessage!['text'] ?? '',
-                                                              maxLines: 1,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: TextStyle(
-                                                                fontSize: 11.sp,
-                                                                color: Colors.grey,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      InkWell(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            replyMessage = null;
-                                                          });
-                                                        },
-                                                        child: Icon(Icons.close, size: 18.r, color: Colors.grey),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              TextFormField(
-                                                controller: chatCubit.message,
-                                                focusNode: messageFocus,
-                                                style: TextStyle(fontSize: 12.sp),
-                                                minLines: 1,
-                                                maxLines: 5,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    chatCubit.isTyping = value.isNotEmpty;
-                                                  });
-  
-                                                  if (value.isNotEmpty) {
-                                                    setTypingStatus(true);
-                                                    typingTimer?.cancel();
-                                                    typingTimer = Timer(const Duration(seconds: 1), () {
-                                                      setTypingStatus(false);
-                                                    });
-                                                  } else {
-                                                    typingTimer?.cancel();
-                                                    setTypingStatus(false);
-                                                  }
-                                                },
-                                                keyboardType: TextInputType.multiline,
-                                                textAlignVertical: TextAlignVertical.center,
-                                                decoration: InputDecoration(
-                                                  contentPadding: EdgeInsetsDirectional.symmetric(
-                                                    horizontal: 15.w,
-                                                    vertical: 10.h,
-                                                  ),
-                                                  hintText: 'اكتب رسالة...',
-                                                  hintStyle: TextStyle(
-                                                    fontSize: 13.sp,
-                                                    color: Colors.grey,
-                                                  ),
-                                                  border: InputBorder.none,
-                                                  suffixIcon: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      InkWell(
-                                                        onTap: () {
-                                                          pickAndSendImage(
-                                                            chatCubit: chatCubit,
-                                                            chatId: widget.chatId,
-                                                            receiverId: otherUserId,
-                                                            senderId: myId,
-                                                          );
-                                                        },
-                                                        child: SvgPicture.asset(
-                                                          'assets/image.svg',
-                                                          height: 23.h,
-                                                          width: 23.h,
-                                                          color: Colors.grey,
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 10.w),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                          child: Text(
+                                            'المحادثة متاحة بعد قبول الحجز',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Colors.orange.shade800,
+                                              fontSize: 11.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(width: 10.w),
-                                      Transform.scale(
-                                        scale: 0.9,
-                                        child: FloatingActionButton(
-                                          onPressed: () async {
-                                            if (chatCubit.message.text.trim().isEmpty) {
-                                              return;
-                                            }
-                                            String? rText = replyMessage != null ? replyMessage!['text'] : null;
-                                            String? rName = replyMessage != null
-                                                ? (replyMessage!['senderId'] == myId ? 'أنت' : widget.otherUsername)
-                                                : null;
-  
-                                            setState(() {
-                                              replyMessage = null;
-                                              chatCubit.isTyping = false;
-                                            });
-  
-                                            clearTypingStatus();
-  
-                                            await chatCubit.sendMessage(widget.chatId, otherUserId, myId,rText,rName);
-  
-                                            Future.delayed(const Duration(milliseconds: 50), () {
-                                              scrollToBottom();
-                                            });
-  
-                                          },
-                                          elevation: 0,
-                                          shape: const CircleBorder(),
-                                          backgroundColor: mainColor,
-                                          splashColor: Colors.transparent,
-                                          child: Transform.rotate(
-                                            angle: 0.4,
-                                            child: Icon(
-                                              Icons.send_rounded,
-                                              color: Colors.white,
-                                              size: 25.h,
+                                      Opacity(
+                                        opacity: canSendMessage ? 1.0 : 0.45,
+                                        child: AbsorbPointer(
+                                          absorbing: !canSendMessage,
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            width: double.infinity,
+                                            child: Padding(
+                                              padding: EdgeInsetsDirectional.only(
+                                                start: 13.w,
+                                                end: 13.w,
+                                                bottom: 13.h,
+                                                top: 5.h,
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                      clipBehavior: Clip.antiAlias,
+                                                      decoration: BoxDecoration(
+                                                        color: appCubit.isDark
+                                                            ? const Color(0xFF161B22)
+                                                            : Colors.grey.withOpacity(0.2),
+                                                        borderRadius: BorderRadius.circular(17.r),
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          if (replyMessage != null)
+                                                            Container(
+                                                              width: double.infinity,
+                                                              padding: EdgeInsets.all(8.r),
+                                                              margin: EdgeInsets.all(5.r),
+                                                              decoration: BoxDecoration(
+                                                                color: appCubit.isDark
+                                                                    ? Colors.black.withOpacity(0.3)
+                                                                    : Colors.white.withOpacity(0.5),
+                                                                borderRadius: BorderRadius.circular(12.r),
+                                                                border: Border(
+                                                                  right: BorderSide(
+                                                                    color: mainColor,
+                                                                    width: 4.w,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child: Column(
+                                                                      crossAxisAlignment:
+                                                                      CrossAxisAlignment.start,
+                                                                      children: [
+                                                                        Text(
+                                                                          replyMessage!['senderId'] == myId
+                                                                              ? 'أنت'
+                                                                              : otherUsername,
+                                                                          style: TextStyle(
+                                                                            color: mainColor,
+                                                                            fontWeight: FontWeight.bold,
+                                                                            fontSize: 12.sp,
+                                                                          ),
+                                                                        ),
+                                                                        Text(
+                                                                          replyMessage!['text'] ?? '',
+                                                                          maxLines: 1,
+                                                                          overflow: TextOverflow.ellipsis,
+                                                                          style: TextStyle(
+                                                                            fontSize: 11.sp,
+                                                                            color: Colors.grey,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  InkWell(
+                                                                    onTap: () {
+                                                                      setState(() {
+                                                                        replyMessage = null;
+                                                                      });
+                                                                    },
+                                                                    child: Icon(
+                                                                      Icons.close,
+                                                                      size: 18.r,
+                                                                      color: Colors.grey,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          TextFormField(
+                                                            controller: chatCubit.message,
+                                                            focusNode: messageFocus,
+                                                            enabled: canSendMessage,
+                                                            style: TextStyle(fontSize: 12.sp),
+                                                            minLines: 1,
+                                                            maxLines: 5,
+                                                            onChanged: (value) {
+                                                              setState(() {
+                                                                chatCubit.isTyping = value.isNotEmpty;
+                                                              });
+
+                                                              if (value.isNotEmpty) {
+                                                                setTypingStatus(true);
+                                                                typingTimer?.cancel();
+                                                                typingTimer = Timer(
+                                                                  const Duration(seconds: 1),
+                                                                      () {
+                                                                    setTypingStatus(false);
+                                                                  },
+                                                                );
+                                                              } else {
+                                                                typingTimer?.cancel();
+                                                                setTypingStatus(false);
+                                                              }
+                                                            },
+                                                            keyboardType: TextInputType.multiline,
+                                                            textAlignVertical: TextAlignVertical.center,
+                                                            decoration: InputDecoration(
+                                                              contentPadding:
+                                                              EdgeInsetsDirectional.symmetric(
+                                                                horizontal: 15.w,
+                                                                vertical: 10.h,
+                                                              ),
+                                                              hintText: canSendMessage
+                                                                  ? 'اكتب رسالة...'
+                                                                  : 'المحادثة للقراءة فقط',
+                                                              hintStyle: TextStyle(
+                                                                fontSize: 13.sp,
+                                                                color: Colors.grey,
+                                                              ),
+                                                              border: InputBorder.none,
+                                                              suffixIcon: Row(
+                                                                mainAxisSize: MainAxisSize.min,
+                                                                children: [
+                                                                  InkWell(
+                                                                    onTap: () {
+                                                                      pickAndSendImage(
+                                                                        chatCubit: chatCubit,
+                                                                        chatId: widget.chatId,
+                                                                        receiverId: otherUserId,
+                                                                        senderId: myId,
+                                                                      );
+                                                                    },
+                                                                    child: SvgPicture.asset(
+                                                                      'assets/image.svg',
+                                                                      height: 23.h,
+                                                                      width: 23.h,
+                                                                      color: Colors.grey,
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 10.w),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  SizedBox(width: 10.w),
+
+                                                  Transform.scale(
+                                                    scale: 0.9,
+                                                    child: FloatingActionButton(
+                                                      onPressed: () async {
+                                                        if (chatCubit.message.text.trim().isEmpty) {
+                                                          return;
+                                                        }
+
+                                                        String? rText = replyMessage != null
+                                                            ? replyMessage!['text']
+                                                            : null;
+
+                                                        String? rName = replyMessage != null
+                                                            ? (replyMessage!['senderId'] == myId
+                                                            ? 'أنت'
+                                                            : widget.otherUsername)
+                                                            : null;
+
+                                                        setState(() {
+                                                          replyMessage = null;
+                                                          chatCubit.isTyping = false;
+                                                        });
+
+                                                        clearTypingStatus();
+
+                                                        await chatCubit.sendMessage(
+                                                          widget.chatId,
+                                                          otherUserId,
+                                                          myId,
+                                                          rText,
+                                                          rName,
+                                                        );
+
+                                                        Future.delayed(
+                                                          const Duration(milliseconds: 50),
+                                                              () {
+                                                            if (!mounted) return;
+                                                            scrollToBottom();
+                                                          },
+                                                        );
+                                                      },
+                                                      elevation: 0,
+                                                      shape: const CircleBorder(),
+                                                      backgroundColor: mainColor,
+                                                      splashColor: Colors.transparent,
+                                                      child: Transform.rotate(
+                                                        angle: 0.4,
+                                                        child: Icon(
+                                                          Icons.send_rounded,
+                                                          color: Colors.white,
+                                                          size: 25.h,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ],
-                                  ),
-                                ),
+                                  );
+                                },
                               ),
                             ],
                           ),

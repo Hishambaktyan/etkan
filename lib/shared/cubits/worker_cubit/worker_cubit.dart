@@ -594,13 +594,15 @@ class WorkerCubit extends Cubit<WorkerStates>{
   Future<void> createOrGetChat({
     required String customerId,
     required String providerId,
+    required String requestId,
     required Map<String, dynamic> customerData,
     required Map<String, dynamic> providerData,
   })
   async {
     try {
       emit(CreateOrGetChatLoadingState());
-      final String chatId = '${customerId}_$providerId';
+
+      final String chatId = '${customerId}_${providerId}_$requestId';
 
       final chatRef = FirebaseFirestore.instance
           .collection('chats')
@@ -611,6 +613,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
       if (!chatDoc.exists) {
         await chatRef.set({
           'chatId': chatId,
+          'requestId': requestId,
           'users': [
             customerId,
             providerId,
