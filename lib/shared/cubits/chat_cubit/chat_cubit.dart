@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/shared/cubits/chat_cubit/chat_states.dart';
 
+import '../../networks/remote/notification_service.dart';
+
 class ChatCubit extends Cubit<ChatStates>{
   ChatCubit(): super(ChatInitState());
 
@@ -67,6 +69,64 @@ class ChatCubit extends Cubit<ChatStates>{
     }
   }
 
+  Future<void> sendChatNotification({
+    required String receiverId,
+    required String senderId,
+    required String chatId,
+    required String body,
+    required bool isImage,
+  }) async {
+    try {
+      if (receiverId == senderId) {
+        print('لن يتم إرسال إشعار لنفس المستخدم');
+        return;
+      }
+
+      final receiverDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(receiverId)
+          .get();
+
+      final receiverData = receiverDoc.data() ?? {};
+
+      final receiverToken = receiverData['token']?.toString() ?? '';
+
+      print('Receiver ID: $receiverId');
+      print('Sender ID: $senderId');
+      print('Receiver Data: $receiverData');
+      print('Receiver Token: $receiverToken');
+
+      if (receiverToken.isEmpty) {
+        print('لا يوجد token لمستقبل الرسالة');
+        return;
+      }
+
+      const String title = 'رسالة جديدة';
+      final String notificationBody = isImage ? 'تم إرسال صورة جديدة' : body;
+
+      await NotificationService.createNotificationInFirestore(
+        receiverId: receiverId,
+        receiverType: 'chat',
+        senderId: senderId,
+        title: title,
+        body: notificationBody,
+        type: 'new_message',
+        relatedId: chatId,
+      );
+
+      await NotificationService.sendNotification(
+        receiverToken: receiverToken,
+        title: title,
+        body: notificationBody,
+        type: 'new_message',
+        relatedId: chatId,
+        senderId: senderId,
+      );
+    } catch (error) {
+      print('خطأ أثناء إرسال إشعار الرسالة: $error');
+    }
+  }
+
   Future<void> sendMessage(
       String chatId,
       String receiverId,
@@ -74,7 +134,7 @@ class ChatCubit extends Cubit<ChatStates>{
       String? replyText,
       String? replyName,
       )
-    async {
+  async {
     try {
       if (message.text.trim().isEmpty) return;
 
@@ -118,6 +178,14 @@ class ChatCubit extends Cubit<ChatStates>{
       });
 
       await batch.commit();
+
+      await sendChatNotification(
+        receiverId: receiverId,
+        senderId: senderId,
+        chatId: chatId,
+        body: text,
+        isImage: false,
+      );
 
       emit(SendMessageSuccessState());
     } catch (e) {
@@ -194,6 +262,14 @@ class ChatCubit extends Cubit<ChatStates>{
       });
 
       await batch.commit();
+
+      await sendChatNotification(
+        receiverId: receiverId,
+        senderId: senderId,
+        chatId: chatId,
+        body: 'أرسل لك صورة',
+        isImage: true,
+      );
 
       emit(SendMessageSuccessState());
     } catch (e) {

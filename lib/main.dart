@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/cubits/bloc_observer.dart';
 import 'package:trying_homy/shared/cubits/chat_cubit/chat_cubit.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
+import 'package:trying_homy/shared/cubits/notification_cubit/notification_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/styles.dart';
@@ -54,6 +56,17 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Widget startWidget = const OnBoardingScreen();
 
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message)
+async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  print('رسالة وصلت في الخلفية: ${message.messageId}');
+  print('Data: ${message.data}');
+}
+
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -65,6 +78,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   Bloc.observer = MyBlocObserver();
 
@@ -127,6 +142,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<WorkerCubit>(
             create: (context) => WorkerCubit()..getWorkerData()),
+        BlocProvider(create: (context) => NotificationCubit()..initFirebaseMessaging(),)
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),
@@ -142,7 +158,8 @@ class MyApp extends StatelessWidget {
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   debugShowCheckedModeBanner: false,
-                  home: startWidget);
+                  home: startWidget
+              );
             },
           );
         },

@@ -16,7 +16,6 @@ import '../images_view.dart';
 
 class ServiceDetails extends StatefulWidget {
   final String category;
-  final String subCategory;
   final String name;
   final String image;
   final int price;
@@ -31,7 +30,6 @@ class ServiceDetails extends StatefulWidget {
   const ServiceDetails({
     super.key,
     required this.category,
-    required this.subCategory,
     required this.name,
     required this.price,
     required this.period,
@@ -89,7 +87,6 @@ class _ServiceDetailsState extends State<ServiceDetails> {
   @override
   Widget build(BuildContext context) {
     final category = widget.category;
-    final subCategory = widget.subCategory;
     final name = widget.name;
     final price = widget.price;
     final period = widget.period;
@@ -503,7 +500,6 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                   BookingConfirmInfoScreen(
                     serciveName: name,
                     serciveCategory: category,
-                    serciveSubCategory: subCategory,
                     servicePrice: price,
                     servicePeriod: period,
                     serciveImage: image,

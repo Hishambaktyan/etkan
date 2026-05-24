@@ -9,6 +9,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 
 import '../../networks/local/cache_helper.dart';
+import '../../networks/remote/notification_service.dart';
 
 class WorkerCubit extends Cubit<WorkerStates>{
 
@@ -536,6 +537,42 @@ class WorkerCubit extends Cubit<WorkerStates>{
     }
   }
 
+  String getStatusNotificationTitle(String status) {
+    if (status == 'مقبول') {
+      return 'تم قبول الحجز';
+    } else if (status == 'في الطريق') {
+      return 'الفني في الطريق';
+    } else if (status == 'مكتمل') {
+      return 'تم إكمال الحجز';
+    } else if (status == 'مرفوض') {
+      return 'تم رفض الحجز';
+    } else if (status == 'ملغي') {
+      return 'تم إلغاء الحجز';
+    } else {
+      return 'تحديث حالة الحجز';
+    }
+  }
+
+  String getStatusNotificationBody({
+    required String status,
+    required String requestTitle,
+  })
+  {
+    if (status == 'مقبول') {
+      return 'تم قبول حجزك: $requestTitle';
+    } else if (status == 'في الطريق') {
+      return 'الفني في الطريق لتنفيذ حجزك: $requestTitle';
+    } else if (status == 'مكتمل') {
+      return 'تم إكمال حجزك: $requestTitle';
+    } else if (status == 'مرفوض') {
+      return 'تم رفض حجزك: $requestTitle';
+    } else if (status == 'ملغي') {
+      return 'تم إلغاء حجزك: $requestTitle';
+    } else {
+      return 'تم تحديث حالة حجزك: $requestTitle';
+    }
+  }
+
   Future<void> updateRequestStatus({
     required String requestId,
     required String status,
@@ -562,13 +599,25 @@ class WorkerCubit extends Cubit<WorkerStates>{
           .collection('requests')
           .doc(requestId);
 
+      final requestSnapshot = await requestRef.get();
+
+      if (!requestSnapshot.exists || requestSnapshot.data() == null) {
+        emit(UpdateRequestStatusErrorState(error: 'الحجز غير موجود'));
+        return;
+      }
+
+      final oldRequestData = requestSnapshot.data()!;
+
+      final customerId = oldRequestData['customerId']?.toString() ?? '';
+      final requestTitle = oldRequestData['title']?.toString() ?? 'حجز خدمة';
+
       final Map<String, dynamic> requestData = {
         'status': status,
         'updatedAt': FieldValue.serverTimestamp(),
       };
 
       if (timeField != null) {
-        requestData[timeField] = FieldValue.serverTimestamp();
+        requestData['statusHistory.$timeField'] = FieldValue.serverTimestamp();
       }
 
       final batch = FirebaseFirestore.instance.batch();
@@ -584,6 +633,45 @@ class WorkerCubit extends Cubit<WorkerStates>{
       );
 
       await batch.commit();
+
+      if (customerId.isNotEmpty) {
+        final notificationTitle = getStatusNotificationTitle(status);
+        final notificationBody = getStatusNotificationBody(
+          status: status,
+          requestTitle: requestTitle,
+        );
+
+        await NotificationService.createNotificationInFirestore(
+          receiverId: customerId,
+          receiverType: 'user',
+          senderId: oldRequestData['providerId']?.toString() ?? '',
+          title: notificationTitle,
+          body: notificationBody,
+          type: 'booking_status',
+          relatedId: requestId,
+        );
+
+        final customerDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(customerId)
+            .get();
+
+        final customerData = customerDoc.data() ?? {};
+
+        final receiverToken = customerData['token']?.toString() ?? '';
+
+        if (receiverToken.isNotEmpty) {
+          await NotificationService.sendNotification(
+            receiverToken: receiverToken,
+            title: notificationTitle,
+            body: notificationBody,
+            type: 'booking_status',
+            relatedId: requestId,
+            senderId: oldRequestData['providerId']?.toString() ?? '',
+          );
+        } else {
+        }
+      }
 
       emit(UpdateRequestStatusSuccessState());
     } catch (error) {

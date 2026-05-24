@@ -360,7 +360,7 @@ class _WorkerHomeState extends State<WorkerHome> {
                                       children: [
                                         _buildSectionTitle(title: 'الخدمات الحالية', icon: 'assets/services.svg', appCubit: appCubit),
                                         const Spacer(),
-                                        defaultTextButton(onPressed: ()=>move(context, WorkerServicesList()), text: 'عرض الكل',isLined: false),
+                                        defaultTextButton(onPressed: ()=>move(context, const WorkerServicesList()), text: 'عرض الكل',isLined: false),
                                       ],
                                     )
                                 ),
@@ -455,12 +455,12 @@ class _WorkerHomeState extends State<WorkerHome> {
                                                         child: Container(
                                                           padding: EdgeInsets.all(8.r),
                                                           decoration: BoxDecoration(
-                                                            color: Colors.white.withOpacity(0.8),
+                                                            color: service['isActive']==true ? Colors.green : Colors.redAccent,
                                                             shape: BoxShape.circle,
                                                           ),
                                                           child: SvgPicture.asset(
                                                             'assets/power.svg',
-                                                            color: service['isActive']==true ? Colors.green : Colors.grey,
+                                                            color: Colors.white,
                                                             width: 18.w,
                                                             height: 18.h,
                                                           ),

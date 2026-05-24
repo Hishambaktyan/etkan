@@ -22,7 +22,6 @@ import '../../shared/styles/colors.dart';
 class BookingConfirmInfoScreen extends StatefulWidget {
   final String serciveName;
   final String serciveCategory;
-  final String serciveSubCategory;
   final String serciveImage;
   final int servicePrice;
   final String servicePeriod;
@@ -32,7 +31,6 @@ class BookingConfirmInfoScreen extends StatefulWidget {
     super.key,
     required this.serciveName,
     required this.serciveCategory,
-    required this.serciveSubCategory,
     required this.servicePrice,
     required this.servicePeriod,
     required this.serciveImage,
@@ -111,7 +109,6 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
     required AppCubit appCubit,
     required String serviceName,
     required String serviceCategory,
-    required String serviceSubCategory,
     required int servicePrice,
     required String servicePeriod,
     required String serviceImage,
@@ -160,7 +157,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$serviceCategory   >   $serviceSubCategory',
+                      '$serviceCategory',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -651,7 +648,6 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
   Widget build(BuildContext context) {
     String serviceName = widget.serciveName;
     String serviceCategory = widget.serciveCategory;
-    String serviceSubCategory = widget.serciveSubCategory;
     int servicePrice = widget.servicePrice;
     String servicePeriod = widget.servicePeriod;
     String serviceImage = widget.serciveImage;
@@ -687,7 +683,6 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
               titleSpacing: 15,
             ),
             body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
               child: Padding(
                 padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                 child: Column(
@@ -697,7 +692,6 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                       appCubit: appCubit,
                       serviceName: serviceName,
                       serviceCategory: serviceCategory,
-                      serviceSubCategory: serviceSubCategory,
                       servicePrice: servicePrice,
                       servicePeriod: servicePeriod,
                       serviceImage: serviceImage,
@@ -813,21 +807,11 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                         return defaultButton(
                           onPressed: () async {
                             if (selectedAddress == null) {
-                              showSnackBar(
-                                Colors.red,
-                                'يرجى اختيار موقع الخدمة',
-                                context,
-                              );
+                              showSnackBar(Colors.red, 'يرجى اختيار موقع الخدمة', context,);
                               return;
                             }
-
-                            if (selectedDate == null ||
-                                selectedTime == null) {
-                              showSnackBar(
-                                Colors.red,
-                                'يرجى اختيار التاريخ والوقت',
-                                context,
-                              );
+                            if (selectedDate == null || selectedTime == null) {
+                              showSnackBar(Colors.red, 'يرجى اختيار التاريخ والوقت', context,);
                               return;
                             }
 
@@ -839,19 +823,16 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                               selectedTime!.minute,
                             );
 
-                            var currentUser = appCubit.allUsers[
-                            CacheHelper.getData(key: 'uid')];
+                            var currentUser = appCubit.allUsers[CacheHelper.getData(key: 'uid')];
 
                             await bookingCubit.createRequest(
                               category: serviceCategory,
                               customerId: currentUser['uid'],
                               providerId: providerId,
-                              subCategory: serviceSubCategory,
                               address: selectedAddress!,
                               title: serviceName,
                               description: noteController.text.trim(),
-                              image:
-                              'https://i.pinimg.com/1200x/3e/f3/50/3ef350dc86cc82a092463e5d795654b5.jpg',
+                              image: serviceImage,
                               duration: servicePeriod,
                               price: servicePrice,
                               scheduledAt:

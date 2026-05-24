@@ -187,11 +187,26 @@ class _WorkerAccountState extends State<WorkerAccount> {
               showLoadingDialog(context);
             }
             if (state is LogOutSuccessState) {
+              hideLoadingDialog(context);
               showSnackBar(Colors.green, 'تم تسجيل خروجك بنجاح', context);
               moveAndReplace(context, const OnBoardingScreen());
               appCubit.changeIndex(0);
             }
             if (state is LogOutErrorState) {
+              showSnackBar(Colors.red, state.error, context);
+            }
+            if( state is DeleteUserAccLoadingState){
+              showLoadingDialog(context);
+            }
+            if( state is DeleteUserAccSuccessState){
+              hideLoadingDialog(context);
+              showSnackBar(Colors.green, 'تم حسب حسابك بنجاح', context);
+              moveAndReplace(context, const OnBoardingScreen());
+              appCubit.changeIndex(0);
+
+            }
+            if( state is DeleteUserAccErrorState){
+              hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
           },
@@ -381,12 +396,14 @@ class _WorkerAccountState extends State<WorkerAccount> {
                                 isDark: appCubit.isDark,
                                 icon: 'assets/delete.svg',
                                 iconColor: Colors.red,
-                                title: 'حذف الخدمة',
-                                body:
-                                    'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+                                title: 'حذف الحساب',
+                                body: 'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
                                 cancelText: 'إلغاء',
                                 confirmText: 'حذف',
-                                onConfirm: () {},
+                                onConfirm: () {
+                                  Navigator.pop(context);
+                                  authCubit.deleteUser();
+                                },
                               );
                             },
                           ),

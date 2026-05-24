@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
 
 import '../../../../shared/networks/local/cache_helper.dart';
+import '../../../../shared/networks/remote/notification_service.dart';
 
 class BookingCubit extends Cubit<BookingStates>{
 
@@ -37,42 +38,79 @@ class BookingCubit extends Cubit<BookingStates>{
     required String category,
     required String customerId,
     required String providerId,
-    required String subCategory,
     required String address,
     required String title,
     required String description,
     required String image,
     required String duration,
     required int price,
-    required Timestamp scheduledAt ,
+    required Timestamp scheduledAt,
   })
   async {
     try {
       emit(CreateRequestLoadingState());
-      DateTime now = DateTime.now();
-      await FirebaseFirestore.instance.collection('requests').add({
-        "address": address,
-        "category": category,
-        "createdAt": Timestamp.fromDate(now),
-        "customerId": customerId,
-        "description": description,
-        "duration": duration,
-        "image": image,
-        "price": price,
-        "providerId": providerId,
-        "scheduledAt": scheduledAt,
-        "status": "قيد الانتظار",
-        "statusHistory": {
-          "pendingAt": Timestamp.fromDate(now),
+
+      final DateTime now = DateTime.now();
+      final Timestamp nowTimestamp = Timestamp.fromDate(now);
+
+      final requestRef = FirebaseFirestore.instance.collection('requests').doc();
+
+      await requestRef.set({
+        'requestId': requestRef.id,
+        'address': address,
+        'category': category,
+        'customerId': customerId,
+        'providerId': providerId,
+        'title': title,
+        'description': description,
+        'image': image,
+        'duration': duration,
+        'price': price,
+        'scheduledAt': scheduledAt,
+        'status': 'قيد الانتظار',
+        'createdAt': nowTimestamp,
+        'updatedAt': nowTimestamp,
+        'statusHistory': {
+          'pendingAt': nowTimestamp,
+          'acceptedAt': null,
+          'rejectedAt': null,
+          'completedAt': null,
+          'cancelledAt': null,
         },
-        "subCategory": subCategory,
-        "title": title,
       });
+
+      await NotificationService.createNotificationInFirestore(
+        receiverId: providerId,
+        receiverType: 'worker',
+        senderId: customerId,
+        title: 'حجز جديد',
+        body: 'لديك حجز خدمة جديد: $title',
+        type: 'new_booking',
+        relatedId: requestRef.id,
+      );
+
+      final providerDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(providerId)
+          .get();
+
+      final providerData = providerDoc.data() ?? {};
+      final receiverToken = providerData['token']?.toString() ?? '';
+
+      if (receiverToken.isNotEmpty) {
+        await NotificationService.sendNotification(
+          receiverToken: receiverToken,
+          title: 'حجز جديد',
+          body: 'لديك حجز خدمة جديد: $title',
+          type: 'new_booking',
+          relatedId: requestRef.id,
+          senderId: customerId,
+        );
+      }
+
       emit(CreateRequestSuccessState());
-      print("request created successfully");
     } catch (e) {
       emit(CreateRequestErrorState(error: e.toString()));
-      print("Error creating request: $e");
     }
   }
 

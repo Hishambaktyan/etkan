@@ -371,8 +371,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                                           name: service['name'],
                                                           image: service['serviceImage'],
                                                           category: service['category'],
-                                                          subCategory:
-                                                          service['subCategory'],
                                                           desc: service['description'],
                                                           price: service['price'],
                                                           period: service['period'],

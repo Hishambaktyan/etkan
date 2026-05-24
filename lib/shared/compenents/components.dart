@@ -888,7 +888,7 @@ class NoInternet extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16.sp,
-                color: Colors.black87,
+                color: Theme.of(context).textTheme.bodyLarge!.color
               ),
             ),
             SizedBox(height: 20.h),

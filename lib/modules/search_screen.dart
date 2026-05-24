@@ -600,7 +600,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         .contains('loading');
 
                     return SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
                       padding: EdgeInsetsDirectional.only(bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2484,7 +2483,6 @@ class _SearchScreenState extends State<SearchScreen> {
         name: '${service['name'] ?? ''}',
         image: '${service['serviceImage'] ?? ''}',
         category: '${service['category'] ?? ''}',
-        subCategory: '${service['subCategory'] ?? ''}',
         desc: '${service['description'] ?? ''}',
         price: service['price'] ?? 0,
         period: '${service['period'] ?? ''}',

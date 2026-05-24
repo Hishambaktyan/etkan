@@ -28,7 +28,7 @@ class AppCubit extends Cubit<AppStates>{
   int currentIndex = 0;
 
   List<Widget> workerScreens = [
-     WorkerHome(),
+     const WorkerHome(),
     const WorkerRequestsList(),
     const WorkerChats(),
     const WorkerAccount(),
