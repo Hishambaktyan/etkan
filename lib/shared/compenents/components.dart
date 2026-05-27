@@ -24,8 +24,8 @@ const List<BoxShadow> shadow = [
   ),
 ];
 
- List<BoxShadow> blueShadow =  [
-  BoxShadow (
+List<BoxShadow> blueShadow = [
+  BoxShadow(
     color: mainColor.withOpacity(0.1),
     spreadRadius: 1.0,
     blurRadius: 7.0,
@@ -83,15 +83,16 @@ void showSnackBar(Color background, String message, context) {
 String formatStatusTime(dynamic timestamp) {
   if (timestamp == null) return "";
   DateTime date = timestamp.toDate();
-  return DateFormat('dd/MM/yyyy - hh:mm a').format(date) .replaceAll('AM', 'ص').replaceAll('PM', 'م');
-
+  return DateFormat('dd/MM/yyyy - hh:mm a')
+      .format(date)
+      .replaceAll('AM', 'ص')
+      .replaceAll('PM', 'م');
 }
 
 String dateFormatStatusTime(dynamic timestamp) {
   if (timestamp == null) return "";
   DateTime date = timestamp.toDate();
   return DateFormat('dd/MM/yyyy').format(date);
-
 }
 
 String timeFormatStatusTime(dynamic timestamp) {
@@ -112,18 +113,17 @@ String timeFormatStatusTime(dynamic timestamp) {
       .replaceAll('AM', 'ص')
       .replaceAll('PM', 'م');
 }
+
 /////////////////////////////////////////////
-Widget header({
-  double headerHeight = 110,
-  required String title,
-  required context,
-  bool isLeading=false,
-  bool isNotif=true,
-  bool isAction=false,
-  String? actionIcon,
-  Function? onActionPresses
-})
-{
+Widget header(
+    {double headerHeight = 110,
+    required String title,
+    required context,
+    bool isLeading = false,
+    bool isNotif = true,
+    bool isAction = false,
+    String? actionIcon,
+    Function? onActionPresses}) {
   return ClipRRect(
     borderRadius:
         BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
@@ -203,12 +203,16 @@ Widget header({
                 children: [
                   Row(
                     children: [
-                      isLeading?IconButton(
-                          onPressed: (){
-                            Navigator.pop(context);
-                            },
-                          icon: const Icon(Icons.arrow_back_ios_rounded,color: Colors.white,)
-                      ):const SizedBox(),
+                      isLeading
+                          ? IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back_ios_rounded,
+                                color: Colors.white,
+                              ))
+                          : const SizedBox(),
                       Text(
                         title,
                         style: TextStyle(
@@ -217,48 +221,55 @@ Widget header({
                             color: Colors.white),
                       ),
                       const Spacer(),
-                      isNotif ?InkWell(
-                        highlightColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: ()=>move(context, const NotificationsScreen()),
-                        child: Container(
-                          padding:  EdgeInsetsDirectional.all(9.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(13.r),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.18),
-                            ),
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/not.svg',
-                            width: 23.w,
-                            height: 23.h,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ):const SizedBox(),
-                      isAction? InkWell(
-                        highlightColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: (){onActionPresses!();},
-                        child: Container(
-                          padding:  EdgeInsetsDirectional.all(9.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(13.r),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.18),
-                            ),
-                          ),
-                          child: SvgPicture.asset(
-                            actionIcon!,
-                            width: 23.w,
-                            height: 23.h,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ):const SizedBox()
+                      isNotif
+                          ? InkWell(
+                              highlightColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              onTap: () =>
+                                  move(context, const NotificationsScreen()),
+                              child: Container(
+                                padding: EdgeInsetsDirectional.all(9.w),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(13.r),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.18),
+                                  ),
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/not.svg',
+                                  width: 23.w,
+                                  height: 23.h,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : const SizedBox(),
+                      isAction
+                          ? InkWell(
+                              highlightColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              onTap: () {
+                                onActionPresses!();
+                              },
+                              child: Container(
+                                padding: EdgeInsetsDirectional.all(9.w),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(13.r),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.18),
+                                  ),
+                                ),
+                                child: SvgPicture.asset(
+                                  actionIcon!,
+                                  width: 23.w,
+                                  height: 23.h,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : const SizedBox()
                     ],
                   ),
                 ],
@@ -272,13 +283,13 @@ Widget header({
 }
 
 /////////////////////////////////////////////
-Widget headerWithSearch({
-  double headerHeight = 160,
-  required String title,
-  required List<String> searchKeyWords,
-  required AppCubit appCubit,
-  bool isLeading = false,
-  required BuildContext context}) {
+Widget headerWithSearch(
+    {double headerHeight = 160,
+    required String title,
+    required List<String> searchKeyWords,
+    required AppCubit appCubit,
+    bool isLeading = false,
+    required BuildContext context}) {
   return ClipRRect(
     borderRadius:
         BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
@@ -351,7 +362,8 @@ Widget headerWithSearch({
           Align(
             alignment: AlignmentDirectional.topCenter,
             child: Padding(
-              padding: EdgeInsetsDirectional.only(top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
+              padding: EdgeInsetsDirectional.only(
+                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -379,7 +391,7 @@ Widget headerWithSearch({
                           move(context, const NotificationsScreen());
                         },
                         child: Container(
-                          padding:  EdgeInsetsDirectional.all(9.w),
+                          padding: EdgeInsetsDirectional.all(9.w),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(13.r),
@@ -400,15 +412,16 @@ Widget headerWithSearch({
                   const Spacer(),
                   InkWell(
                     borderRadius: BorderRadius.circular(15.r),
-                    onTap: () => move(context, const SearchScreen(),),
+                    onTap: () => move(
+                      context,
+                      const SearchScreen(),
+                    ),
                     child: Container(
                       height: 52.h,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 17),
+                      padding: const EdgeInsets.symmetric(horizontal: 17),
                       decoration: BoxDecoration(
-                        color: appCubit.isDark? darkBgColor: Colors.white,
-                        borderRadius:
-                        BorderRadius.circular(30.r),
+                        color: appCubit.isDark ? darkBgColor : Colors.white,
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
                       child: Row(
                         children: [
@@ -419,35 +432,25 @@ Widget headerWithSearch({
                           SizedBox(width: 10.w),
                           Expanded(
                               child: IgnorePointer(
-                                child: SizedBox(
-                                  height: 20,
-                                  child: AnimatedTextKit(
-                                    repeatForever: true,
-                                    pause: const Duration(
-                                        seconds: 2),
-                                    animatedTexts: [
-                                      TyperAnimatedText(
-                                          searchKeyWords[0],
-                                          textStyle:
-                                          const TextStyle(
-                                              color: Colors
-                                                  .grey)),
-                                      TyperAnimatedText(
-                                          searchKeyWords[1],
-                                          textStyle:
-                                          const TextStyle(
-                                              color: Colors
-                                                  .grey)),
-                                      TyperAnimatedText(
-                                          searchKeyWords[2],
-                                          textStyle:
-                                          const TextStyle(
-                                              color: Colors
-                                                  .grey)),
-                                    ],
-                                  ),
-                                ),
-                              )),
+                            child: SizedBox(
+                              height: 20,
+                              child: AnimatedTextKit(
+                                repeatForever: true,
+                                pause: const Duration(seconds: 2),
+                                animatedTexts: [
+                                  TyperAnimatedText(searchKeyWords[0],
+                                      textStyle:
+                                          const TextStyle(color: Colors.grey)),
+                                  TyperAnimatedText(searchKeyWords[1],
+                                      textStyle:
+                                          const TextStyle(color: Colors.grey)),
+                                  TyperAnimatedText(searchKeyWords[2],
+                                      textStyle:
+                                          const TextStyle(color: Colors.grey)),
+                                ],
+                              ),
+                            ),
+                          )),
                         ],
                       ),
                     ),
@@ -461,6 +464,7 @@ Widget headerWithSearch({
     ),
   );
 }
+
 /////////////////////////////////////////////
 Widget defaultButton({
   double height = 50,
@@ -511,7 +515,9 @@ Widget defaultButtonWithIcon(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             icon,
-            SizedBox(width: 7.w,),
+            SizedBox(
+              width: 7.w,
+            ),
             Text(
               text!,
               style: TextStyle(fontSize: textSize.sp, color: Colors.white),
@@ -587,8 +593,7 @@ Widget defaultOutlinedButtonWithIcon(
     );
 ////////////////////////////////////////////
 Widget defaultTextFormField(
-    {
-  required String? text,
+        {required String? text,
         required String? prefixIcon,
         required String? errorMes,
         required TextEditingController? controller,
@@ -600,14 +605,13 @@ Widget defaultTextFormField(
         double? fontSize,
         required AppCubit cubit,
         bool isCovered = false,
-        bool isReadOnly=false
-        }) =>
+        bool isReadOnly = false}) =>
     TextFormField(
       style: TextStyle(
         fontSize: 14.sp,
         color: cubit.isDark ? Colors.white : Colors.black,
       ),
-      readOnly:isReadOnly,
+      readOnly: isReadOnly,
       keyboardType: type,
       textDirection: TextDirection.rtl,
       validator: (value) {
@@ -622,10 +626,7 @@ Widget defaultTextFormField(
         filled: true,
         fillColor: cubit.isDark ? lightDarkColor : Colors.white,
         labelText: text,
-        labelStyle: TextStyle(
-            fontSize: 12.sp,
-            color: Colors.grey
-        ),
+        labelStyle: TextStyle(fontSize: 12.sp, color: Colors.grey),
         prefixIcon: Padding(
           padding: EdgeInsets.all(12.r),
           child: SvgPicture.asset(
@@ -635,22 +636,25 @@ Widget defaultTextFormField(
             color: mainColor,
           ),
         ),
-        suffixIcon: isSuffixIcon ? IconButton(
-          onPressed: () {
-            suffixPressed!();
-          },
-          icon: SvgPicture.asset(
-            suffixIcon!,
-            width: 20.w,
-            height: 20.h,
-            color: Colors.grey,
-          ),
-          highlightColor: Colors.transparent,
-        ) : null,
+        suffixIcon: isSuffixIcon
+            ? IconButton(
+                onPressed: () {
+                  suffixPressed!();
+                },
+                icon: SvgPicture.asset(
+                  suffixIcon!,
+                  width: 20.w,
+                  height: 20.h,
+                  color: Colors.grey,
+                ),
+                highlightColor: Colors.transparent,
+              )
+            : null,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.r),
           borderSide: BorderSide(
-            color: cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade100,
+            color:
+                cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade100,
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -720,8 +724,7 @@ void defaultConfirmDialog({
   VoidCallback? onCancel,
   Color? confirmColor,
   Color? cancelColor,
-})
-{
+}) {
   showDialog(
     context: context,
     barrierColor: Colors.black.withOpacity(0.25),
@@ -745,13 +748,16 @@ void defaultConfirmDialog({
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      padding: EdgeInsetsDirectional.all(16.r),
-                      decoration: BoxDecoration(
-                        color: iconColor.withOpacity(0.10),
-                        shape: BoxShape.circle,
-                      ),
-                      child: SvgPicture.asset(icon,color: iconColor,width: 50.w,)
-                    ),
+                        padding: EdgeInsetsDirectional.all(16.r),
+                        decoration: BoxDecoration(
+                          color: iconColor.withOpacity(0.10),
+                          shape: BoxShape.circle,
+                        ),
+                        child: SvgPicture.asset(
+                          icon,
+                          color: iconColor,
+                          width: 50.w,
+                        )),
                     SizedBox(height: 20.h),
                     Text(
                       title,
@@ -778,7 +784,7 @@ void defaultConfirmDialog({
                         Expanded(
                           child: defaultButton(
                             onPressed: onCancel ??
-                                    () {
+                                () {
                                   Navigator.pop(dialogContext);
                                 },
                             text: cancelText,
@@ -876,9 +882,12 @@ class NoInternet extends StatelessWidget {
               delegates: LottieDelegates(
                 values: [
                   ValueDelegate.color(['**', 'Fill 1'], value: mainColor),
-                  ValueDelegate.color(['**', 'Fill 2'], value: mainColor.withOpacity(0.7)),
-                  ValueDelegate.color(['**', 'Fill 3'], value: mainColor.withOpacity(0.5)),
-                  ValueDelegate.opacity(['LOST CONNECTION Outlines', '**'], value: 0),
+                  ValueDelegate.color(['**', 'Fill 2'],
+                      value: mainColor.withOpacity(0.7)),
+                  ValueDelegate.color(['**', 'Fill 3'],
+                      value: mainColor.withOpacity(0.5)),
+                  ValueDelegate.opacity(['LOST CONNECTION Outlines', '**'],
+                      value: 0),
                 ],
               ),
             ),
@@ -894,7 +903,13 @@ class NoInternet extends StatelessWidget {
             SizedBox(height: 20.h),
             Padding(
               padding: EdgeInsetsDirectional.symmetric(horizontal: 30.w),
-              child: defaultOutlinedButton(onPressed: (){onRetry();}, text: 'إعادة المحاولة',border: mainColor,textColor: mainColor),
+              child: defaultOutlinedButton(
+                  onPressed: () {
+                    onRetry();
+                  },
+                  text: 'إعادة المحاولة',
+                  border: mainColor,
+                  textColor: mainColor),
             )
           ],
         ),
@@ -914,8 +929,7 @@ class ChatShimmerLoading extends StatelessWidget {
   Color get highlightColor =>
       isDark ? const Color(0xFF3A414A) : const Color(0xFFF8FCFF);
 
-  Color get cardColor =>
-      isDark ? const Color(0xFF161B22) : Colors.white;
+  Color get cardColor => isDark ? const Color(0xFF161B22) : Colors.white;
 
   Color get chipColor =>
       isDark ? const Color(0xFF1E2A36) : const Color(0xFFEAF5FF);
@@ -927,7 +941,6 @@ class ChatShimmerLoading extends StatelessWidget {
       child: Column(
         children: [
           header(title: 'الدردشة', context: context),
-
           Expanded(
             child: ListView.separated(
               padding: EdgeInsetsDirectional.only(
@@ -960,7 +973,6 @@ class ChatShimmerLoading extends StatelessWidget {
                             height: 50.h,
                             radius: 50,
                           ),
-
                           if (index % 3 == 0)
                             _shimmerBox(
                               width: 18.w,
@@ -969,9 +981,7 @@ class ChatShimmerLoading extends StatelessWidget {
                             ),
                         ],
                       ),
-
                       SizedBox(width: 15.w),
-
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -985,9 +995,7 @@ class ChatShimmerLoading extends StatelessWidget {
                                     radius: 8,
                                   ),
                                 ),
-
                                 SizedBox(width: 45.w),
-
                                 _shimmerBox(
                                   height: 9.h,
                                   width: 42.w,
@@ -995,9 +1003,7 @@ class ChatShimmerLoading extends StatelessWidget {
                                 ),
                               ],
                             ),
-
                             SizedBox(height: 7.h),
-
                             Container(
                               padding: EdgeInsetsDirectional.symmetric(
                                 horizontal: 8.w,
@@ -1013,9 +1019,7 @@ class ChatShimmerLoading extends StatelessWidget {
                                 radius: 8,
                               ),
                             ),
-
                             SizedBox(height: 8.h),
-
                             Row(
                               children: [
                                 if (index % 2 == 0) ...[
@@ -1026,7 +1030,6 @@ class ChatShimmerLoading extends StatelessWidget {
                                   ),
                                   SizedBox(width: 5.w),
                                 ],
-
                                 Expanded(
                                   child: _shimmerBox(
                                     height: 11.h,
@@ -1075,13 +1078,17 @@ class WorkerHomeShimmer extends StatelessWidget {
 
   const WorkerHomeShimmer({super.key, required this.isDark});
 
-  Color get baseColor => isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
 
-  Color get highlightColor => isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
 
-  Color get containerColor => isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  Color get containerColor =>
+      isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
 
-  Color get innerContainerColor => isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+  Color get innerContainerColor =>
+      isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
 
   @override
   Widget build(BuildContext context) {
@@ -1238,7 +1245,6 @@ class WorkerHomeShimmer extends StatelessWidget {
                         width: double.infinity,
                         radius: 25,
                       ),
-
                       Padding(
                         padding: EdgeInsets.all(12.r),
                         child: Column(
@@ -1259,7 +1265,6 @@ class WorkerHomeShimmer extends StatelessWidget {
                               width: 85.w,
                             ),
                             SizedBox(height: 12.h),
-
                             Container(
                               padding: EdgeInsets.all(10.r),
                               decoration: BoxDecoration(
@@ -1406,9 +1411,11 @@ class WorkerServicesShimmer extends StatelessWidget {
 
   const WorkerServicesShimmer({super.key, required this.isDark});
 
-  Color get baseColor => isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
 
-  Color get highlightColor => isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
 
   Color get containerColor => isDark ? lightDarkColor : Colors.white;
 
@@ -1430,7 +1437,8 @@ class WorkerServicesShimmer extends StatelessWidget {
               ),
 
               Padding(
-                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 10.h),
+                padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: 10.w, vertical: 10.h),
                 child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -1439,8 +1447,7 @@ class WorkerServicesShimmer extends StatelessWidget {
                       mainAxisExtent: 230.h,
                       crossAxisCount: 2,
                       crossAxisSpacing: 10.w,
-                      mainAxisSpacing: 15.h
-                  ),
+                      mainAxisSpacing: 15.h),
                   itemBuilder: (context, index) {
                     return Container(
                       decoration: BoxDecoration(
@@ -1483,14 +1490,16 @@ class WorkerServicesShimmer extends StatelessWidget {
                           ),
 
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 8.h),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Rating Shimmer
                                 Row(
                                   children: [
-                                    _shimmerBox(width: 15.r, height: 15.r, radius: 4),
+                                    _shimmerBox(
+                                        width: 15.r, height: 15.r, radius: 4),
                                     SizedBox(width: 5.w),
                                     _shimmerBox(width: 30.w, height: 10.h),
                                   ],
@@ -1500,7 +1509,8 @@ class WorkerServicesShimmer extends StatelessWidget {
                                 _shimmerBox(height: 14.h, width: 100.w),
                                 SizedBox(height: 8.h),
                                 // Description Shimmer
-                                _shimmerBox(height: 8.h, width: double.infinity),
+                                _shimmerBox(
+                                    height: 8.h, width: double.infinity),
                                 SizedBox(height: 4.h),
                                 _shimmerBox(height: 8.h, width: 80.w),
                               ],
@@ -1561,18 +1571,19 @@ class UserHomeShimmer extends StatelessWidget {
 
   const UserHomeShimmer({super.key, required this.isDark});
 
-  Color get baseColor => isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
 
-  Color get highlightColor => isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-
           /// ================= HEADER =================
-          _shimmerBox(height: 160.h, width: double.infinity,radius: 30),
+          _shimmerBox(height: 160.h, width: double.infinity, radius: 30),
 
           SizedBox(height: 15.h),
 
@@ -1620,15 +1631,15 @@ class UserHomeShimmer extends StatelessWidget {
 
           /// ================= TITLE =================
 
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: Padding(
-            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-            child: _shimmerBox(width: 120.w, height: 18.h),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Padding(
+              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+              child: _shimmerBox(width: 120.w, height: 18.h),
+            ),
           ),
-        ),
 
-        SizedBox(height: 15.h),
+          SizedBox(height: 15.h),
 
           /// ================= HORIZONTAL LIST =================
           SizedBox(
@@ -1688,8 +1699,10 @@ class UserServicesShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isDark = AppCubit.get(context).isDark;
 
-    Color baseColor = isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
-    Color highlightColor = isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+    Color baseColor =
+        isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+    Color highlightColor =
+        isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
     Color containerColor = isDark ? lightDarkColor : const Color(0xFFF2F9FF);
 
     return Directionality(
@@ -1838,7 +1851,6 @@ class UserBookingsShimmer extends StatelessWidget {
             radius: 30,
           ),
           SizedBox(height: 15.h),
-
           SizedBox(
             height: 40.h,
             child: ListView.builder(
@@ -1855,9 +1867,7 @@ class UserBookingsShimmer extends StatelessWidget {
               },
             ),
           ),
-
           SizedBox(height: 20.h),
-
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -1882,7 +1892,6 @@ class UserBookingsShimmer extends StatelessWidget {
                             radius: 20,
                           ),
                           SizedBox(width: 15.w),
-
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1894,9 +1903,7 @@ class UserBookingsShimmer extends StatelessWidget {
                               ],
                             ),
                           ),
-
                           SizedBox(width: 10.w),
-
                           _shimmerBox(
                             width: 60.w,
                             height: 25.h,
@@ -1904,9 +1911,7 @@ class UserBookingsShimmer extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 15.h),
-
                       Container(
                         padding: EdgeInsets.all(12.r),
                         decoration: BoxDecoration(
@@ -2003,7 +2008,6 @@ class AddressManagementShimmer extends StatelessWidget {
             margin: EdgeInsetsDirectional.all(10.w),
             radius: 20,
           ),
-
           Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
             child: Row(
@@ -2014,9 +2018,7 @@ class AddressManagementShimmer extends StatelessWidget {
               ],
             ),
           ),
-
           SizedBox(height: 20.h),
-
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -2037,29 +2039,22 @@ class AddressManagementShimmer extends StatelessWidget {
                         children: [
                           _shimmerBox(width: 45.w, height: 45.h, radius: 12),
                           SizedBox(width: 10.w),
-
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _shimmerBox(
-                                    height: 12.h,
-                                    width: double.infinity),
+                                    height: 12.h, width: double.infinity),
                                 SizedBox(height: 8.h),
-                                _shimmerBox(
-                                    height: 10.h,
-                                    width: 120.w),
+                                _shimmerBox(height: 10.h, width: 120.w),
                               ],
                             ),
                           ),
-
                           SizedBox(width: 10.w),
                           _shimmerBox(width: 50.w, height: 18.h),
                         ],
                       ),
-
                       SizedBox(height: 12.h),
-
                       Container(
                         padding: EdgeInsets.all(10.w),
                         decoration: BoxDecoration(
@@ -2074,9 +2069,7 @@ class AddressManagementShimmer extends StatelessWidget {
                           ],
                         ),
                       ),
-
                       SizedBox(height: 12.h),
-
                       Row(
                         children: [
                           Expanded(
@@ -2088,9 +2081,7 @@ class AddressManagementShimmer extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 10.h),
-
                       _shimmerBox(height: 42.h),
                     ],
                   ),
@@ -2098,14 +2089,11 @@ class AddressManagementShimmer extends StatelessWidget {
               );
             },
           ),
-
           SizedBox(height: 20.h),
-
           Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
             child: _shimmerBox(height: 50.h, radius: 14),
           ),
-
           SizedBox(height: 20.h),
         ],
       ),
@@ -2212,9 +2200,7 @@ class AdminHomeShimmer extends StatelessWidget {
               );
             },
           ),
-
           _sectionTitleShimmer(),
-
           GridView.builder(
             shrinkWrap: true,
             padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
@@ -2230,10 +2216,8 @@ class AdminHomeShimmer extends StatelessWidget {
               return _smallCategoryCard();
             },
           ),
-
           SizedBox(height: 20.h),
           _sectionTitleShimmer(),
-
           SizedBox(
             height: 270.h,
             child: ListView.separated(
@@ -2250,10 +2234,8 @@ class AdminHomeShimmer extends StatelessWidget {
               },
             ),
           ),
-
           SizedBox(height: 20.h),
           _sectionTitleShimmer(),
-
           SizedBox(
             height: 310.h,
             child: ListView.separated(
@@ -2270,10 +2252,8 @@ class AdminHomeShimmer extends StatelessWidget {
               },
             ),
           ),
-
           SizedBox(height: 20.h),
           _sectionTitleShimmer(),
-
           SizedBox(
             height: 380.h,
             child: ListView.separated(
@@ -2289,10 +2269,8 @@ class AdminHomeShimmer extends StatelessWidget {
               },
             ),
           ),
-
           SizedBox(height: 20.h),
           _sectionTitleShimmer(),
-
           SizedBox(
             height: 250.h,
             child: ListView.separated(
@@ -2308,7 +2286,6 @@ class AdminHomeShimmer extends StatelessWidget {
               },
             ),
           ),
-
           SizedBox(height: 20.h),
         ],
       ),
@@ -2566,7 +2543,6 @@ class AdminCategoriesShimmer extends StatelessWidget {
           margin: EdgeInsetsDirectional.all(10.w),
           radius: 20,
         ),
-
         Expanded(
           child: GridView.builder(
             padding: EdgeInsetsDirectional.symmetric(
@@ -2609,7 +2585,6 @@ class AdminCategoriesShimmer extends StatelessWidget {
                               ),
                             ),
                           ),
-
                           PositionedDirectional(
                             top: 10.h,
                             end: 10.w,
@@ -2622,7 +2597,6 @@ class AdminCategoriesShimmer extends StatelessWidget {
                         ],
                       ),
                     ),
-
                     Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 12.w,
@@ -2704,7 +2678,6 @@ class AdminUsersShimmer extends StatelessWidget {
             margin: EdgeInsetsDirectional.all(15.w),
             radius: 15,
           ),
-
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -2733,7 +2706,6 @@ class AdminUsersShimmer extends StatelessWidget {
                       width: double.infinity,
                       radius: 25,
                     ),
-
                     Padding(
                       padding: EdgeInsetsDirectional.only(
                         top: 15.h,
@@ -2741,16 +2713,13 @@ class AdminUsersShimmer extends StatelessWidget {
                         end: 10.w,
                       ),
                       child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _shimmerBox(
                             height: 12.h,
                             width: double.infinity,
                           ),
-
                           SizedBox(height: 12.h),
-
                           _shimmerBox(
                             height: 35.h,
                             width: double.infinity,
@@ -2823,8 +2792,7 @@ class AdminServicesShimmer extends StatelessWidget {
               vertical: 20.h,
             ),
             itemCount: 5,
-            separatorBuilder: (context, index) =>
-                SizedBox(height: 15.h),
+            separatorBuilder: (context, index) => SizedBox(height: 15.h),
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
@@ -2864,8 +2832,7 @@ class AdminServicesShimmer extends StatelessWidget {
                     Padding(
                       padding: EdgeInsetsDirectional.all(15.r),
                       child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _shimmerBox(
                             height: 14.h,
@@ -2891,8 +2858,7 @@ class AdminServicesShimmer extends StatelessWidget {
                             padding: EdgeInsets.all(8.r),
                             decoration: BoxDecoration(
                               color: innerContainerColor,
-                              borderRadius:
-                              BorderRadius.circular(15.r),
+                              borderRadius: BorderRadius.circular(15.r),
                             ),
                             child: Row(
                               children: [
@@ -2905,7 +2871,7 @@ class AdminServicesShimmer extends StatelessWidget {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       _shimmerBox(
                                         height: 10.h,
@@ -2981,9 +2947,7 @@ class AdminRequestsShimmer extends StatelessWidget {
             margin: EdgeInsetsDirectional.all(15.w),
             radius: 15,
           ),
-
           SizedBox(height: 10.h),
-
           SizedBox(
             height: 50.h,
             child: ListView.builder(
@@ -3005,7 +2969,6 @@ class AdminRequestsShimmer extends StatelessWidget {
               },
             ),
           ),
-
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -3027,21 +2990,17 @@ class AdminRequestsShimmer extends StatelessWidget {
                   child: Column(
                     children: [
                       Row(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _shimmerBox(
                             width: 70.w,
                             height: 70.h,
                             radius: 20,
                           ),
-
                           SizedBox(width: 15.w),
-
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
@@ -3051,9 +3010,7 @@ class AdminRequestsShimmer extends StatelessWidget {
                                         width: double.infinity,
                                       ),
                                     ),
-
                                     SizedBox(width: 10.w),
-
                                     _shimmerBox(
                                       width: 65.w,
                                       height: 24.h,
@@ -3061,9 +3018,7 @@ class AdminRequestsShimmer extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-
                                 SizedBox(height: 10.h),
-
                                 _shimmerBox(
                                   width: 80.w,
                                   height: 12.h,
@@ -3073,15 +3028,12 @@ class AdminRequestsShimmer extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 15.h),
-
                       Container(
                         padding: EdgeInsets.all(12.r),
                         decoration: BoxDecoration(
                           color: innerContainerColor,
-                          borderRadius:
-                          BorderRadius.circular(20.r),
+                          borderRadius: BorderRadius.circular(20.r),
                         ),
                         child: Column(
                           children: [
@@ -3161,16 +3113,12 @@ class AdminRequestsShimmer extends StatelessWidget {
           height: 35.h,
           radius: 12,
         ),
-
         SizedBox(width: 10.w),
-
         _shimmerBox(
           width: 80.w,
           height: 10.h,
         ),
-
         SizedBox(width: 10.w),
-
         Expanded(
           child: _shimmerBox(
             height: 10.h,
@@ -3202,7 +3150,6 @@ class AdminProvidersShimmer extends StatelessWidget {
             margin: EdgeInsetsDirectional.all(15.w),
             radius: 15,
           ),
-
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -3224,8 +3171,7 @@ class AdminProvidersShimmer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25.r),
                 ),
                 child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Stack(
                       children: [
@@ -3234,7 +3180,6 @@ class AdminProvidersShimmer extends StatelessWidget {
                           width: double.infinity,
                           radius: 25,
                         ),
-
                         PositionedDirectional(
                           top: 10.h,
                           start: 10.w,
@@ -3246,28 +3191,21 @@ class AdminProvidersShimmer extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     Padding(
-                      padding:
-                      EdgeInsetsDirectional.all(10.w),
+                      padding: EdgeInsetsDirectional.all(10.w),
                       child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _shimmerBox(
                             height: 14.h,
                             width: double.infinity,
                           ),
-
                           SizedBox(height: 8.h),
-
                           _shimmerBox(
                             height: 10.h,
                             width: 90.w,
                           ),
-
                           SizedBox(height: 15.h),
-
                           _shimmerBox(
                             height: 35.h,
                             width: double.infinity,
@@ -3310,3 +3248,539 @@ class AdminProvidersShimmer extends StatelessWidget {
   }
 }
 
+class SearchScreenShimmer extends StatelessWidget {
+  final bool isDark;
+
+  const SearchScreenShimmer({super.key, required this.isDark});
+
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+
+  Color get containerColor => isDark ? lightDarkColor : Colors.white;
+
+  Color get innerContainerColor =>
+      isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// ================= HEADER =================
+            _searchHeaderShimmer(),
+
+            SizedBox(height: 20.h),
+
+            Padding(
+              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// ================= سجل البحث =================
+                  _sectionTitleShimmer(),
+                  SizedBox(height: 12.h),
+                  _recentSearchesShimmer(),
+
+                  SizedBox(height: 25.h),
+
+                  /// ================= اقتراحات شائعة =================
+                  _sectionTitleShimmer(),
+                  SizedBox(height: 12.h),
+                  _suggestionsShimmer(),
+
+                  SizedBox(height: 25.h),
+
+                  /// ================= الأقسام الشائعة =================
+                  _sectionTitleShimmer(),
+                  SizedBox(height: 12.h),
+                  _departmentsGridShimmer(),
+
+                  SizedBox(height: 25.h),
+
+                  /// ================= خدمات مقترحة لك =================
+                  _sectionTitleShimmer(),
+                  SizedBox(height: 10.h),
+                  _suggestedServicesShimmer(),
+
+                  SizedBox(height: 20.h),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _searchHeaderShimmer() {
+    return ClipRRect(
+      borderRadius: BorderRadiusDirectional.vertical(
+        bottom: Radius.circular(30.r),
+      ),
+      child: Container(
+        height: 175.h,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              mainColor,
+              Color(0xFF0F0F1E),
+            ],
+          ),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -45.h,
+              left: -40.w,
+              child: CircleAvatar(
+                radius: 95.r,
+                backgroundColor: Colors.white.withOpacity(0.12),
+              ),
+            ),
+            Positioned(
+              bottom: -90.h,
+              right: -60.w,
+              child: Container(
+                width: 230.r,
+                height: 230.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF00F2FF).withOpacity(0.35),
+                      const Color(0xFF00F2FF).withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 35, sigmaY: 35),
+                  child: Container(color: Colors.transparent),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsetsDirectional.only(
+                top: 35.h,
+                start: 15.w,
+                end: 15.w,
+                bottom: 18.h,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      _glassShimmerBox(
+                        width: 42.w,
+                        height: 42.h,
+                        radius: 15,
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _glassShimmerBox(
+                              width: 75.w,
+                              height: 18.h,
+                              radius: 8,
+                            ),
+                            SizedBox(height: 8.h),
+                            _glassShimmerBox(
+                              width: 180.w,
+                              height: 10.h,
+                              radius: 8,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    height: 52.h,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: isDark ? lightDarkColor : Colors.white,
+                      borderRadius: BorderRadius.circular(25.r),
+                      boxShadow: blueShadow,
+                    ),
+                    padding: EdgeInsetsDirectional.symmetric(horizontal: 18.w),
+                    child: Row(
+                      children: [
+                        _shimmerBox(
+                          width: 22.w,
+                          height: 22.h,
+                          radius: 8,
+                        ),
+                        SizedBox(width: 15.w),
+                        Expanded(
+                          child: _shimmerBox(
+                            height: 12.h,
+                            width: double.infinity,
+                            radius: 8,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionTitleShimmer() {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsetsDirectional.all(8.w),
+          decoration: BoxDecoration(
+            color: mainColor.withOpacity(isDark ? 0.2 : 0.1),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: _shimmerBox(
+            width: 25.w,
+            height: 25.h,
+            radius: 8,
+          ),
+        ),
+        SizedBox(width: 8.w),
+        _shimmerBox(
+          width: 125.w,
+          height: 16.h,
+          radius: 8,
+        ),
+        const Spacer(),
+        _shimmerBox(
+          width: 55.w,
+          height: 14.h,
+          radius: 8,
+        ),
+      ],
+    );
+  }
+
+  Widget _recentSearchesShimmer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: containerColor,
+        borderRadius: BorderRadius.circular(25.r),
+        boxShadow: blueShadow,
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        padding: EdgeInsetsDirectional.symmetric(
+          horizontal: 15.w,
+          vertical: 8.h,
+        ),
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 5,
+        separatorBuilder: (context, index) => Divider(
+          color: Colors.grey.withOpacity(0.12),
+          height: 1.h,
+        ),
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsetsDirectional.symmetric(vertical: 12.h),
+            child: Row(
+              children: [
+                _shimmerBox(
+                  width: 20.w,
+                  height: 20.h,
+                  radius: 7,
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: _shimmerBox(
+                    height: 12.h,
+                    width: double.infinity,
+                    radius: 8,
+                  ),
+                ),
+                SizedBox(width: 40.w),
+                _shimmerBox(
+                  width: 18.w,
+                  height: 18.h,
+                  radius: 50,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _suggestionsShimmer() {
+    return Wrap(
+      spacing: 8.w,
+      runSpacing: 10.h,
+      children: List.generate(7, (index) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 9.h),
+          decoration: BoxDecoration(
+            color: containerColor,
+            borderRadius: BorderRadius.circular(25.r),
+            border: Border.all(color: mainColor.withOpacity(0.08)),
+            boxShadow: blueShadow,
+          ),
+          child: _shimmerBox(
+            width: index % 2 == 0 ? 65.w : 105.w,
+            height: 12.h,
+            radius: 8,
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _departmentsGridShimmer() {
+    return GridView.builder(
+      shrinkWrap: true,
+      padding: EdgeInsetsDirectional.zero,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 15.h,
+        crossAxisSpacing: 10.w,
+        childAspectRatio: 2,
+      ),
+      itemCount: 8,
+      itemBuilder: (context, index) {
+        return Container(
+          padding: EdgeInsetsDirectional.all(10.r),
+          decoration: BoxDecoration(
+            color: containerColor,
+            borderRadius: BorderRadius.circular(25.r),
+            boxShadow: blueShadow,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50.w,
+                height: 50.h,
+                padding: EdgeInsets.all(12.r),
+                decoration: BoxDecoration(
+                  color: mainColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(18.r),
+                ),
+                child: _shimmerBox(
+                  width: 25.w,
+                  height: 25.h,
+                  radius: 8,
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: _shimmerBox(
+                  height: 12.h,
+                  width: double.infinity,
+                  radius: 8,
+                ),
+              ),
+              SizedBox(width: 10.w),
+              _shimmerBox(
+                width: 12.w,
+                height: 12.h,
+                radius: 4,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _suggestedServicesShimmer() {
+    return SizedBox(
+      height: 350.h,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsetsDirectional.only(
+          start: 5.w,
+          bottom: 10.h,
+        ),
+        itemCount: 4,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsetsDirectional.only(
+              start: index == 0 ? 0 : 15.w,
+              end: index == 3 ? 5.w : 0,
+            ),
+            child: Container(
+              width: 280.w,
+              decoration: BoxDecoration(
+                color: containerColor,
+                borderRadius: BorderRadius.circular(25.r),
+                boxShadow: blueShadow,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      _shimmerBox(
+                        height: 180.h,
+                        width: double.infinity,
+                        radius: 25,
+                      ),
+                      PositionedDirectional(
+                        bottom: 12.h,
+                        end: 12.w,
+                        child: _shimmerBox(
+                          width: 70.w,
+                          height: 28.h,
+                          radius: 15,
+                        ),
+                      ),
+                      PositionedDirectional(
+                        top: 12.h,
+                        start: 12.w,
+                        child: _shimmerBox(
+                          width: 55.w,
+                          height: 24.h,
+                          radius: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.all(15.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _shimmerBox(
+                          width: 160.w,
+                          height: 15.h,
+                          radius: 8,
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          children: [
+                            _shimmerBox(
+                              width: 18.w,
+                              height: 18.h,
+                              radius: 5,
+                            ),
+                            SizedBox(width: 5.w),
+                            _shimmerBox(
+                              width: 35.w,
+                              height: 11.h,
+                              radius: 8,
+                            ),
+                            const Spacer(),
+                            _shimmerBox(
+                              width: 14.w,
+                              height: 14.h,
+                              radius: 5,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.h),
+                        Container(
+                          padding: EdgeInsets.all(8.r),
+                          decoration: BoxDecoration(
+                            color: mainColor.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(15.r),
+                          ),
+                          child: Row(
+                            children: [
+                              _shimmerBox(
+                                width: 32.w,
+                                height: 32.h,
+                                radius: 50,
+                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _shimmerBox(
+                                      height: 10.h,
+                                      width: double.infinity,
+                                      radius: 8,
+                                    ),
+                                    SizedBox(height: 6.h),
+                                    _shimmerBox(
+                                      height: 8.h,
+                                      width: 80.w,
+                                      radius: 8,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _glassShimmerBox({
+    required double width,
+    required double height,
+    double radius = 12,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: Colors.white.withOpacity(0.22),
+      highlightColor: Colors.white.withOpacity(0.45),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(radius.r),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerBox({
+    required double height,
+    double? width,
+    double radius = 12,
+    EdgeInsetsDirectional? margin,
+  }) {
+    return Container(
+      margin: margin,
+      child: Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
+        child: Container(
+          height: height,
+          width: width,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(radius.r),
+          ),
+        ),
+      ),
+    );
+  }
+}

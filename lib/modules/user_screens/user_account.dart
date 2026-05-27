@@ -33,8 +33,7 @@ class _UserAccountState extends State<UserAccount> {
   Widget _buildHeader({
     required AppCubit appCubit,
     required Map<String, dynamic> user,
-  })
-  {
+  }) {
     String name = user['name'] ?? 'مستخدم';
     String phone = user['phone'] ?? '';
     String image = user['profileImage'] ?? '';
@@ -233,8 +232,7 @@ class _UserAccountState extends State<UserAccount> {
     required String title,
     required String icon,
     required AppCubit appCubit,
-  })
-  {
+  }) {
     return Padding(
       padding: EdgeInsetsDirectional.only(
         start: 10.w,
@@ -268,8 +266,7 @@ class _UserAccountState extends State<UserAccount> {
     );
   }
 
-  Widget _buildMenuCard(
-      {
+  Widget _buildMenuCard({
     required AppCubit appCubit,
     required List<Widget> children,
   }) {
@@ -578,10 +575,12 @@ class _UserAccountState extends State<UserAccount> {
                                 iconColor: Colors.red,
                                 title: 'حذف الخدمة',
                                 body:
-                                'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+                                    'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
                                 cancelText: 'إلغاء',
                                 confirmText: 'حذف',
-                                onConfirm: () {},
+                                onConfirm: () {
+                                  authCubit.logoutUser();
+                                },
                               );
                             },
                           ),

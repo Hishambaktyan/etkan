@@ -162,8 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
     required List<dynamic> highPriority,
     List<dynamic> mediumPriority = const [],
     List<dynamic> lowPriority = const [],
-  })
-  {
+  }) {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return 0;
 
@@ -215,8 +214,7 @@ class _SearchScreenState extends State<SearchScreen> {
   int getServiceSearchScore(
     Map<String, dynamic> service,
     Map<dynamic, dynamic> providers,
-  )
-  {
+  ) {
     final providerData = providers[service['providerId']] ?? {};
 
     return calculateSearchScore(
@@ -247,8 +245,7 @@ class _SearchScreenState extends State<SearchScreen> {
   int getBookingSearchScore(
     Map<String, dynamic> booking,
     Map<dynamic, dynamic> providers,
-  )
-  {
+  ) {
     final providerData = providers[booking['providerId']] ?? {};
     final status = '${booking['status'] ?? ''}';
 
@@ -407,8 +404,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Map<String, dynamic>> getFilteredServices({
     required List<Map<String, dynamic>> services,
     required Map<dynamic, dynamic> providers,
-  })
-  {
+  }) {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return [];
 
@@ -446,8 +442,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Map<String, dynamic>> getFilteredBookings({
     required List<Map<String, dynamic>> bookings,
     required Map<dynamic, dynamic> providers,
-  })
-  {
+  }) {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return [];
 
@@ -492,8 +487,7 @@ class _SearchScreenState extends State<SearchScreen> {
     required Map<dynamic, dynamic> providers,
     required List<Map<String, dynamic>> services,
     required List<Map<String, dynamic>> bookings,
-  })
-  {
+  }) {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return [];
 
@@ -555,12 +549,17 @@ class _SearchScreenState extends State<SearchScreen> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         final appCubit = AppCubit.get(context);
+
         return Scaffold(
           resizeToAvoidBottomInset: true,
           body: Directionality(
             textDirection: TextDirection.rtl,
             child: BlocBuilder<UserServicesCubit, UserServicesStates>(
-              builder: (context, state) {
+              builder: (context, userServicesState) {
+                if (userServicesState is GetUserAllServicesLoadingState) {
+                  return SearchScreenShimmer(isDark: appCubit.isDark);
+                }
+
                 return BlocBuilder<BookingCubit, BookingStates>(
                   builder: (context, bookingState) {
                     final userServicesCubit = UserServicesCubit.get(context);
@@ -593,6 +592,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       services: services,
                       bookings: bookings,
                     );
+
                     final hasQuery = searchController.text.trim().isNotEmpty;
                     final isBookingLoading = bookingState
                         .toString()
@@ -600,14 +600,19 @@ class _SearchScreenState extends State<SearchScreen> {
                         .contains('loading');
 
                     return SingleChildScrollView(
-                      padding: EdgeInsetsDirectional.only(bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,),
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsetsDirectional.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildSearchHeader(appCubit),
                           SizedBox(height: 20.h),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,),
+                            padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 10.w,
+                            ),
                             child: hasQuery
                                 ? buildSearchResults(
                                     appCubit: appCubit,
@@ -2094,10 +2099,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 9.h),
                   Row(
                     children: [
-                      Icon(
-                        Icons.star_rounded,
-                        color: Colors.amber,
-                        size: 17.sp,
+                      SvgPicture.asset(
+                        'assets/star.svg',
+                        color: mainColor,
+                        width: 15.w,
                       ),
                       SizedBox(width: 4.w),
                       Text(
@@ -2121,10 +2126,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 7.h),
                   Row(
                     children: [
-                      Icon(
-                        Icons.person_rounded,
-                        color: Colors.grey,
-                        size: 15.sp,
+                      SvgPicture.asset(
+                        'assets/acc.svg',
+                        color: mainColor,
+                        width: 15.w,
                       ),
                       SizedBox(width: 4.w),
                       Expanded(
@@ -2256,10 +2261,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 9.h),
                   Row(
                     children: [
-                      Icon(
-                        Icons.person_rounded,
+                      SvgPicture.asset(
+                        'assets/acc.svg',
                         color: mainColor,
-                        size: 16.sp,
+                        width: 16.w,
                       ),
                       SizedBox(width: 5.w),
                       Expanded(
@@ -2289,10 +2294,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 6.h),
                   Row(
                     children: [
-                      Icon(
-                        Icons.location_on_rounded,
+                      SvgPicture.asset(
+                        'assets/loc.svg',
                         color: Colors.grey,
-                        size: 15.sp,
+                        width: 15.w,
                       ),
                       SizedBox(width: 4.w),
                       Expanded(
