@@ -534,9 +534,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                                       category:
                                                           service['category'] ??
                                                               '',
-                                                      subCategory: service[
-                                                              'subCategory'] ??
-                                                          '',
                                                       desc: service[
                                                               'description'] ??
                                                           '',
@@ -619,83 +616,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                                               },
                                                             ),
                                                           ),
-<<<<<<< Updated upstream
-                                                        ),
-                                                        Icon(
-                                                          Icons.arrow_forward_ios_rounded,
-                                                          color: mainColor.withOpacity(0.3),
-                                                          size: 12.sp,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h,),
-                                      /*الخدمات الرائجة*/
-                                      Column(
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                                            child: buildSectionTitle(title: 'الخدمات الرائجة', icon: 'assets/services.svg', cubit: appCubit),
-                                          ),
-                                          SizedBox(height: 10.h,),
-                                          SizedBox(
-                                            height: 350.h,
-                                            child: ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              padding: EdgeInsetsDirectional.only(start: 15.w, bottom: 10.h),
-                                              itemCount: 4,
-                                              itemBuilder: (context, index) {
-                                                var service = userServicesCubit.userServices[index];
-                                                var providerData = userServicesCubit.allUsers[service['providerId']];
-                                                return Padding(
-                                                  padding: EdgeInsetsDirectional.only(
-                                                      start: index == 0 ? 0 : 15.w,
-                                                      end: index == 3 ? 15.w : 0),
-                                                  child: InkWell(
-                                                    onTap: () => move(
-                                                        context,
-                                                        ServiceDetails(
-                                                          name: service['name'],
-                                                          image: service['serviceImage'],
-                                                          category: service['category'],
-                                                          desc: service['description'],
-                                                          price: service['price'],
-                                                          period: service['period'],
-                                                          rate: service['rate'],
-                                                          providerName:
-                                                          providerData['name'],
-                                                          providerSpec: providerData[
-                                                          'specialization'],
-                                                          reviews: service['reviews'],
-                                                          providerId: providerData['uid'],
-                                                        )), // نفس الدالة الأصلية
-                                                    borderRadius: BorderRadius.circular(25.r),
-                                                    child: Container(
-                                                      width: 280.w,
-                                                      decoration: BoxDecoration(
-                                                          color: appCubit.isDark ? lightDarkColor : Colors.white,
-                                                          borderRadius: BorderRadius.circular(25.r),
-                                                          boxShadow: blueShadow
-                                                      ),
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Stack(
-                                                            children: [
-                                                              ClipRRect(
-                                                                borderRadius: BorderRadius.circular(25.r),
-                                                                child: Image.network(
-                                                                  '${service['serviceImage'] ?? ''}',
-                                                                  height: 180.h,
-                                                                  width: double.infinity,
-                                                                  fit: BoxFit.cover,
-=======
                                                           PositionedDirectional(
                                                             bottom: 12.h,
                                                             end: 12.w,
@@ -734,7 +654,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                                                           .bold,
                                                                   fontSize:
                                                                       13.sp,
->>>>>>> Stashed changes
                                                                 ),
                                                               ),
                                                             ),
