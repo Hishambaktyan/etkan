@@ -1,25 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
- import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 
 import '../../../../shared/networks/local/cache_helper.dart';
 import '../../../../shared/networks/remote/notification_service.dart';
 
-class BookingCubit extends Cubit<BookingStates>{
+class BookingCubit extends Cubit<BookingStates> {
+  BookingCubit() : super(BookingInitState());
 
-  BookingCubit(): super(BookingInitState());
+  static BookingCubit get(context) => BlocProvider.of(context);
 
-  static BookingCubit get(context)=>BlocProvider.of(context);
+  List<Map<String, dynamic>> userRequests = [];
 
-  List<Map<String,dynamic>> userRequests = [];
-
-  Future<void> getUserRequests()async{
-    try{
+  Future<void> getUserRequests() async {
+    try {
       emit(GetUserRequestLoadingState());
+      userRequests.clear();
       final requestSnapshot = await FirebaseFirestore.instance
           .collection('requests')
-          .where('customerId' ,isEqualTo: CacheHelper.getData(key: 'uid'))
+          .where('customerId', isEqualTo: CacheHelper.getData(key: 'uid'))
           .get();
 
       for (var doc in requestSnapshot.docs) {
@@ -28,8 +28,7 @@ class BookingCubit extends Cubit<BookingStates>{
         userRequests.add(data);
       }
       emit(GetUserRequestSuccessState());
-
-    }catch(e){
+    } catch (e) {
       emit(GetUserRequestErrorState(error: e.toString()));
       print(e.toString());
     }
@@ -46,15 +45,15 @@ class BookingCubit extends Cubit<BookingStates>{
     required String duration,
     required int price,
     required Timestamp scheduledAt,
-  })
-  async {
+  }) async {
     try {
       emit(CreateRequestLoadingState());
 
       final DateTime now = DateTime.now();
       final Timestamp nowTimestamp = Timestamp.fromDate(now);
 
-      final requestRef = FirebaseFirestore.instance.collection('requests').doc();
+      final requestRef =
+          FirebaseFirestore.instance.collection('requests').doc();
 
       final Map<String, dynamic> requestData = {
         'requestId': requestRef.id,
@@ -116,5 +115,4 @@ class BookingCubit extends Cubit<BookingStates>{
       emit(CreateRequestErrorState(error: e.toString()));
     }
   }
-
 }

@@ -41,45 +41,44 @@ class _DeptScreenState extends State<DeptScreen> {
         builder: (context, state) {
           AppCubit appCubit = AppCubit.get(context);
 
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                headerWithSearch(
-                  title: 'الأقسام',
-                  searchKeyWords: const [
-                    'ابحث في الكهرباء',
-                    'ابحث في السباكة',
-                    'ابحث في التكييف',
-                  ],
-                  context: context,
-                  appCubit: appCubit,
-                ),
-                SizedBox(height: 20.h),
-                Expanded(
-                  child: BlocConsumer<UserServicesCubit, UserServicesStates>(
-                    listener: (context, state) {
-                      if (state is GetCategoryErrorState) {
-                        showSnackBar(
-                          Colors.red,
-                          state.error,
-                          context,
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      final userServicesCubit = UserServicesCubit.get(context);
-                      final categories = userServicesCubit.categories;
+          return BlocConsumer<UserServicesCubit, UserServicesStates>(
+            listener: (context, state) {
+              if (state is GetCategoryErrorState) {
+                showSnackBar(
+                  Colors.red,
+                  state.error,
+                  context,
+                );
+              }
+            },
+            builder: (context, state) {
+              final userServicesCubit = UserServicesCubit.get(context);
+              final categories = userServicesCubit.categories;
 
-                      if (state is GetCategoryLoadingState &&
-                          categories.isEmpty) {
-                        return UserDeptShimmer(
-                          isDark: appCubit.isDark,
-                        );
-                      }
+              if (state is GetCategoryLoadingState && categories.isEmpty) {
+                return UserDeptShimmer(
+                  isDark: appCubit.isDark,
+                );
+              }
 
-                      return RefreshIndicator(
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    headerWithSearch(
+                      title: 'الأقسام',
+                      searchKeyWords: const [
+                        'ابحث في الكهرباء',
+                        'ابحث في السباكة',
+                        'ابحث في التكييف',
+                      ],
+                      context: context,
+                      appCubit: appCubit,
+                    ),
+                    SizedBox(height: 20.h),
+                    Expanded(
+                      child: RefreshIndicator(
                         color: mainColor,
                         onRefresh: () async {
                           await userServicesCubit.getCategories();
@@ -143,27 +142,6 @@ class _DeptScreenState extends State<DeptScreen> {
                                           ? SvgPicture.network(
                                               categoryImage,
                                               fit: BoxFit.contain,
-                                              placeholderBuilder: (context) {
-                                                return Shimmer.fromColors(
-                                                  baseColor: appCubit.isDark
-                                                      ? const Color(0xFF2A2A2A)
-                                                      : const Color(0xFFE3F2FD),
-                                                  highlightColor: appCubit
-                                                          .isDark
-                                                      ? const Color(0xFF3A3A3A)
-                                                      : const Color(0xFFF8FCFF),
-                                                  child: Container(
-                                                    width: 26.w,
-                                                    height: 26.h,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.r),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
                                             )
                                           : Icon(
                                               Icons.category_rounded,
@@ -197,12 +175,12 @@ class _DeptScreenState extends State<DeptScreen> {
                             );
                           },
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

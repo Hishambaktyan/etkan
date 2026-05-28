@@ -3801,80 +3801,266 @@ class UserDeptShimmer extends StatelessWidget {
 
   Color get containerColor => isDark ? lightDarkColor : Colors.white;
 
-  Color get innerContainerColor =>
-      isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+  Color get searchContainerColor => isDark ? darkBgColor : Colors.white;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: EdgeInsetsDirectional.symmetric(
-        horizontal: 10.w,
-        vertical: 5.h,
-      ),
-      physics: const AlwaysScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 20.h,
-        crossAxisSpacing: 10.w,
-        childAspectRatio: 2,
-      ),
-      itemCount: 8,
-      itemBuilder: (context, index) {
-        return Container(
-          padding: EdgeInsetsDirectional.all(10.r),
-          decoration: BoxDecoration(
-            color: containerColor,
-            borderRadius: BorderRadius.circular(25.r),
-            boxShadow: isDark ? [] : blueShadow,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _headerShimmer(),
+          SizedBox(height: 20.h),
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsetsDirectional.symmetric(
+                horizontal: 10.w,
+                vertical: 5.h,
+              ),
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 20.h,
+                crossAxisSpacing: 10.w,
+                childAspectRatio: 2,
+              ),
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return _categoryCardShimmer();
+              },
+            ),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 50.w,
-                height: 50.h,
-                padding: EdgeInsets.all(12.r),
-                decoration: BoxDecoration(
-                  color: mainColor.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(18.r),
-                ),
-                child: _shimmerBox(
-                  width: 26.w,
-                  height: 26.h,
-                  radius: 8,
-                ),
-              ),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: _shimmerBox(
-                  width: double.infinity,
-                  height: 12.h,
-                  radius: 8,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              _shimmerBox(
-                width: 12.w,
-                height: 12.h,
-                radius: 5,
-              ),
+        ],
+      ),
+    );
+  }
+
+  Widget _headerShimmer() {
+    return ClipRRect(
+      borderRadius: BorderRadiusDirectional.vertical(
+        bottom: Radius.circular(30.r),
+      ),
+      child: Container(
+        height: 160.h,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              mainColor.withOpacity(0.9),
+              const Color(0xFF0F0F1E),
+            ],
+            stops: const [
+              0.0,
+              0.8,
             ],
           ),
-        );
-      },
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -50.h,
+              left: -50.w,
+              child: CircleAvatar(
+                radius: 100.r,
+                backgroundColor: Colors.white.withOpacity(0.15),
+              ),
+            ),
+            Positioned(
+              top: 80.h,
+              right: -60.w,
+              child: Container(
+                width: 250.r,
+                height: 250.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF00F2FF).withOpacity(0.5),
+                      const Color(0xFF00F2FF).withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 200.h,
+              left: -40.w,
+              child: Container(
+                width: 200.r,
+                height: 200.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      mainColor.withOpacity(0.4),
+                      mainColor.withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 40,
+                    sigmaY: 40,
+                  ),
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: AlignmentDirectional.topCenter,
+              child: Padding(
+                padding: EdgeInsetsDirectional.only(
+                  top: 30.h,
+                  start: 10.w,
+                  end: 10.w,
+                  bottom: 20.h,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        _glassShimmerBox(
+                          width: 95.w,
+                          height: 28.h,
+                          radius: 10,
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: EdgeInsetsDirectional.all(9.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(13.r),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.18),
+                            ),
+                          ),
+                          child: _glassShimmerBox(
+                            width: 23.w,
+                            height: 23.h,
+                            radius: 7,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Container(
+                      height: 52.h,
+                      padding: EdgeInsets.symmetric(horizontal: 17.w),
+                      decoration: BoxDecoration(
+                        color: searchContainerColor,
+                        borderRadius: BorderRadius.circular(30.r),
+                      ),
+                      child: Row(
+                        children: [
+                          _shimmerBox(
+                            width: 22.w,
+                            height: 22.h,
+                            radius: 8,
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: _shimmerBox(
+                              width: double.infinity,
+                              height: 13.h,
+                              radius: 8,
+                            ),
+                          ),
+                          SizedBox(width: 60.w),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _categoryCardShimmer() {
+    return Container(
+      padding: EdgeInsetsDirectional.all(10.r),
+      decoration: BoxDecoration(
+        color: containerColor,
+        borderRadius: BorderRadius.circular(25.r),
+        boxShadow: isDark ? [] : blueShadow,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50.w,
+            height: 50.h,
+            padding: EdgeInsets.all(12.r),
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(18.r),
+            ),
+            child: _shimmerBox(
+              width: 26.w,
+              height: 26.h,
+              radius: 8,
+            ),
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: _shimmerBox(
+              width: double.infinity,
+              height: 12.h,
+              radius: 8,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          _shimmerBox(
+            width: 12.w,
+            height: 12.h,
+            radius: 5,
+          ),
+        ],
+      ),
     );
   }
 
   Widget _shimmerBox({
-    required double height,
     required double width,
+    required double height,
     double radius = 12,
   }) {
     return Shimmer.fromColors(
       baseColor: baseColor,
       highlightColor: highlightColor,
       child: Container(
-        height: height,
         width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(radius.r),
+        ),
+      ),
+    );
+  }
+
+  Widget _glassShimmerBox({
+    required double width,
+    required double height,
+    double radius = 12,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: Colors.white.withOpacity(0.20),
+      highlightColor: Colors.white.withOpacity(0.55),
+      child: Container(
+        width: width,
+        height: height,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(radius.r),
