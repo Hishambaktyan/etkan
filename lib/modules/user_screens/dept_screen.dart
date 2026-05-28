@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trying_homy/modules/user_screens/services_list.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
@@ -73,43 +74,8 @@ class _DeptScreenState extends State<DeptScreen> {
 
                       if (state is GetCategoryLoadingState &&
                           categories.isEmpty) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: mainColor,
-                          ),
-                        );
-                      }
-
-                      if (categories.isEmpty) {
-                        return RefreshIndicator(
-                          color: mainColor,
-                          onRefresh: () async {
-                            await userServicesCubit.getCategories();
-                          },
-                          child: ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            children: [
-                              SizedBox(height: 120.h),
-                              Icon(
-                                Icons.category_outlined,
-                                size: 55.sp,
-                                color: mainColor,
-                              ),
-                              SizedBox(height: 15.h),
-                              Center(
-                                child: Text(
-                                  'لا توجد أقسام حالياً',
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: appCubit.isDark
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        return UserDeptShimmer(
+                          isDark: appCubit.isDark,
                         );
                       }
 
@@ -176,15 +142,24 @@ class _DeptScreenState extends State<DeptScreen> {
                                       child: categoryImage.trim().isNotEmpty
                                           ? SvgPicture.network(
                                               categoryImage,
+                                              fit: BoxFit.contain,
                                               placeholderBuilder: (context) {
-                                                return Center(
-                                                  child: SizedBox(
-                                                    width: 18.w,
-                                                    height: 18.w,
-                                                    child:
-                                                        const CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      color: mainColor,
+                                                return Shimmer.fromColors(
+                                                  baseColor: appCubit.isDark
+                                                      ? const Color(0xFF2A2A2A)
+                                                      : const Color(0xFFE3F2FD),
+                                                  highlightColor: appCubit
+                                                          .isDark
+                                                      ? const Color(0xFF3A3A3A)
+                                                      : const Color(0xFFF8FCFF),
+                                                  child: Container(
+                                                    width: 26.w,
+                                                    height: 26.h,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.r),
                                                     ),
                                                   ),
                                                 );

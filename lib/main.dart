@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:ui';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -59,11 +58,13 @@ void moveAndReplace(BuildContext context, Widget screen) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin localNotifications =
+    FlutterLocalNotificationsPlugin();
 
 Map<String, dynamic>? pendingNotificationData;
 
-const AndroidNotificationChannel highImportanceChannel = AndroidNotificationChannel(
+const AndroidNotificationChannel highImportanceChannel =
+    AndroidNotificationChannel(
   'high_importance_channel',
   'High Importance Notifications',
   description: 'This channel is used for important notifications.',
@@ -71,7 +72,8 @@ const AndroidNotificationChannel highImportanceChannel = AndroidNotificationChan
 );
 
 Future<void> initLocalNotifications({bool requestPermission = true}) async {
-  const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+  const androidSettings =
+      AndroidInitializationSettings('@mipmap/launcher_icon');
 
   const settings = InitializationSettings(
     android: androidSettings,
@@ -86,7 +88,7 @@ Future<void> initLocalNotifications({bool requestPermission = true}) async {
       if (response.payload == null || response.payload!.isEmpty) return;
 
       final Map<String, dynamic> data =
-      Map<String, dynamic>.from(jsonDecode(response.payload!));
+          Map<String, dynamic>.from(jsonDecode(response.payload!));
 
       final context = navigatorKey.currentContext;
 
@@ -100,7 +102,7 @@ Future<void> initLocalNotifications({bool requestPermission = true}) async {
 
   if (requestPermission) {
     final NotificationAppLaunchDetails? launchDetails =
-    await localNotifications.getNotificationAppLaunchDetails();
+        await localNotifications.getNotificationAppLaunchDetails();
 
     if (launchDetails?.didNotificationLaunchApp ?? false) {
       final payload = launchDetails!.notificationResponse?.payload;
@@ -110,7 +112,7 @@ Future<void> initLocalNotifications({bool requestPermission = true}) async {
 
       if (payload != null && payload.isNotEmpty) {
         pendingNotificationData =
-        Map<String, dynamic>.from(jsonDecode(payload));
+            Map<String, dynamic>.from(jsonDecode(payload));
 
         print('pendingNotificationData saved: $pendingNotificationData');
       }
@@ -119,13 +121,13 @@ Future<void> initLocalNotifications({bool requestPermission = true}) async {
 
   await localNotifications
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(highImportanceChannel);
 
   if (requestPermission) {
     await localNotifications
         .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
   }
 }
@@ -196,7 +198,6 @@ Future<void> main() async {
 
   await initLocalNotifications(requestPermission: true);
 
-
   Bloc.observer = MyBlocObserver();
 
   await CacheHelper.init();
@@ -218,7 +219,9 @@ Future<void> main() async {
     startWidget = const OnBoardingScreen();
   }
 
-  runApp(MyApp(isDark: isDark,));
+  runApp(MyApp(
+    isDark: isDark,
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -256,7 +259,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<WorkerCubit>(
             create: (context) => WorkerCubit()..getWorkerData()),
-        BlocProvider(create: (context) => NotificationCubit()..initFirebaseMessaging(),)
+        BlocProvider(
+          create: (context) => NotificationCubit()..initFirebaseMessaging(),
+        )
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 800),
@@ -272,8 +277,7 @@ class MyApp extends StatelessWidget {
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   debugShowCheckedModeBanner: false,
-                  home: startWidget
-              );
+                  home: startWidget);
             },
           );
         },

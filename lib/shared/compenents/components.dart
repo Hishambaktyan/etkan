@@ -3784,3 +3784,102 @@ class SearchScreenShimmer extends StatelessWidget {
     );
   }
 }
+
+class UserDeptShimmer extends StatelessWidget {
+  final bool isDark;
+
+  const UserDeptShimmer({
+    super.key,
+    required this.isDark,
+  });
+
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+
+  Color get containerColor => isDark ? lightDarkColor : Colors.white;
+
+  Color get innerContainerColor =>
+      isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: EdgeInsetsDirectional.symmetric(
+        horizontal: 10.w,
+        vertical: 5.h,
+      ),
+      physics: const AlwaysScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 20.h,
+        crossAxisSpacing: 10.w,
+        childAspectRatio: 2,
+      ),
+      itemCount: 8,
+      itemBuilder: (context, index) {
+        return Container(
+          padding: EdgeInsetsDirectional.all(10.r),
+          decoration: BoxDecoration(
+            color: containerColor,
+            borderRadius: BorderRadius.circular(25.r),
+            boxShadow: isDark ? [] : blueShadow,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50.w,
+                height: 50.h,
+                padding: EdgeInsets.all(12.r),
+                decoration: BoxDecoration(
+                  color: mainColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(18.r),
+                ),
+                child: _shimmerBox(
+                  width: 26.w,
+                  height: 26.h,
+                  radius: 8,
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: _shimmerBox(
+                  width: double.infinity,
+                  height: 12.h,
+                  radius: 8,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              _shimmerBox(
+                width: 12.w,
+                height: 12.h,
+                radius: 5,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _shimmerBox({
+    required double height,
+    required double width,
+    double radius = 12,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(radius.r),
+        ),
+      ),
+    );
+  }
+}

@@ -600,7 +600,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         .contains('loading');
 
                     return SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
                       padding: EdgeInsetsDirectional.only(
                         bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
                       ),
