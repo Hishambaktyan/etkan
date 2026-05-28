@@ -8,7 +8,6 @@ import 'package:trying_homy/modules/the_chat.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 
 import '../../shared/networks/local/cache_helper.dart';
 
@@ -29,8 +28,7 @@ class _WorkerChatsState extends State<WorkerChats> {
       .snapshots();
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit,AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
           return Scaffold(
@@ -129,7 +127,7 @@ class _WorkerChatsState extends State<WorkerChats> {
 
                               final requestId = chatData['requestId'] ?? '';
 
-                              return InkWell(
+                 return InkWell(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 borderRadius: BorderRadius.circular(18.r),
@@ -148,7 +146,7 @@ class _WorkerChatsState extends State<WorkerChats> {
                                     color: appCubit.isDark
                                         ? const Color(0xFF161B22)
                                         : Colors.white,
-                                    borderRadius: BorderRadius.circular(18.r),
+                                    borderRadius: BorderRadius.circular(25.r),
                                     boxShadow: blueShadow
                                   ),
                                   child: Row(
@@ -174,6 +172,7 @@ class _WorkerChatsState extends State<WorkerChats> {
                                             Container(
                                               height: 18.h,
                                               width: 18.w,
+                                              padding: EdgeInsetsDirectional.only(top: 4.r),
                                               alignment: Alignment.center,
                                               decoration: BoxDecoration(
                                                 color: Colors.green,
@@ -289,7 +288,7 @@ class _WorkerChatsState extends State<WorkerChats> {
                                   ),
                                 ),
                               );
-                            },
+                                         },
                             separatorBuilder: (context, index) => SizedBox(height:17.h,),
                           ),
                         ),

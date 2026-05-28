@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis_auth/auth_io.dart';
@@ -31,16 +30,17 @@ class NotificationService {
     required String body,
     required String type,
     required String relatedId,
-    String senderId = '',
+    required String senderId,
+    String senderName = '',
+    String senderImage = '',
+    String requestId = '',
   })
   async {
     try {
-
       final accessToken = await getAccessToken();
 
       final response = await http.post(
-
-        Uri.parse('https://fcm.googleapis.com/v1/projects/$projectId/messages:send',),
+        Uri.parse('https://fcm.googleapis.com/v1/projects/$projectId/messages:send'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -48,23 +48,20 @@ class NotificationService {
         body: jsonEncode({
           'message': {
             'token': receiverToken,
-
-            'notification': {
+            'data': {
               'title': title,
               'body': body,
-            },
-
-            'data': {
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
               'type': type,
               'relatedId': relatedId,
               'senderId': senderId,
+              'senderName': senderName,
+              'senderImage': senderImage,
+              'requestId': requestId,
             },
-
             'android': {
-              'priority': 'high',
-              'notification': {
-                'sound': 'default',
-              },
+              'priority': 'HIGH',
+              'ttl': '60s',
             },
           },
         }),

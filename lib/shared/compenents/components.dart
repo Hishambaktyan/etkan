@@ -221,6 +221,7 @@ Widget header(
                             color: Colors.white),
                       ),
                       const Spacer(),
+<<<<<<< HEAD
                       isNotif
                           ? InkWell(
                               highlightColor: Colors.transparent,
@@ -270,6 +271,51 @@ Widget header(
                               ),
                             )
                           : const SizedBox()
+=======
+                      isAction? InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: (){onActionPresses!();},
+                        child: Container(
+                          margin: EdgeInsetsDirectional.only(end: 10.w),
+                          padding:  EdgeInsetsDirectional.all(9.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(13.r),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.18),
+                            ),
+                          ),
+                          child: SvgPicture.asset(
+                            actionIcon!,
+                            width: 23.w,
+                            height: 23.h,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ):const SizedBox(),
+                      isNotif ?InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: ()=>move(context, const NotificationsScreen()),
+                        child: Container(
+                          padding:  EdgeInsetsDirectional.all(9.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(13.r),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.18),
+                            ),
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/not.svg',
+                            width: 23.w,
+                            height: 23.h,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ):const SizedBox(),
+>>>>>>> 06477f1074550386f40830ad2d7bca77cce679dc
                     ],
                   ),
                 ],

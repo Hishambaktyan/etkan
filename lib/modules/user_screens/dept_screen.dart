@@ -36,6 +36,7 @@ class _DeptScreenState extends State<DeptScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
       body: BlocBuilder<AppCubit, AppStates>(
         builder: (context, state) {
           AppCubit appCubit = AppCubit.get(context);
@@ -224,6 +225,86 @@ class _DeptScreenState extends State<DeptScreen> {
                         ),
                       );
                     },
+=======
+      body: BlocBuilder<AppCubit,AppStates>(
+          builder: (context, state) {
+            AppCubit appCubit = AppCubit.get(context);
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  headerWithSearch(
+                      title: 'الأقسام',
+                      searchKeyWords: [
+                        'ابحث في الكهرباء',
+                        'ابحث في السباكة',
+                        'ابحث في التكييف',
+                      ],
+                      context: context,
+                      appCubit: appCubit
+                  ),
+                  Expanded(
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      padding:EdgeInsetsDirectional.symmetric(vertical: 20.h,horizontal: 10.w),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 20.h,
+                        crossAxisSpacing: 10.w,
+                        childAspectRatio: 2,
+                      ),
+                      itemCount: services.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          borderRadius: BorderRadius.circular(25.r),
+                          onTap: () => move(context, ServicesList(categoryType: services[index]['type']!)),
+                          child: Container(
+                            padding: EdgeInsetsDirectional.all(10.r),
+                            decoration: BoxDecoration(
+                              color: appCubit.isDark ? lightDarkColor : Colors.white,
+                              borderRadius: BorderRadius.circular(25.r),
+                              boxShadow: blueShadow,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 50.w,
+                                  height: 50.h,
+                                  padding: EdgeInsets.all(12.r),
+                                  decoration: BoxDecoration(
+                                    color: mainColor.withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(18.r),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    services[index]['icon']!,
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
+                                Expanded(
+                                  child: Text(
+                                    services[index]['name']!,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12.sp,
+                                      color: appCubit.isDark ? Colors.white : Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: mainColor.withOpacity(0.3),
+                                  size: 12.sp,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+>>>>>>> 06477f1074550386f40830ad2d7bca77cce679dc
                   ),
                 ),
               ],

@@ -6,9 +6,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
+
   AuthCubit() : super(AuthInitSatate());
 
   static AuthCubit get(context) => BlocProvider.of(context);
@@ -212,6 +214,7 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
+
   Future<String> uploadImageToCloudinary(String imagePath) async {
     final dio = Dio();
 
@@ -298,44 +301,46 @@ class AuthCubit extends Cubit<AuthStates> {
 
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .where('phone',isEqualTo: phone.trim())
-          .where('password',isEqualTo: password.trim())
+          .where('phone', isEqualTo: phone.trim())
+          .where('password', isEqualTo: password.trim())
+          .where('role', isEqualTo: requiredRole)
           .limit(1)
           .get();
 
       if (userDoc.docs.isEmpty) {
-        emit(LoginErrorState(error: 'رقم الهاتف أو كلمة المرور غير صحيحة'));
-        return;
-      }
-
-      final userData = userDoc.docs.first.data();
-      final role = userData['role'];
-      final uid = userData['uid'];
-
-      if (role != requiredRole) {
-        String message = 'ليس لديك صلاحية الدخول من هذه الصفحة';
+        String message = 'رقم الهاتف أو كلمة المرور غير صحيحة';
 
         if (requiredRole == 'admin') {
           message = 'هذا الحساب ليس حساب مسؤول';
-          await CacheHelper.saveData(key: 'role', value: 'admin');
         } else if (requiredRole == 'provider') {
-          message = 'هذا الحساب ليس حساب عامل';
-          await CacheHelper.saveData(key: 'role', value: 'provider');
+          message = 'هذا الحساب ليس حساب فني';
         } else if (requiredRole == 'user') {
           message = 'هذا الحساب ليس حساب مستخدم';
-          await CacheHelper.saveData(key: 'role', value: 'user');
         }
 
         emit(LoginErrorState(error: message));
         return;
       }
 
+      final doc = userDoc.docs.first;
+      final userData = doc.data();
+
+      final String role = userData['role']?.toString().trim() ?? '';
+      final String uid = doc.id;
+
+      if (role != requiredRole) {
+        emit(LoginErrorState(error: 'ليس لديك صلاحية الدخول من هذه الصفحة'));
+        return;
+      }
+
       await CacheHelper.saveData(key: 'uid', value: uid);
-      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true,);
+      await CacheHelper.saveData(key: 'role', value: role);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
+
       await saveUserToken(uid);
 
       emit(LoginSuccessState());
-    }catch (e) {
+    } catch (e) {
       emit(LoginErrorState(error: e.toString()));
     }
   }
@@ -406,4 +411,6 @@ class AuthCubit extends Cubit<AuthStates> {
     } catch (e) {
       print("خطأ أثناء حفظ الـ Token: ${e.toString()}");
     }
-  }}
+  }
+
+}

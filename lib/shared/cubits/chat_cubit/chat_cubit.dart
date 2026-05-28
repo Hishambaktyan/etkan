@@ -73,64 +73,76 @@ class ChatCubit extends Cubit<ChatStates>{
     required String receiverId,
     required String senderId,
     required String chatId,
+    required String requestId,
     required String body,
     required bool isImage,
-  }) async {
+  })
+  async {
     try {
       if (receiverId == senderId) {
         print('لن يتم إرسال إشعار لنفس المستخدم');
         return;
       }
 
-      final receiverDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(receiverId)
-          .get();
+      final results = await Future.wait([
+        FirebaseFirestore.instance.collection('users').doc(receiverId).get(),
+        FirebaseFirestore.instance.collection('users').doc(senderId).get(),
+      ]);
+
+      final receiverDoc = results[0];
+      final senderDoc = results[1];
 
       final receiverData = receiverDoc.data() ?? {};
+      final senderData = senderDoc.data() ?? {};
 
       final receiverToken = receiverData['token']?.toString() ?? '';
-
-      print('Receiver ID: $receiverId');
-      print('Sender ID: $senderId');
-      print('Receiver Data: $receiverData');
-      print('Receiver Token: $receiverToken');
 
       if (receiverToken.isEmpty) {
         print('لا يوجد token لمستقبل الرسالة');
         return;
       }
 
-      const String title = 'رسالة جديدة';
+      final String senderName = senderData['name']?.toString() ?? 'مستخدم';
+      final String senderImage = senderData['profileImage']?.toString() ?? '';
+
+      final nameParts = senderName.trim().split(RegExp(r'\s+'));
+      final firstTwoNames = nameParts.take(2).join(' ');
+
+      final String title = 'رسالة جديدة من $firstTwoNames';
       final String notificationBody = isImage ? 'تم إرسال صورة جديدة' : body;
 
-      await NotificationService.createNotificationInFirestore(
-        receiverId: receiverId,
-        receiverType: 'chat',
-        senderId: senderId,
-        title: title,
-        body: notificationBody,
-        type: 'new_message',
-        relatedId: chatId,
-      );
+      await Future.wait([
+        NotificationService.sendNotification(
+          receiverToken: receiverToken,
+          title: title,
+          body: notificationBody,
+          type: 'new_message',
+          relatedId: chatId,
+          senderId: senderId,
+          senderName: senderName,
+          senderImage: senderImage,
+          requestId: requestId,
+        ),
 
-      await NotificationService.sendNotification(
-        receiverToken: receiverToken,
-        title: title,
-        body: notificationBody,
-        type: 'new_message',
-        relatedId: chatId,
-        senderId: senderId,
-      );
+        NotificationService.createNotificationInFirestore(
+          receiverId: receiverId,
+          receiverType: 'chat',
+          senderId: senderId,
+          title: title,
+          body: notificationBody,
+          type: 'new_message',
+          relatedId: chatId,
+        ),
+      ]);
     } catch (error) {
       print('خطأ أثناء إرسال إشعار الرسالة: $error');
     }
   }
-
   Future<void> sendMessage(
       String chatId,
       String receiverId,
       String senderId,
+      String requestId,
       String? replyText,
       String? replyName,
       )
@@ -179,15 +191,19 @@ class ChatCubit extends Cubit<ChatStates>{
 
       await batch.commit();
 
-      await sendChatNotification(
+      emit(SendMessageSuccessState());
+
+      sendChatNotification(
         receiverId: receiverId,
         senderId: senderId,
         chatId: chatId,
         body: text,
         isImage: false,
-      );
+        requestId: requestId,
+      ).catchError((error) {
+        print('فشل إرسال إشعار الرسالة: $error');
+      });
 
-      emit(SendMessageSuccessState());
     } catch (e) {
       emit(SendMessageErrorState(error: e.toString()));
     }
@@ -217,6 +233,7 @@ class ChatCubit extends Cubit<ChatStates>{
     required String chatId,
     required String receiverId,
     required String senderId,
+    required String requestId,
     required String imageUrl,
     String? replyText,
     String? replyName,
@@ -263,15 +280,18 @@ class ChatCubit extends Cubit<ChatStates>{
 
       await batch.commit();
 
-      await sendChatNotification(
+      emit(SendMessageSuccessState());
+
+      sendChatNotification(
         receiverId: receiverId,
         senderId: senderId,
         chatId: chatId,
-        body: 'أرسل لك صورة',
-        isImage: true,
-      );
-
-      emit(SendMessageSuccessState());
+        body: 'ارسل لك صورة',
+        isImage: false,
+        requestId: requestId,
+      ).catchError((error) {
+        print('فشل إرسال إشعار الرسالة: $error');
+      });
     } catch (e) {
       emit(SendMessageErrorState(error: e.toString()));
     }

@@ -11,8 +11,11 @@ import 'package:trying_homy/modules/admin_screens/manage_dept.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../main.dart';
+import '../on_boarding.dart';
 import 'admin_service_details.dart';
 import 'categories_list.dart';
 import 'admin_providers_list.dart';
@@ -106,7 +109,47 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    header(title: 'مرحبا، هشام', context: context),
+                    BlocConsumer<AuthCubit,AuthStates>(
+                      listener: (context, state) {
+                        if (state is LogOutLoadingState) {
+                          showLoadingDialog(context);
+                        }
+                        if (state is LogOutSuccessState) {
+                          hideLoadingDialog(context);
+                          showSnackBar(Colors.green, 'تم تسجيل خروجك بنجاح', context);
+                          moveAndReplace(context, const OnBoardingScreen());
+                        }
+                        if (state is LogOutErrorState) {
+                          hideLoadingDialog(context);
+                          showSnackBar(Colors.red, state.error, context);
+                        }
+                      },
+                      builder: (context, state) {
+                        AuthCubit authCubit = AuthCubit.get(context);
+                        return header(
+                          title: 'مرحبا، هشام',
+                          context: context,
+                          isAction: true,
+                          actionIcon: 'assets/out.svg',
+                          onActionPresses: (){
+                            defaultConfirmDialog(
+                              context: context,
+                              isDark: false,
+                              icon: 'assets/out.svg',
+                              iconColor: Colors.red,
+                              title: 'تأكيد تسجيل الخروج',
+                              body: 'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                              cancelText: 'إلغاء',
+                              confirmText: 'خروج',
+                              onConfirm: () {
+                                Navigator.pop(context);
+                                authCubit.logoutUser();
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -734,7 +777,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     SizedBox(height: 10.h),
                     SizedBox(
-                      height: 390.h,
+                      height: 400.h,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding:

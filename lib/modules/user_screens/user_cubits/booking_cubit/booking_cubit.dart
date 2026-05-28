@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
  import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 
 import '../../../../shared/networks/local/cache_helper.dart';
 import '../../../../shared/networks/remote/notification_service.dart';
@@ -55,8 +56,9 @@ class BookingCubit extends Cubit<BookingStates>{
 
       final requestRef = FirebaseFirestore.instance.collection('requests').doc();
 
-      await requestRef.set({
+      final Map<String, dynamic> requestData = {
         'requestId': requestRef.id,
+        'id': requestRef.id,
         'address': address,
         'category': category,
         'customerId': customerId,
@@ -77,17 +79,9 @@ class BookingCubit extends Cubit<BookingStates>{
           'completedAt': null,
           'cancelledAt': null,
         },
-      });
+      };
 
-      await NotificationService.createNotificationInFirestore(
-        receiverId: providerId,
-        receiverType: 'worker',
-        senderId: customerId,
-        title: 'حجز جديد',
-        body: 'لديك حجز خدمة جديد: $title',
-        type: 'new_booking',
-        relatedId: requestRef.id,
-      );
+      await requestRef.set(requestData);
 
       final providerDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -107,6 +101,15 @@ class BookingCubit extends Cubit<BookingStates>{
           senderId: customerId,
         );
       }
+      await NotificationService.createNotificationInFirestore(
+        receiverId: providerId,
+        receiverType: 'worker',
+        senderId: customerId,
+        title: 'حجز جديد',
+        body: 'لديك حجز خدمة جديد: $title',
+        type: 'new_booking',
+        relatedId: requestRef.id,
+      );
 
       emit(CreateRequestSuccessState());
     } catch (e) {

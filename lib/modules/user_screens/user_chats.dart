@@ -120,121 +120,162 @@ class _UserChatsState extends State<UserChats> {
                               return InkWell(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-                                onTap: () => move(context,
-                                    TheChat(
-                                      otherUsername: otherUsername,
-                                      otherUserImage: otherUserImage,
-                                      otherUserId: otherUser,
-                                      myId: myUserId,
-                                      chatId: doc.id,
-                                      requestId: requestId,
-                                    )
-                                ),
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: otherUserImage.toString().isNotEmpty
-                                          ? NetworkImage(otherUserImage)
-                                          : null,
-                                      backgroundColor: Colors.grey.withOpacity(0.1),
-                                      radius: 27.r,
-                                      child: otherUserImage.toString().isEmpty
-                                          ? const Icon(Icons.person)
-                                          : null,
-                                    ),
-                                    SizedBox(width: 10.w,),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                borderRadius: BorderRadius.circular(18.r),
+                                onTap: () => move(context, TheChat(
+                                    otherUsername: otherUsername,
+                                    otherUserImage: otherUserImage,
+                                    otherUserId: otherUser,
+                                    myId: myUserId,
+                                    chatId: doc.id,
+                                    requestId: requestId,
+                                  ),),
+                                child: Container(
+                                  margin: EdgeInsetsDirectional.symmetric(horizontal: 2.w),
+                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w, vertical: 12.h,),
+                                  decoration: BoxDecoration(
+                                    color: appCubit.isDark
+                                        ? const Color(0xFF161B22)
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(25.r),
+                                    boxShadow: blueShadow
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Stack(
+                                        alignment: AlignmentDirectional.bottomStart,
                                         children: [
-                                          Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 190.w,
-                                                child: Text(
-                                                  otherUsername,
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      color: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .color),
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              Container(
-                                                alignment:
-                                                    AlignmentDirectional.centerEnd,
-                                                child: Text(
-                                                 timeFormatStatusTime(
-                                                      chatData['lastUpdate']),
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 9.sp),
-                                                ),
-                                              ),
-                                            ],
+                                          CircleAvatar(
+                                            backgroundImage: otherUserImage.toString().isNotEmpty
+                                                ? NetworkImage(otherUserImage)
+                                                : null,
+                                            backgroundColor: Colors.grey.withOpacity(0.12),
+                                            radius: 25.r,
+                                            child: otherUserImage.toString().isEmpty
+                                                ? Icon(
+                                              Icons.person,
+                                              color: Colors.grey,
+                                              size: 25.r,
+                                            )
+                                                : null,
                                           ),
-                                          Row(
-                                            children: [
-                                              isMe
-                                                  ? SvgPicture.asset(
+                                          if (unReadCount != 0)
+                                            Container(
+                                              height: 18.h,
+                                              width: 18.w,
+                                              padding: EdgeInsetsDirectional.only(top: 4.r),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                color: Colors.green,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: appCubit.isDark
+                                                      ? const Color(0xFF161B22)
+                                                      : Colors.white,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                '$unReadCount',
+                                                style: TextStyle(
+                                                  fontSize: 8.sp,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  height: 1,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      SizedBox(width: 15.w),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    otherUsername,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                                                      fontSize: 14.sp,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 10.w),
+                                                Text(
+                                                  timeFormatStatusTime(chatData['lastUpdate']),
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 9.sp,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 5.h),
+                                            Container(
+                                              padding: EdgeInsetsDirectional.symmetric(horizontal: 8.w, vertical: 4.h,),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.withOpacity(0.10),
+                                                borderRadius: BorderRadius.circular(20.r),
+                                              ),
+                                              child: Text(
+                                                requestId.isNotEmpty
+                                                    ? 'حجز اسم: ${chatData['requestTitle']}'
+                                                    : 'حجز خدمة',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 9.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+
+                                            SizedBox(height: 6.h),
+
+                                            Row(
+                                              children: [
+                                                if (isMe)
+                                                  Padding(
+                                                    padding: EdgeInsetsDirectional.only(end: 5.w),
+                                                    child: SvgPicture.asset(
                                                       otherHasRead
                                                           ? 'assets/checks.svg'
                                                           : 'assets/check.svg',
                                                       color: Colors.grey,
-                                                      width: 13.w,
-                                                    )
-                                                  : const SizedBox(),
-                                              SizedBox(width: 5.w,),
-                                              Expanded(
-                                                child: Text(
-                                                  displayLastMessage,
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 11.sp
+                                                      width: 14.w,
+                                                      height: 14.w,
+                                                    ),
                                                   ),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+
+                                                Expanded(
+                                                  child: Text(
+                                                    displayLastMessage,
+                                                    style: TextStyle(
+                                                      color: unReadCount != 0
+                                                          ? Theme.of(context).textTheme.bodyLarge!.color
+                                                          : Colors.grey,
+                                                      fontSize: 11.sp,
+                                                      fontWeight: unReadCount != 0
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
                                                 ),
-                                              ),
-                                              unReadCount != 0
-                                                  ? Container(
-                                                      height: 17.h,
-                                                      width: 17.w,
-                                                      alignment: Alignment.center,
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                        color: Colors.green,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: Padding(
-                                                        padding:
-                                                            EdgeInsetsDirectional
-                                                                .only(top: 4.h),
-                                                        child: Text(
-                                                          '$unReadCount',
-                                                          style: TextStyle(
-                                                            fontSize: 9.sp,
-                                                            color: Colors.white,
-                                                            height: 1,
-                                                            leadingDistribution:
-                                                                TextLeadingDistribution
-                                                                    .even,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : const SizedBox(),
-                                            ],
-                                          ),
-                                        ],
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               );
                             },
