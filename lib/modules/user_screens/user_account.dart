@@ -579,7 +579,7 @@ class _UserAccountState extends State<UserAccount> {
                                 cancelText: 'إلغاء',
                                 confirmText: 'حذف',
                                 onConfirm: () {
-                                  authCubit.logoutUser();
+                                  authCubit.deleteUser();
                                 },
                               );
                             },
