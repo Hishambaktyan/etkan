@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
@@ -21,6 +25,7 @@ import 'layout/user_layout/user_main_screen.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
 import 'modules/admin_screens/admin_home_screen.dart';
 import 'modules/on_boarding.dart';
+import 'modules/the_chat.dart';
 import 'modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
 
 void move(BuildContext context, Widget screen) {
@@ -54,17 +59,125 @@ void moveAndReplace(BuildContext context, Widget screen) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
+
+Map<String, dynamic>? pendingNotificationData;
+
+const AndroidNotificationChannel highImportanceChannel = AndroidNotificationChannel(
+  'high_importance_channel',
+  'High Importance Notifications',
+  description: 'This channel is used for important notifications.',
+  importance: Importance.high,
+);
+
+Future<void> initLocalNotifications({bool requestPermission = true}) async {
+  const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+
+  const settings = InitializationSettings(
+    android: androidSettings,
+  );
+
+  await localNotifications.initialize(
+    settings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      print('Local notification clicked while app running/background');
+      print('Payload: ${response.payload}');
+
+      if (response.payload == null || response.payload!.isEmpty) return;
+
+      final Map<String, dynamic> data =
+      Map<String, dynamic>.from(jsonDecode(response.payload!));
+
+      final context = navigatorKey.currentContext;
+
+      if (context != null) {
+        NotificationCubit.get(context).handleNotificationData(data);
+      } else {
+        pendingNotificationData = data;
+      }
+    },
+  );
+
+  if (requestPermission) {
+    final NotificationAppLaunchDetails? launchDetails =
+    await localNotifications.getNotificationAppLaunchDetails();
+
+    if (launchDetails?.didNotificationLaunchApp ?? false) {
+      final payload = launchDetails!.notificationResponse?.payload;
+
+      print('App launched from local notification');
+      print('Launch payload: $payload');
+
+      if (payload != null && payload.isNotEmpty) {
+        pendingNotificationData =
+        Map<String, dynamic>.from(jsonDecode(payload));
+
+        print('pendingNotificationData saved: $pendingNotificationData');
+      }
+    }
+  }
+
+  await localNotifications
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(highImportanceChannel);
+
+  if (requestPermission) {
+    await localNotifications
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  }
+}
+
+Future<void> showLocalNotification(RemoteMessage message) async {
+  final data = message.data;
+
+  final String type = data['type']?.toString() ?? '';
+  final String relatedId = data['relatedId']?.toString() ?? '';
+
+  if (type == 'new_message' && TheChat.currentChatId == relatedId) {
+    print('تم تجاهل إشعار الرسالة لأن المستخدم داخل نفس الدردشة');
+    return;
+  }
+
+  final title = data['title']?.toString() ?? 'إشعار جديد';
+  final body = data['body']?.toString() ?? '';
+
+  await localNotifications.show(
+    DateTime.now().millisecondsSinceEpoch.remainder(100000),
+    title,
+    body,
+    NotificationDetails(
+      android: AndroidNotificationDetails(
+        highImportanceChannel.id,
+        highImportanceChannel.name,
+        channelDescription: highImportanceChannel.description,
+        importance: Importance.high,
+        priority: Priority.high,
+        icon: '@mipmap/launcher_icon',
+      ),
+    ),
+    payload: jsonEncode(data),
+  );
+}
+
 Widget startWidget = const OnBoardingScreen();
 
 @pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message)
-async {
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  DartPluginRegistrant.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  await initLocalNotifications(requestPermission: false);
+
   print('رسالة وصلت في الخلفية: ${message.messageId}');
   print('Data: ${message.data}');
+
+  await showLocalNotification(message);
 }
 
 Future<void> main() async {
@@ -80,6 +193,9 @@ Future<void> main() async {
   );
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  await initLocalNotifications(requestPermission: true);
+
 
   Bloc.observer = MyBlocObserver();
 
@@ -102,9 +218,7 @@ Future<void> main() async {
     startWidget = const OnBoardingScreen();
   }
 
-  runApp(MyApp(
-    isDark: isDark,
-  ));
+  runApp(MyApp(isDark: isDark,));
 }
 
 class MyApp extends StatelessWidget {

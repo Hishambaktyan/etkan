@@ -1,24 +1,20 @@
 import 'dart:ui';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
  import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/modules/notifications_screen.dart';
-import 'package:trying_homy/modules/search_screen.dart';
-import 'package:trying_homy/modules/user_screens/dept_screen.dart';
 import 'package:trying_homy/modules/user_screens/services_list.dart';
 import 'package:trying_homy/modules/user_screens/service_details.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/notification_cubit/notification_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
-import '../worker_screens/worker_add_service.dart';
 
 class UserHomeScreen extends StatefulWidget {
   const UserHomeScreen({super.key});
@@ -90,11 +86,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       await UserServicesCubit.get(context).getAllUsers();
     }
   }
-  
   @override
   void initState() {
-    checkConnectionAndGetData();
     super.initState();
+    checkConnectionAndGetData();
   }
 
   @override

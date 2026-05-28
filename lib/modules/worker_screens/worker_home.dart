@@ -10,6 +10,7 @@ import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services_list.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/notification_cubit/notification_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
@@ -91,12 +92,18 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
   }
 
+late NotificationCubit notificationCubit;
+
   @override
   void initState() {
     super.initState();
       checkConnectionAndGetData();
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+      notificationCubit = NotificationCubit.get(context);
+      notificationCubit.initFirebaseMessaging();
+  });
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
@@ -129,6 +136,7 @@ class _WorkerHomeState extends State<WorkerHome> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // hi there my namw
                                 headerWithSearch(
                                     title: 'مرحبا، ${workerCubit.workerName!.split(' ')[0] ?? ''}',
                                     searchKeyWords:['ايحث عن خدماتك','ايحث عن حجوزاتك المكتملة','ايحث عن خدماتك الرائجة',] ,

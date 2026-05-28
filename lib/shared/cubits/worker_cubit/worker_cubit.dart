@@ -585,7 +585,8 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
       if (status == 'مقبول') {
         timeField = 'acceptedAt';
-      } else if (status == 'في الطريق') {
+      }
+      else if (status == 'في الطريق') {
         timeField = 'onWayAt';
       } else if (status == 'مكتمل') {
         timeField = 'completedAt';
@@ -634,21 +635,12 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
       await batch.commit();
 
-      if (customerId.isNotEmpty) {
+      if (customerId.isNotEmpty)
+      {
         final notificationTitle = getStatusNotificationTitle(status);
         final notificationBody = getStatusNotificationBody(
           status: status,
           requestTitle: requestTitle,
-        );
-
-        await NotificationService.createNotificationInFirestore(
-          receiverId: customerId,
-          receiverType: 'user',
-          senderId: oldRequestData['providerId']?.toString() ?? '',
-          title: notificationTitle,
-          body: notificationBody,
-          type: 'booking_status',
-          relatedId: requestId,
         );
 
         final customerDoc = await FirebaseFirestore.instance
@@ -671,6 +663,17 @@ class WorkerCubit extends Cubit<WorkerStates>{
           );
         } else {
         }
+
+        await NotificationService.createNotificationInFirestore(
+          receiverId: customerId,
+          receiverType: 'user',
+          senderId: oldRequestData['providerId']?.toString() ?? '',
+          title: notificationTitle,
+          body: notificationBody,
+          type: 'booking_status',
+          relatedId: requestId,
+        );
+
       }
 
       emit(UpdateRequestStatusSuccessState());

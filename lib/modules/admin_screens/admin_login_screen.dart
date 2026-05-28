@@ -33,14 +33,19 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
         AuthCubit authCubit = AuthCubit.get(context);
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
+            if (state is LoginLoadingState){
+              showLoadingDialog(context);
+            }
             if (state is LoginSuccessState) {
+              hideLoadingDialog(context);
+              moveAndReplace(context, const AdminHomeScreen(),);
               authCubit.userLoginPhoneController.clear();
               authCubit.userLoginPasswordController.clear();
-              moveAndReplace(context, const AdminHomeScreen(),);
             }
-
             if (state is LoginErrorState) {
+              hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error.toString(), context);
+              print(state.error);
             }
           },
           builder: (context, state) {
@@ -121,7 +126,7 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w),
+                                    padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,),
                                     child: Row(
                                       children: [
                                         Padding(
@@ -154,7 +159,7 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                                   Align(
                                     alignment: AlignmentDirectional.topCenter,
                                     child: Container(
-                                      padding: EdgeInsets.all(20.r),
+                                      padding: EdgeInsetsDirectional.all(20.r),
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: Colors.white.withOpacity(0.1),
@@ -201,9 +206,10 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                       ),
                     ),
                     Align(
+
                       alignment: Alignment.bottomCenter,
                       child: Container(
-                        height: 450.h,
+                        height: 420.h,
                         width: double.infinity,
                         padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
@@ -265,17 +271,14 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 20.h),
-                                authCubit.state is LoginLoadingState
-                                    ? const Center(
-                                        child: CircularProgressIndicator())
-                                    : defaultButton(
+                                defaultButton(
                                         onPressed: () async {
                                            if(formKey.currentState!.validate()){
-                                             /*await authCubit.loginUser(
+                                             await authCubit.loginUser(
                                                phone: authCubit.userLoginPhoneController.text.trim(),
                                                password: authCubit.userLoginPasswordController.text.trim(),
                                                requiredRole: 'admin',
-                                             );*/
+                                             );
                                            }
                                         },
                                         text: 'دخول',

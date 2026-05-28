@@ -47,68 +47,6 @@ class AppCubit extends Cubit<AppStates>{
     emit(ChangeNavBarState());
   }
 
-  Future<String> getAccessToken() async {
-
-    final jsonString = await rootBundle.loadString('assets/service-account.json');
-    final accountCredentials = ServiceAccountCredentials.fromJson(jsonString);
-
-    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-
-    final client = await clientViaServiceAccount(accountCredentials, scopes);
-    return client.credentials.accessToken.data;
-  }
-
-  Future<void> sendNotificationV1({
-    required String receiverToken,
-    required String messageText,
-    required String chatId,
-  })
-  async {
-    try {
-      var uid = CacheHelper.getData(key: 'uid');
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
-
-      final String accessToken = await getAccessToken();
-      const String projectId = "homy-1de67";
-
-      final response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/v1/projects/$projectId/messages:send'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
-        body: jsonEncode({
-          'message': {
-            'token': receiverToken,
-            'data': {
-              'title': 'رسالة جديدة من ${snapshot.data()!['name']}',
-              'body': messageText,
-              'chatId': chatId,
-              'senderId': uid,
-              'senderName': snapshot.data()!['name'],
-              'senderImage': snapshot.data()!['image'],
-              'type': 'chat'
-            },
-            'android': {
-              'priority': 'high',
-            }
-          },
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        print('تم إرسال الإشعار بنجاح (V1)');
-      } else {
-        print('خطأ في الإرسال: ${response.body}');
-      }
-    } catch (e) {
-      print("حدث خطأ أثناء توليد التوكن: $e");
-    }
-  }
-
   bool isDark = true;
 
   void  changeTheme({bool? fromShared}) {
@@ -143,7 +81,5 @@ class AppCubit extends Cubit<AppStates>{
     }
 
   }
-
-
 
 }
