@@ -9,7 +9,6 @@ import 'package:trying_homy/modules/user_screens/service_details.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/notification_cubit/notification_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -114,7 +113,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       debugPrint('Error loading home data: $e');
     }
   }
-<<<<<<< HEAD
 
   @override
   void initState() {
@@ -123,12 +121,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkConnectionAndGetData();
     });
-=======
-  @override
-  void initState() {
-    super.initState();
-    checkConnectionAndGetData();
->>>>>>> 06477f1074550386f40830ad2d7bca77cce679dc
   }
 
   @override
