@@ -63,26 +63,26 @@ class _DeptScreenState extends State<DeptScreen> {
 
               return Directionality(
                 textDirection: TextDirection.rtl,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    headerWithSearch(
-                      title: 'الأقسام',
-                      searchKeyWords: const [
-                        'ابحث في الكهرباء',
-                        'ابحث في السباكة',
-                        'ابحث في التكييف',
-                      ],
-                      context: context,
-                      appCubit: appCubit,
-                    ),
-                    SizedBox(height: 20.h),
-                    Expanded(
-                      child: RefreshIndicator(
-                        color: mainColor,
-                        onRefresh: () async {
-                          await userServicesCubit.getCategories();
-                        },
+                child: RefreshIndicator(
+                  color: mainColor,
+                  onRefresh: () async {
+                    await userServicesCubit.getCategories();
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      headerWithSearch(
+                        title: 'الأقسام',
+                        searchKeyWords: const [
+                          'ابحث في الكهرباء',
+                          'ابحث في السباكة',
+                          'ابحث في التكييف',
+                        ],
+                        context: context,
+                        appCubit: appCubit,
+                      ),
+                      SizedBox(height: 20.h),
+                      Expanded(
                         child: GridView.builder(
                           padding: EdgeInsetsDirectional.symmetric(
                             horizontal: 10.w,
@@ -142,6 +142,27 @@ class _DeptScreenState extends State<DeptScreen> {
                                           ? SvgPicture.network(
                                               categoryImage,
                                               fit: BoxFit.contain,
+                                              placeholderBuilder: (context) {
+                                                return Shimmer.fromColors(
+                                                  baseColor: appCubit.isDark
+                                                      ? const Color(0xFF2A2A2A)
+                                                      : const Color(0xFFE3F2FD),
+                                                  highlightColor: appCubit
+                                                          .isDark
+                                                      ? const Color(0xFF3A3A3A)
+                                                      : const Color(0xFFF8FCFF),
+                                                  child: Container(
+                                                    width: 26.w,
+                                                    height: 26.h,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.r),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
                                             )
                                           : Icon(
                                               Icons.category_rounded,
@@ -176,8 +197,8 @@ class _DeptScreenState extends State<DeptScreen> {
                           },
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

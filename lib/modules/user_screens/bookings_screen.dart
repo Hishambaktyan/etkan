@@ -21,17 +21,27 @@ class BookingsScreen extends StatefulWidget {
 }
 
 class _BookingsScreenState extends State<BookingsScreen> {
-  List<String> statusFilters = ['الكل', 'قيد الانتظار', 'مقبول','في الطريق','مكتمل','مرفوض','ملغي'];
+  List<String> statusFilters = [
+    'الكل',
+    'قيد الانتظار',
+    'مقبول',
+    'في الطريق',
+    'مكتمل',
+    'مرفوض',
+    'ملغي'
+  ];
   String selectedStatus = 'الكل';
-  Widget buildDetailRow(String label, String value, String iconPath,dynamic cubit) {
+  Widget buildDetailRow(
+      String label, String value, String iconPath, dynamic cubit) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsetsDirectional.all(8),
           decoration: BoxDecoration(
-              color: cubit.isDark? mainColor.withOpacity(0.2): mainColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10.r)
-          ),
+              color: cubit.isDark
+                  ? mainColor.withOpacity(0.2)
+                  : mainColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10.r)),
           child: SvgPicture.asset(
             iconPath,
             width: 22.w,
@@ -47,7 +57,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: cubit.isDark? darkSubTextColor: Colors.grey,
+              color: cubit.isDark ? darkSubTextColor : Colors.grey,
               fontSize: 12.sp,
             ),
           ),
@@ -56,265 +66,389 @@ class _BookingsScreenState extends State<BookingsScreen> {
           child: Text(
             value,
             style: TextStyle(
-                color: cubit.isDark? darkSubTextColor: Colors.black87,
+                color: cubit.isDark ? darkSubTextColor : Colors.black87,
                 fontSize: 12.sp,
-                fontWeight: FontWeight.w500
-            ),
+                fontWeight: FontWeight.w500),
           ),
         ),
       ],
     );
   }
+
   @override
   void initState() {
     BookingCubit.get(context).getUserRequests();
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit,AppStates>(
-        builder: (context, state) {
-          AppCubit appCubit = AppCubit.get(context);
-          BookingCubit bookingCubit = BookingCubit.get(context);
-          List<Map<String, dynamic>> filteredList = selectedStatus == 'الكل' ? bookingCubit.userRequests
-              : bookingCubit.userRequests.where((item) => item['status'] == selectedStatus).toList();
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: Scaffold(
-              body: BlocBuilder<BookingCubit,BookingStates>(
-                builder:(context, state) {
-                  BookingCubit bookingCubit = BookingCubit.get(context);
-                return ConditionalBuilder(
-                    condition: state is GetUserRequestLoadingState,
-                    builder: (context) => UserBookingsShimmer(isDark: appCubit.isDark),
-                    fallback: (context) => SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          headerWithSearch(
-                              title: 'الحجوزات',
-                              searchKeyWords: [
-                                "ابحث عن حجوزات مقبولة",
-                                "ابحث عن حجوزات مكتملة",
-                                "ابحث عن حجوزات قيد الأنتظار"
-                              ],
-                              context: context,
-                            appCubit: appCubit
-                          ),
-                          SizedBox(height: 15.h,),
-                          SizedBox(
-                            height: 55.h,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                              itemCount: statusFilters.length,
-                              itemBuilder: (context, index) {
-                                bool isSelected = selectedStatus == statusFilters[index];
-                                return Padding(
-                                  padding: EdgeInsetsDirectional.only(end: 10.w,bottom: 10.h),
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedStatus = statusFilters[index];
-                                      });
-                                    },
-                                    child: AnimatedContainer(
-                                      duration: const Duration(milliseconds: 300),
-                                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: isSelected ? mainColor : appCubit.isDark?lightDarkColor:Colors.white,
-                                        borderRadius: BorderRadius.circular(15.r),
-                                        boxShadow: isSelected ? [] : blueShadow,
-                                      ),
-                                      child: Text(
-                                        statusFilters[index],
-                                        style: TextStyle(
-                                          color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge!.color,
-                                          fontSize: 12.sp,
-                                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 10.h,),
-                          filteredList.isEmpty?SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.55,
-                            width: double.infinity,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.inbox_rounded,
-                                  color: appCubit.isDark? Colors.grey.shade700: Colors.grey.shade400,
-                                  size: 100.w,
-                                ),
-                                SizedBox(height: 5.h,),
-                                Text(
-                                  'لا توجد حجوزات لك',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20.sp,
-                                      color: appCubit.isDark? Colors.grey.shade700: Colors.grey.shade400
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ):ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 5.h),
-                            itemCount: bookingCubit.userRequests.length,
+    return BlocBuilder<AppCubit, AppStates>(
+      builder: (context, state) {
+        AppCubit appCubit = AppCubit.get(context);
+        BookingCubit bookingCubit = BookingCubit.get(context);
+        List<Map<String, dynamic>> filteredList = selectedStatus == 'الكل'
+            ? bookingCubit.userRequests
+            : bookingCubit.userRequests
+                .where((item) => item['status'] == selectedStatus)
+                .toList();
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(body: BlocBuilder<BookingCubit, BookingStates>(
+            builder: (context, state) {
+              BookingCubit bookingCubit = BookingCubit.get(context);
+              return ConditionalBuilder(
+                condition: state is GetUserRequestLoadingState,
+                builder: (context) =>
+                    UserBookingsShimmer(isDark: appCubit.isDark),
+                fallback: (context) => RefreshIndicator(
+                  color: mainColor,
+                  onRefresh: () async {
+                    await bookingCubit.getUserRequests();
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        headerWithSearch(
+                            title: 'الحجوزات',
+                            searchKeyWords: [
+                              "ابحث عن حجوزات مقبولة",
+                              "ابحث عن حجوزات مكتملة",
+                              "ابحث عن حجوزات قيد الأنتظار"
+                            ],
+                            context: context,
+                            appCubit: appCubit),
+                        SizedBox(
+                          height: 15.h,
+                        ),
+                        SizedBox(
+                          height: 55.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 10.w),
+                            itemCount: statusFilters.length,
                             itemBuilder: (context, index) {
-                              var booking = bookingCubit.userRequests[index];
-                              Color statusColor;
-                              String status = booking['status'];
-                              switch (status) {
-                                case 'مكتمل': statusColor = Colors.green; break;
-                                case 'مقبول':
-                                case 'في الطريق': statusColor = Colors.blueAccent; break;
-                                case 'مرفوض':
-                                case 'ملغي': statusColor = Colors.redAccent; break;
-                                default: statusColor = Colors.orangeAccent;
-                              }
-                              var providerData = appCubit.allUsers[booking['providerId']];
+                              bool isSelected =
+                                  selectedStatus == statusFilters[index];
                               return Padding(
-                                padding: EdgeInsetsDirectional.only(bottom: 20.h),
+                                padding: EdgeInsetsDirectional.only(
+                                    end: 10.w, bottom: 10.h),
                                 child: InkWell(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () => move(context, BookingDetails(request: booking, providerData: providerData)),
-                                  child: Container(
-                                    padding: EdgeInsetsDirectional.all(15.r),
+                                  onTap: () {
+                                    setState(() {
+                                      selectedStatus = statusFilters[index];
+                                    });
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20.w),
+                                    alignment: Alignment.center,
                                     decoration: BoxDecoration(
-                                      color: appCubit.isDark ? lightDarkColor : Colors.white,
-                                      borderRadius: BorderRadius.circular(25.r),
-                                      boxShadow: blueShadow,
+                                      color: isSelected
+                                          ? mainColor
+                                          : appCubit.isDark
+                                              ? lightDarkColor
+                                              : Colors.white,
+                                      borderRadius: BorderRadius.circular(15.r),
+                                      boxShadow: isSelected ? [] : blueShadow,
                                     ),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(20.r),
-                                                border: Border.all(
-                                                  color: mainColor.withOpacity(0.1),
-                                                  width: 2,
-                                                ),
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(18.r),
-                                                child: Image.network(
-                                                  booking['image'] ?? '',
-                                                  width: 70.w,
-                                                  height: 70.h,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error, stackTrace) => Container(
-                                                    width: 70.w,
-                                                    height: 70.h,
-                                                    color: Colors.grey.shade200,
-                                                    child: Icon(Icons.image_not_supported, color: Colors.grey, size: 20.sp),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 15.w),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          booking['title'],
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                            fontSize: 14.sp,
-                                                            fontWeight: FontWeight.bold,
-                                                            color: appCubit.isDark ? Colors.white : Colors.black,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 5.w,),
-                                                      Container(
-                                                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                                                        decoration: BoxDecoration(
-                                                          color: statusColor.withOpacity(0.1),
-                                                          borderRadius: BorderRadius.circular(30.r),
-                                                          border: Border.all(color: statusColor.withOpacity(0.2)),
-                                                        ),
-                                                        child: Text(
-                                                          status,
-                                                          style: TextStyle(
-                                                            color: statusColor,
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 10.sp,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 6.h),
-                                                  Text(
-                                                    '${booking['price']} $reyalSymbol',
-                                                    style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      fontWeight: FontWeight.w900,
-                                                      color: mainColor,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 15.h),
-                                        Container(
-                                          padding: EdgeInsets.all(12.r),
-                                          decoration: BoxDecoration(
-                                            color: mainColor.withOpacity(0.04),
-                                            borderRadius: BorderRadius.circular(20.r),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              buildDetailRow('العنوان:', booking['address'], 'assets/loc.svg', appCubit),
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(vertical: 8.h),
-                                                child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
-                                              ),
-                                              buildDetailRow('الموعد:',formatStatusTime(booking['scheduledAt']), 'assets/timer.svg', appCubit),
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(vertical: 8.h),
-                                                child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
-                                              ),
-                                              buildDetailRow('الفني:', providerData['name'], 'assets/acc.svg', appCubit),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                                    child: Text(
+                                      statusFilters[index],
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .color,
+                                        fontSize: 12.sp,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ),
                               );
                             },
-                          )
-                        ],
-                      ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        filteredList.isEmpty
+                            ? SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.55,
+                                width: double.infinity,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.inbox_rounded,
+                                      color: appCubit.isDark
+                                          ? Colors.grey.shade700
+                                          : Colors.grey.shade400,
+                                      size: 100.w,
+                                    ),
+                                    SizedBox(
+                                      height: 5.h,
+                                    ),
+                                    Text(
+                                      'لا توجد حجوزات لك',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.sp,
+                                          color: appCubit.isDark
+                                              ? Colors.grey.shade700
+                                              : Colors.grey.shade400),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsetsDirectional.only(
+                                    start: 10.w, end: 10.w, top: 5.h),
+                                itemCount: bookingCubit.userRequests.length,
+                                itemBuilder: (context, index) {
+                                  var booking =
+                                      bookingCubit.userRequests[index];
+                                  Color statusColor;
+                                  String status = booking['status'];
+                                  switch (status) {
+                                    case 'مكتمل':
+                                      statusColor = Colors.green;
+                                      break;
+                                    case 'مقبول':
+                                    case 'في الطريق':
+                                      statusColor = Colors.blueAccent;
+                                      break;
+                                    case 'مرفوض':
+                                    case 'ملغي':
+                                      statusColor = Colors.redAccent;
+                                      break;
+                                    default:
+                                      statusColor = Colors.orangeAccent;
+                                  }
+                                  var providerData =
+                                      appCubit.allUsers[booking['providerId']];
+                                  return Padding(
+                                    padding: EdgeInsetsDirectional.only(
+                                        bottom: 20.h),
+                                    child: InkWell(
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      onTap: () => move(
+                                          context,
+                                          BookingDetails(
+                                              request: booking,
+                                              providerData: providerData)),
+                                      child: Container(
+                                        padding:
+                                            EdgeInsetsDirectional.all(15.r),
+                                        decoration: BoxDecoration(
+                                          color: appCubit.isDark
+                                              ? lightDarkColor
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(25.r),
+                                          boxShadow: blueShadow,
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.r),
+                                                    border: Border.all(
+                                                      color: mainColor
+                                                          .withOpacity(0.1),
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            18.r),
+                                                    child: Image.network(
+                                                      booking['image'] ?? '',
+                                                      width: 70.w,
+                                                      height: 70.h,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (context,
+                                                              error,
+                                                              stackTrace) =>
+                                                          Container(
+                                                        width: 70.w,
+                                                        height: 70.h,
+                                                        color: Colors
+                                                            .grey.shade200,
+                                                        child: Icon(
+                                                            Icons
+                                                                .image_not_supported,
+                                                            color: Colors.grey,
+                                                            size: 20.sp),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 15.w),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              booking['title'],
+                                                              maxLines: 2,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: TextStyle(
+                                                                fontSize: 14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: appCubit
+                                                                        .isDark
+                                                                    ? Colors
+                                                                        .white
+                                                                    : Colors
+                                                                        .black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 5.w,
+                                                          ),
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        10.w,
+                                                                    vertical:
+                                                                        4.h),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: statusColor
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          30.r),
+                                                              border: Border.all(
+                                                                  color: statusColor
+                                                                      .withOpacity(
+                                                                          0.2)),
+                                                            ),
+                                                            child: Text(
+                                                              status,
+                                                              style: TextStyle(
+                                                                color:
+                                                                    statusColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 10.sp,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 6.h),
+                                                      Text(
+                                                        '${booking['price']} $reyalSymbol',
+                                                        style: TextStyle(
+                                                          fontSize: 14.sp,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          color: mainColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 15.h),
+                                            Container(
+                                              padding: EdgeInsets.all(12.r),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    mainColor.withOpacity(0.04),
+                                                borderRadius:
+                                                    BorderRadius.circular(20.r),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  buildDetailRow(
+                                                      'العنوان:',
+                                                      booking['address'],
+                                                      'assets/loc.svg',
+                                                      appCubit),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.h),
+                                                    child: Divider(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.1),
+                                                        height: 1),
+                                                  ),
+                                                  buildDetailRow(
+                                                      'الموعد:',
+                                                      formatStatusTime(booking[
+                                                          'scheduledAt']),
+                                                      'assets/timer.svg',
+                                                      appCubit),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.h),
+                                                    child: Divider(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.1),
+                                                        height: 1),
+                                                  ),
+                                                  buildDetailRow(
+                                                      'الفني:',
+                                                      providerData['name'],
+                                                      'assets/acc.svg',
+                                                      appCubit),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                      ],
                     ),
-                );
-              },)
-            ),
-          );
-        },
+                  ),
+                ),
+              );
+            },
+          )),
+        );
+      },
     );
   }
 }
