@@ -97,7 +97,8 @@ class _ServiceDetailsState extends State<ServiceDetails> {
     final providerId = widget.providerId;
     AppCubit cubit = AppCubit.get(context);
 
-    final providerData = cubit.allUsers[providerId];
+    final providerData =
+        Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -165,7 +166,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                         textDirection: TextDirection.rtl,
                                         child: SizedBox(
                                             width: double.infinity,
-                                            child:  Text('إبلاغ'))),
+                                            child: Text('إبلاغ'))),
                                   ),
                                 ],
                               ),
@@ -190,8 +191,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       ? lightDarkColor
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(25.r),
-                                  boxShadow: blueShadow
-                              ),
+                                  boxShadow: blueShadow),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -238,7 +238,11 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            SvgPicture.asset('assets/money.svg',color: Colors.grey,width: 20.w,),
+                                            SvgPicture.asset(
+                                              'assets/money.svg',
+                                              color: Colors.grey,
+                                              width: 20.w,
+                                            ),
                                             SizedBox(width: 8.w),
                                             Column(
                                               crossAxisAlignment:
@@ -277,7 +281,11 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            SvgPicture.asset('assets/timer.svg',color: Colors.grey,width: 20.w,),
+                                            SvgPicture.asset(
+                                              'assets/timer.svg',
+                                              color: Colors.grey,
+                                              width: 20.w,
+                                            ),
                                             SizedBox(width: 8.w),
                                             Column(
                                               crossAxisAlignment:
@@ -309,14 +317,14 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 10.h,),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
                                   Text(
                                     '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
                                     style: TextStyle(
                                         color: Colors.grey.shade400,
-                                        fontSize: 8.sp
-                                    ),
-
+                                        fontSize: 8.sp),
                                   ),
                                 ],
                               ),
@@ -328,13 +336,18 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                   ],
                 ),
               ),
-              SizedBox(height: 10.h,),
+              SizedBox(
+                height: 10.h,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildSectionTitle(title: 'وصف الخدمة', icon: Icons.notes_rounded, cubit: cubit),
+                    buildSectionTitle(
+                        title: 'وصف الخدمة',
+                        icon: Icons.notes_rounded,
+                        cubit: cubit),
                     SizedBox(height: 10.h),
                     Container(
                       width: double.infinity,
@@ -342,8 +355,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       decoration: BoxDecoration(
                           color: cubit.isDark ? lightDarkColor : Colors.white,
                           borderRadius: BorderRadius.circular(20.r),
-                          boxShadow: blueShadow
-                      ),
+                          boxShadow: blueShadow),
                       child: Column(
                         children: [
                           ReadMoreText(
@@ -365,7 +377,10 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    buildSectionTitle(title: 'معلومات الفني', icon: Icons.person_pin_outlined, cubit: cubit),
+                    buildSectionTitle(
+                        title: 'معلومات الفني',
+                        icon: Icons.person_pin_outlined,
+                        cubit: cubit),
                     SizedBox(height: 10.h),
                     Container(
                       padding: EdgeInsetsDirectional.all(18.r),
@@ -373,8 +388,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       decoration: BoxDecoration(
                           color: cubit.isDark ? lightDarkColor : Colors.white,
                           borderRadius: BorderRadius.circular(25.r),
-                          boxShadow: blueShadow
-                      ),
+                          boxShadow: blueShadow),
                       child: Column(
                         children: [
                           Row(
@@ -383,7 +397,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                 radius: 25.r,
                                 backgroundColor: mainColor.withOpacity(0.1),
                                 backgroundImage: NetworkImage(
-                                  providerData['profileImage']??'',
+                                  providerData['profileImage'] ?? '',
                                 ),
                               ),
                               SizedBox(width: 12.w),
@@ -391,7 +405,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                  providerData['name']??'',
+                                    providerData['name'] ?? '',
                                     style: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
@@ -401,7 +415,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                     ),
                                   ),
                                   Text(
-                                    providerData['specialization']?? '',
+                                    providerData['specialization'] ?? '',
                                     style: TextStyle(
                                       fontSize: 13.sp,
                                       color: Colors.grey,
@@ -421,19 +435,22 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                           ),
                           defaultOutlinedButtonWithIcon(
                             onPressed: () {
-                              move(context, const UserWorkerProfile());
+                              move(
+                                context,
+                                UserWorkerProfile(
+                                  providerId: providerId,
+                                  providerData: providerData,
+                                ),
+                              );
                             },
                             text: 'المزيد',
                             fontSize: 13.sp,
                             height: 45.h,
-                            textColor:
-                            cubit.isDark ? Colors.white : mainColor,
-                            border:
-                            cubit.isDark ? Colors.white : mainColor,
+                            textColor: cubit.isDark ? Colors.white : mainColor,
+                            border: cubit.isDark ? Colors.white : mainColor,
                             icon: SvgPicture.asset(
                               'assets/acc.svg',
-                              color:
-                              cubit.isDark ? Colors.white : mainColor,
+                              color: cubit.isDark ? Colors.white : mainColor,
                               width: 20.r,
                               height: 20.r,
                             ),
@@ -442,22 +459,23 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    buildSectionTitle(title: 'التقييمات والمراجعات', icon: Icons.star_outline_rounded, cubit: cubit),
+                    buildSectionTitle(
+                        title: 'التقييمات والمراجعات',
+                        icon: Icons.star_outline_rounded,
+                        cubit: cubit),
                     SizedBox(height: 10.h),
                     Container(
                       padding: EdgeInsetsDirectional.all(18.r),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: cubit.isDark ? lightDarkColor : Colors.white,
-                        borderRadius: BorderRadius.circular(25.r),
-                        boxShadow: blueShadow
-                      ),
+                          color: cubit.isDark ? lightDarkColor : Colors.white,
+                          borderRadius: BorderRadius.circular(25.r),
+                          boxShadow: blueShadow),
                       child: Center(
                         child: Column(
                           children: [
                             CircleAvatar(
-                              backgroundColor:
-                                  Colors.orange.withOpacity(0.15),
+                              backgroundColor: Colors.orange.withOpacity(0.15),
                               radius: 35.r,
                               child: Text(
                                 '$rate',
