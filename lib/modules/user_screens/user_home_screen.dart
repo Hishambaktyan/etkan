@@ -323,7 +323,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                           const Spacer(),
                                           defaultTextButton(
                                             onPressed: () =>
-                                                appCubit.changeIndex(2),
+                                                appCubit.changeIndex(1),
                                             text: 'عرض الكل',
                                             isLined: false,
                                           ),

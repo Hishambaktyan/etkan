@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trying_homy/modules/user_screens/booking_details.dart';
 import 'package:trying_homy/modules/user_screens/service_details.dart';
 import 'package:trying_homy/modules/user_screens/services_list.dart';
@@ -64,6 +65,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
       searchFocusNode.requestFocus();
 
+      final userServicesCubit = UserServicesCubit.get(context);
+
+      if (userServicesCubit.categories.isEmpty) {
+        userServicesCubit.getCategories();
+      }
+
       final bookingCubit = BookingCubit.get(context);
       if (bookingCubit.userRequests.isEmpty) {
         bookingCubit.getUserRequests();
@@ -77,6 +84,109 @@ class _SearchScreenState extends State<SearchScreen> {
     searchController.dispose();
     searchFocusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AppCubit, AppStates>(
+      builder: (context, state) {
+        final appCubit = AppCubit.get(context);
+
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          body: Directionality(
+            textDirection: TextDirection.rtl,
+            child: BlocBuilder<UserServicesCubit, UserServicesStates>(
+              builder: (context, userServicesState) {
+                if (userServicesState is GetUserAllServicesLoadingState) {
+                  return SearchScreenShimmer(isDark: appCubit.isDark);
+                }
+
+                return BlocBuilder<BookingCubit, BookingStates>(
+                  builder: (context, bookingState) {
+                    final userServicesCubit = UserServicesCubit.get(context);
+                    final bookingCubit = BookingCubit.get(context);
+
+                    final services = List<Map<String, dynamic>>.from(
+                      userServicesCubit.userServices,
+                    );
+
+                    final bookings = List<Map<String, dynamic>>.from(
+                      bookingCubit.userRequests,
+                    );
+
+                    final allUsers = <dynamic, dynamic>{};
+                    allUsers.addAll(userServicesCubit.allUsers);
+                    allUsers.addAll(appCubit.allUsers);
+
+                    final suggestedServices = services.take(4).toList();
+                    final categories = List<Map<String, dynamic>>.from(
+                      userServicesCubit.categories,
+                    );
+
+                    final filteredDepartments = getFilteredDepartments(
+                      categories: categories,
+                    );
+                    final filteredServices = getFilteredServices(
+                      services: services,
+                      providers: allUsers,
+                    );
+                    final filteredBookings = getFilteredBookings(
+                      bookings: bookings,
+                      providers: allUsers,
+                    );
+                    final filteredWorkers = getFilteredWorkers(
+                      providers: allUsers,
+                      services: services,
+                      bookings: bookings,
+                    );
+
+                    final hasQuery = searchController.text.trim().isNotEmpty;
+                    final isBookingLoading = bookingState
+                        .toString()
+                        .toLowerCase()
+                        .contains('loading');
+
+                    return SingleChildScrollView(
+                      padding: EdgeInsetsDirectional.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildSearchHeader(appCubit),
+                          SizedBox(height: 20.h),
+                          Padding(
+                            padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 10.w,
+                            ),
+                            child: hasQuery
+                                ? buildSearchResults(
+                                    appCubit: appCubit,
+                                    departments: filteredDepartments,
+                                    services: filteredServices,
+                                    bookings: filteredBookings,
+                                    workers: filteredWorkers,
+                                    allUsers: allUsers,
+                                    isBookingLoading: isBookingLoading,
+                                  )
+                                : buildDefaultSearchContent(
+                                    appCubit: appCubit,
+                                    suggestedServices: suggestedServices,
+                                    allUsers: allUsers,
+                                  ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void loadRecentSearches() {
@@ -198,16 +308,25 @@ class _SearchScreenState extends State<SearchScreen> {
         scoreList(lowPriority, 3);
   }
 
-  int getDepartmentSearchScore(Map<String, String> dept) {
+  int getDepartmentSearchScore(Map<String, dynamic> dept) {
+    final title = '${dept['title'] ?? dept['name'] ?? ''}';
+
     return calculateSearchScore(
-      highPriority: [dept['name'], dept['type']],
-      mediumPriority: [
-        'قسم ${dept['name']}',
-        'خدمات ${dept['name']}',
-        'فني ${dept['name']}',
-        'عامل ${dept['name']}',
+      highPriority: [
+        title,
       ],
-      lowPriority: ['قسم', 'اقسام', 'الأقسام', 'الخدمات'],
+      mediumPriority: [
+        'قسم $title',
+        'خدمات $title',
+        'فني $title',
+        'عامل $title',
+      ],
+      lowPriority: [
+        'قسم',
+        'اقسام',
+        'الأقسام',
+        'الخدمات',
+      ],
     );
   }
 
@@ -363,7 +482,9 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  List<Map<String, String>> getFilteredDepartments() {
+  List<Map<String, dynamic>> getFilteredDepartments({
+    required List<Map<String, dynamic>> categories,
+  }) {
     final query = normalizeText(searchController.text);
     if (query.isEmpty) return [];
 
@@ -371,24 +492,28 @@ class _SearchScreenState extends State<SearchScreen> {
       'قسم',
       'اقسام',
       'الاقسام',
+      'الأقسام',
       'خدمات',
       'الخدمات',
     ].contains(query);
 
-    final results = servicesDepts.where((dept) {
+    final results = categories.where((category) {
+      final title = '${category['title'] ?? category['name'] ?? ''}';
+
+      if (title.trim().isEmpty) return false;
+
       if (isDepartmentQuery) return true;
 
       return containsQuery([
-        dept['name'],
-        dept['type'],
+        title,
         'قسم',
         'اقسام',
         'الأقسام',
         'الخدمات',
-        'خدمات ${dept['name']}',
-        'قسم ${dept['name']}',
-        'فني ${dept['name']}',
-        'عامل ${dept['name']}',
+        'خدمات $title',
+        'قسم $title',
+        'فني $title',
+        'عامل $title',
       ]);
     }).toList();
 
@@ -542,103 +667,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
 
     return workers;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit, AppStates>(
-      builder: (context, state) {
-        final appCubit = AppCubit.get(context);
-
-        return Scaffold(
-          resizeToAvoidBottomInset: true,
-          body: Directionality(
-            textDirection: TextDirection.rtl,
-            child: BlocBuilder<UserServicesCubit, UserServicesStates>(
-              builder: (context, userServicesState) {
-                if (userServicesState is GetUserAllServicesLoadingState) {
-                  return SearchScreenShimmer(isDark: appCubit.isDark);
-                }
-
-                return BlocBuilder<BookingCubit, BookingStates>(
-                  builder: (context, bookingState) {
-                    final userServicesCubit = UserServicesCubit.get(context);
-                    final bookingCubit = BookingCubit.get(context);
-
-                    final services = List<Map<String, dynamic>>.from(
-                      userServicesCubit.userServices,
-                    );
-
-                    final bookings = List<Map<String, dynamic>>.from(
-                      bookingCubit.userRequests,
-                    );
-
-                    final allUsers = <dynamic, dynamic>{};
-                    allUsers.addAll(userServicesCubit.allUsers);
-                    allUsers.addAll(appCubit.allUsers);
-
-                    final suggestedServices = services.take(4).toList();
-                    final filteredDepartments = getFilteredDepartments();
-                    final filteredServices = getFilteredServices(
-                      services: services,
-                      providers: allUsers,
-                    );
-                    final filteredBookings = getFilteredBookings(
-                      bookings: bookings,
-                      providers: allUsers,
-                    );
-                    final filteredWorkers = getFilteredWorkers(
-                      providers: allUsers,
-                      services: services,
-                      bookings: bookings,
-                    );
-
-                    final hasQuery = searchController.text.trim().isNotEmpty;
-                    final isBookingLoading = bookingState
-                        .toString()
-                        .toLowerCase()
-                        .contains('loading');
-
-                    return SingleChildScrollView(
-                      padding: EdgeInsetsDirectional.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildSearchHeader(appCubit),
-                          SizedBox(height: 20.h),
-                          Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                              horizontal: 10.w,
-                            ),
-                            child: hasQuery
-                                ? buildSearchResults(
-                                    appCubit: appCubit,
-                                    departments: filteredDepartments,
-                                    services: filteredServices,
-                                    bookings: filteredBookings,
-                                    workers: filteredWorkers,
-                                    allUsers: allUsers,
-                                    isBookingLoading: isBookingLoading,
-                                  )
-                                : buildDefaultSearchContent(
-                                    appCubit: appCubit,
-                                    suggestedServices: suggestedServices,
-                                    allUsers: allUsers,
-                                  ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget buildSearchHeader(AppCubit appCubit) {
@@ -992,7 +1020,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget buildSearchResults({
     required AppCubit appCubit,
-    required List<Map<String, String>> departments,
+    required List<Map<String, dynamic>> departments,
     required List<Map<String, dynamic>> services,
     required List<Map<String, dynamic>> bookings,
     required List<Map<String, dynamic>> workers,
@@ -1693,6 +1721,20 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget buildPopularDepartments(AppCubit appCubit) {
+    final userServicesCubit = UserServicesCubit.get(context);
+
+    final categories = List<Map<String, dynamic>>.from(
+      userServicesCubit.categories,
+    );
+
+    if (categories.isEmpty) {
+      return buildEmptyState(
+        appCubit: appCubit,
+        icon: Icons.category_outlined,
+        title: 'لا توجد أقسام حالياً',
+      );
+    }
+
     return GridView.builder(
       shrinkWrap: true,
       padding: EdgeInsetsDirectional.zero,
@@ -1703,24 +1745,29 @@ class _SearchScreenState extends State<SearchScreen> {
         crossAxisSpacing: 10.w,
         childAspectRatio: 2,
       ),
-      itemCount: servicesDepts.length,
+      itemCount: categories.length,
       itemBuilder: (context, index) {
-        final dept = servicesDepts[index];
+        final category = categories[index];
+
+        final categoryTitle = '${category['title'] ?? category['name'] ?? ''}';
 
         return InkWell(
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           borderRadius: BorderRadius.circular(25.r),
           onTap: () {
-            addRecentSearch(dept['name'] ?? '');
+            addRecentSearch(categoryTitle);
+
             move(
               context,
-              ServicesList(categoryType: dept['type']!),
+              ServicesList(
+                categoryType: categoryTitle,
+              ),
             );
           },
           child: buildDepartmentContent(
             appCubit: appCubit,
-            dept: dept,
+            dept: category,
           ),
         );
       },
@@ -1729,8 +1776,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget buildDepartmentContent({
     required AppCubit appCubit,
-    required Map<String, String> dept,
+    required Map<String, dynamic> dept,
   }) {
+    final String categoryTitle = '${dept['title'] ?? dept['name'] ?? ''}';
+    final String categoryImage = '${dept['image'] ?? dept['icon'] ?? ''}';
+
     return Container(
       padding: EdgeInsetsDirectional.all(10.r),
       decoration: BoxDecoration(
@@ -1748,14 +1798,16 @@ class _SearchScreenState extends State<SearchScreen> {
               color: mainColor.withOpacity(0.08),
               borderRadius: BorderRadius.circular(18.r),
             ),
-            child: SvgPicture.asset(dept['icon']!),
+            child: buildCategoryImage(
+              image: categoryImage,
+              isDark: appCubit.isDark,
+            ),
           ),
           SizedBox(width: 10.w),
           Expanded(
-            child: Text(
-              dept['name']!,
+            child: buildHighlightedText(
+              text: categoryTitle,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12.sp,
@@ -1775,17 +1827,26 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget buildResultDepartmentCard({
     required AppCubit appCubit,
-    required Map<String, String> dept,
+    required Map<String, dynamic> dept,
   }) {
+    final String categoryTitle = '${dept['title'] ?? dept['name'] ?? ''}';
+
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       borderRadius: BorderRadius.circular(25.r),
       onTap: () {
-        addRecentSearch(searchController.text);
+        addRecentSearch(
+          searchController.text.trim().isNotEmpty
+              ? searchController.text
+              : categoryTitle,
+        );
+
         move(
           context,
-          ServicesList(categoryType: dept['type']!),
+          ServicesList(
+            categoryType: categoryTitle,
+          ),
         );
       },
       child: buildDepartmentContent(
@@ -2511,6 +2572,63 @@ class _SearchScreenState extends State<SearchScreen> {
       BookingDetails(
         request: booking,
         providerData: providerData,
+      ),
+    );
+  }
+
+  Widget buildCategoryImage({
+    required String image,
+    required bool isDark,
+  }) {
+    if (image.trim().isEmpty) {
+      return Icon(
+        Icons.category_rounded,
+        color: mainColor,
+        size: 25.sp,
+      );
+    }
+
+    final bool isSvg = image.toLowerCase().contains('.svg');
+
+    if (isSvg) {
+      return SvgPicture.network(
+        image,
+        fit: BoxFit.contain,
+        placeholderBuilder: (context) {
+          return _categoryImageShimmer(isDark);
+        },
+      );
+    }
+
+    return Image.network(
+      image,
+      fit: BoxFit.contain,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return _categoryImageShimmer(isDark);
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Icon(
+          Icons.category_rounded,
+          color: mainColor,
+          size: 25.sp,
+        );
+      },
+    );
+  }
+
+  Widget _categoryImageShimmer(bool isDark) {
+    return Shimmer.fromColors(
+      baseColor: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD),
+      highlightColor:
+          isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF),
+      child: Container(
+        width: 26.w,
+        height: 26.h,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
       ),
     );
   }
