@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:marquee/marquee.dart';
-import 'package:trying_homy/modules/user_screens/service_details.dart';
+import 'package:trying_homy/modules/user_screens/user_service_details.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -115,7 +115,7 @@ class _UserServicesListState extends State<UserServicesList> {
                               return InkWell(
                                 onTap: () => move(
                                     context,
-                                    ServiceDetails(
+                                    UserServiceDetails(
                                       name: service['name'],
                                       image: service['serviceImage'],
                                       category: service['category'],

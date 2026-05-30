@@ -14,7 +14,7 @@ import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
 import '../images_view.dart';
 
-class ServiceDetails extends StatefulWidget {
+class UserServiceDetails extends StatefulWidget {
   final String category;
   final String name;
   final String image;
@@ -27,7 +27,7 @@ class ServiceDetails extends StatefulWidget {
   final List<dynamic> reviews;
   final String providerId;
 
-  const ServiceDetails({
+  const UserServiceDetails({
     super.key,
     required this.category,
     required this.name,
@@ -43,10 +43,10 @@ class ServiceDetails extends StatefulWidget {
   });
 
   @override
-  State<ServiceDetails> createState() => _ServiceDetailsState();
+  State<UserServiceDetails> createState() => _UserServiceDetailsState();
 }
 
-class _ServiceDetailsState extends State<ServiceDetails> {
+class _UserServiceDetailsState extends State<UserServiceDetails> {
   final TextEditingController commentController = TextEditingController();
   double userRating = 0;
 
@@ -96,9 +96,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
     final image = widget.image;
     final providerId = widget.providerId;
     AppCubit cubit = AppCubit.get(context);
-
-    final providerData =
-        Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
+    final providerData = Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -121,58 +119,35 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.only(
-                          top: 20.h, start: 10.w, end: 10.w),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(7),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white.withOpacity(0.8),
-                              child: InkWell(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () => Navigator.pop(context),
-                                child: const Icon(CupertinoIcons.back),
+                      padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
+                      child: Padding(
+                        padding:  EdgeInsetsDirectional.all(7.w),
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: 42.r,
+                            height: 42.r,
+                            decoration: BoxDecoration(
+                              color: AppCubit.get(context).isDark
+                                  ? darkBgColor.withOpacity(0.8)
+                                  : Colors.white.withOpacity(0.8),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.6),
+                                width: 1,
                               ),
                             ),
-                          ),
-                          const Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.all(7),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white.withOpacity(0.8),
-                              child: PopupMenuButton<String>(
-                                color: Colors.white,
-                                icon: Icon(
-                                  Icons.more_vert,
-                                  color: Colors.black,
-                                  size: 24.r,
-                                ),
-                                offset: const Offset(0, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25.r),
-                                ),
-                                onSelected: (String value) {
-                                  if (value == 'active') {
-                                    /*cubit.isServicesActive=!cubit.isServicesActive;
-                                  print(cubit.isServicesActive);*/
-                                  } else if (value == 'delete') {}
-                                },
-                                itemBuilder: (BuildContext context) => [
-                                  const PopupMenuItem<String>(
-                                    value: 'active',
-                                    child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: SizedBox(
-                                            width: double.infinity,
-                                            child: Text('إبلاغ'))),
-                                  ),
-                                ],
-                              ),
+                            child: Icon(
+                              CupertinoIcons.back,
+                              color: Theme.of(context).iconTheme.color,
+                              size: 24.r,
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
                     Align(

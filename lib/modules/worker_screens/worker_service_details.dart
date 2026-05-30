@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/images_view.dart';
 import 'package:trying_homy/modules/worker_screens/worker_edit_service.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
@@ -247,7 +246,6 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

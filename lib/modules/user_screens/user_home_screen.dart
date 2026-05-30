@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trying_homy/modules/user_screens/user_services_list.dart';
-import 'package:trying_homy/modules/user_screens/service_details.dart';
+import 'package:trying_homy/modules/user_screens/user_service_details.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
@@ -563,7 +563,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                                 onTap: () {
                                                   move(
                                                     context,
-                                                    ServiceDetails(
+                                                    UserServiceDetails(
                                                       name:
                                                           service['name'] ?? '',
                                                       image: service[
