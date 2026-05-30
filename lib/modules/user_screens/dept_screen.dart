@@ -24,10 +24,8 @@ class _DeptScreenState extends State<DeptScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cubit = UserServicesCubit.get(context);
-
       if (cubit.categories.isEmpty) {
         cubit.getCategories();
       }
@@ -40,27 +38,20 @@ class _DeptScreenState extends State<DeptScreen> {
       body: BlocBuilder<AppCubit, AppStates>(
         builder: (context, state) {
           AppCubit appCubit = AppCubit.get(context);
-
           return BlocConsumer<UserServicesCubit, UserServicesStates>(
             listener: (context, state) {
               if (state is GetCategoryErrorState) {
-                showSnackBar(
-                  Colors.red,
-                  state.error,
-                  context,
-                );
+                showSnackBar(Colors.red, state.error, context,);
               }
             },
             builder: (context, state) {
               final userServicesCubit = UserServicesCubit.get(context);
               final categories = userServicesCubit.categories;
-
               if (state is GetCategoryLoadingState && categories.isEmpty) {
                 return UserDeptShimmer(
                   isDark: appCubit.isDark,
                 );
               }
-
               return Directionality(
                 textDirection: TextDirection.rtl,
                 child: RefreshIndicator(

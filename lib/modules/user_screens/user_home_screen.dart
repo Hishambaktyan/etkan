@@ -23,38 +23,6 @@ class UserHomeScreen extends StatefulWidget {
 }
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
-  Widget buildSectionTitle({
-    required String title,
-    required String icon,
-    required dynamic cubit,
-  }) {
-    return Row(
-      children: [
-        Container(
-            padding: EdgeInsetsDirectional.all(8.w),
-            decoration: BoxDecoration(
-              color: cubit.isDark
-                  ? mainColor.withOpacity(0.2)
-                  : mainColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: SvgPicture.asset(
-              icon,
-              color: mainColor,
-              width: 25.w,
-            )),
-        SizedBox(width: 8.w),
-        Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16.sp,
-            color: cubit.isDark ? Colors.white : Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
 
   bool hasInternet = true;
   bool checkingInternet = true;
@@ -103,6 +71,39 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
       debugPrint('Error loading home data: $e');
     }
+  }
+
+  Widget buildSectionTitle({
+    required String title,
+    required String icon,
+    required dynamic cubit,
+  }) {
+    return Row(
+      children: [
+        Container(
+            padding: EdgeInsetsDirectional.all(8.w),
+            decoration: BoxDecoration(
+              color: cubit.isDark
+                  ? mainColor.withOpacity(0.2)
+                  : mainColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: mainColor,
+              width: 25.w,
+            )),
+        SizedBox(width: 8.w),
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+            color: cubit.isDark ? Colors.white : Colors.black,
+          ),
+        ),
+      ],
+    );
   }
 
   @override

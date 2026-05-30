@@ -416,8 +416,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
     AppCubit appCubit = AppCubit.get(context);
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        return BlocConsumer<LocationCubit,LocationStates>(
-          listener: (context, state) {},
+        return BlocBuilder<LocationCubit,LocationStates>(
           builder: (context, state) {
               LocationCubit locationCubit = LocationCubit.get(context);
               return Directionality(
@@ -455,7 +454,6 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                     ),
                   ),
                   body: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsetsDirectional.all(10),
                     child: state is GetAddressesLoadingState? AddressManagementShimmer(isDark: appCubit.isDark,)
                         : Column(
@@ -465,21 +463,53 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                         SizedBox(height: 25.h),
                         _buildSectionTitle(appCubit),
                         SizedBox(height: 15.h),
-                        locationCubit.allAddresses.isEmpty? Center(
-                            child: Column(
-                              children: [
-                                SvgPicture.asset('assets/no_loc.svg',color: Colors.grey,width: 60.w,),
-                                SizedBox(height: 10.h,),
-                                Text(
-                                    'لا يوجد عناوين لديك',
-                                    style: TextStyle(
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey
-                                    )
+                        locationCubit.allAddresses.isEmpty?
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.55,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 85.w,
+                                height: 85.w,
+                                padding: EdgeInsets.all(18.r),
+                                decoration: BoxDecoration(
+                                  color: mainColor.withOpacity(0.08),
+                                  shape: BoxShape.circle,
                                 ),
-                              ],
-                            )
+                                child: SvgPicture.asset(
+                                  'assets/no_loc.svg',
+                                  width: 45.w,
+                                  colorFilter: ColorFilter.mode(
+                                    mainColor.withOpacity(0.75),
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20.h),
+                              Text(
+                                'لا توجد عناوين محفوظة',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              Text(
+                                'أضف عنوانك الآن لتسهيل استخدامه عند حجز الخدمات.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  height: 1.6,
+                                  color: appCubit.isDark
+                                      ? darkSubTextColor
+                                      : Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
                         )
                             : ListView.builder(
                           shrinkWrap: true,
@@ -508,15 +538,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: appCubit.isDark ? darkBgColor : Colors.white,
-                      boxShadow: appCubit.isDark
-                          ? []
-                          : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 12,
-                          offset: const Offset(0, -4),
-                        ),
-                      ],
+                      boxShadow: blueShadow
                     ),
                     child: defaultButtonWithIcon(
                         onPressed: ()=>move(context, const AddAddress()),

@@ -68,8 +68,9 @@ class UserServicesCubit extends Cubit<UserServicesStates> {
   }
 
   Future<void> getCategories() async {
+    if (isGetCategoriesLoading) return;
+
     try {
-      categories = [];
       isGetCategoriesLoading = true;
       emit(GetCategoryLoadingState());
 
@@ -78,11 +79,15 @@ class UserServicesCubit extends Cubit<UserServicesStates> {
           .where('isActive', isEqualTo: true)
           .get();
 
+      final List<Map<String, dynamic>> loadedCategories = [];
+
       for (var doc in categoriesSnapshot.docs) {
-        var data = doc.data();
+        final data = doc.data();
         data['id'] = doc.id;
-        categories.add(data);
+        loadedCategories.add(data);
       }
+
+      categories = loadedCategories;
 
       isGetCategoriesLoading = false;
       emit(GetCategorySuccessState());
