@@ -18,6 +18,18 @@ class NotificationErrorState extends NotificationStates {
   NotificationErrorState({required this.error});
 }
 
+class GetNotificationsLoadingState extends NotificationStates {}
+
+class GetNotificationsSuccessState extends NotificationStates {}
+
+class GetNotificationsErrorState extends NotificationStates {
+  final String error;
+
+  GetNotificationsErrorState({required this.error});
+}
+
+class MarkNotificationAsReadSuccessState extends NotificationStates {}
+
 
 
 

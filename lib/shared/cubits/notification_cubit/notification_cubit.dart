@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -240,4 +241,124 @@ class NotificationCubit extends Cubit<NotificationStates> {
       emit(NotificationErrorState(error: error.toString()));
     }
   }
+
+  List<Map<String, dynamic>> userNotifications = [];
+
+  int get unreadNotificationsCount {
+    return userNotifications
+        .where((notification) => notification['isRead'] != true)
+        .length;
+  }
+
+  Future<void> getUserNotifications() async {
+    try {
+      final String uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
+
+      if (uid.isEmpty) {
+        userNotifications = [];
+        emit(GetNotificationsErrorState(error: 'لم يتم العثور على معرف المستخدم'));
+        return;
+      }
+
+      emit(GetNotificationsLoadingState());
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('notifications')
+          .where('receiverId', isEqualTo: uid)
+          .get();
+
+      userNotifications = snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        data['id'] = doc.id;
+        data['notificationId'] = data['notificationId'] ?? doc.id;
+
+        return data;
+      }).toList();
+
+      userNotifications.sort((a, b) {
+        final DateTime aDate = a['createdAt'] is Timestamp
+            ? (a['createdAt'] as Timestamp).toDate()
+            : DateTime.fromMillisecondsSinceEpoch(0);
+
+        final DateTime bDate = b['createdAt'] is Timestamp
+            ? (b['createdAt'] as Timestamp).toDate()
+            : DateTime.fromMillisecondsSinceEpoch(0);
+
+        return bDate.compareTo(aDate);
+      });
+
+      emit(GetNotificationsSuccessState());
+    } catch (error) {
+      emit(GetNotificationsErrorState(error: error.toString()));
+    }
+  }
+
+  Future<void> markNotificationAsRead(String notificationId) async {
+    try {
+      if (notificationId.isEmpty) return;
+
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationId)
+          .update({
+        'isRead': true,
+      });
+
+      final index = userNotifications.indexWhere((notification) {
+        final String id =
+            notification['notificationId']?.toString() ??
+                notification['id']?.toString() ??
+                '';
+
+        return id == notificationId;
+      });
+
+      if (index != -1) {
+        userNotifications[index]['isRead'] = true;
+      }
+
+      emit(MarkNotificationAsReadSuccessState());
+    } catch (error) {
+      print('خطأ أثناء جعل الإشعار مقروء: $error');
+    }
+  }
+
+  Future<void> markAllNotificationsAsRead() async {
+    try {
+      final unreadNotifications = userNotifications
+          .where((notification) => notification['isRead'] != true)
+          .toList();
+
+      if (unreadNotifications.isEmpty) return;
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      for (final notification in unreadNotifications) {
+        final String notificationId =
+            notification['notificationId']?.toString() ??
+                notification['id']?.toString() ??
+                '';
+
+        if (notificationId.isNotEmpty) {
+          final ref = FirebaseFirestore.instance
+              .collection('notifications')
+              .doc(notificationId);
+
+          batch.update(ref, {'isRead': true});
+        }
+      }
+
+      await batch.commit();
+
+      for (final notification in userNotifications) {
+        notification['isRead'] = true;
+      }
+
+      emit(MarkNotificationAsReadSuccessState());
+    } catch (error) {
+      print('خطأ أثناء جعل كل الإشعارات مقروءة: $error');
+    }
+  }
+
 }

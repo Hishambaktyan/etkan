@@ -30,10 +30,12 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
+
   Widget _buildHeader({
     required AppCubit appCubit,
     required Map<String, dynamic> user,
-  }) {
+  })
+  {
     String name = user['name'] ?? 'مستخدم';
     String phone = user['phone'] ?? '';
     String image = user['profileImage'] ?? '';
@@ -232,13 +234,10 @@ class _UserAccountState extends State<UserAccount> {
     required String title,
     required String icon,
     required AppCubit appCubit,
-  }) {
+  })
+  {
     return Padding(
-      padding: EdgeInsetsDirectional.only(
-        start: 10.w,
-        end: 10.w,
-        bottom: 10.h,
-      ),
+      padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 10.h,),
       child: Row(
         children: [
           Container(
@@ -283,11 +282,8 @@ class _UserAccountState extends State<UserAccount> {
       ),
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        border: appCubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade100),
-        boxShadow: appCubit.isDark ? [] : blueShadow,
+        borderRadius: BorderRadius.circular(25.r),
+        boxShadow: blueShadow,
       ),
       child: Column(
         children: children,

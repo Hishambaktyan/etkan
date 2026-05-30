@@ -23,7 +23,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22.r),
+        borderRadius: BorderRadius.circular(25.r),
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
@@ -80,13 +80,10 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
   Widget _buildLastUpdatedCard(BuildContext context, AppCubit cubit) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(15.r),
+      padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Row(
@@ -161,10 +158,10 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(bottom: 14.h),
+      margin: EdgeInsets.only(bottom: 20.h),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: blueShadow,
       ),
       child: Theme(
@@ -216,7 +213,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: Colors.orange.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(18.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: Border.all(
           color: Colors.orange.withOpacity(0.25),
         ),
@@ -263,10 +260,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
       padding: EdgeInsets.all(14.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Row(

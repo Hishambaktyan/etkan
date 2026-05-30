@@ -24,9 +24,7 @@ class AboutAppScreen extends StatelessWidget {
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border:
-            cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Row(
@@ -80,15 +78,14 @@ class AboutAppScreen extends StatelessWidget {
     required String icon,
   }) {
     return Container(
-      padding: EdgeInsets.all(14.r),
+      padding: EdgeInsetsDirectional.all(14.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border:
-            cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             padding: EdgeInsets.all(10.r),
@@ -98,7 +95,7 @@ class AboutAppScreen extends StatelessWidget {
             ),
             child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 20.h),
           Text(
             title,
             textAlign: TextAlign.center,
@@ -149,9 +146,7 @@ class AboutAppScreen extends StatelessWidget {
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border:
-            cubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Row(

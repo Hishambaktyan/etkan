@@ -118,9 +118,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                             ],
                             context: context,
                             appCubit: appCubit),
-                        SizedBox(
-                          height: 15.h,
-                        ),
+                        SizedBox(height: 15.h,),
                         SizedBox(
                           height: 55.h,
                           child: ListView.builder(
@@ -175,13 +173,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                             },
                           ),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
+                        SizedBox(height: 10.h,),
                         filteredList.isEmpty
                             ? SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.55,
+                                height: MediaQuery.of(context).size.height * 0.55,
                                 width: double.infinity,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,

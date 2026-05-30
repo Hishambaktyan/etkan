@@ -58,8 +58,7 @@ void moveAndReplace(BuildContext context, Widget screen) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-final FlutterLocalNotificationsPlugin localNotifications =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
 
 Map<String, dynamic>? pendingNotificationData;
 
@@ -219,9 +218,7 @@ Future<void> main() async {
     startWidget = const OnBoardingScreen();
   }
 
-  runApp(MyApp(
-    isDark: isDark,
-  ));
+  runApp(MyApp(isDark: isDark,));
 }
 
 class MyApp extends StatelessWidget {
@@ -259,7 +256,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<WorkerCubit>(
             create: (context) => WorkerCubit()..getWorkerData()),
-        BlocProvider(
+        BlocProvider<NotificationCubit>(
           create: (context) => NotificationCubit()..initFirebaseMessaging(),
         )
       ],
@@ -270,10 +267,10 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           return BlocBuilder<AppCubit, AppStates>(
             builder: (context, state) {
-              var cubit = AppCubit.get(context);
+              var appCubit = AppCubit.get(context);
               return MaterialApp(
                   navigatorKey: navigatorKey,
-                  themeMode: cubit.isDark ? ThemeMode.dark : ThemeMode.light,
+                  themeMode: appCubit.isDark ? ThemeMode.dark : ThemeMode.light,
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   debugShowCheckedModeBanner: false,

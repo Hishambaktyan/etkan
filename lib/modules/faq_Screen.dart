@@ -118,15 +118,8 @@ class _FaqScreenState extends State<FaqScreen> {
                   return Container(
                     decoration: BoxDecoration(
                       color: cubit.isDark? const Color(0xFF161B22): Colors.white,
-                      borderRadius: BorderRadius.circular(15.r),
-                      boxShadow: cubit.isDark?[]: [
-                        BoxShadow (
-                          color: mainColor.withOpacity(0.2),
-                          spreadRadius: 1.0,
-                          blurRadius: 7.0,
-                          offset: const Offset(2, 5),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(25.r),
+                      boxShadow: blueShadow
                     ),
                     child: Theme(
                       data: Theme.of(context).copyWith(

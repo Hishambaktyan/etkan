@@ -16,7 +16,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22.r),
+        borderRadius: BorderRadius.circular(25.r),
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
@@ -25,15 +25,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             mainColor.withOpacity(0.75),
           ],
         ),
-        boxShadow: cubit.isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: mainColor.withOpacity(0.20),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+        boxShadow: blueShadow
       ),
       child: Row(
         children: [
@@ -81,13 +73,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget _buildLastUpdatedCard(BuildContext context, AppCubit cubit) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(15.r),
+      padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(25.r),
         boxShadow: blueShadow,
       ),
       child: Row(
@@ -133,7 +122,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: EdgeInsets.all(8.r),
+          padding: EdgeInsetsDirectional.all(8.r),
           decoration: BoxDecoration(
             color: mainColor.withOpacity(0.10),
             borderRadius: BorderRadius.circular(10.r),
@@ -162,13 +151,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
   }) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(bottom: 14.h),
+      margin: EdgeInsetsDirectional.only(bottom: 20.h),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: blueShadow,
       ),
       child: Theme(
@@ -229,11 +215,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
       padding: EdgeInsets.all(14.r),
       decoration: BoxDecoration(
         color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: cubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : Border.all(color: Colors.grey.shade200),
-        boxShadow: cubit.isDark ? [] : shadow,
+        borderRadius: BorderRadius.circular(25.r),
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [

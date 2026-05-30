@@ -5005,3 +5005,208 @@ class UserWorkerProfileShimmer extends StatelessWidget {
     );
   }
 }
+
+
+class NotificationsScreenShimmer extends StatelessWidget {
+  final bool isDark;
+
+  const NotificationsScreenShimmer({
+    super.key,
+    required this.isDark,
+  });
+
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+
+  Color get containerColor =>
+      isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+
+  Color get iconContainerColor =>
+      isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Column(
+        children: [
+          SizedBox(height: 10.h),
+
+          SizedBox(
+            height: 42.h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w),
+              itemCount: 4,
+              separatorBuilder: (context, index) => SizedBox(width: 10.w),
+              itemBuilder: (context, index) {
+                return _shimmerBox(
+                  height: 38.h,
+                  width: index == 0 ? 70.w : 85.w,
+                  radius: 12,
+                );
+              },
+            ),
+          ),
+
+          SizedBox(height: 15.h),
+
+          Expanded(
+            child: ListView.separated(
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsetsDirectional.only(
+                start: 10.w,
+                end: 10.w,
+                bottom: 20.h,
+              ),
+              itemCount: 7,
+              separatorBuilder: (context, index) => SizedBox(height: 15.h),
+              itemBuilder: (context, index) {
+                return _notificationCardShimmer();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _notificationCardShimmer() {
+    return Container(
+      padding: EdgeInsetsDirectional.all(15.r),
+      decoration: BoxDecoration(
+        color: containerColor,
+        borderRadius: BorderRadius.circular(25.r),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                padding: EdgeInsetsDirectional.all(10.r),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14.r),
+                  color: iconContainerColor,
+                ),
+                child: _shimmerBox(
+                  width: 22.w,
+                  height: 22.h,
+                  radius: 8,
+                ),
+              ),
+              PositionedDirectional(
+                top: -2.h,
+                start: -2.w,
+                child: _shimmerCircle(radius: 5.r),
+              ),
+            ],
+          ),
+
+          SizedBox(width: 12.w),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: _shimmerBox(
+                        height: 14.h,
+                        width: double.infinity,
+                        radius: 8,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    _shimmerBox(
+                      height: 24.h,
+                      width: 50.w,
+                      radius: 20,
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 12.h),
+
+                _shimmerBox(
+                  height: 11.h,
+                  width: double.infinity,
+                  radius: 8,
+                ),
+
+                SizedBox(height: 7.h),
+
+                _shimmerBox(
+                  height: 11.h,
+                  width: 180.w,
+                  radius: 8,
+                ),
+
+                SizedBox(height: 14.h),
+
+                Row(
+                  children: [
+                    _shimmerBox(
+                      height: 15.h,
+                      width: 15.w,
+                      radius: 6,
+                    ),
+                    SizedBox(width: 5.w),
+                    _shimmerBox(
+                      height: 10.h,
+                      width: 75.w,
+                      radius: 8,
+                    ),
+                    const Spacer(),
+                    _shimmerBox(
+                      height: 10.h,
+                      width: 55.w,
+                      radius: 8,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _shimmerBox({
+    required double height,
+    required double width,
+    double radius = 12,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(radius.r),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerCircle({
+    required double radius,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: CircleAvatar(
+        radius: radius,
+        backgroundColor: Colors.white,
+      ),
+    );
+  }
+}

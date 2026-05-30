@@ -91,8 +91,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               ),
               body: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsetsDirectional.only(
-                      top: 10.h, start: 10.w, end: 10.w, bottom: 20.h),
+                  padding: EdgeInsetsDirectional.only(top: 10.h, start: 10.w, end: 10.w, bottom: 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -111,9 +110,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),
                       ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
+                      SizedBox(height: 20.h,),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsetsDirectional.all(20),
@@ -121,8 +118,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                             color: cubit.isDark
                                 ? const Color(0xFF161B22)
                                 : Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: blueShadow),
+                            borderRadius: BorderRadius.circular(25.r),
+                            boxShadow: blueShadow
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -239,14 +237,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
+                      SizedBox(height: 20.h,),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsetsDirectional.all(20),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.r),
+                          borderRadius: BorderRadius.circular(25.r),
                           color: cubit.isDark
                               ? const Color(0xFF161B22)
                               : Colors.white,
