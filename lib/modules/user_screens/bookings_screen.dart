@@ -5,10 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/user_screens/booking_details.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
@@ -77,7 +77,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
   @override
   void initState() {
-    BookingCubit.get(context).getUserRequests();
+    UserCubit.get(context).getUserRequests();
     super.initState();
   }
 
@@ -86,7 +86,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-        BookingCubit bookingCubit = BookingCubit.get(context);
+        UserCubit bookingCubit = UserCubit.get(context);
         List<Map<String, dynamic>> filteredList = selectedStatus == 'الكل'
             ? bookingCubit.userRequests
             : bookingCubit.userRequests
@@ -94,9 +94,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 .toList();
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: Scaffold(body: BlocBuilder<BookingCubit, BookingStates>(
+          child: Scaffold(
+              body: BlocBuilder<UserCubit, UserStates>(
             builder: (context, state) {
-              BookingCubit bookingCubit = BookingCubit.get(context);
+              UserCubit userCubit = UserCubit.get(context);
               return ConditionalBuilder(
                 condition: state is GetUserRequestLoadingState,
                 builder: (context) =>
@@ -104,20 +105,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 fallback: (context) => RefreshIndicator(
                   color: mainColor,
                   onRefresh: () async {
-                    await bookingCubit.getUserRequests();
+                    await userCubit.getUserRequests();
                   },
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        headerWithSearch(
+                        header(
                             title: 'الحجوزات',
-                            searchKeyWords: [
-                              "ابحث عن حجوزات مقبولة",
-                              "ابحث عن حجوزات مكتملة",
-                              "ابحث عن حجوزات قيد الأنتظار"
-                            ],
                             context: context,
-                            appCubit: appCubit),
+                        ),
                         SizedBox(height: 15.h,),
                         SizedBox(
                           height: 55.h,
@@ -184,14 +180,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               Container(
                                 width: 100.w,
                                 height:100.w,
+                                padding: EdgeInsets.all(15.r),
                                 decoration: BoxDecoration(
                                   color: mainColor.withOpacity(0.08),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(
-                                  Icons.event_busy_rounded,
-                                  color: mainColor.withOpacity(0.75),
-                                  size: 60.sp,
+                                child: SvgPicture.asset(
+                                  'assets/ticket.svg',
+                                  color: mainColor,
                                 ),
                               ),
                               SizedBox(height: 20.h),
@@ -224,10 +220,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 padding: EdgeInsetsDirectional.only(
                                     start: 10.w, end: 10.w, top: 5.h),
-                                itemCount: bookingCubit.userRequests.length,
+                                itemCount: userCubit.userRequests.length,
                                 itemBuilder: (context, index) {
                                   var booking =
-                                      bookingCubit.userRequests[index];
+                                      userCubit.userRequests[index];
                                   Color statusColor;
                                   String status = booking['status'];
                                   switch (status) {

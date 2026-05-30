@@ -10,12 +10,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:trying_homy/layout/user_layout/user_main_screen.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
@@ -660,7 +659,6 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : Colors.white,
             appBar: AppBar(
               backgroundColor: appCubit.isDark ? darkBgColor : Colors.white,
               scrolledUnderElevation: 0,
@@ -703,7 +701,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                     SizedBox(height: 15.h),
                     buildNotesCard(appCubit),
                     SizedBox(height: 20.h),
-                    BlocConsumer<BookingCubit, BookingStates>(
+                    BlocConsumer<UserCubit, UserStates>(
                       listener: (context, state) {
                         if (state is CreateRequestLoadingState) {
                           showLoadingDialog(context);
@@ -779,12 +777,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                                                     onPressed: () =>
                                                         moveAndReplace(
                                                           context,
-                                                          BlocProvider(
-                                                            create: (context) =>
-                                                                UserServicesCubit(),
-                                                            child:
-                                                            const UserMainScreen(),
-                                                          ),
+                                                          const UserMainScreen()
                                                         ),
                                                     text: 'العودة إلى الرئيسية',
                                                   ),
@@ -803,7 +796,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                         }
                       },
                       builder: (context, state) {
-                        BookingCubit bookingCubit = BookingCubit.get(context);
+                        UserCubit userCubit = UserCubit.get(context);
                         return defaultButton(
                           onPressed: () async {
                             if (selectedAddress == null) {
@@ -825,7 +818,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
 
                             var currentUser = appCubit.allUsers[CacheHelper.getData(key: 'uid')];
 
-                            await bookingCubit.createRequest(
+                            await userCubit.createRequest(
                               category: serviceCategory,
                               customerId: currentUser['uid'],
                               providerId: providerId,

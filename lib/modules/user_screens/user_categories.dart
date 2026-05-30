@@ -3,29 +3,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:trying_homy/modules/user_screens/services_list.dart';
+import 'package:trying_homy/modules/user_screens/user_services_list.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 
+import '../../shared/cubits/user_cubit/user_cubit.dart';
 import '../../shared/styles/colors.dart';
 
-class DeptScreen extends StatefulWidget {
-  const DeptScreen({super.key});
+class UserCategories extends StatefulWidget {
+  const UserCategories({super.key});
 
   @override
-  State<DeptScreen> createState() => _DeptScreenState();
+  State<UserCategories> createState() => _UserCategoriesState();
 }
 
-class _DeptScreenState extends State<DeptScreen> {
+class _UserCategoriesState extends State<UserCategories> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = UserServicesCubit.get(context);
+      final cubit = UserCubit.get(context);
       if (cubit.categories.isEmpty) {
         cubit.getCategories();
       }
@@ -38,17 +38,17 @@ class _DeptScreenState extends State<DeptScreen> {
       body: BlocBuilder<AppCubit, AppStates>(
         builder: (context, state) {
           AppCubit appCubit = AppCubit.get(context);
-          return BlocConsumer<UserServicesCubit, UserServicesStates>(
+          return BlocConsumer<UserCubit, UserStates>(
             listener: (context, state) {
               if (state is GetCategoryErrorState) {
                 showSnackBar(Colors.red, state.error, context,);
               }
             },
             builder: (context, state) {
-              final userServicesCubit = UserServicesCubit.get(context);
-              final categories = userServicesCubit.categories;
+              final userCubit = UserCubit.get(context);
+              final categories = userCubit.categories;
               if (state is GetCategoryLoadingState && categories.isEmpty) {
-                return UserDeptShimmer(
+                return UserCategoriesShimmer(
                   isDark: appCubit.isDark,
                 );
               }
@@ -57,20 +57,14 @@ class _DeptScreenState extends State<DeptScreen> {
                 child: RefreshIndicator(
                   color: mainColor,
                   onRefresh: () async {
-                    await userServicesCubit.getCategories();
+                    await userCubit.getCategories();
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      headerWithSearch(
+                      header(
                         title: 'الأقسام',
-                        searchKeyWords: const [
-                          'ابحث في الكهرباء',
-                          'ابحث في السباكة',
-                          'ابحث في التكييف',
-                        ],
                         context: context,
-                        appCubit: appCubit,
                       ),
                       SizedBox(height: 20.h),
                       Expanded(
@@ -104,7 +98,7 @@ class _DeptScreenState extends State<DeptScreen> {
                               onTap: () {
                                 move(
                                   context,
-                                  ServicesList(
+                                  UserServicesList(
                                     categoryType: categoryTitle,
                                   ),
                                 );

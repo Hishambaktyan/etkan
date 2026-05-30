@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../modules/user_screens/bookings_screen.dart';
-import '../../../modules/user_screens/dept_screen.dart';
+import '../../../modules/user_screens/user_categories.dart';
 import '../../../modules/user_screens/user_home_screen.dart';
 import '../../../modules/user_screens/user_account.dart';
 import '../../../modules/user_screens/user_chats.dart';
@@ -36,7 +36,7 @@ class AppCubit extends Cubit<AppStates>{
 
   List<Widget> userScreen = [
     const UserHomeScreen(),
-    const DeptScreen(),
+    const UserCategories(),
     const BookingsScreen(),
     const UserChats(),
     const UserAccount(),

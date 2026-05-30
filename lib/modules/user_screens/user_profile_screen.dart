@@ -9,15 +9,16 @@ import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/user_edit_profile_screen.dart';
 import 'package:trying_homy/modules/user_screens/addresses_management_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+
+import '../../shared/cubits/user_cubit/user_cubit.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -36,7 +37,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
 
-    BookingCubit.get(context).getUserRequests();
+    UserCubit.get(context).getUserRequests();
     LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
   }
 
@@ -357,7 +358,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Widget buildQuickStats({
     required AppCubit cubit,
-    required BookingCubit bookingCubit,
+    required UserCubit bookingCubit,
     required LocationCubit locationCubit,
   }) {
     return Row(
@@ -528,9 +529,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         Map<String, dynamic> user =
             appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? widget.user;
 
-        return BlocBuilder<BookingCubit, BookingStates>(
+        return BlocBuilder<UserCubit, UserStates>(
           builder: (context, bookingState) {
-            BookingCubit bookingCubit = BookingCubit.get(context);
+            UserCubit userCubit = UserCubit.get(context);
 
             return BlocBuilder<LocationCubit, LocationStates>(
               builder: (context, locationState) {
@@ -557,7 +558,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               children: [
                                 buildQuickStats(
                                   cubit: appCubit,
-                                  bookingCubit: bookingCubit,
+                                  bookingCubit: userCubit,
                                   locationCubit: locationCubit,
                                 ),
                                 SizedBox(height: 25.h),

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,12 +9,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trying_homy/modules/user_screens/booking_details.dart';
 import 'package:trying_homy/modules/user_screens/service_details.dart';
-import 'package:trying_homy/modules/user_screens/services_list.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
+import 'package:trying_homy/modules/user_screens/user_services_list.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -44,7 +41,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Timer? searchDebounce;
   String selectedSearchFilter = 'الكل';
 
-  final List<Map<String, String>> servicesDepts = [
+  final List<Map<String, String>> servicesCategories = [
     {'name': 'الكهرباء', 'icon': 'assets/SVGs/E.svg', 'type': 'كهرباء'},
     {'name': 'السباكة', 'icon': 'assets/SVGs/P.svg', 'type': 'سباكة'},
     {'name': 'البناء', 'icon': 'assets/SVGs/C.svg', 'type': 'بناء'},
@@ -65,13 +62,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
       searchFocusNode.requestFocus();
 
-      final userServicesCubit = UserServicesCubit.get(context);
+      final userServicesCubit = UserCubit.get(context);
 
       if (userServicesCubit.categories.isEmpty) {
         userServicesCubit.getCategories();
       }
 
-      final bookingCubit = BookingCubit.get(context);
+      final bookingCubit = UserCubit.get(context);
       if (bookingCubit.userRequests.isEmpty) {
         bookingCubit.getUserRequests();
       }
@@ -96,34 +93,28 @@ class _SearchScreenState extends State<SearchScreen> {
           resizeToAvoidBottomInset: true,
           body: Directionality(
             textDirection: TextDirection.rtl,
-            child: BlocBuilder<UserServicesCubit, UserServicesStates>(
+            child: BlocBuilder<UserCubit, UserStates>(
               builder: (context, userServicesState) {
                 if (userServicesState is GetUserAllServicesLoadingState) {
                   return SearchScreenShimmer(isDark: appCubit.isDark);
                 }
-
-                return BlocBuilder<BookingCubit, BookingStates>(
+                return BlocBuilder<UserCubit, UserStates>(
                   builder: (context, bookingState) {
-                    final userServicesCubit = UserServicesCubit.get(context);
-                    final bookingCubit = BookingCubit.get(context);
-
+                    final userServicesCubit = UserCubit.get(context);
+                    final bookingCubit = UserCubit.get(context);
                     final services = List<Map<String, dynamic>>.from(
                       userServicesCubit.userServices,
                     );
-
                     final bookings = List<Map<String, dynamic>>.from(
                       bookingCubit.userRequests,
                     );
-
                     final allUsers = <dynamic, dynamic>{};
                     allUsers.addAll(userServicesCubit.allUsers);
                     allUsers.addAll(appCubit.allUsers);
-
                     final suggestedServices = services.take(4).toList();
                     final categories = List<Map<String, dynamic>>.from(
                       userServicesCubit.categories,
                     );
-
                     final filteredDepartments = getFilteredDepartments(
                       categories: categories,
                     );
@@ -1721,7 +1712,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget buildPopularDepartments(AppCubit appCubit) {
-    final userServicesCubit = UserServicesCubit.get(context);
+    final userServicesCubit = UserCubit.get(context);
 
     final categories = List<Map<String, dynamic>>.from(
       userServicesCubit.categories,
@@ -1760,7 +1751,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
             move(
               context,
-              ServicesList(
+              UserServicesList(
                 categoryType: categoryTitle,
               ),
             );
@@ -1844,7 +1835,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
         move(
           context,
-          ServicesList(
+          UserServicesList(
             categoryType: categoryTitle,
           ),
         );

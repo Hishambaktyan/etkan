@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,39 +6,40 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:marquee/marquee.dart';
 import 'package:trying_homy/modules/user_screens/service_details.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import '../../shared/compenents/components.dart';
 import '../../main.dart';
 import '../../shared/styles/colors.dart';
 
-class ServicesList extends StatefulWidget {
+class UserServicesList extends StatefulWidget {
   final String categoryType;
-  const ServicesList({super.key, required this.categoryType});
+  const UserServicesList({super.key, required this.categoryType});
 
   @override
-  State<ServicesList> createState() => _ServicesListState();
+  State<UserServicesList> createState() => _UserServicesListState();
 }
 
-class _ServicesListState extends State<ServicesList> {
+class _UserServicesListState extends State<UserServicesList> {
+
   @override
   void initState() {
-    UserServicesCubit.get(context).getUserSpecServices(widget.categoryType);
+    UserCubit.get(context).getUserSpecServices(widget.categoryType);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     AppCubit appCubit = AppCubit.get(context);
     return BlocBuilder<AppCubit,AppStates>(
         builder: (context, state) {
-          return BlocBuilder<UserServicesCubit,UserServicesStates>(
+          return BlocBuilder<UserCubit,UserStates>(
             builder: (context, state) {
-                UserServicesCubit  userServicesCubit = UserServicesCubit.get(context);
-                return state is GetUserElecServicesLoadingState? const UserServicesShimmer():
-                userServicesCubit.userElecServices.isEmpty? const Center(child: Text('لا توجد خدمات في الكهرباء حاليا'),):
+              UserCubit  userCubit = UserCubit.get(context);
+                return state is GetUserSpecServicesLoadingState? const UserServicesShimmer():
                 Directionality(
                   textDirection: TextDirection.rtl,
                   child: Scaffold(
@@ -59,13 +59,58 @@ class _ServicesListState extends State<ServicesList> {
                               appCubit: appCubit
                           ),
                           SizedBox(height: 15.h,),
-                          ListView.separated(
-                            itemCount: userServicesCubit.userElecServices.length,
+                          userCubit.userSpecServices.isEmpty
+                              ? SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.55,
+                            width: double.infinity,
+                            child:  Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 100.w,
+                                  height:100.w,
+                                  padding: EdgeInsets.all(15.r),
+                                  decoration: BoxDecoration(
+                                    color: mainColor.withOpacity(0.08),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/services.svg',
+                                    color: mainColor,
+                                  ),
+                                ),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  'لا توجد خدمات حالياً',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.sp,
+                                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                                  ),
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  'لا توجد خدمات في قسم  ال${widget.categoryType} في الوقت الحالي.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    height: 1.6,
+                                    color: appCubit.isDark
+                                        ? darkSubTextColor
+                                        : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          :ListView.separated(
+                            itemCount: userCubit.userSpecServices.length,
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             padding: EdgeInsetsDirectional.only(start:15.w,end: 15.w,bottom: 20.h),
                             itemBuilder: (context, index) {
-                              var service = userServicesCubit.userElecServices[index];
+                              var service = userCubit.userSpecServices[index];
                               var providerData = appCubit.allUsers[service['providerId']];
                               return InkWell(
                                 onTap: () => move(

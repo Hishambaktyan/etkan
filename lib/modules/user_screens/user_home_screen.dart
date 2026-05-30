@@ -5,15 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:trying_homy/modules/user_screens/services_list.dart';
+import 'package:trying_homy/modules/user_screens/user_services_list.dart';
 import 'package:trying_homy/modules/user_screens/service_details.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_cubit.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/user_servies_cubit/user_services_states.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
+import '../../shared/cubits/user_cubit/user_cubit.dart';
 import '../../shared/styles/colors.dart';
 
 class UserHomeScreen extends StatefulWidget {
@@ -47,7 +47,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     }
 
     try {
-      final userServicesCubit = UserServicesCubit.get(context);
+      final userServicesCubit = UserCubit.get(context);
 
       await Future.wait([
         userServicesCubit.getUserServices(),
@@ -109,7 +109,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkConnectionAndGetData();
     });
@@ -123,10 +122,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         return Scaffold(
             body: Directionality(
           textDirection: TextDirection.rtl,
-          child: BlocBuilder<UserServicesCubit, UserServicesStates>(
+          child: BlocBuilder<UserCubit, UserStates>(
             builder: (context, state) {
-              UserServicesCubit userServicesCubit =
-                  UserServicesCubit.get(context);
+              UserCubit userCubit = UserCubit.get(context);
               return ConditionalBuilder(
                 condition: checkingInternet,
                 builder: (context) => UserHomeShimmer(isDark: appCubit.isDark),
@@ -137,8 +135,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   ),
                   fallback: (context) => ConditionalBuilder(
                     condition: state is GetUserAllServicesLoadingState,
-                    builder: (context) =>
-                        UserHomeShimmer(isDark: appCubit.isDark),
+                    builder: (context) => UserHomeShimmer(isDark: appCubit.isDark),
                     fallback: (context) => RefreshIndicator(
                       onRefresh: () => checkConnectionAndGetData(),
                       child: SingleChildScrollView(
@@ -154,15 +151,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                 ],
                                 context: context,
                                 appCubit: appCubit),
-                            SizedBox(
-                              height: 20.h,
-                            ),
+                            SizedBox(height: 20.h,),
                             Column(
                               children: [
                                 /*بانر ترحيبي*/
                                 Padding(
-                                  padding: EdgeInsetsDirectional.symmetric(
-                                      horizontal: 10.w),
+                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                   child: Container(
                                     width: double.infinity,
                                     decoration: BoxDecoration(
@@ -305,13 +299,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                                 /*الأقسام*/
                                 Padding(
-                                  padding: EdgeInsetsDirectional.symmetric(
-                                      horizontal: 10.w),
+                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                   child: Column(
                                     children: [
                                       Row(
@@ -331,7 +322,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                         ],
                                       ),
                                       SizedBox(height: 10.h),
-                                      if (userServicesCubit.categories.isEmpty)
+                                      if (userCubit.categories.isEmpty)
                                         Container(
                                           width: double.infinity,
                                           padding: EdgeInsets.all(20.r),
@@ -368,48 +359,31 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                         GridView.builder(
                                           shrinkWrap: true,
                                           padding: EdgeInsetsDirectional.zero,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          gridDelegate:
-                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                             crossAxisCount: 2,
                                             mainAxisSpacing: 10.h,
                                             crossAxisSpacing: 10.w,
                                             childAspectRatio: 2.1,
                                           ),
-                                          itemCount: userServicesCubit
-                                                      .categories.length >
-                                                  4
-                                              ? 4
-                                              : userServicesCubit
-                                                  .categories.length,
+                                          itemCount: userCubit.categories.length > 4 ? 4
+                                              : userCubit.categories.length,
                                           itemBuilder: (context, index) {
-                                            final category = userServicesCubit
-                                                .categories[index];
-
-                                            final String categoryTitle =
-                                                '${category['title'] ?? ''}';
-                                            final String categoryImage =
-                                                '${category['image'] ?? ''}';
+                                            
+                                            final category = userCubit.categories[index];
+                                            final String categoryTitle = '${category['title'] ?? ''}';
+                                            final String categoryImage = '${category['image'] ?? ''}';
 
                                             return InkWell(
                                               splashColor: Colors.transparent,
                                               highlightColor:
-                                                  Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(25.r),
+                                              Colors.transparent,
+                                              borderRadius: BorderRadius.circular(25.r),
                                               onTap: () {
-                                                move(
-                                                  context,
-                                                  ServicesList(
-                                                    categoryType: categoryTitle,
-                                                  ),
-                                                );
+                                                move(context, UserServicesList(categoryType: categoryTitle,),);
                                               },
                                               child: Container(
-                                                padding:
-                                                    EdgeInsetsDirectional.all(
-                                                        10.r),
+                                                padding: EdgeInsetsDirectional.all(10.r),
                                                 decoration: BoxDecoration(
                                                   color: appCubit.isDark
                                                       ? lightDarkColor
@@ -513,15 +487,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                                 /*الخدمات الرائجة*/
                                 Column(
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.symmetric(
-                                          horizontal: 10.w),
+                                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                       child: buildSectionTitle(
                                         title: 'الخدمات الرائجة',
                                         icon: 'assets/services.svg',
@@ -529,14 +500,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                       ),
                                     ),
                                     SizedBox(height: 10.h),
-                                    if (userServicesCubit.userServices.isEmpty)
+                                    if (userCubit.userServices.isEmpty)
                                       Padding(
-                                        padding:
-                                            EdgeInsetsDirectional.symmetric(
-                                                horizontal: 10.w),
+                                        padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                         child: Container(
                                           width: double.infinity,
-                                          padding: EdgeInsets.all(20.r),
+                                          padding: EdgeInsetsDirectional.all(20.r),
                                           decoration: BoxDecoration(
                                             color: appCubit.isDark
                                                 ? lightDarkColor
@@ -548,8 +517,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                           child: Column(
                                             children: [
                                               Icon(
-                                                Icons
-                                                    .home_repair_service_rounded,
+                                                Icons.home_repair_service_rounded,
                                                 color: mainColor,
                                                 size: 45.sp,
                                               ),
@@ -577,31 +545,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                             start: 15.w,
                                             bottom: 10.h,
                                           ),
-                                          itemCount: userServicesCubit
-                                                      .userServices.length >
-                                                  4
-                                              ? 4
-                                              : userServicesCubit
-                                                  .userServices.length,
+                                          itemCount: userCubit.userServices.length > 4 ? 4
+                                              : userCubit.userServices.length,
                                           itemBuilder: (context, index) {
-                                            var service = userServicesCubit
-                                                .userServices[index];
-
+                                            var service = userCubit.userServices[index];
                                             Map<String, dynamic> providerData =
                                                 Map<String, dynamic>.from(
-                                              userServicesCubit.allUsers[
-                                                      service['providerId']] ??
-                                                  {},
-                                            );
-
-                                            String serviceImage =
-                                                '${service['serviceImage'] ?? ''}';
-                                            String providerImage =
-                                                '${providerData['profileImage'] ?? ''}';
-
+                                              userCubit.allUsers[service['providerId']] ?? {},);
+                                            String serviceImage = '${service['serviceImage'] ?? ''}';
+                                            String providerImage = '${providerData['profileImage'] ?? ''}';
                                             return Padding(
-                                              padding:
-                                                  EdgeInsetsDirectional.only(
+                                              padding: EdgeInsetsDirectional.only(
                                                 start: index == 0 ? 0 : 15.w,
                                                 end: index == 3 ? 15.w : 0,
                                               ),
@@ -646,8 +600,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                                                     ),
                                                   );
                                                 },
-                                                borderRadius:
-                                                    BorderRadius.circular(25.r),
+                                                borderRadius: BorderRadius.circular(25.r),
                                                 child: Container(
                                                   width: 280.w,
                                                   decoration: BoxDecoration(

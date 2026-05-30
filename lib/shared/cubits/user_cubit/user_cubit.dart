@@ -1,15 +1,108 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trying_homy/modules/user_screens/user_cubits/booking_cubit/booking_states.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 
-import '../../../../shared/networks/local/cache_helper.dart';
-import '../../../../shared/networks/remote/notification_service.dart';
+import '../../networks/local/cache_helper.dart';
+import '../../networks/remote/notification_service.dart';
 
-class BookingCubit extends Cubit<BookingStates> {
-  BookingCubit() : super(BookingInitState());
+class UserCubit extends Cubit<UserStates>{
 
-  static BookingCubit get(context) => BlocProvider.of(context);
+  UserCubit(): super(UserInitState());
+
+  static UserCubit get(context) => BlocProvider.of(context);
+
+  Map<String, dynamic> allUsers = {};
+
+
+  Future<void> getAllUsers() async {
+    final snapshot = await FirebaseFirestore.instance.collection('users').get();
+
+    allUsers = {};
+
+    for (var doc in snapshot.docs) {
+      allUsers[doc.id] = doc.data();
+    }
+  }
+
+  List<dynamic> userSpecServices = [];
+
+  Future<void> getUserSpecServices(String type) async {
+    try {
+      userSpecServices = [];
+      emit(GetUserSpecServicesLoadingState());
+
+      final getServicesSnapshot = await FirebaseFirestore.instance
+          .collection('services')
+          .where('category', isEqualTo: type)
+          .get();
+
+      for (var doc in getServicesSnapshot.docs) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        userSpecServices.add(data);
+      }
+      emit(GetUserSpecServicesSuccessState());
+    } catch (e) {
+      emit(GetUserSpecServicesErrorState(error: e.toString()));
+    }
+  }
+
+  List<Map<String, dynamic>> userServices = [];
+
+  Future<void> getUserServices() async {
+    try {
+      emit(GetUserAllServicesLoadingState());
+
+      userServices.clear();
+
+      final servicesSnapshot =
+      await FirebaseFirestore.instance.collection('services').get();
+
+      for (var doc in servicesSnapshot.docs) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        userServices.add(data);
+      }
+
+      emit(GetUserAllServicesSuccessState());
+    } catch (e) {
+      emit(GetUserAllServicesErrorState(error: e.toString()));
+      print(e.toString());
+    }
+  }
+
+  List<Map<String, dynamic>> categories = [];
+  bool isGetCategoriesLoading = false;
+
+  Future<void> getCategories() async {
+    if (isGetCategoriesLoading) return;
+
+    try {
+      isGetCategoriesLoading = true;
+      emit(GetCategoryLoadingState());
+
+      final categoriesSnapshot = await FirebaseFirestore.instance
+          .collection('categories')
+          .where('isActive', isEqualTo: true)
+          .get();
+
+      final List<Map<String, dynamic>> loadedCategories = [];
+
+      for (var doc in categoriesSnapshot.docs) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        loadedCategories.add(data);
+      }
+
+      categories = loadedCategories;
+
+      isGetCategoriesLoading = false;
+      emit(GetCategorySuccessState());
+    } catch (e) {
+      isGetCategoriesLoading = false;
+      emit(GetCategoryErrorState(error: e.toString()));
+    }
+  }
 
   List<Map<String, dynamic>> userRequests = [];
 
@@ -45,7 +138,8 @@ class BookingCubit extends Cubit<BookingStates> {
     required String duration,
     required int price,
     required Timestamp scheduledAt,
-  }) async {
+  })
+  async {
     try {
       emit(CreateRequestLoadingState());
 
@@ -53,7 +147,7 @@ class BookingCubit extends Cubit<BookingStates> {
       final Timestamp nowTimestamp = Timestamp.fromDate(now);
 
       final requestRef =
-          FirebaseFirestore.instance.collection('requests').doc();
+      FirebaseFirestore.instance.collection('requests').doc();
 
       final Map<String, dynamic> requestData = {
         'requestId': requestRef.id,
@@ -115,4 +209,5 @@ class BookingCubit extends Cubit<BookingStates> {
       emit(CreateRequestErrorState(error: e.toString()));
     }
   }
+
 }

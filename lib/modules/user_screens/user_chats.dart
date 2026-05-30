@@ -11,6 +11,7 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 
 import '../../shared/networks/local/cache_helper.dart';
+import '../../shared/styles/colors.dart';
 
 class UserChats extends StatefulWidget {
   const UserChats({super.key});
@@ -54,29 +55,63 @@ class _UserChatsState extends State<UserChats> {
                       children: [
                         header(title: 'الدردشة', context: context),
                         Expanded(
-                          child: Center(
-                            child: Text(
-                              'لا توجد دردشات',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.55,
+                            width: double.infinity,
+                            child:  Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 100.w,
+                                  height:100.w,
+                                  padding: EdgeInsets.all(15.r),
+                                  decoration: BoxDecoration(
+                                    color: mainColor.withOpacity(0.08),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/chat.svg',
+                                    color: mainColor,
+                                  ),
+                                ),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  'لا توجد محادثات لديك',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.sp,
+                                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                                  ),
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  'عند حجز أي خدمة ستظهر المحادثات للحجز هنا.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    height: 1.6,
+                                    color: appCubit.isDark
+                                        ? darkSubTextColor
+                                        : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          )
                         ),
                       ],
                     ),
                   );
                 }
-                var docs = snapshot.data!.docs;
 
+                var docs = snapshot.data!.docs;
                 return Directionality(
                     textDirection: TextDirection.rtl,
                     child: Column(
                       children: [
                         header(
-                          title: 'الدردشة',
+                          title: 'المحادثات',
                           context: context,
                         ),
                         Expanded(

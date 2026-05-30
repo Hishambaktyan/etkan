@@ -142,7 +142,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
                                 ? mainColor
                                 : Colors.grey,
                           ),
-                          label: 'الدردشة',
+                          label: 'المحادثات',
                         ),
                         NavigationDestination(
                           icon: SvgPicture.asset(
