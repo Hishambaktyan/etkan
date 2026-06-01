@@ -125,26 +125,23 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                         child: InkWell(
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
+                          borderRadius: BorderRadius.circular(15.r),
                           onTap: () {
                             Navigator.pop(context);
                           },
                           child: Container(
-                            width: 42.r,
-                            height: 42.r,
+                            width: 42.w,
+                            height: 42.h,
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: AppCubit.get(context).isDark
-                                  ? darkBgColor.withOpacity(0.8)
-                                  : Colors.white.withOpacity(0.8),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.6),
-                                width: 1,
-                              ),
+                              color: cubit.isDark? darkBgColor.withOpacity(0.7): Colors.white.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(15.r),
+                              border: Border.all(color: Colors.white.withOpacity(0.12)),
                             ),
                             child: Icon(
-                              CupertinoIcons.back,
+                              Icons.arrow_back_ios_new_rounded,
                               color: Theme.of(context).iconTheme.color,
-                              size: 24.r,
+                              size: 18.sp,
                             ),
                           ),
                         ),

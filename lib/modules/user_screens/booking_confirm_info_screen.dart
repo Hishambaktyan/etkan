@@ -13,8 +13,10 @@ import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
 import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
 import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
+import '../../shared/cubits/location_cubit/location_states.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
@@ -45,14 +47,101 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
   TimeOfDay? selectedTime;
   TextEditingController noteController = TextEditingController();
 
-  String? selectedAddress;
+  String? selectedAddressId;
+  String? selectedAddressText;
 
-  List<String> addresses = [
-    'المنزل - الشيخ عثمان',
-    'العمل - المنصورة',
-    'الشقة - خور مكسر',
-    'البيت - كريتر',
-  ];
+  List<Map<String,dynamic>> addresses = [];
+
+  Future<DateTime?> pickDateWithTheme({
+    required BuildContext context,
+    required AppCubit appCubit,
+  })
+  {
+    return showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2060),
+      cancelText: 'إلغاء',
+      confirmText: 'تم',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: appCubit.isDark
+                ? ColorScheme.dark(
+              primary: mainColor,
+              onPrimary: Colors.white,
+              surface: lightDarkColor,
+              onSurface: Colors.white,
+            )
+                : ColorScheme.light(
+              primary: mainColor,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor:
+            appCubit.isDark ? lightDarkColor : Colors.white,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: mainColor,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+  }
+
+  Future<TimeOfDay?> pickTimeWithTheme({
+    required BuildContext context,
+    required AppCubit appCubit,
+  })
+  {
+    return showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      cancelText: 'إلغاء',
+      confirmText: 'تم',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: appCubit.isDark
+                ? ColorScheme.dark(
+              primary: mainColor,
+              onPrimary: Colors.white,
+              surface: lightDarkColor,
+              onSurface: Colors.white,
+            )
+                : ColorScheme.light(
+              primary: mainColor,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor:
+            appCubit.isDark ? lightDarkColor : Colors.white,
+            timePickerTheme: TimePickerThemeData(
+              backgroundColor: appCubit.isDark ? lightDarkColor : Colors.white,
+              hourMinuteTextColor: appCubit.isDark ? Colors.white : Colors.black,
+              dayPeriodTextColor: appCubit.isDark ? Colors.white : Colors.black,
+              dialHandColor: mainColor,
+              dialBackgroundColor:
+              appCubit.isDark ? darkBgColor : Colors.grey.shade100,
+              entryModeIconColor: appCubit.isDark ? Colors.white : Colors.grey,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: mainColor,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+  }
 
   Widget buildCard({
     required AppCubit appCubit,
@@ -278,99 +367,200 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
   }
 
   Widget buildAddressCard(AppCubit appCubit) {
-    return buildCard(
-      appCubit: appCubit,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildSectionTitle(
-            appCubit: appCubit,
-            title: 'موقع الخدمة',
-            icon: SvgPicture.asset(
-              'assets/loc.svg',
-              color: mainColor,
-              width: 22.w,
-              height: 22.h,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'اختر العنوان الذي تريد تنفيذ الخدمة فيه',
-            style: TextStyle(
-              fontSize: 11.sp,
-              color: appCubit.isDark ? darkSubTextColor : Colors.grey.shade600,
-            ),
-          ),
-          SizedBox(height: 15.h),
-          Container(
-            padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w),
-            decoration: BoxDecoration(
-              color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(14.r),
-              border: Border.all(
-                color: appCubit.isDark
-                    ? const Color(0xFF30363D)
-                    : Colors.grey.shade200,
+    return BlocBuilder<LocationCubit, LocationStates>(
+      builder: (context, locationState) {
+        final locationCubit = LocationCubit.get(context);
+        final List<Map<String, dynamic>> addresses = locationCubit.allAddresses;
+
+        return buildCard(
+          appCubit: appCubit,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildSectionTitle(
+                appCubit: appCubit,
+                title: 'موقع الخدمة',
+                icon: SvgPicture.asset(
+                  'assets/loc.svg',
+                  color: mainColor,
+                  width: 22.w,
+                  height: 22.h,
+                ),
               ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButtonFormField<String>(
-                value: selectedAddress,
-                isExpanded: true,
-                dropdownColor: appCubit.isDark ? lightDarkColor : Colors.white,
-                icon: Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+              SizedBox(height: 8.h),
+              Text(
+                'اختر العنوان الذي تريد تنفيذ الخدمة فيه',
+                style: TextStyle(
+                  fontSize: 11.sp,
+                  color: appCubit.isDark ? darkSubTextColor : Colors.grey.shade600,
                 ),
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                ),
-                hint: Text(
-                  'اختر الموقع',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+              ),
+              SizedBox(height: 15.h),
+
+              if (addresses.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+                  decoration: BoxDecoration(
+                    color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(14.r),
+                    border: Border.all(
+                      color: appCubit.isDark
+                          ? const Color(0xFF30363D)
+                          : Colors.grey.shade200,
+                    ),
                   ),
-                ),
-                items: addresses.map((address) {
-                  return DropdownMenuItem<String>(
-                    value: address,
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            color: mainColor,
-                            size: 18.r,
-                          ),
-                          SizedBox(width: 8.w),
-                          Expanded(
-                            child: Text(
-                              address,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: appCubit.isDark
-                                    ? Colors.white
-                                    : Colors.black87,
+                  child: Text(
+                    'لا توجد عناوين محفوظة',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w),
+                  decoration: BoxDecoration(
+                    color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: appCubit.isDark
+                          ? const Color(0xFF30363D)
+                          : Colors.grey.shade200,
+                    ),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButtonFormField<String>(
+                      value: selectedAddressId,
+                      isExpanded: true,
+                      isDense: false,
+                      itemHeight: 72.h,
+                      menuMaxHeight: 320.h,
+                      borderRadius: BorderRadius.circular(25.r),
+                      dropdownColor: appCubit.isDark ? lightDarkColor : Colors.white,
+                      icon: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+                      ),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      hint: Text(
+                        'اختر الموقع',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+                        ),
+                      ),
+                      selectedItemBuilder: (context) {
+                        return addresses.map((address) {
+                          final String label = address['label']?.toString() ?? 'بدون عنوان';
+                          final String details = address['addressName']?.toString() ?? '';
+                          return Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/loc.svg',
+                                color: mainColor,
                               ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: Text(
+                                  details.isEmpty ? label : '$label - $details',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: appCubit.isDark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList();
+                      },
+                      items: addresses.map((address) {
+                        final String id = address['id']?.toString() ?? '';
+                        final String label = address['label']?.toString() ?? 'بدون عنوان';
+                        final String details = address['addressName']?.toString() ?? '';
+                        return DropdownMenuItem<String>(
+                          value: id,
+                          child: Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/loc.svg',
+                                  color: mainColor,
+                                ),
+                                SizedBox(width: 8.w),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        label,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: appCubit.isDark
+                                              ? Colors.white
+                                              : Colors.black87,
+                                        ),
+                                      ),
+                                      SizedBox(height: 3.h),
+                                      Text(
+                                        details.isEmpty
+                                            ? 'لا يوجد وصف للموقع'
+                                            : details,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 10.sp,
+                                          color: appCubit.isDark
+                                              ? darkSubTextColor
+                                              : Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value == null) return;
+                        final selected = addresses.firstWhere(
+                              (address) => address['id']?.toString() == value,
+                          orElse: () => {},
+                        );
+                        final String label = selected['label']?.toString() ?? '';
+                        final String details = selected['addressName']?.toString() ?? '';
+                        setState(() {
+                          selectedAddressId = value;
+                          selectedAddressText =
+                          details.isEmpty ? label : '$label - $details';
+                        });
+                      },
                     ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedAddress = value;
-                  });
-                },
-              ),
-            ),
+                  ),
+                ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -392,7 +582,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
           SizedBox(height: 20.h),
           DottedBorder(
             options: RoundedRectDottedBorderOptions(
-              radius: Radius.circular(15.r),
+              radius: Radius.circular(25.r),
               color: appCubit.isDark
                   ? const Color(0xFF30363D)
                   : Colors.grey.shade400,
@@ -402,7 +592,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
               height: 105.h,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.r),
+                borderRadius: BorderRadius.circular(25.r),
                 color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
               ),
               child: ConditionalBuilder(
@@ -503,24 +693,16 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                       ),
                       IconButton(
                         onPressed: () async {
-                          selectedDate = await showDatePicker(
+                          selectedDate = await pickDateWithTheme(
                             context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2060),
-                            cancelText: 'إلغاء',
-                            confirmText: 'تم',
+                            appCubit: appCubit,
                           );
-
                           if (selectedDate != null) {
-                            selectedTime = await showTimePicker(
+                            selectedTime = await pickTimeWithTheme(
                               context: context,
-                              initialTime: TimeOfDay.now(),
-                              cancelText: 'إلغاء',
-                              confirmText: 'تم',
+                              appCubit: appCubit,
                             );
                           }
-
                           setState(() {});
                         },
                         icon: SvgPicture.asset(
@@ -533,26 +715,16 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                 ),
                 fallback: (context) => InkWell(
                   onTap: () async {
-                    final pickedDate = await showDatePicker(
+                    final pickedDate = await pickDateWithTheme(
                       context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2060),
-                      cancelText: 'إلغاء',
-                      confirmText: 'تم',
+                      appCubit: appCubit,
                     );
-
                     if (pickedDate == null) return;
-
-                    final pickedTime = await showTimePicker(
+                    final pickedTime = await pickTimeWithTheme(
                       context: context,
-                      initialTime: TimeOfDay.now(),
-                      cancelText: 'إلغاء',
-                      confirmText: 'تم',
+                      appCubit: appCubit,
                     );
-
                     if (pickedTime == null) return;
-
                     setState(() {
                       selectedDate = pickedDate;
                       selectedTime = pickedTime;
@@ -609,7 +781,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
           Container(
             height: 90.h,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14.r),
+              borderRadius: BorderRadius.circular(20.r),
               color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
               border: Border.all(
                 color: appCubit.isDark
@@ -641,6 +813,12 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
   }
 
   @override
@@ -799,8 +977,12 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                         UserCubit userCubit = UserCubit.get(context);
                         return defaultButton(
                           onPressed: () async {
-                            if (selectedAddress == null) {
-                              showSnackBar(Colors.red, 'يرجى اختيار موقع الخدمة', context,);
+                            if (selectedAddressId == null || selectedAddressText == null) {
+                              showSnackBar(
+                                Colors.red,
+                                'يرجى اختيار موقع الخدمة',
+                                context,
+                              );
                               return;
                             }
                             if (selectedDate == null || selectedTime == null) {
@@ -822,7 +1004,7 @@ class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
                               category: serviceCategory,
                               customerId: currentUser['uid'],
                               providerId: providerId,
-                              address: selectedAddress!,
+                              address: selectedAddressText!,
                               title: serviceName,
                               description: noteController.text.trim(),
                               image: serviceImage,

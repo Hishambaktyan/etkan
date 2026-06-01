@@ -465,8 +465,6 @@ class WorkerRequestDetails extends StatelessWidget {
 
             final bool canContact = status == 'مقبول' || status == 'في الطريق' || status == 'مكتمل';
 
-            final requestId = request['id'];
-
               return Directionality(
                 textDirection: TextDirection.rtl,
                 child: Scaffold(

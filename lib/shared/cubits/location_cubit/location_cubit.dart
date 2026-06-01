@@ -136,7 +136,8 @@ class LocationCubit extends Cubit<LocationStates>{
     required String addressDetails,
     required double lat,
     required double long,
-  }) async {
+  })
+  async {
     final CollectionReference addresses = FirebaseFirestore.instance
         .collection('users')
         .doc(uId)

@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
+import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -327,6 +328,9 @@ class _BookingDetailsState extends State<BookingDetails> {
           default:
             statusColor = Colors.orangeAccent;
         }
+        var userData = appCubit.allUsers[request['customerId']] ?? {};
+        final String status = request['status'] ?? '';
+        final bool canContact = status == 'مقبول' || status == 'في الطريق' || status == 'مكتمل';
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -359,14 +363,27 @@ class _BookingDetailsState extends State<BookingDetails> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(7),
-                                  child: CircleAvatar(
-                                    backgroundColor:
-                                        Colors.white.withOpacity(0.8),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () => Navigator.pop(context),
-                                      child: const Icon(CupertinoIcons.back),
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(15.r),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      width: 42.w,
+                                      height: 42.h,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: appCubit.isDark? darkBgColor.withOpacity(0.7): Colors.white.withOpacity(0.7),
+                                        borderRadius: BorderRadius.circular(15.r),
+                                        border: Border.all(color: Colors.white.withOpacity(0.12)),
+                                      ),
+                                      child: Icon(
+                                        Icons.arrow_back_ios_new_rounded,
+                                        color: Theme.of(context).iconTheme.color,
+                                        size: 18.sp,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -376,8 +393,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Padding(
-                              padding: EdgeInsetsDirectional.symmetric(
-                                  horizontal: 15.w),
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -389,18 +405,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                           ? lightDarkColor
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(25.r),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: mainColor.withOpacity(0.2),
-                                          spreadRadius: 1.0,
-                                          blurRadius: 7.0,
-                                          offset: const Offset(2, 5),
-                                        ),
-                                      ],
-                                      border: appCubit.isDark
-                                          ? Border.all(
-                                              color: const Color(0xFF30363D))
-                                          : null,
+                                      boxShadow: blueShadow
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -687,9 +692,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
+                    SizedBox(height: 15.h,),
                     Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: 16.w, vertical: 10.h),
@@ -700,9 +703,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                               title: 'مراحل التنفيذ',
                               icon: Icons.route_outlined,
                               cubit: appCubit),
-                          SizedBox(
-                            height: 10.h,
-                          ),
+                          SizedBox(height: 10.h,),
                           Container(
                             padding: EdgeInsetsDirectional.all(15.r),
                             decoration: BoxDecoration(
@@ -710,17 +711,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                                     ? lightDarkColor
                                     : Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: mainColor.withOpacity(0.2),
-                                    spreadRadius: 1.0,
-                                    blurRadius: 7.0,
-                                    offset: const Offset(2, 5),
-                                  ),
-                                ],
-                                border: appCubit.isDark
-                                    ? Border.all(color: const Color(0xFF30363D))
-                                    : null),
+                                boxShadow: blueShadow
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -754,16 +746,12 @@ class _BookingDetailsState extends State<BookingDetails> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h,),
                           buildSectionTitle(
                               title: 'ملاحظات الحجز',
                               icon: Icons.notes_rounded,
                               cubit: appCubit),
-                          SizedBox(
-                            height: 10.h,
-                          ),
+                          SizedBox(height: 10.h,),
                           Container(
                             width: double.infinity,
                             padding: EdgeInsetsDirectional.all(15.r),
@@ -771,18 +759,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 color: appCubit.isDark
                                     ? lightDarkColor
                                     : Colors.white,
-                                borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: mainColor.withOpacity(0.2),
-                                    spreadRadius: 1.0,
-                                    blurRadius: 7.0,
-                                    offset: const Offset(2, 5),
-                                  ),
-                                ],
-                                border: appCubit.isDark
-                                    ? Border.all(color: const Color(0xFF30363D))
-                                    : null),
+                                borderRadius: BorderRadius.circular(20.r),
+                                boxShadow: blueShadow
+                            ),
                             child: Column(
                               children: [
                                 ReadMoreText(
@@ -804,16 +783,12 @@ class _BookingDetailsState extends State<BookingDetails> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h,),
                           buildSectionTitle(
                               title: 'معلومات الفني',
                               icon: Icons.person_pin_outlined,
                               cubit: appCubit),
-                          SizedBox(
-                            height: 10.h,
-                          ),
+                          SizedBox(height: 10.h,),
                           Container(
                             padding: EdgeInsetsDirectional.all(18.r),
                             width: double.infinity,
@@ -822,17 +797,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                                     ? lightDarkColor
                                     : Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: mainColor.withOpacity(0.2),
-                                    spreadRadius: 1.0,
-                                    blurRadius: 7.0,
-                                    offset: const Offset(2, 5),
-                                  ),
-                                ],
-                                border: appCubit.isDark
-                                    ? Border.all(color: const Color(0xFF30363D))
-                                    : null),
+                                boxShadow: blueShadow
+                            ),
                             child: Column(
                               children: [
                                 Row(
@@ -879,6 +845,76 @@ class _BookingDetailsState extends State<BookingDetails> {
                                           : Colors.grey.shade100,
                                       height: 1),
                                 ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: AbsorbPointer(
+                                        absorbing: !canContact,
+                                        child: Opacity(
+                                          opacity: canContact ? 1.0 : 0.45,
+                                          child: defaultButtonWithIcon(
+                                            onPressed: () async {
+                                              await WorkerCubit.get(context).createOrGetChat(
+                                                customerId: request['customerId'],
+                                                providerId: request['providerId'],
+                                                requestId: request['id'],
+                                                requestTitle: request['title'],
+                                                customerData: userData,
+                                                providerData: providerData,
+                                              );
+                                            },
+                                            text: 'دردشة',
+                                            height: 45.h,
+                                            textSize: 13.sp,
+                                            background: canContact ? mainColor : Colors.grey,
+                                            icon: SvgPicture.asset(
+                                              'assets/chat.svg',
+                                              color: Colors.white,
+                                              width: 20.r,
+                                              height: 20.r,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: AbsorbPointer(
+                                        absorbing: !canContact,
+                                        child: Opacity(
+                                          opacity: canContact ? 1.0 : 0.45,
+                                          child: defaultOutlinedButtonWithIcon(
+                                            onPressed: (){},
+                                            text: 'إتصال',
+                                            fontSize: 13.sp,
+                                            height: 45.h,
+                                            textColor: canContact
+                                                ? appCubit.isDark
+                                                ? Colors.white
+                                                : mainColor
+                                                : Colors.grey,
+                                            border: canContact
+                                                ? appCubit.isDark
+                                                ? Colors.white
+                                                : mainColor
+                                                : Colors.grey,
+                                            icon: SvgPicture.asset(
+                                              'assets/phone.svg',
+                                              color: canContact
+                                                  ? appCubit.isDark
+                                                  ? Colors.white
+                                                  : mainColor
+                                                  : Colors.grey,
+                                              width: 20.r,
+                                              height: 20.r,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20.h,),
                                 defaultOutlinedButtonWithIcon(
                                   onPressed: () {
                                     move(
@@ -928,7 +964,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                           background: Colors.red,
                           text: 'إلغاء الطلب'),
                     )
-                  : null),
+                  : null
+          ),
         );
       },
     );
