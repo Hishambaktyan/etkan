@@ -38,6 +38,8 @@ class GetCategoryErrorState extends UserStates {
   GetCategoryErrorState({required this.error});
 }
 
+//////////////////////////////////////
+
 class GetUserRequestSuccessState extends UserStates {}
 
 class GetUserRequestLoadingState extends UserStates {}

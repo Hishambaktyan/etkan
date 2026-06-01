@@ -121,23 +121,12 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
     );
   }
 
-  void saveUserData() {
-    if (!formKey.currentState!.validate()) return;
-
-    UserCubit.get(context).editUserData(
-      name: nameController.text.trim(),
-      profileImagePath: profileImage,
-      oldProfileImage: widget.user['profileImage'] ?? '',
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, appState) {
         final AppCubit appCubit = AppCubit.get(context);
         final UserCubit userCubit = UserCubit.get(context);
-
         return BlocConsumer<UserCubit, UserStates>(
           listener: (context, state) {
             if (state is EditUserDataLoadingState) {
@@ -186,7 +175,6 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  centerTitle: true,
                 ),
                 body: SingleChildScrollView(
                   padding: EdgeInsetsDirectional.all(10.r),
@@ -289,7 +277,14 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                         ),
                         SizedBox(height: 40.h),
                         defaultButton(
-                          onPressed: saveUserData,
+                          onPressed: () {
+                            if (!formKey.currentState!.validate()) return;
+                            UserCubit.get(context).editUserData(
+                              name: nameController.text.trim(),
+                              profileImagePath: profileImage,
+                              oldProfileImage: widget.user['profileImage'] ?? '',
+                            );
+                          },
                           text: 'حفظ التعديلات',
                           height: 50.h,
                         ),

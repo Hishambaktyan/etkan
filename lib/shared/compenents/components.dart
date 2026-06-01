@@ -2388,250 +2388,173 @@ class AddressManagementShimmer extends StatelessWidget {
   Color get innerContainerColor =>
       isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
 
-  Color get borderColor =>
-      isDark ? const Color(0xFF30363D) : const Color(0xFFE6EEF8);
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _headerCardShimmer(),
-        SizedBox(height: 25.h),
-        _sectionTitleShimmer(),
-        SizedBox(height: 15.h),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 4,
-          itemBuilder: (context, index) {
-            return _addressCardShimmer(index);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _headerCardShimmer() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsetsDirectional.all(20.r),
-      decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(22.r),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsetsDirectional.all(15.r),
-            decoration: BoxDecoration(
-              color: innerContainerColor,
-              borderRadius: BorderRadiusDirectional.circular(16.r),
-            ),
-            child: _shimmerBox(
-              width: 40.w,
-              height: 40.w,
-              radius: 12,
-            ),
-          ),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _shimmerBox(
-                  width: 130.w,
-                  height: 18.h,
-                  radius: 8,
-                ),
-                SizedBox(height: 10.h),
-                _shimmerBox(
-                  width: double.infinity,
-                  height: 12.h,
-                  radius: 8,
-                ),
-                SizedBox(height: 7.h),
-                _shimmerBox(
-                  width: 190.w,
-                  height: 12.h,
-                  radius: 8,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _sectionTitleShimmer() {
-    return Row(
-      children: [
-        Container(
-          padding: EdgeInsetsDirectional.all(10.r),
-          decoration: BoxDecoration(
-            color: innerContainerColor,
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: _shimmerBox(
-            width: 20.w,
-            height: 20.w,
-            radius: 6,
-          ),
-        ),
-        SizedBox(width: 8.w),
-        _shimmerBox(
-          width: 130.w,
-          height: 16.h,
-          radius: 8,
-        ),
-      ],
-    );
-  }
-
-  Widget _addressCardShimmer(int index) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsetsDirectional.only(bottom: 15.h),
-      padding: EdgeInsetsDirectional.all(15.r),
-      decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: borderColor,
-          width: 1,
-        ),
-      ),
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Column(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsetsDirectional.all(10.r),
-                decoration: BoxDecoration(
-                  color: innerContainerColor,
-                  borderRadius: BorderRadius.circular(13.r),
-                ),
-                child: _shimmerBox(
-                  width: 25.w,
-                  height: 25.w,
-                  radius: 8,
-                ),
-              ),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: Row(
-                  children: [
-                    _shimmerBox(
-                      width: 90.w,
-                      height: 15.h,
-                      radius: 8,
-                    ),
-                    if (index == 0) ...[
-                      SizedBox(width: 8.w),
-                      _shimmerBox(
-                        width: 58.w,
-                        height: 24.h,
-                        radius: 30,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
+          _shimmerBox(
+            height: 110.h,
+            width: double.infinity,
+            radius: 30,
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 14.h),
-            child: Divider(
-              color: borderColor,
-              height: 1,
-            ),
-          ),
-          SizedBox(height: 10.h),
-          _infoRowShimmer(),
           SizedBox(height: 15.h),
-          Row(
-            children: [
-              Expanded(
-                child: _smallButtonShimmer(),
-              ),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: _smallButtonShimmer(),
-              ),
-            ],
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+            itemCount: 4,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsetsDirectional.only(bottom: 20.h),
+                child: Container(
+                  padding: EdgeInsets.all(15.r),
+                  decoration: BoxDecoration(
+                    color: containerColor,
+                    borderRadius: BorderRadius.circular(25.r),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          _shimmerBox(
+                            width: 70.w,
+                            height: 70.h,
+                            radius: 20,
+                          ),
+
+                          SizedBox(width: 15.w),
+
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _shimmerBox(
+                                        height: 14.h,
+                                        width: double.infinity,
+                                      ),
+                                    ),
+
+                                    if (index == 0) ...[
+                                      SizedBox(width: 10.w),
+                                      _shimmerBox(
+                                        width: 60.w,
+                                        height: 25.h,
+                                        radius: 30,
+                                      ),
+                                    ],
+                                  ],
+                                ),
+
+                                SizedBox(height: 8.h),
+
+                                _shimmerBox(
+                                  height: 12.h,
+                                  width: 130.w,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 15.h),
+
+                      Container(
+                        padding: EdgeInsets.all(12.r),
+                        decoration: BoxDecoration(
+                          color: innerContainerColor,
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Column(
+                          children: [
+                            _detailRow(),
+                            SizedBox(height: 12.h),
+                            _detailRow(),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: 15.h),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buttonShimmer(),
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: _buttonShimmer(),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 10.h),
+
+                      _buttonShimmer(),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
-          SizedBox(height: 10.h),
-          _smallButtonShimmer(),
         ],
       ),
     );
   }
 
-  Widget _infoRowShimmer() {
+  Widget _buttonShimmer() {
+    return Container(
+      height: 42.h,
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      decoration: BoxDecoration(
+        color: innerContainerColor,
+        borderRadius: BorderRadius.circular(15.r),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _shimmerBox(
+            width: 22.w,
+            height: 22.h,
+            radius: 8,
+          ),
+          SizedBox(width: 8.w),
+          _shimmerBox(
+            width: 65.w,
+            height: 11.h,
+            radius: 8,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailRow() {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _shimmerBox(
-          width: 22.w,
-          height: 22.w,
-          radius: 6,
+          width: 30.w,
+          height: 30.h,
+          radius: 10,
         ),
         SizedBox(width: 10.w),
         _shimmerBox(
-          width: 55.w,
-          height: 12.h,
-          radius: 8,
+          width: 70.w,
+          height: 10.h,
         ),
         SizedBox(width: 10.w),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _shimmerBox(
-                width: double.infinity,
-                height: 12.h,
-                radius: 8,
-              ),
-              SizedBox(height: 7.h),
-              _shimmerBox(
-                width: 160.w,
-                height: 12.h,
-                radius: 8,
-              ),
-            ],
+          child: _shimmerBox(
+            height: 10.h,
+            width: double.infinity,
           ),
         ),
       ],
-    );
-  }
-
-  Widget _smallButtonShimmer() {
-    return Container(
-      height: 42.h,
-      decoration: BoxDecoration(
-        color: innerContainerColor,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: borderColor),
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _shimmerBox(
-              width: 18.w,
-              height: 18.w,
-              radius: 5,
-            ),
-            SizedBox(width: 6.w),
-            _shimmerBox(
-              width: 55.w,
-              height: 12.h,
-              radius: 8,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -4994,6 +4917,307 @@ class NotificationsScreenShimmer extends StatelessWidget {
       child: CircleAvatar(
         radius: radius,
         backgroundColor: Colors.white,
+      ),
+    );
+  }
+}
+
+class UserProfileShimmer extends StatelessWidget {
+  final bool isDark;
+
+  const UserProfileShimmer({
+    super.key,
+    required this.isDark,
+  });
+
+  Color get baseColor =>
+      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+
+  Color get highlightColor =>
+      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+
+  Color get containerColor => isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: isDark ? darkBgColor : Colors.white,
+        body: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              _buildHeaderShimmer(),
+              Padding(
+                padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
+                child: Column(
+                  children: [
+                    _buildStatsShimmer(),
+                    SizedBox(height: 25.h),
+                    _buildSectionTitleShimmer(),
+                    SizedBox(height: 10.h),
+                    _buildAccountInfoCardShimmer(),
+                    SizedBox(height: 20.h),
+                    _buildSectionTitleShimmer(),
+                    SizedBox(height: 10.h),
+                    _buildAddressCardShimmer(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderShimmer() {
+    return ClipRRect(
+      borderRadius: BorderRadiusDirectional.vertical(
+        bottom: Radius.circular(35.r),
+      ),
+      child: Container(
+        width: double.infinity,
+        height: 300.h,
+        decoration: BoxDecoration(
+          color: containerColor,
+        ),
+        child: Padding(
+          padding: EdgeInsetsDirectional.only(
+            top: 30.h,
+            start: 10.w,
+            end: 10.w,
+            bottom: 20.h,
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  _shimmerBox(
+                    width: 42.w,
+                    height: 42.h,
+                    radius: 15,
+                  ),
+                  SizedBox(width: 12.w),
+                  _shimmerBox(
+                    width: 90.w,
+                    height: 24.h,
+                    radius: 8,
+                  ),
+                  const Spacer(),
+                  _shimmerBox(
+                    width: 75.w,
+                    height: 36.h,
+                    radius: 12,
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              _shimmerBox(
+                width: 98.r,
+                height: 98.r,
+                isCircle: true,
+              ),
+              SizedBox(height: 12.h),
+              _shimmerBox(
+                width: 140.w,
+                height: 18.h,
+                radius: 8,
+              ),
+              SizedBox(height: 12.h),
+              _shimmerBox(
+                width: 170.w,
+                height: 30.h,
+                radius: 30,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsShimmer() {
+    return Row(
+      children: [
+        _buildStatCardShimmer(),
+        SizedBox(width: 15.w),
+        _buildStatCardShimmer(),
+      ],
+    );
+  }
+
+  Widget _buildStatCardShimmer() {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsetsDirectional.all(15.w),
+        decoration: BoxDecoration(
+          color: containerColor,
+          borderRadius: BorderRadius.circular(25.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _shimmerBox(
+                  width: 35.w,
+                  height: 24.h,
+                  radius: 8,
+                ),
+                const Spacer(),
+                _shimmerBox(
+                  width: 30.w,
+                  height: 30.h,
+                  radius: 8,
+                ),
+              ],
+            ),
+            SizedBox(height: 8.h),
+            _shimmerBox(
+              width: 55.w,
+              height: 13.h,
+              radius: 8,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitleShimmer() {
+    return Row(
+      children: [
+        _shimmerBox(
+          width: 42.w,
+          height: 42.h,
+          radius: 10,
+        ),
+        SizedBox(width: 8.w),
+        _shimmerBox(
+          width: 120.w,
+          height: 18.h,
+          radius: 8,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAccountInfoCardShimmer() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsetsDirectional.all(18.r),
+      decoration: BoxDecoration(
+        color: containerColor,
+        borderRadius: BorderRadius.circular(25.r),
+      ),
+      child: Column(
+        children: [
+          _buildInfoRowShimmer(),
+          SizedBox(height: 15.h),
+          _buildInfoRowShimmer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRowShimmer() {
+    return Row(
+      children: [
+        _shimmerBox(
+          width: 40.w,
+          height: 40.h,
+          radius: 14,
+        ),
+        SizedBox(width: 10.w),
+        _shimmerBox(
+          width: 70.w,
+          height: 13.h,
+          radius: 8,
+        ),
+        const Spacer(),
+        _shimmerBox(
+          width: 110.w,
+          height: 13.h,
+          radius: 8,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddressCardShimmer() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsetsDirectional.all(18.r),
+      decoration: BoxDecoration(
+        color: containerColor,
+        borderRadius: BorderRadius.circular(25.r),
+      ),
+      child: Row(
+        children: [
+          _shimmerBox(
+            width: 51.w,
+            height: 51.h,
+            radius: 18,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _shimmerBox(
+                  width: 120.w,
+                  height: 15.h,
+                  radius: 8,
+                ),
+                SizedBox(height: 10.h),
+                _shimmerBox(
+                  width: double.infinity,
+                  height: 12.h,
+                  radius: 8,
+                ),
+                SizedBox(height: 8.h),
+                _shimmerBox(
+                  width: 180.w,
+                  height: 12.h,
+                  radius: 8,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 10.w),
+          _shimmerBox(
+            width: 24.w,
+            height: 24.h,
+            radius: 8,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _shimmerBox({
+    required double height,
+    required double width,
+    double radius = 12,
+    bool isCircle = false,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return Container(
+      margin: margin,
+      child: Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
+        child: Container(
+          height: height,
+          width: width,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
+            borderRadius: isCircle ? null : BorderRadius.circular(radius.r),
+          ),
+        ),
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_edit_profile_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_edit_profile_screen.dart';
 import 'package:trying_homy/modules/user_screens/addresses_management_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -30,13 +30,6 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    UserCubit.get(context).getUserRequests();
-    LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
-  }
 
   Widget buildSectionHeader({
     required String title,
@@ -422,7 +415,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             title: 'رقم الهاتف',
             value: user['phone'] ?? 'غير متوفر',
           ),
-          SizedBox(height: 15.h),
         ],
       ),
     );
@@ -534,39 +526,39 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    UserCubit.get(context).getUserRequests();
+    LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-
-        Map<String, dynamic> user =
-            appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? widget.user;
-
+        Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? widget.user;
         return BlocBuilder<UserCubit, UserStates>(
           builder: (context, bookingState) {
             UserCubit userCubit = UserCubit.get(context);
-
             return BlocBuilder<LocationCubit, LocationStates>(
               builder: (context, locationState) {
                 LocationCubit locationCubit = LocationCubit.get(context);
-
+                final bool isLoading =
+                    bookingState is GetUserRequestLoadingState ||
+                        locationState is GetAddressesLoadingState;
+                if (isLoading) {
+                  return UserProfileShimmer(isDark: appCubit.isDark);
+                }
                 return Directionality(
                   textDirection: TextDirection.rtl,
                   child: Scaffold(
                     body: SingleChildScrollView(
                       child: Column(
                         children: [
-                          buildHeader(
-                            appCubit: appCubit,
-                            user: user,
-                          ),
+                          buildHeader(appCubit: appCubit, user: user,),
                           Padding(
-                            padding: EdgeInsetsDirectional.only(
-                              start: 10.w,
-                              end: 10.w,
-                              top: 20.h,
-                              bottom: 20.h,
-                            ),
+                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
                             child: Column(
                               children: [
                                 buildQuickStats(
