@@ -284,16 +284,22 @@ class NotificationCubit extends Cubit<NotificationStates> {
         .length;
   }
 
+  bool isNotificationsLoaded = false;
+  bool isNotificationsLoading = false;
+
   Future<void> getUserNotifications() async {
     try {
       final String uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
 
       if (uid.isEmpty) {
         userNotifications = [];
+        isNotificationsLoaded = true;
+        isNotificationsLoading = false;
         emit(GetNotificationsErrorState(error: 'لم يتم العثور على معرف المستخدم'));
         return;
       }
 
+      isNotificationsLoading = true;
       emit(GetNotificationsLoadingState());
 
       final snapshot = await FirebaseFirestore.instance
@@ -322,8 +328,13 @@ class NotificationCubit extends Cubit<NotificationStates> {
         return bDate.compareTo(aDate);
       });
 
+      isNotificationsLoaded = true;
+      isNotificationsLoading = false;
+
       emit(GetNotificationsSuccessState());
     } catch (error) {
+      isNotificationsLoaded = true;
+      isNotificationsLoading = false;
       emit(GetNotificationsErrorState(error: error.toString()));
     }
   }

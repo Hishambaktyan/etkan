@@ -32,9 +32,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationCubit.get(context).getUserNotifications();
-    });
+    NotificationCubit.get(context).getUserNotifications();
   }
 
   List<Map<String, dynamic>> getFilteredNotifications(
@@ -549,8 +547,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ],
                   ),
                 ),
-                body: state is GetNotificationsLoadingState
-                    ? NotificationsScreenShimmer(isDark: appCubit.isDark)
+                body: notificationCubit.isNotificationsLoading ||
+                    !notificationCubit.isNotificationsLoaded
+                     ? NotificationsScreenShimmer(isDark: appCubit.isDark)
                     : RefreshIndicator(
                   color: mainColor,
                   onRefresh: () => notificationCubit.getUserNotifications(),
