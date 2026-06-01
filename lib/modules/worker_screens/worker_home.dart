@@ -98,10 +98,6 @@ late NotificationCubit notificationCubit;
   void initState() {
     super.initState();
       checkConnectionAndGetData();
-       WidgetsBinding.instance.addPostFrameCallback((_) {
-      notificationCubit = NotificationCubit.get(context);
-      notificationCubit.initFirebaseMessaging();
-  });
   }
  
   @override

@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:trying_homy/modules/user_screens/booking_details.dart';
+import 'package:trying_homy/modules/user_screens/user_request_details.dart';
 import 'package:trying_homy/modules/user_screens/user_service_details.dart';
 import 'package:trying_homy/modules/user_screens/user_services_list.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
@@ -2552,7 +2552,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
     move(
       context,
-      BookingDetails(
+      UserRequestDetails(
         request: booking,
         providerData: providerData,
       ),

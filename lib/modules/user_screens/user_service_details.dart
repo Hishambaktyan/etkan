@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/user_screens/booking_confirm_info_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_complete_request_info.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -474,7 +474,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
           child: defaultButton(
               onPressed: () => move(
                   context,
-                  BookingConfirmInfoScreen(
+                  UserCompleteRequestInfo(
                     serciveName: name,
                     serciveCategory: category,
                     servicePrice: price,

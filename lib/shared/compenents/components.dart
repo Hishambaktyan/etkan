@@ -321,12 +321,19 @@ Widget header(
 
 /////////////////////////////////////////////
 Widget headerWithSearch(
-    {double headerHeight = 160,
-    required String title,
-    required List<String> searchKeyWords,
-    required AppCubit appCubit,
-    bool isLeading = false,
-    required BuildContext context}) {
+    {
+      double headerHeight = 160,
+      required String title,
+       List<String>? searchKeyWords,
+      required AppCubit appCubit,
+      bool isLeading = false,
+      required BuildContext context,
+      bool isNotif = true,
+      bool isCustomSearch=false,
+      TextEditingController? searchController,
+      void Function(String)? onFieldSubmitted,
+      String searchLabel=''
+    }) {
   return ClipRRect(
     borderRadius:
         BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
@@ -441,7 +448,7 @@ Widget headerWithSearch(
                             color: Colors.white),
                       ),
                       const Spacer(),
-                      InkWell(
+                      isNotif ?InkWell(
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onTap: () {
@@ -464,11 +471,11 @@ Widget headerWithSearch(
                             color: Colors.white,
                           ),
                         ),
-                      ),
+                      ) :const SizedBox.shrink(),
                     ],
                   ),
                   const Spacer(),
-                  InkWell(
+                  !isCustomSearch? InkWell(
                     borderRadius: BorderRadius.circular(15.r),
                     onTap: () => move(
                       context,
@@ -496,7 +503,7 @@ Widget headerWithSearch(
                                 repeatForever: true,
                                 pause: const Duration(seconds: 2),
                                 animatedTexts: [
-                                  TyperAnimatedText(searchKeyWords[0],
+                                  TyperAnimatedText(searchKeyWords![0],
                                       textStyle:
                                           const TextStyle(color: Colors.grey)),
                                   TyperAnimatedText(searchKeyWords[1],
@@ -511,6 +518,53 @@ Widget headerWithSearch(
                           )),
                         ],
                       ),
+                    ),
+                  )
+                  : Container(
+                    height: 52.h,
+                    padding: const EdgeInsets.symmetric(horizontal: 17),
+                    decoration: BoxDecoration(
+                      color: appCubit.isDark ? darkBgColor : Colors.white,
+                      borderRadius: BorderRadius.circular(30.r),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        TextFormField(
+                          controller: searchController,
+                          cursorColor: mainColor,
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.search,
+                          onFieldSubmitted: (value){
+                            onFieldSubmitted?.call(value);
+                          },
+                          style: TextStyle(
+                            color: appCubit.isDark ? Colors.white : Colors.black,
+                            fontSize: 14.sp,
+                            height: 1
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            contentPadding: EdgeInsetsDirectional.only(
+                              start: 45.w,
+                              end: 18.w,
+                              top: 15.h,
+                              bottom: 15.h,
+                            ),
+                            hintText: searchLabel,
+                          ),
+                        ),
+                        PositionedDirectional(
+                          start: 10.w,
+                          child: SvgPicture.asset(
+                            'assets/search.svg',
+                            color: Colors.grey,
+                            width: 22.w,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -994,7 +1048,7 @@ class NoInternet extends StatelessWidget {
             ),
             SizedBox(height: 20.h),
             Padding(
-              padding: EdgeInsetsDirectional.symmetric(horizontal: 50.w),
+              padding: EdgeInsetsDirectional.symmetric(horizontal: 70.w),
               child: defaultOutlinedButton(
                   onPressed: () {
                     onRetry();
@@ -2403,7 +2457,6 @@ class AddressManagementShimmer extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
             itemCount: 4,
             itemBuilder: (context, index) {
               return Padding(
@@ -2510,7 +2563,7 @@ class AddressManagementShimmer extends StatelessWidget {
   Widget _buttonShimmer() {
     return Container(
       height: 42.h,
-      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
       decoration: BoxDecoration(
         color: innerContainerColor,
         borderRadius: BorderRadius.circular(15.r),

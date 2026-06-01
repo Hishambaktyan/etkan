@@ -11,14 +11,14 @@ import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
-class AddAddress extends StatefulWidget {
-  const AddAddress({super.key});
+class UserAddAddress extends StatefulWidget {
+  const UserAddAddress({super.key});
 
   @override
-  State<AddAddress> createState() => _AddAddressState();
+  State<UserAddAddress> createState() => _UserAddAddressState();
 }
 
-class _AddAddressState extends State<AddAddress> {
+class _UserAddAddressState extends State<UserAddAddress> {
 
   TextEditingController titleController = TextEditingController();
   TextEditingController detailsController = TextEditingController();

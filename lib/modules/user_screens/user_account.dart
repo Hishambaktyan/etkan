@@ -6,12 +6,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/aboutApp_screen.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_edit_profile_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_edit_profile.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/privacy_policy_screen.dart';
 import 'package:trying_homy/modules/terms_conditions_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_profile_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
@@ -20,7 +20,7 @@ import '../../shared/compenents/components.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 import '../on_boarding.dart';
-import 'addresses_management_screen.dart';
+import 'user_addresses_list.dart';
 
 class UserAccount extends StatefulWidget {
   const UserAccount({super.key});
@@ -422,7 +422,7 @@ class _UserAccountState extends State<UserAccount> {
                             onTap: () {
                               move(
                                 context,
-                                UserProfileScreen(user: user),
+                                UserProfile(user: user),
                               );
                             },
                           ),
@@ -434,7 +434,7 @@ class _UserAccountState extends State<UserAccount> {
                             onTap: () {
                               move(
                                 context,
-                                const AddressesManagementScreen(),
+                                const UserAddressesList(),
                               );
                             },
                           ),

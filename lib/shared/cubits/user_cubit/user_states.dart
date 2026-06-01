@@ -85,3 +85,19 @@ class EditUserDataErrorState extends UserStates {
 
   EditUserDataErrorState({required this.error});
 }
+
+//////////////////////////////////////
+
+class CreateOrGetChatLoadingState extends UserStates {}
+
+class CreateOrGetChatSuccessState extends UserStates {
+  final String chatId;
+
+  CreateOrGetChatSuccessState({required this.chatId});
+}
+
+class CreateOrGetChatErrorState extends UserStates {
+  final String error;
+
+  CreateOrGetChatErrorState({required this.error});
+}

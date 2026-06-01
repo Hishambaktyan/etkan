@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_forgot_password_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_forgot_password.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -15,14 +15,14 @@ import '../../../shared/compenents/components.dart';
 import '../../layout/user_layout/user_main_screen.dart';
 import '../../shared/networks/local/cache_helper.dart';
 
-class UserLoginScreen extends StatefulWidget {
-  const UserLoginScreen({super.key});
+class UserLogin extends StatefulWidget {
+  const UserLogin({super.key});
 
   @override
-  State<UserLoginScreen> createState() => _UserLoginScreenState();
+  State<UserLogin> createState() => _UserLoginState();
 }
 
-class _UserLoginScreenState extends State<UserLoginScreen> {
+class _UserLoginState extends State<UserLogin> {
   var formKey = GlobalKey<FormState>();
 
   @override
@@ -256,7 +256,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                                   child: TextButton(
                                     onPressed: () {
                                       move(context,
-                                          const UserForgotPasswordScreen());
+                                          const UserForgotPassword());
                                     },
                                     child: Text(
                                       'نسيت كلمة المرور؟',

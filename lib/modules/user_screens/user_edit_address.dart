@@ -12,15 +12,15 @@ import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
-class EditAddress extends StatefulWidget {
+class UserEditAddress extends StatefulWidget {
   final Map<String,dynamic> address;
-  const EditAddress({super.key, required this.address});
+  const UserEditAddress({super.key, required this.address});
 
   @override
-  State<EditAddress> createState() => _EditAddressState();
+  State<UserEditAddress> createState() => _UserEditAddressState();
 }
 
-class _EditAddressState extends State<EditAddress> {
+class _UserEditAddressState extends State<UserEditAddress> {
 
   TextEditingController titleController = TextEditingController();
   TextEditingController detailsController = TextEditingController();
@@ -42,11 +42,20 @@ class _EditAddressState extends State<EditAddress> {
         AppCubit appCubit = AppCubit.get(context);
         return BlocConsumer<LocationCubit, LocationStates>(
           listener: (context, state) {
+            if(state is EditAddressLoadingState){
+              showLoadingDialog(context);
+            }
             if(state is EditAddressSuccessState){
+              hideLoadingDialog(context);
               LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
               Navigator.pop(context);
               showSnackBar(Colors.green, 'تم تعديل الموقع بنجاح', context);
             }
+            if(state is EditAddressErrorState){
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red, state.error, context);
+            }
+
           },
           builder: (context, state) {
             LocationCubit locationCubit = LocationCubit.get(context);
@@ -253,8 +262,7 @@ class _EditAddressState extends State<EditAddress> {
                                   ),
                                 ),
                                 SizedBox(height: 10.h),
-                                state is EditAddressLoadingState ? const Center( child: CircularProgressIndicator())
-                                    : defaultButton(
+                                defaultButton(
                                   onPressed:() async {
                                     if(titleController.text.isEmpty || detailsController.text.isEmpty){
                                       showSnackBar(Colors.red, 'يرجى تعبئة كل الحقول', context);

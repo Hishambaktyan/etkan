@@ -14,19 +14,19 @@ import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
 import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class UserEditProfileScreen extends StatefulWidget {
+class UserEditProfile extends StatefulWidget {
   final Map<String, dynamic> user;
 
-  const UserEditProfileScreen({
+  const UserEditProfile({
     super.key,
     required this.user,
   });
 
   @override
-  State<UserEditProfileScreen> createState() => _UserEditProfileScreenState();
+  State<UserEditProfile> createState() => _UserEditProfileState();
 }
 
-class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
+class _UserEditProfileState extends State<UserEditProfile> {
   final formKey = GlobalKey<FormState>();
 
   String profileImage = '';

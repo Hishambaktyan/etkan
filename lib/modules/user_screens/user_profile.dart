@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_edit_profile_screen.dart';
-import 'package:trying_homy/modules/user_screens/addresses_management_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_edit_profile.dart';
+import 'package:trying_homy/modules/user_screens/user_addresses_list.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -17,19 +17,19 @@ import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../../shared/cubits/user_cubit/user_cubit.dart';
 
-class UserProfileScreen extends StatefulWidget {
+class UserProfile extends StatefulWidget {
   final Map<String, dynamic> user;
 
-  const UserProfileScreen({
+  const UserProfile({
     super.key,
     required this.user,
   });
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  State<UserProfile> createState() => _UserProfileState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
+class _UserProfileState extends State<UserProfile> {
 
   Widget buildSectionHeader({
     required String title,
@@ -249,7 +249,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         onTap: () {
                           move(
                             context,
-                            UserEditProfileScreen(user: user),
+                            UserEditProfile(user: user),
                           );
                         },
                         child: Container(
@@ -470,7 +470,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       cubit: cubit,
       child: InkWell(
         onTap: () {
-          move(context, const AddressesManagementScreen());
+          move(context, const UserAddressesList());
         },
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,

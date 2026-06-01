@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_login.dart';
 import 'package:trying_homy/modules/verified_phone.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -233,7 +233,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                     ),
                                     defaultTextButton(
                                         onPressed: () => moveAndReplace(
-                                            context, const UserLoginScreen()),
+                                            context, const UserLogin()),
                                         text: 'سجل دخول')
                                   ],
                                 ),

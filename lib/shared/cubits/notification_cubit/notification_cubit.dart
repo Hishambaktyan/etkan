@@ -8,7 +8,7 @@ import 'package:trying_homy/shared/cubits/notification_cubit/notification_states
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../../main.dart';
 import '../../../modules/the_chat.dart';
-import '../../../modules/user_screens/booking_details.dart';
+import '../../../modules/user_screens/user_request_details.dart';
 
 class NotificationCubit extends Cubit<NotificationStates> {
   NotificationCubit() : super(NotificationInitState());
@@ -106,7 +106,7 @@ class NotificationCubit extends Cubit<NotificationStates> {
 
       navigatorKey.currentState!.push(
         MaterialPageRoute(
-          builder: (_) => BookingDetails(
+          builder: (_) => UserRequestDetails(
             request: requestData,
             providerData: providerData,
           ),

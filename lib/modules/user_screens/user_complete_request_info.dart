@@ -20,7 +20,7 @@ import '../../shared/cubits/location_cubit/location_states.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
-class BookingConfirmInfoScreen extends StatefulWidget {
+class UserCompleteRequestInfo extends StatefulWidget {
   final String serciveName;
   final String serciveCategory;
   final String serciveImage;
@@ -28,7 +28,7 @@ class BookingConfirmInfoScreen extends StatefulWidget {
   final String servicePeriod;
   final String providerId;
 
-  const BookingConfirmInfoScreen({
+  const UserCompleteRequestInfo({
     super.key,
     required this.serciveName,
     required this.serciveCategory,
@@ -39,10 +39,10 @@ class BookingConfirmInfoScreen extends StatefulWidget {
   });
 
   @override
-  State<BookingConfirmInfoScreen> createState() =>_BookingConfirmInfoScreenState();
+  State<UserCompleteRequestInfo> createState() =>_UserCompleteRequestInfoState();
 }
 
-class _BookingConfirmInfoScreenState extends State<BookingConfirmInfoScreen> {
+class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   TextEditingController noteController = TextEditingController();

@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_login_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_login.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
@@ -10,14 +10,14 @@ import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 
 
-class UserForgotPasswordScreen extends StatefulWidget {
-  const UserForgotPasswordScreen({super.key});
+class UserForgotPassword extends StatefulWidget {
+  const UserForgotPassword({super.key});
 
   @override
-  State<UserForgotPasswordScreen> createState() => _UserForgotPasswordScreenState();
+  State<UserForgotPassword> createState() => _UserForgotPasswordState();
 }
 
-class _UserForgotPasswordScreenState extends State<UserForgotPasswordScreen> {
+class _UserForgotPasswordState extends State<UserForgotPassword> {
   final TextEditingController emailController =
   TextEditingController();
 
@@ -206,7 +206,7 @@ class _UserForgotPasswordScreenState extends State<UserForgotPasswordScreen> {
                     SizedBox(height: 20.h),
                     TextButton(
                       onPressed: () =>
-                          move(context, const UserLoginScreen()),
+                          move(context, const UserLogin()),
                       child: Text(
                         "العودة لتسجيل الدخول",
                         style: TextStyle(

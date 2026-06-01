@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_edit_profile_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_edit_profile.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile.dart';

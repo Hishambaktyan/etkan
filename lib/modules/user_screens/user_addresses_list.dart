@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/add_address.dart';
-import 'package:trying_homy/modules/user_screens/edit_address.dart';
+import 'package:trying_homy/modules/user_screens/user_add_address.dart';
+import 'package:trying_homy/modules/user_screens/user_edit_address.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -16,15 +16,15 @@ import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../../shared/networks/local/cache_helper.dart';
 
-class AddressesManagementScreen extends StatefulWidget {
-  const AddressesManagementScreen({super.key});
+class UserAddressesList extends StatefulWidget {
+  const UserAddressesList({super.key});
 
   @override
-  State<AddressesManagementScreen> createState() =>
-      _AddressesManagementScreenState();
+  State<UserAddressesList> createState() =>
+      _UserAddressesListState();
 }
 
-class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
+class _UserAddressesListState extends State<UserAddressesList> {
 
   Widget _buildHeaderCard(AppCubit cubit) {
     return Container(
@@ -212,7 +212,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                   title: 'تعديل',
                   icon: 'assets/pen.svg',
                   color: mainColor,
-                  onTap: ()=>move(context,  EditAddress(address: address)),
+                  onTap: ()=>move(context,  UserEditAddress(address: address)),
                 ),
               ),
               SizedBox(width: 10.w),
@@ -539,7 +539,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
                       boxShadow: blueShadow
                     ),
                     child: defaultButtonWithIcon(
-                        onPressed: ()=>move(context, const AddAddress()),
+                        onPressed: ()=>move(context, const UserAddAddress()),
                         height: 50.h,
                         text: 'إضافة عنوان جديد',
                         icon: SvgPicture.asset('assets/add_loc.svg',color: Colors.white,)
