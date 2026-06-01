@@ -6,9 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class UserEditProfileScreen extends StatefulWidget {
@@ -29,20 +32,16 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
   String profileImage = '';
 
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
     nameController.text = widget.user['name'] ?? '';
-    phoneController.text = widget.user['phone'] ?? '';
   }
 
   @override
   void dispose() {
     nameController.dispose();
-    phoneController.dispose();
     super.dispose();
   }
 
@@ -122,194 +121,185 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
     );
   }
 
-  Widget buildInputField({
-    required TextEditingController controller,
-    required AppCubit cubit,
-    required String hint,
-    required String icon,
-    required String error,
-    TextInputType type = TextInputType.text,
-  }) {
-    return defaultTextFormField(
-      text: hint,
-      prefixIcon: icon,
-      errorMes: error,
-      controller: controller,
-      type: type,
-      cubit: cubit,
-    );
-  }
-
   void saveUserData() {
     if (!formKey.currentState!.validate()) return;
 
-    /*
-      هنا اربط دالة تعديل بيانات العميل.
-
-      مثال إذا عملت دالة داخل AppCubit:
-
-      AppCubit.get(context).editUserData(
-        name: nameController.text.trim(),
-        phone: phoneController.text.trim(),
-        profileImagePath: profileImage,
-        oldProfileImage: widget.user['profileImage'] ?? '',
-      );
-    */
-
-    showSnackBar(
-      Colors.green,
-      'واجهة التعديل جاهزة، اربط دالة الحفظ فقط',
-      context,
+    UserCubit.get(context).editUserData(
+      name: nameController.text.trim(),
+      profileImagePath: profileImage,
+      oldProfileImage: widget.user['profileImage'] ?? '',
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
-      builder: (context, state) {
-        AppCubit appCubit = AppCubit.get(context);
+      builder: (context, appState) {
+        final AppCubit appCubit = AppCubit.get(context);
+        final UserCubit userCubit = UserCubit.get(context);
 
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(
-                  CupertinoIcons.back,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-              ),
-              title: Text(
-                'تعديل حساب',
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            body: SingleChildScrollView(
-              padding: EdgeInsetsDirectional.all(10.r),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    buildSectionHeader(
-                      title: 'المعلومات الشخصية',
-                      icon: SvgPicture.asset(
-                        'assets/contact.svg',
-                        color: mainColor,
-                        width: 22.w,
-                      ),
-                      cubit: appCubit,
+        return BlocConsumer<UserCubit, UserStates>(
+          listener: (context, state) {
+            if (state is EditUserDataLoadingState) {
+              showLoadingDialog(context);
+            } else if (state is EditUserDataSuccessState) {
+              hideLoadingDialog(context);
+
+              userCubit.getAllUsers();
+
+              Navigator.pop(context, true);
+
+              showSnackBar(
+                Colors.green,
+                'تم تعديل حسابك بنجاح',
+                context,
+              );
+            } else if (state is EditUserDataErrorState) {
+              hideLoadingDialog(context);
+
+              showSnackBar(
+                Colors.red,
+                state.error,
+                context,
+              );
+            }
+          },
+          builder: (context, userState) {
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(
+                appBar: AppBar(
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  leading: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      CupertinoIcons.back,
+                      color: Theme.of(context).iconTheme.color,
                     ),
-                    SizedBox(height: 10.h),
-                    buildWhiteCard(
-                      cubit: appCubit,
-                      child: Column(
-                        children: [
-                          Center(
-                            child: Stack(
-                              alignment: Alignment.bottomRight,
-                              children: [
-                                Container(
-                                  width: 100.r,
-                                  height: 100.r,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    boxShadow: blueShadow,
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 48.r,
-                                    backgroundColor: appCubit.isDark
-                                        ? darkBgColor
-                                        : Colors.grey.shade100,
-                                    backgroundImage: getProfileImage(),
-                                    child: getProfileImage() == null
-                                        ? Icon(
-                                            Icons.person_rounded,
-                                            color: Colors.grey,
-                                            size: 45.r,
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                                InkWell(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: pickUserProfileImage,
-                                  child: CircleAvatar(
-                                    radius: 16.r,
-                                    backgroundColor: mainColor,
-                                    child: SvgPicture.asset(
-                                      'assets/camera.svg',
-                                      color: Colors.white,
-                                      width: 18.w,
+                  ),
+                  title: Text(
+                    'تعديل الحساب',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  centerTitle: true,
+                ),
+                body: SingleChildScrollView(
+                  padding: EdgeInsetsDirectional.all(10.r),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        buildSectionHeader(
+                          title: 'المعلومات الشخصية',
+                          icon: SvgPicture.asset(
+                            'assets/contact.svg',
+                            color: mainColor,
+                            width: 22.w,
+                          ),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        buildWhiteCard(
+                          cubit: appCubit,
+                          child: Column(
+                            children: [
+                              Center(
+                                child: Stack(
+                                  alignment: Alignment.bottomRight,
+                                  children: [
+                                    Container(
+                                      width: 100.r,
+                                      height: 100.r,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        boxShadow: blueShadow,
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: 48.r,
+                                        backgroundColor: appCubit.isDark
+                                            ? darkBgColor
+                                            : Colors.grey.shade100,
+                                        backgroundImage: getProfileImage(),
+                                        child: getProfileImage() == null
+                                            ? Icon(
+                                                Icons.person_rounded,
+                                                color: Colors.grey,
+                                                size: 45.r,
+                                              )
+                                            : null,
+                                      ),
                                     ),
-                                  ),
+                                    InkWell(
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      onTap: pickUserProfileImage,
+                                      child: CircleAvatar(
+                                        radius: 16.r,
+                                        backgroundColor: mainColor,
+                                        child: SvgPicture.asset(
+                                          'assets/camera.svg',
+                                          color: Colors.white,
+                                          width: 18.w,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
+                              SizedBox(height: 25.h),
+                              defaultTextFormField(
+                                text: 'الاسم الكامل',
+                                prefixIcon: 'assets/acc.svg',
+                                errorMes: 'الاسم يجب أن لا يكون فارغًا',
+                                controller: nameController,
+                                type: TextInputType.text,
+                                cubit: appCubit,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'ملاحظة',
+                          icon: SvgPicture.asset(
+                            'assets/info.svg',
+                            color: mainColor,
+                            width: 22.w,
+                          ),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        buildWhiteCard(
+                          cubit: appCubit,
+                          child: Text(
+                            'يمكنك تعديل اسمك وصورة حسابك, تأكد من البيانات قبل الحفظ.',
+                            style: TextStyle(
+                              color: appCubit.isDark
+                                  ? darkSubTextColor
+                                  : Colors.grey.shade700,
+                              fontSize: 13.sp,
+                              height: 1.7,
                             ),
                           ),
-                          SizedBox(height: 25.h),
-                          buildInputField(
-                            hint: 'الاسم الكامل',
-                            icon: 'assets/acc.svg',
-                            error: 'الاسم يجب أن لا يكون فارغًا',
-                            controller: nameController,
-                            type: TextInputType.text,
-                            cubit: appCubit,
-                          ),
-                          SizedBox(height: 15.h),
-                          buildInputField(
-                            hint: 'رقم الهاتف',
-                            icon: 'assets/phone.svg',
-                            error: 'رقم الهاتف يجب أن لا يكون فارغًا',
-                            controller: phoneController,
-                            type: TextInputType.phone,
-                            cubit: appCubit,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-                    buildSectionHeader(
-                      title: 'ملاحظة',
-                      icon: SvgPicture.asset(
-                        'assets/info.svg',
-                        color: mainColor,
-                        width: 22.w,
-                      ),
-                      cubit: appCubit,
-                    ),
-                    SizedBox(height: 10.h),
-                    buildWhiteCard(
-                      cubit: appCubit,
-                      child: Text(
-                        'يمكنك تعديل اسمك ورقم هاتفك وصورة حسابك. تأكد من صحة البيانات قبل الحفظ.',
-                        style: TextStyle(
-                          color: appCubit.isDark
-                              ? darkSubTextColor
-                              : Colors.grey.shade700,
-                          fontSize: 13.sp,
-                          height: 1.7,
                         ),
-                      ),
+                        SizedBox(height: 40.h),
+                        defaultButton(
+                          onPressed: saveUserData,
+                          text: 'حفظ التعديلات',
+                          height: 50.h,
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 40.h),
-                    defaultButton(
-                      onPressed: saveUserData,
-                      text: 'حفظ التعديلات',
-                      height: 50.h,
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

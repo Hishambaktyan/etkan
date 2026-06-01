@@ -125,24 +125,26 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                         child: InkWell(
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
-                          borderRadius: BorderRadius.circular(15.r),
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
                           child: Container(
-                            width: 42.w,
-                            height: 42.h,
-                            margin: EdgeInsetsDirectional.only(end: 10.w),
-                            alignment: Alignment.center,
+                            width: 42.r,
+                            height: 42.r,
                             decoration: BoxDecoration(
-                              color: cubit.isDark? darkBgColor.withOpacity(0.7) : Colors.white.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(15.r),
+                              color: AppCubit.get(context).isDark
+                                  ? darkBgColor.withOpacity(0.8)
+                                  : Colors.white.withOpacity(0.8),
+                              shape: BoxShape.circle,
                               border: Border.all(
-                                  color: Colors.white.withOpacity(0.12)
+                                color: Colors.white.withOpacity(0.6),
+                                width: 1,
                               ),
                             ),
                             child: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color:cubit.isDark? Colors.white: Colors.black,
-                              size: 18.sp,
+                              CupertinoIcons.back,
+                              color: Theme.of(context).iconTheme.color,
+                              size: 24.r,
                             ),
                           ),
                         ),

@@ -1,12 +1,9 @@
 import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/user_edit_profile_screen.dart';
 import 'package:trying_homy/modules/user_screens/addresses_management_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
@@ -221,12 +218,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(
-                          CupertinoIcons.back,
-                          color: Colors.white,
-                        ),
+                      buildHeaderButton(
+                        icon: Icons.arrow_back_ios_new_rounded,
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      SizedBox(
+                        width: 12.w,
                       ),
                       Text(
                         'الحساب',
