@@ -119,11 +119,10 @@ class _UserServicesListState extends State<UserServicesList> {
                                       rate: service['rate'],
                                       providerName:
                                       providerData['name'],
-                                      providerSpec: providerData[
-                                      'specialization'],
-                                      reviews: service['reviews'],
+                                      providerSpec: providerData['specialization'],
+                                      reviews: service['reviews'] ?? [],
                                       providerId: providerData['uid'],
-                                    )), // نفس الدالة الأصلية
+                                    )),
                                 borderRadius: BorderRadius.circular(25.r),
                                 child: Container(
                                   width: 280.w,

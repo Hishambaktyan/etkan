@@ -24,7 +24,7 @@ class UserServiceDetails extends StatefulWidget {
   final double rate;
   final String providerName;
   final String providerSpec;
-  final List<dynamic> reviews;
+  final dynamic reviews;
   final String providerId;
 
   const UserServiceDetails({
