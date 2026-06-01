@@ -1,6 +1,6 @@
 abstract class UserStates {}
 
-class UserInitState extends UserStates{}
+class UserInitState extends UserStates {}
 
 //////////////////////////////////////
 
@@ -38,11 +38,11 @@ class GetCategoryErrorState extends UserStates {
   GetCategoryErrorState({required this.error});
 }
 
-class GetUserRequestSuccessState extends UserStates{}
+class GetUserRequestSuccessState extends UserStates {}
 
-class GetUserRequestLoadingState extends UserStates{}
+class GetUserRequestLoadingState extends UserStates {}
 
-class GetUserRequestErrorState extends UserStates{
+class GetUserRequestErrorState extends UserStates {
   final String error;
 
   GetUserRequestErrorState({required this.error});
@@ -50,14 +50,36 @@ class GetUserRequestErrorState extends UserStates{
 
 //////////////////////////////////////
 
-class CreateRequestSuccessState extends UserStates{}
+class CreateRequestSuccessState extends UserStates {}
 
-class CreateRequestLoadingState extends UserStates{}
+class CreateRequestLoadingState extends UserStates {}
 
-class CreateRequestErrorState extends UserStates{
+class CreateRequestErrorState extends UserStates {
   final String error;
 
   CreateRequestErrorState({required this.error});
 }
 
 //////////////////////////////////////
+
+class DeleteUserRequestLoadingState extends UserStates {}
+
+class DeleteUserRequestSuccessState extends UserStates {}
+
+class DeleteUserRequestErrorState extends UserStates {
+  final String error;
+
+  DeleteUserRequestErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
+class EditUserDataLoadingState extends UserStates {}
+
+class EditUserDataSuccessState extends UserStates {}
+
+class EditUserDataErrorState extends UserStates {
+  final String error;
+
+  EditUserDataErrorState({required this.error});
+}

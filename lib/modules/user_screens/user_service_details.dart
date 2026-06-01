@@ -96,7 +96,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
     final image = widget.image;
     final providerId = widget.providerId;
     AppCubit cubit = AppCubit.get(context);
-    final providerData = Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
+    final providerData =
+        Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -119,34 +120,17 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
+                      padding: EdgeInsetsDirectional.only(
+                          top: 20.h, start: 10.w, end: 10.w),
                       child: Padding(
-                        padding:  EdgeInsetsDirectional.all(7.w),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
+                        padding: EdgeInsetsDirectional.all(7.w),
+                        child: buildButton(
+                          context: context,
+                          isDark: cubit.isDark,
+                          icon: CupertinoIcons.back,
                           onTap: () {
                             Navigator.pop(context);
                           },
-                          child: Container(
-                            width: 42.r,
-                            height: 42.r,
-                            decoration: BoxDecoration(
-                              color: AppCubit.get(context).isDark
-                                  ? darkBgColor.withOpacity(0.8)
-                                  : Colors.white.withOpacity(0.8),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.6),
-                                width: 1,
-                              ),
-                            ),
-                            child: Icon(
-                              CupertinoIcons.back,
-                              color: Theme.of(context).iconTheme.color,
-                              size: 24.r,
-                            ),
-                          ),
                         ),
                       ),
                     ),

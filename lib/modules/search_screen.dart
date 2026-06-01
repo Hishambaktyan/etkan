@@ -767,40 +767,13 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget buildHeaderButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      borderRadius: BorderRadius.circular(15.r),
-      onTap: onTap,
-      child: Container(
-        width: 42.w,
-        height: 42.h,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.16),
-          borderRadius: BorderRadius.circular(15.r),
-          border: Border.all(color: Colors.white.withOpacity(0.12)),
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 18.sp,
-        ),
-      ),
-    );
-  }
-
   Widget buildSearchField(AppCubit appCubit) {
     return Container(
       height: 52.h,
+      padding: const EdgeInsets.symmetric(horizontal: 17),
       decoration: BoxDecoration(
-        color: appCubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(25.r),
-        boxShadow: blueShadow,
+        color: appCubit.isDark ? darkBgColor : Colors.white,
+        borderRadius: BorderRadius.circular(30.r),
       ),
       child: Stack(
         alignment: Alignment.centerRight,

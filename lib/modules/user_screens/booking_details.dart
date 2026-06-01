@@ -8,11 +8,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
+import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
+import '../../shared/cubits/user_cubit/user_cubit.dart';
 import '../../shared/styles/colors.dart';
 import '../images_view.dart';
 
@@ -300,6 +302,252 @@ class _BookingDetailsState extends State<BookingDetails> {
     );
   }
 
+  void showBookingOptionsSheet({
+    required BuildContext context,
+    required AppCubit appCubit,
+    required Map<String, dynamic> request,
+  }) {
+    final String status = (request['status'] ?? '').toString();
+
+    final bool canDelete = status != 'مقبول' && status != 'في الطريق';
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Container(
+            margin: EdgeInsets.all(15.w),
+            padding: EdgeInsetsDirectional.only(
+              start: 15.w,
+              end: 15.w,
+              top: 12.h,
+              bottom: 15.h,
+            ),
+            decoration: BoxDecoration(
+              color: appCubit.isDark ? lightDarkColor : Colors.white,
+              borderRadius: BorderRadius.circular(25.r),
+              border: appCubit.isDark
+                  ? Border.all(color: const Color(0xFF30363D))
+                  : null,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 12,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 45.w,
+                    height: 5.h,
+                    margin: EdgeInsets.only(bottom: 15.h),
+                    decoration: BoxDecoration(
+                      color: appCubit.isDark
+                          ? Colors.white.withOpacity(0.25)
+                          : Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  _bookingOptionItem(
+                    appCubit: appCubit,
+                    icon: Icons.delete_outline_rounded,
+                    title: 'حذف الحجز',
+                    subTitle: canDelete
+                        ? 'سيتم حذف الحجز نهائيًا من القائمة'
+                        : 'لا يمكن حذف الحجز بعد قبوله أو أثناء التنفيذ',
+                    color: canDelete ? Colors.red : Colors.grey,
+                    onTap: canDelete
+                        ? () {
+                            Navigator.pop(sheetContext);
+                            confirmDeleteBooking(
+                              context: context,
+                              appCubit: appCubit,
+                              request: request,
+                            );
+                          }
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _bookingOptionItem({
+    required AppCubit appCubit,
+    required IconData icon,
+    required String title,
+    required String subTitle,
+    required Color color,
+    required VoidCallback? onTap,
+    bool isMuted = false,
+  }) {
+    final Color itemColor = isMuted
+        ? appCubit.isDark
+            ? Colors.grey.shade500
+            : Colors.grey.shade500
+        : color;
+
+    final Color iconBgColor = isMuted
+        ? appCubit.isDark
+            ? Colors.grey.withOpacity(0.12)
+            : Colors.grey.withOpacity(0.10)
+        : color.withOpacity(0.12);
+
+    final Color containerColor = appCubit.isDark
+        ? darkBgColor.withOpacity(0.7)
+        : isMuted
+            ? Colors.grey.withOpacity(0.06)
+            : color.withOpacity(0.06);
+
+    final Color borderColor =
+        isMuted ? Colors.grey.withOpacity(0.18) : color.withOpacity(0.25);
+
+    return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsetsDirectional.all(13.r),
+        decoration: BoxDecoration(
+          color: containerColor,
+          borderRadius: BorderRadius.circular(18.r),
+          border: Border.all(
+            color: borderColor,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42.r,
+              height: 42.r,
+              padding: EdgeInsets.all(8.r),
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(14.r),
+              ),
+              child: SvgPicture.asset(
+                'assets/delete.svg',
+                color: itemColor,
+                width: 22.w,
+                height: 22.h,
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      color: onTap == null
+                          ? Colors.grey
+                          : isMuted
+                              ? itemColor
+                              : appCubit.isDark
+                                  ? Colors.white
+                                  : Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 3.h),
+                  Text(
+                    subTitle,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: onTap == null
+                          ? Colors.grey
+                          : appCubit.isDark
+                              ? darkSubTextColor
+                              : Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 15.r,
+              color: onTap == null ? Colors.grey : itemColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> confirmDeleteBooking({
+    required BuildContext context,
+    required AppCubit appCubit,
+    required Map<String, dynamic> request,
+  }) async {
+    final String requestId =
+        (request['id'] ?? request['requestId'] ?? '').toString();
+
+    if (requestId.isEmpty) {
+      showSnackBar(Colors.red, 'رقم الحجز غير صحيح', context);
+      return;
+    }
+
+    defaultConfirmDialog(
+      context: context,
+      isDark: appCubit.isDark,
+      icon: 'assets/delete.svg',
+      iconColor: Colors.red,
+      title: 'حذف الحجز',
+      body:
+          'هل أنت متأكد أنك تريد حذف هذا الحجز؟ لا يمكن التراجع عن هذه العملية.',
+      confirmText: 'حذف',
+      cancelText: 'تراجع',
+      confirmColor: Colors.red,
+      onConfirm: () async {
+        // إغلاق Dialog التأكيد
+        Navigator.of(context, rootNavigator: true).pop();
+
+        // إظهار لودينج
+        showLoadingDialog(context);
+
+        final bool deleted = await UserCubit.get(context).deleteUserRequest(
+          requestId: requestId,
+        );
+
+        if (!context.mounted) return;
+
+        // إغلاق اللودينج
+        hideLoadingDialog(context);
+
+        if (deleted) {
+          showSnackBar(Colors.green, 'تم حذف الحجز بنجاح', context);
+
+          // الخروج من صفحة تفاصيل الحجز
+          Navigator.pop(context, true);
+        } else {
+          final state = UserCubit.get(context).state;
+
+          final String error = state is DeleteUserRequestErrorState
+              ? state.error
+              : 'حدث خطأ أثناء حذف الحجز';
+
+          showSnackBar(Colors.red, error, context);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> request = widget.request;
@@ -357,18 +605,26 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 top: 30.h, start: 10.w, end: 10.w),
                             child: Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(7),
-                                  child: CircleAvatar(
-                                    backgroundColor:
-                                        Colors.white.withOpacity(0.8),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () => Navigator.pop(context),
-                                      child: const Icon(CupertinoIcons.back),
-                                    ),
-                                  ),
+                                buildButton(
+                                  context: context,
+                                  isDark: appCubit.isDark,
+                                  icon: CupertinoIcons.back,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                const Spacer(),
+                                buildButton(
+                                  context: context,
+                                  isDark: appCubit.isDark,
+                                  icon: Icons.more_vert_rounded,
+                                  onTap: () {
+                                    showBookingOptionsSheet(
+                                      context: context,
+                                      appCubit: appCubit,
+                                      request: request,
+                                    );
+                                  },
                                 ),
                               ],
                             ),

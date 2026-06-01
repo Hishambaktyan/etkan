@@ -30,12 +30,10 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
-
   Widget _buildHeader({
     required AppCubit appCubit,
     required Map<String, dynamic> user,
-  })
-  {
+  }) {
     String name = user['name'] ?? 'مستخدم';
     String phone = user['phone'] ?? '';
     String image = user['profileImage'] ?? '';
@@ -137,13 +135,12 @@ class _UserAccountState extends State<UserAccount> {
                         child: Container(
                           width: 42.w,
                           height: 42.h,
-                          padding: const EdgeInsetsDirectional.all(9),
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.18),
-                            borderRadius: BorderRadius.circular(13.r),
+                            color: Colors.white.withOpacity(0.16),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.18),
-                            ),
+                                color: Colors.white.withOpacity(0.12)),
                           ),
                           child: Center(
                               child: SvgPicture.asset(
@@ -234,10 +231,13 @@ class _UserAccountState extends State<UserAccount> {
     required String title,
     required String icon,
     required AppCubit appCubit,
-  })
-  {
+  }) {
     return Padding(
-      padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 10.h,),
+      padding: EdgeInsetsDirectional.only(
+        start: 10.w,
+        end: 10.w,
+        bottom: 10.h,
+      ),
       child: Row(
         children: [
           Container(

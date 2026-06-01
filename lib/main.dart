@@ -57,7 +57,8 @@ void moveAndReplace(BuildContext context, Widget screen) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin localNotifications =
+    FlutterLocalNotificationsPlugin();
 
 Map<String, dynamic>? pendingNotificationData;
 
@@ -217,7 +218,9 @@ Future<void> main() async {
     startWidget = const OnBoardingScreen();
   }
 
-  runApp(MyApp(isDark: isDark,));
+  runApp(MyApp(
+    isDark: isDark,
+  ));
 }
 
 class MyApp extends StatelessWidget {
