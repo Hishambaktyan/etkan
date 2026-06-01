@@ -109,10 +109,7 @@ class _UserAccountState extends State<UserAccount> {
             ),
             Padding(
               padding: EdgeInsetsDirectional.only(
-                top: 35.h,
-                start: 18.w,
-                end: 18.w,
-              ),
+                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
               child: Column(
                 children: [
                   Row(
