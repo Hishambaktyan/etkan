@@ -96,7 +96,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
     final image = widget.image;
     final providerId = widget.providerId;
     AppCubit cubit = AppCubit.get(context);
-    final providerData = Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
+    final providerData =
+        Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -119,31 +120,17 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
+                      padding: EdgeInsetsDirectional.only(
+                          top: 20.h, start: 10.w, end: 10.w),
                       child: Padding(
-                        padding:  EdgeInsetsDirectional.all(7.w),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          borderRadius: BorderRadius.circular(15.r),
+                        padding: EdgeInsetsDirectional.all(7.w),
+                        child: buildButton(
+                          context: context,
+                          isDark: cubit.isDark,
+                          icon: CupertinoIcons.back,
                           onTap: () {
                             Navigator.pop(context);
                           },
-                          child: Container(
-                            width: 42.w,
-                            height: 42.h,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: cubit.isDark? darkBgColor.withOpacity(0.7): Colors.white.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(15.r),
-                              border: Border.all(color: Colors.white.withOpacity(0.12)),
-                            ),
-                            child: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: Theme.of(context).iconTheme.color,
-                              size: 18.sp,
-                            ),
-                          ),
                         ),
                       ),
                     ),

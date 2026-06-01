@@ -223,28 +223,30 @@ Widget header(
                 children: [
                   Row(
                     children: [
-                      isLeading ? InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        borderRadius: BorderRadius.circular(15.r),
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          width: 42.w,
-                          height: 42.h,
-                          margin: EdgeInsetsDirectional.only(end: 10.w),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.16),
-                            borderRadius: BorderRadius.circular(15.r),
-                            border: Border.all(color: Colors.white.withOpacity(0.12)),
-                          ),
-                          child: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            color: Colors.white,
-                            size: 18.sp,
-                          ),
-                        ),
-                      )
+                      isLeading
+                          ? InkWell(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              borderRadius: BorderRadius.circular(15.r),
+                              onTap: () => Navigator.pop(context),
+                              child: Container(
+                                width: 42.w,
+                                height: 42.h,
+                                margin: EdgeInsetsDirectional.only(end: 10.w),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.16),
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.12)),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  color: Colors.white,
+                                  size: 18.sp,
+                                ),
+                              ),
+                            )
                           : const SizedBox(),
                       Text(
                         title,
@@ -749,34 +751,6 @@ Widget defaultTextButton({
             decorationColor: mainColor,
           ),
         ));
-/////////////////////////////////////////////
-Widget buildHeaderButton({
-  required IconData icon,
-  required VoidCallback onTap,
-}) {
-  return InkWell(
-    splashColor: Colors.transparent,
-    highlightColor: Colors.transparent,
-    borderRadius: BorderRadius.circular(15.r),
-    onTap: onTap,
-    child: Container(
-      width: 42.w,
-      height: 42.h,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.16),
-        borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
-      ),
-      child: Icon(
-        icon,
-        color: Colors.white,
-        size: 18.sp,
-      ),
-    ),
-  );
-}
-
 /////////////////////////////////////////////
 Widget buildButton({
   required BuildContext context,
@@ -4505,16 +4479,13 @@ class UserWorkerProfileShimmer extends StatelessWidget {
                   children: [
                     _buildStatsShimmer(),
                     SizedBox(height: 25.h),
-
                     _buildSectionTitleShimmer(),
                     SizedBox(height: 10.h),
                     _buildAboutCardShimmer(),
-
                     SizedBox(height: 20.h),
                     _buildSectionTitleShimmer(),
                     SizedBox(height: 10.h),
                     _buildExperienceCardShimmer(),
-
                     SizedBox(height: 20.h),
                     _buildSectionTitleShimmer(),
                     SizedBox(height: 10.h),
@@ -4537,9 +4508,7 @@ class UserWorkerProfileShimmer extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: 325.h,
-        decoration: BoxDecoration(
-          color: containerColor
-        ),
+        decoration: BoxDecoration(color: containerColor),
         child: Padding(
           padding: EdgeInsetsDirectional.only(
             top: 35.h,
