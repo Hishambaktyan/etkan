@@ -120,7 +120,7 @@ class _UserServicesListState extends State<UserServicesList> {
                                       providerName:
                                       providerData['name'],
                                       providerSpec: providerData['specialization'],
-                                      reviews: service['reviews'] ?? [],
+                                      reviews: service['reviews'] ?? '',
                                       providerId: providerData['uid'],
                                     )),
                                 borderRadius: BorderRadius.circular(25.r),
