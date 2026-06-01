@@ -259,7 +259,7 @@ class _UserChatsState extends State<UserChats> {
                                               ),
                                               child: Text(
                                                 requestId.isNotEmpty
-                                                    ? 'حجز اسم: ${chatData['requestTitle']}'
+                                                    ? 'عنوان الحجز: ${chatData['requestTitle']}'
                                                     : 'حجز خدمة',
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,

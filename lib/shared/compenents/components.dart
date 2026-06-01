@@ -223,15 +223,28 @@ Widget header(
                 children: [
                   Row(
                     children: [
-                      isLeading
-                          ? IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(
-                                Icons.arrow_back_ios_rounded,
-                                color: Colors.white,
-                              ))
+                      isLeading ? InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        borderRadius: BorderRadius.circular(15.r),
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 42.w,
+                          height: 42.h,
+                          margin: EdgeInsetsDirectional.only(end: 10.w),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.16),
+                            borderRadius: BorderRadius.circular(15.r),
+                            border: Border.all(color: Colors.white.withOpacity(0.12)),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 18.sp,
+                          ),
+                        ),
+                      )
                           : const SizedBox(),
                       Text(
                         title,
@@ -2349,7 +2362,10 @@ class UserBookingsShimmer extends StatelessWidget {
 class AddressManagementShimmer extends StatelessWidget {
   final bool isDark;
 
-  const AddressManagementShimmer({super.key, required this.isDark});
+  const AddressManagementShimmer({
+    super.key,
+    required this.isDark,
+  });
 
   Color get baseColor =>
       isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);

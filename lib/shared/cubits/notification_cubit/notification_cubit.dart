@@ -117,6 +117,22 @@ class NotificationCubit extends Cubit<NotificationStates> {
     }
   }
 
+  void _runWhenNavigatorReady(VoidCallback action, {int retry = 0}) {
+    if (navigatorKey.currentState != null) {
+      action();
+      return;
+    }
+
+    if (retry >= 20) {
+      print('Navigator is still null after retries');
+      return;
+    }
+
+    Future.delayed(const Duration(milliseconds: 150), () {
+      _runWhenNavigatorReady(action, retry: retry + 1);
+    });
+  }
+
   void handleNotificationClick(RemoteMessage message) {
     handleNotificationData(message.data);
   }
@@ -126,19 +142,21 @@ class NotificationCubit extends Cubit<NotificationStates> {
 
     print('Notification Click Data: $data');
 
-    if (data['type'] == 'new_message') {
+    final String type = data['type']?.toString() ?? '';
+
+    if (type == 'new_message') {
       final String chatId = data['relatedId']?.toString() ?? '';
       final String requestId = data['requestId']?.toString() ?? '';
       final String senderId = data['senderId']?.toString() ?? '';
       final String senderName = data['senderName']?.toString() ?? '';
       final String senderImage = data['senderImage']?.toString() ?? '';
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (navigatorKey.currentState == null) {
-          print('navigatorKey.currentState is null');
-          return;
-        }
+      if (chatId.isEmpty || senderId.isEmpty || myId.isEmpty) {
+        print('Missing chat notification data');
+        return;
+      }
 
+      _runWhenNavigatorReady(() {
         navigatorKey.currentState!.push(
           MaterialPageRoute(
             builder: (_) => TheChat(
@@ -152,25 +170,41 @@ class NotificationCubit extends Cubit<NotificationStates> {
           ),
         );
       });
+
+      return;
     }
 
-    if (data['type'] == 'new_booking') {
+    if (type == 'new_booking') {
       final String requestId = data['relatedId']?.toString() ?? '';
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (requestId.isEmpty) {
+        print('new_booking requestId is empty');
+        return;
+      }
+
+      _runWhenNavigatorReady(() {
         openWorkerRequestDetails(requestId);
       });
+
+      return;
     }
 
-    if (data['type'] == 'booking_status') {
+    if (type == 'booking_status') {
       final String requestId = data['relatedId']?.toString() ?? '';
+
+      if (requestId.isEmpty) {
+        print('booking_status requestId is empty');
+        return;
+      }
 
       print('تم الضغط على إشعار تحديث الحجز');
       print('booking_status requestId: $requestId');
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      _runWhenNavigatorReady(() {
         openUserBookingDetails(requestId);
       });
+
+      return;
     }
   }
 

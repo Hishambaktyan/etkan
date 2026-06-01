@@ -15,6 +15,26 @@ class LocationCubit extends Cubit<LocationStates>{
 
   bool isGettingLocation = false;
 
+  final LatLng adenCenter = const LatLng(12.7855, 45.0187);
+
+  final LatLngBounds adenBounds = LatLngBounds(
+    southwest: const LatLng(12.60, 44.70),
+    northeast: const LatLng(13.05, 45.20),
+  );
+
+  bool isInsideAden(LatLng point) {
+    return point.latitude >= adenBounds.southwest.latitude &&
+        point.latitude <= adenBounds.northeast.latitude &&
+        point.longitude >= adenBounds.southwest.longitude &&
+        point.longitude <= adenBounds.northeast.longitude;
+  }
+
+  void moveCameraToAden() {
+    mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(adenCenter, 13),
+    );
+  }
+
   Future<void> getCurrentLocation(context) async {
     if (isGettingLocation) return;
 
@@ -65,9 +85,27 @@ class LocationCubit extends Cubit<LocationStates>{
         return;
       }
 
+      if (!isInsideAden(newLocation)) {
+        showSnackBar(
+          Colors.red,
+          'الخدمة متاحة داخل مدينة عدن فقط',
+          context,
+        );
+
+        moveCameraToAden();
+
+        emit(GetCurrentLocationErrorState(
+          error: 'موقع المستخدم خارج مدينة عدن',
+        ));
+
+        return;
+      }
+
       selectedLocation = newLocation;
 
-      mapController?.animateCamera(CameraUpdate.newLatLngZoom(newLocation, 16),);
+      mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(newLocation, 16),
+      );
 
       emit(GetCurrentLocationSuccessState());
     } catch (e) {
@@ -81,7 +119,7 @@ class LocationCubit extends Cubit<LocationStates>{
 
   GoogleMapController? mapController;
 
-  LatLng selectedLocation = const LatLng(12.8351, 44.9757);
+  LatLng selectedLocation = const LatLng(12.7855, 45.0187);
 
   bool isValidLatLng(LatLng point) {
     return point.latitude.isFinite &&
@@ -98,10 +136,7 @@ class LocationCubit extends Cubit<LocationStates>{
     required String addressDetails,
     required double lat,
     required double long,
-    bool isDefault=false
-  })
-  async {
-
+  }) async {
     final CollectionReference addresses = FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -109,17 +144,45 @@ class LocationCubit extends Cubit<LocationStates>{
 
     try {
       emit(AddAddressesLoadingState());
-      await addresses.add(
-        {
-          'label': label,
-          'addressName': addressDetails,
-          'location':  GeoPoint(lat, long),
-          'createdAt': FieldValue.serverTimestamp(),
-          'isDefault': isDefault
-        }
-      );
-      emit(AddAddressesSuccessState());
 
+      final LatLng addressPoint = LatLng(lat, long);
+
+      if (!isValidLatLng(addressPoint)) {
+        emit(AddAddressesErrorState(error: 'إحداثيات العنوان غير صحيحة'));
+        return;
+      }
+
+      if (!isInsideAden(addressPoint)) {
+        emit(AddAddressesErrorState(
+          error: 'لا يمكن حفظ عنوان خارج مدينة عدن',
+        ));
+        return;
+      }
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      final oldAddressesSnapshot = await addresses.get();
+
+      for (var doc in oldAddressesSnapshot.docs) {
+        batch.update(doc.reference, {
+          'isDefault': false,
+        });
+      }
+
+      final newAddressRef = addresses.doc();
+
+      batch.set(newAddressRef, {
+        'id': newAddressRef.id,
+        'label': label,
+        'addressName': addressDetails,
+        'location': GeoPoint(lat, long),
+        'createdAt': FieldValue.serverTimestamp(),
+        'isDefault': true,
+      });
+
+      await batch.commit();
+
+      emit(AddAddressesSuccessState());
     } catch (e) {
       emit(AddAddressesErrorState(error: e.toString()));
     }
@@ -217,7 +280,8 @@ class LocationCubit extends Cubit<LocationStates>{
     required double lat,
     required double long,
     required bool isDefault,
-  }) async {
+  })
+  async {
     emit(EditAddressLoadingState());
 
     try {

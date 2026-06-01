@@ -31,7 +31,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22.r),
+        borderRadius: BorderRadius.circular(25.r),
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
@@ -40,7 +40,7 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
             mainColor.withOpacity(0.75),
           ],
         ),
-        boxShadow: cubit.isDark ? [] : blueShadow,
+        boxShadow: blueShadow,
       ),
       child: Row(
         children: [
@@ -122,13 +122,11 @@ class _AddressesManagementScreenState extends State<AddressesManagementScreen> {
       padding: EdgeInsetsDirectional.all(15.r),
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(25.r),
         border: Border.all(
           color: address['isDefault']
               ? mainColor
-              : appCubit.isDark
-                  ? const Color(0xFF30363D)
-                  : Colors.grey.shade200,
+              : Colors.transparent,
           width: address['isDefault'] ? 1.3 : 1,
         ),
         boxShadow: blueShadow,

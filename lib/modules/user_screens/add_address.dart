@@ -19,8 +19,43 @@ class AddAddress extends StatefulWidget {
 }
 
 class _AddAddressState extends State<AddAddress> {
+
   TextEditingController titleController = TextEditingController();
   TextEditingController detailsController = TextEditingController();
+
+  final LatLng adenCenter = const LatLng(12.7855, 45.0187);
+
+  final LatLngBounds adenBounds = LatLngBounds(
+    southwest: const LatLng(12.60, 44.70),
+    northeast: const LatLng(13.05, 45.15),
+  );
+
+  bool isInsideAden(LatLng point) {
+    return point.latitude >= adenBounds.southwest.latitude &&
+        point.latitude <= adenBounds.northeast.latitude &&
+        point.longitude >= adenBounds.southwest.longitude &&
+        point.longitude <= adenBounds.northeast.longitude;
+  }
+
+  void selectLocationInsideAden(LatLng point) {
+    if (!isInsideAden(point)) {
+      showSnackBar(
+        Colors.red,
+        'الخدمة متاحة داخل مدينة عدن فقط',
+        context,
+      );
+
+      LocationCubit.get(context).mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(adenCenter, 13),
+      );
+
+      return;
+    }
+
+    setState(() {
+      LocationCubit.get(context).selectedLocation = point;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,22 +87,43 @@ class _AddAddressState extends State<AddAddress> {
                   children: [
                     GoogleMap(
                       initialCameraPosition: CameraPosition(
-                        target: locationCubit.selectedLocation,
-                        zoom: 14,
+                        target: isInsideAden(locationCubit.selectedLocation)
+                            ? locationCubit.selectedLocation
+                            : adenCenter,
+                        zoom: 13,
                       ),
                       mapType: MapType.normal,
                       zoomControlsEnabled: false,
                       myLocationButtonEnabled: false,
+
+                      cameraTargetBounds: CameraTargetBounds(adenBounds),
+                      minMaxZoomPreference: const MinMaxZoomPreference(11, 19),
+
                       onMapCreated: (GoogleMapController controller) {
                         locationCubit.mapController = controller;
                       },
+
                       markers: {
                         Marker(
                           markerId: const MarkerId('selected_location'),
-                          position: locationCubit.selectedLocation,
+                          position: isInsideAden(locationCubit.selectedLocation)
+                              ? locationCubit.selectedLocation
+                              : adenCenter,
                         ),
                       },
+
                       onTap: (LatLng point) {
+                        if (!locationCubit.isInsideAden(point)) {
+                          showSnackBar(
+                            Colors.red,
+                            'الخدمة متاحة داخل مدينة عدن فقط',
+                            context,
+                          );
+
+                          locationCubit.moveCameraToAden();
+                          return;
+                        }
+
                         setState(() {
                           locationCubit.selectedLocation = point;
                         });
@@ -266,7 +322,7 @@ class _AddAddressState extends State<AddAddress> {
                                                     .selectedLocation.latitude,
                                                 long: locationCubit
                                                     .selectedLocation.longitude,
-                                                isDefault: false);
+                                            );
                                           }
                                         },
                                         text: 'حفظ الموقع',

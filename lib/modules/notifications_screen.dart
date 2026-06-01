@@ -25,7 +25,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     'الكل',
     'غير مقروء',
     'الحجوزات',
-    'الدردشة',
   ];
 
   String selectedStatus = 'الكل';
@@ -39,28 +38,31 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   List<Map<String, dynamic>> getFilteredNotifications(
-    List<Map<String, dynamic>> notifications,
-  ) {
+      List<Map<String, dynamic>> notifications,
+      )
+  {
+    final visibleNotifications = notifications.where((notification) {
+      final String type = notification['type']?.toString() ?? '';
+      return type != 'new_message';
+    }).toList();
+
     if (selectedStatus == 'الكل') {
-      return notifications;
+      return visibleNotifications;
     }
+
     if (selectedStatus == 'غير مقروء') {
-      return notifications
+      return visibleNotifications
           .where((notification) => notification['isRead'] != true)
           .toList();
     }
 
-    return notifications.where((notification) {
+    return visibleNotifications.where((notification) {
       final String type = notification['type']?.toString() ?? '';
       return getNotificationTypeText(type) == selectedStatus;
     }).toList();
   }
 
   String getNotificationTypeText(String type) {
-    if (type == 'new_message') {
-      return 'الدردشة';
-    }
-
     if (type == 'new_booking' || type == 'booking_status') {
       return 'الحجوزات';
     }
@@ -69,12 +71,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   String getNotificationIcon(String type) {
-    if (type == 'new_message') {
-      return 'assets/chat.svg';
-    }
-
     if (type == 'new_booking') {
-      return 'assets/all.svg';
+      return 'assets/ticket.svg';
     }
 
     if (type == 'booking_status') {
@@ -119,40 +117,61 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget buildFilterChip({
     required String title,
     required AppCubit cubit,
-  })
-  {
+  }) {
     final bool isSelected = selectedStatus == title;
 
-    return ChoiceChip(
-      backgroundColor: cubit.isDark ? lightDarkColor : Colors.grey.shade100,
-      selectedColor: cubit.isDark
-          ? mainColor.withOpacity(0.20)
-          : mainColor.withOpacity(0.15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        side: BorderSide(
-          color: isSelected
-              ? mainColor
-              : cubit.isDark
-                  ? const Color(0xFF30363D)
-                  : Colors.transparent,
-        ),
-      ),
-      label: Text(title),
-      selected: isSelected,
-      onSelected: (value) {
+    return InkWell(
+      onTap: () {
         setState(() {
           selectedStatus = title;
         });
       },
-      labelStyle: TextStyle(
-        color: cubit.isDark
-            ? (isSelected ? mainColor : const Color(0xFFC9D1D9))
-            : (isSelected ? mainColor : Colors.black87),
-        fontSize: 12.sp,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      borderRadius: BorderRadius.circular(18.r),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: EdgeInsetsDirectional.symmetric(
+          horizontal: 16.w,
+          vertical: 9.h,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? mainColor
+              : cubit.isDark
+              ? lightDarkColor
+              : Colors.white,
+          borderRadius: BorderRadius.circular(18.r),
+          border: Border.all(
+            color: isSelected
+                ? mainColor
+                : cubit.isDark
+                ? const Color(0xFF30363D)
+                : Colors.grey.shade200,
+          ),
+          boxShadow: isSelected && !cubit.isDark
+              ? [
+            BoxShadow(
+              color: mainColor.withOpacity(0.18),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
+            ),
+          ]
+              : [],
+        ),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: isSelected
+                ? Colors.white
+                : cubit.isDark
+                ? Colors.white
+                : Colors.black87,
+            fontSize: 12.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      showCheckmark: false,
     );
   }
 
@@ -160,8 +179,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     required Map<String, dynamic> notification,
     required AppCubit appCubit,
     required NotificationCubit notificationCubit,
-  })
-  {
+  }) {
     final bool isRead = notification['isRead'] == true;
 
     final String title = notification['title']?.toString() ?? 'إشعار';
@@ -170,158 +188,232 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final String typeText = getNotificationTypeText(type);
     final String icon = getNotificationIcon(type);
     final String time = formatNotificationTime(notification['createdAt']);
-    final String notificationId = notification['notificationId']?.toString() ??
-        notification['id']?.toString() ??
-        '';
+    final String notificationId =
+        notification['notificationId']?.toString() ??
+            notification['id']?.toString() ??
+            '';
 
-    return GestureDetector(
+    return InkWell(
       onTap: () async {
+        if (type == 'new_message') {
+          return;
+        }
+
         if (!isRead) {
           await notificationCubit.markNotificationAsRead(notificationId);
         }
 
         notificationCubit.handleNotificationData(notification);
       },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      borderRadius: BorderRadius.circular(25.r),
       child: Container(
-        padding: EdgeInsetsDirectional.all(15.r),
         decoration: BoxDecoration(
           color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow: blueShadow,
+          border: Border.all(
+            color: !isRead
+                ? mainColor.withOpacity(0.35)
+                :Colors.transparent
+          ),
+          boxShadow:blueShadow,
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  padding: EdgeInsetsDirectional.all(10.r),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14.r),
-                    color: appCubit.isDark
-                        ? mainColor.withOpacity(0.20)
-                        : mainColor.withOpacity(0.10),
-                  ),
-                  child: SvgPicture.asset(
-                    icon,
-                    width: 22.w,
-                    height: 22.h,
-                    color: mainColor,
-                  ),
+            Container(
+              width: 5.w,
+              height: 145.h,
+              decoration: BoxDecoration(
+                color: isRead ? Colors.transparent : mainColor,
+                borderRadius: BorderRadiusDirectional.only(
+                  topStart: Radius.circular(25.r),
+                  bottomStart: Radius.circular(25.r),
                 ),
-                if (!isRead)
-                  PositionedDirectional(
-                    top: -2.h,
-                    start: -2.w,
-                    child: CircleAvatar(
-                      radius: 5.r,
-                      backgroundColor: Colors.redAccent,
-                    ),
-                  ),
-              ],
+              ),
             ),
-            SizedBox(width: 12.w),
+
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.sp,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
+              child: Padding(
+                padding: EdgeInsetsDirectional.all(15.r),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          width: 48.w,
+                          height: 48.w,
+                          padding: EdgeInsetsDirectional.all(12.r),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark
+                                ? mainColor.withOpacity(0.18)
+                                : mainColor.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: SvgPicture.asset(
+                            icon,
+                            color: mainColor,
                           ),
                         ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Container(
-                        padding: EdgeInsetsDirectional.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isRead
-                              ? Colors.grey.withOpacity(0.10)
-                              : mainColor.withOpacity(0.10),
-                          borderRadius: BorderRadius.circular(20.r),
-                        ),
-                        child: Text(
-                          isRead ? 'مقروء' : 'جديد',
-                          style: TextStyle(
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.bold,
-                            color: isRead
-                                ? appCubit.isDark
+
+                        if (!isRead)
+                          PositionedDirectional(
+                            top: -3.h,
+                            start: -3.w,
+                            child: Container(
+                              width: 12.w,
+                              height: 12.w,
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: appCubit.isDark
+                                      ? lightDarkColor
+                                      : Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    SizedBox(width: 12.w),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.sp,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .color,
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(width: 8.w),
+
+                              Container(
+                                padding: EdgeInsetsDirectional.symmetric(
+                                  horizontal: 9.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isRead
+                                      ? Colors.grey.withOpacity(0.10)
+                                      : mainColor.withOpacity(0.10),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
+                                child: Text(
+                                  isRead ? 'مقروء' : 'جديد',
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: isRead
+                                        ? appCubit.isDark
+                                        ? darkSubTextColor
+                                        : Colors.grey
+                                        : mainColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: 8.h),
+
+                          ReadMoreText(
+                            body.isEmpty
+                                ? 'لا يوجد محتوى لهذا الإشعار'
+                                : body,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: appCubit.isDark
+                                  ? darkSubTextColor
+                                  : Colors.grey.shade700,
+                              height: 1.6,
+                            ),
+                            trimLines: 2,
+                            colorClickableText: mainColor,
+                            trimMode: TrimMode.Line,
+                            trimCollapsedText: ' عرض المزيد',
+                            trimExpandedText: ' عرض أقل',
+                            moreStyle: TextStyle(
+                              fontSize: 12.sp,
+                              color: mainColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            lessStyle: TextStyle(
+                              fontSize: 12.sp,
+                              color: mainColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          SizedBox(height: 12.h),
+
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsetsDirectional.symmetric(
+                                  horizontal: 9.w,
+                                  vertical: 5.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: mainColor.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
+                                child: Text(
+                                  typeText,
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: mainColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+
+                              const Spacer(),
+
+                              Icon(
+                                CupertinoIcons.time,
+                                color: appCubit.isDark
                                     ? darkSubTextColor
-                                    : Colors.grey
-                                : mainColor,
+                                    : Colors.grey,
+                                size: 14.r,
+                              ),
+
+                              SizedBox(width: 4.w),
+
+                              Text(
+                                time,
+                                style: TextStyle(
+                                  fontSize: 10.5.sp,
+                                  color: appCubit.isDark
+                                      ? darkSubTextColor
+                                      : Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
-                  ReadMoreText(
-                    body.isEmpty ? 'لا يوجد محتوى لهذا الإشعار' : body,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: appCubit.isDark
-                          ? darkSubTextColor
-                          : Colors.grey.shade700,
-                      height: 1.6,
                     ),
-                    trimLines: 2,
-                    colorClickableText: mainColor,
-                    trimMode: TrimMode.Line,
-                    trimCollapsedText: ' عرض المزيد',
-                    trimExpandedText: ' عرض أقل',
-                    moreStyle: TextStyle(
-                      fontSize: 12.sp,
-                      color: mainColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    lessStyle: TextStyle(
-                      fontSize: 12.sp,
-                      color: mainColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  Row(
-                    children: [
-                      Icon(
-                        CupertinoIcons.time,
-                        color: appCubit.isDark ? darkSubTextColor : Colors.grey,
-                        size: 15.r,
-                      ),
-                      SizedBox(width: 5.w),
-                      Text(
-                        time,
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color:
-                              appCubit.isDark ? darkSubTextColor : Colors.grey,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        typeText,
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: mainColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -331,45 +423,54 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Widget buildEmptyState(AppCubit cubit) {
-    return Padding(
-      padding: EdgeInsetsDirectional.only(top: 80.h, start: 25.w, end: 25.w),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsetsDirectional.all(18.r),
-            decoration: BoxDecoration(
-              color: cubit.isDark
-                  ? mainColor.withOpacity(0.18)
-                  : mainColor.withOpacity(0.08),
-              shape: BoxShape.circle,
+    return Center(
+      child: Padding(
+        padding: EdgeInsetsDirectional.symmetric(horizontal: 25.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 95.w,
+              height: 95.w,
+              padding: EdgeInsetsDirectional.all(22.r),
+              decoration: BoxDecoration(
+                color: cubit.isDark
+                    ? mainColor.withOpacity(0.18)
+                    : mainColor.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(
+                'assets/not.svg',
+                color: mainColor,
+              ),
             ),
-            child: SvgPicture.asset(
-              'assets/not.svg',
-              color: mainColor,
-              width: 45.w,
+
+            SizedBox(height: 18.h),
+
+            Text(
+              'لا توجد إشعارات',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
             ),
-          ),
-          SizedBox(height: 18.h),
-          Text(
-            'لا توجد إشعارات',
-            style: TextStyle(
-              fontSize: 17.sp,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).textTheme.bodyLarge!.color,
+
+            SizedBox(height: 8.h),
+
+            Text(
+              selectedStatus == 'الكل'
+                  ? 'لا توجد إشعارات حالياً، ستظهر هنا إشعارات الحجوزات والتحديثات المهمة.'
+                  : 'لا توجد إشعارات ضمن هذا التصنيف حالياً.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                height: 1.6,
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'لا توجد إشعارات ضمن هذا التصنيف حالياً.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: cubit.isDark ? darkSubTextColor : Colors.grey,
-              height: 1.6,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -381,9 +482,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         final AppCubit appCubit = AppCubit.get(context);
         return BlocBuilder<NotificationCubit, NotificationStates>(
           builder: (context, state) {
-            final NotificationCubit notificationCubit = NotificationCubit.get(context);
+            NotificationCubit notificationCubit = NotificationCubit.get(context);
             final notifications = notificationCubit.userNotifications;
-            final filteredNotifications = getFilteredNotifications(notifications);
+
+            final visibleNotifications = notifications.where((notification) {
+              final String type = notification['type']?.toString() ?? '';
+              return type != 'new_message';
+            }).toList();
+
+            final filteredNotifications = getFilteredNotifications(visibleNotifications);
+
+            final int unreadVisibleCount = visibleNotifications
+                .where((notification) => notification['isRead'] != true)
+                .length;
+
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
@@ -425,7 +537,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             borderRadius: BorderRadius.circular(25.r),
                           ),
                           child: Text(
-                            '${notificationCubit.unreadNotificationsCount} جديد',
+                            '$unreadVisibleCount جديد',
                             style: TextStyle(
                               color: mainColor,
                               fontSize: 11.sp,
@@ -437,51 +549,59 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ],
                   ),
                 ),
-                body: state is GetNotificationsLoadingState ? NotificationsScreenShimmer(isDark: appCubit.isDark)
+                body: state is GetNotificationsLoadingState
+                    ? NotificationsScreenShimmer(isDark: appCubit.isDark)
                     : RefreshIndicator(
-                        onRefresh: () => notificationCubit.getUserNotifications(),
-                        child: Column(
-                          children: [
-                            SizedBox(height: 10.h),
-                            SizedBox(
-                              height: 42.h,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                padding: EdgeInsetsDirectional.only(
-                                    start: 10.w, end: 10.w),
-                                itemCount: statusFilters.length,
-                                separatorBuilder: (context, index) =>
-                                    SizedBox(width: 10.w),
-                                itemBuilder: (context, index) {
-                                  return buildFilterChip(
-                                    title: statusFilters[index],
-                                    cubit: appCubit,
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 15.h),
-                            filteredNotifications.isEmpty
-                                ? SizedBox(
-                                height: MediaQuery.of(context).size.height * 0.55,
-                                child: buildEmptyState(appCubit))
-                                : Expanded(
-                              child:  ListView.separated(
-                                      padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h,),
-                                      itemCount: filteredNotifications.length,
-                                      separatorBuilder: (context, index) => SizedBox(height: 15.h),
-                                      itemBuilder: (context, index) {
-                                        return buildNotificationCard(
-                                          notification: filteredNotifications[index],
-                                          appCubit: appCubit,
-                                          notificationCubit: notificationCubit,
-                                        );
-                                      },
-                                    ),
-                            ),
-                          ],
+                  color: mainColor,
+                  onRefresh: () => notificationCubit.getUserNotifications(),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 44.h,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsetsDirectional.only(
+                            start: 10.w,
+                            end: 10.w,
+                          ),
+                          itemCount: statusFilters.length,
+                          separatorBuilder: (context, index) => SizedBox(width: 10.w),
+                          itemBuilder: (context, index) {
+                            return buildFilterChip(
+                              title: statusFilters[index],
+                              cubit: appCubit,
+                            );
+                          },
                         ),
                       ),
+                      SizedBox(height: 15.h),
+                      filteredNotifications.isEmpty
+                          ? Expanded(
+                        child: buildEmptyState(appCubit),
+                      )
+                          : Expanded(
+                        child: ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsetsDirectional.only(
+                            start: 10.w,
+                            end: 10.w,
+                            bottom: 20.h,
+                          ),
+                          itemCount: filteredNotifications.length,
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 15.h),
+                          itemBuilder: (context, index) {
+                            return buildNotificationCard(
+                              notification: filteredNotifications[index],
+                              appCubit: appCubit,
+                              notificationCubit: notificationCubit,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },

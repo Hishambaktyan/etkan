@@ -355,29 +355,38 @@ class _BookingDetailsState extends State<BookingDetails> {
                           Padding(
                             padding: EdgeInsetsDirectional.only(
                                 top: 30.h, start: 10.w, end: 10.w),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(7),
-                                  child: CircleAvatar(
-                                    backgroundColor:
-                                        Colors.white.withOpacity(0.8),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () => Navigator.pop(context),
-                                      child: const Icon(CupertinoIcons.back),
+                            child: Padding(
+                              padding: const EdgeInsets.all(7),
+                              child: InkWell(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                borderRadius: BorderRadius.circular(15.r),
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  width: 42.w,
+                                  height: 42.h,
+                                  margin: EdgeInsetsDirectional.only(end: 10.w),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: appCubit.isDark? darkBgColor.withOpacity(0.7) : Colors.white.withOpacity(0.7),
+                                    borderRadius: BorderRadius.circular(15.r),
+                                    border: Border.all(
+                                        color: Colors.white.withOpacity(0.12)
                                     ),
                                   ),
+                                  child: Icon(
+                                    Icons.arrow_back_ios_new_rounded,
+                                    color:appCubit.isDark? Colors.white: Colors.black,
+                                    size: 18.sp,
+                                  ),
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Padding(
-                              padding: EdgeInsetsDirectional.symmetric(
-                                  horizontal: 15.w),
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -389,18 +398,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                                           ? lightDarkColor
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(25.r),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: mainColor.withOpacity(0.2),
-                                          spreadRadius: 1.0,
-                                          blurRadius: 7.0,
-                                          offset: const Offset(2, 5),
-                                        ),
-                                      ],
-                                      border: appCubit.isDark
-                                          ? Border.all(
-                                              color: const Color(0xFF30363D))
-                                          : null,
+                                      boxShadow: blueShadow,
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -687,12 +685,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
+                    SizedBox(height: 15.h,),
                     Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 10.h),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -700,9 +695,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                               title: 'مراحل التنفيذ',
                               icon: Icons.route_outlined,
                               cubit: appCubit),
-                          SizedBox(
-                            height: 10.h,
-                          ),
+                          SizedBox(height: 10.h,),
                           Container(
                             padding: EdgeInsetsDirectional.all(15.r),
                             decoration: BoxDecoration(
@@ -710,17 +703,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                                     ? lightDarkColor
                                     : Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: mainColor.withOpacity(0.2),
-                                    spreadRadius: 1.0,
-                                    blurRadius: 7.0,
-                                    offset: const Offset(2, 5),
-                                  ),
-                                ],
-                                border: appCubit.isDark
-                                    ? Border.all(color: const Color(0xFF30363D))
-                                    : null),
+                                boxShadow: blueShadow
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -754,16 +738,13 @@ class _BookingDetailsState extends State<BookingDetails> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h,),
                           buildSectionTitle(
                               title: 'ملاحظات الحجز',
                               icon: Icons.notes_rounded,
-                              cubit: appCubit),
-                          SizedBox(
-                            height: 10.h,
+                              cubit: appCubit
                           ),
+                          SizedBox(height: 10.h,),
                           Container(
                             width: double.infinity,
                             padding: EdgeInsetsDirectional.all(15.r),
@@ -771,18 +752,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                                 color: appCubit.isDark
                                     ? lightDarkColor
                                     : Colors.white,
-                                borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: mainColor.withOpacity(0.2),
-                                    spreadRadius: 1.0,
-                                    blurRadius: 7.0,
-                                    offset: const Offset(2, 5),
-                                  ),
-                                ],
-                                border: appCubit.isDark
-                                    ? Border.all(color: const Color(0xFF30363D))
-                                    : null),
+                                borderRadius: BorderRadius.circular(20.r),
+                                boxShadow: blueShadow
+                            ),
                             child: Column(
                               children: [
                                 ReadMoreText(
@@ -804,16 +776,13 @@ class _BookingDetailsState extends State<BookingDetails> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h,),
                           buildSectionTitle(
                               title: 'معلومات الفني',
                               icon: Icons.person_pin_outlined,
-                              cubit: appCubit),
-                          SizedBox(
-                            height: 10.h,
+                              cubit: appCubit
                           ),
+                          SizedBox(height: 10.h,),
                           Container(
                             padding: EdgeInsetsDirectional.all(18.r),
                             width: double.infinity,
@@ -822,17 +791,8 @@ class _BookingDetailsState extends State<BookingDetails> {
                                     ? lightDarkColor
                                     : Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: mainColor.withOpacity(0.2),
-                                    spreadRadius: 1.0,
-                                    blurRadius: 7.0,
-                                    offset: const Offset(2, 5),
-                                  ),
-                                ],
-                                border: appCubit.isDark
-                                    ? Border.all(color: const Color(0xFF30363D))
-                                    : null),
+                                boxShadow: blueShadow
+                            ),
                             child: Column(
                               children: [
                                 Row(

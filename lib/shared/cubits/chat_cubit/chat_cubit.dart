@@ -123,35 +123,26 @@ class ChatCubit extends Cubit<ChatStates>{
           senderImage: senderImage,
           requestId: requestId,
         ),
-
-        NotificationService.createNotificationInFirestore(
-          receiverId: receiverId,
-          receiverType: 'chat',
-          senderId: senderId,
-          title: title,
-          body: notificationBody,
-          type: 'new_message',
-          relatedId: chatId,
-        ),
       ]);
     } catch (error) {
       print('خطأ أثناء إرسال إشعار الرسالة: $error');
     }
   }
-  Future<void> sendMessage(
-      String chatId,
-      String receiverId,
-      String senderId,
-      String requestId,
-      String? replyText,
-      String? replyName,
-      )
-  async {
-    try {
-      if (message.text.trim().isEmpty) return;
 
-      final String text = message.text.trim();
-      message.clear();
+  Future<void> sendMessage({
+    required String chatId,
+    required String receiverId,
+    required String senderId,
+    required String requestId,
+    required String text,
+    String? replyText,
+    String? replyName,
+  }) async {
+    try {
+      final String finalText = text.trim();
+
+      if (finalText.isEmpty) return;
+
       isTyping = false;
 
       emit(SendMessageLoadingState());
@@ -170,7 +161,7 @@ class ChatCubit extends Cubit<ChatStates>{
 
       batch.set(messageRef, {
         'messageId': messageRef.id,
-        'text': text,
+        'text': finalText,
         'messageStatus': 'sent',
         'receiverId': receiverId,
         'senderId': senderId,
@@ -181,7 +172,7 @@ class ChatCubit extends Cubit<ChatStates>{
       });
 
       batch.update(chatRef, {
-        'lastMessage': text,
+        'lastMessage': finalText,
         'lastMessageType': 'text',
         'lastUpdate': now,
         'lastSenderId': senderId,
@@ -197,13 +188,12 @@ class ChatCubit extends Cubit<ChatStates>{
         receiverId: receiverId,
         senderId: senderId,
         chatId: chatId,
-        body: text,
+        body: finalText,
         isImage: false,
         requestId: requestId,
       ).catchError((error) {
         print('فشل إرسال إشعار الرسالة: $error');
       });
-
     } catch (e) {
       emit(SendMessageErrorState(error: e.toString()));
     }
@@ -287,7 +277,7 @@ class ChatCubit extends Cubit<ChatStates>{
         senderId: senderId,
         chatId: chatId,
         body: 'ارسل لك صورة',
-        isImage: false,
+        isImage: true,
         requestId: requestId,
       ).catchError((error) {
         print('فشل إرسال إشعار الرسالة: $error');
@@ -299,42 +289,26 @@ class ChatCubit extends Cubit<ChatStates>{
 
   Future<void> markAsSeen(String chatId, String myId) async {
     try {
-      final query = await FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId)
+      final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+      final query = await chatRef
           .collection('messages')
           .where('receiverId', isEqualTo: myId)
+          .where('messageStatus', isNotEqualTo: 'seen')
+          .limit(400)
           .get();
-
-      final unreadDocs = query.docs.where((doc) {
-        final data = doc.data();
-        return data['messageStatus'] != 'seen';
-      }).toList();
-
-      if (unreadDocs.isEmpty) {
-        await FirebaseFirestore.instance
-            .collection('chats')
-            .doc(chatId)
-            .update({
-          'unreadCount.$myId': 0,
-        });
-        return;
-      }
 
       final batch = FirebaseFirestore.instance.batch();
 
-      for (var doc in unreadDocs) {
+      for (final doc in query.docs) {
         batch.update(doc.reference, {
           'messageStatus': 'seen',
         });
       }
 
-      batch.update(
-        FirebaseFirestore.instance.collection('chats').doc(chatId),
-        {
-          'unreadCount.$myId': 0,
-        },
-      );
+      batch.update(chatRef, {
+        'unreadCount.$myId': 0,
+      });
 
       await batch.commit();
     } catch (e) {
@@ -344,5 +318,10 @@ class ChatCubit extends Cubit<ChatStates>{
 
   bool isTyping=false;
 
+  @override
+  Future<void> close() {
+    message.dispose();
+    return super.close();
+  }
 
 }

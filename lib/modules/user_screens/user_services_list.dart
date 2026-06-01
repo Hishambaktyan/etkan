@@ -47,16 +47,10 @@ class _UserServicesListState extends State<UserServicesList> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          headerWithSearch(
+                          header(
                               title: 'خدمات ال${widget.categoryType}',
                               isLeading: true,
-                              searchKeyWords: [
-                                'ابحث عن تصليح فيش',
-                                'ابحث عن تركيب مروحة',
-                                'ابحث عن تركيب شاحن',
-                              ],
                               context: context,
-                              appCubit: appCubit
                           ),
                           SizedBox(height: 15.h,),
                           userCubit.userSpecServices.isEmpty
