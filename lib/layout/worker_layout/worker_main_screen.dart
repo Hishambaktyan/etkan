@@ -124,7 +124,7 @@ class _WorkerMainScreenState extends State<WorkerMainScreen> {
                               height: 25.h,
                               color: cubit.currentIndex == 2 ? mainColor : Colors.grey,
                             ),
-                            label: 'الدردشة',
+                            label: 'المحادثات',
                           ),
                           NavigationDestination(
                             icon: SvgPicture.asset(

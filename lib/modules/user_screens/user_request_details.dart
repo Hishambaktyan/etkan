@@ -583,10 +583,11 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                 TheChat(
                   otherUsername: providerData['name'] ?? 'مستخدم',
                   otherUserImage: providerData['profileImage'] ?? '',
-                  otherUserId: request['customerId'],
+                  otherUserId: request['providerId'],
                   myId: request['customerId'],
                   chatId: state.chatId,
                   requestId: request['id'],
+                  requestStatus: request['status'] ?? '',
                 ),
               );
             }
@@ -1123,6 +1124,7 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                     requestTitle: request['title'],
                                                     customerData: userData,
                                                     providerData: providerData,
+                                                    requestStatus: request['status']
                                                   );
                                                 },
                                                 text: 'دردشة',

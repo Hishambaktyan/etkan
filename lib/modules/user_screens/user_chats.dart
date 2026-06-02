@@ -53,7 +53,7 @@ class _UserChatsState extends State<UserChats> {
                     textDirection: TextDirection.rtl,
                     child: Column(
                       children: [
-                        header(title: 'الدردشة', context: context),
+                        header(title: 'المحادثات', context: context),
                         Expanded(
                           child: SizedBox(
                             height: MediaQuery.of(context).size.height * 0.55,
@@ -152,21 +152,24 @@ class _UserChatsState extends State<UserChats> {
                               int otherUnread = unreadMap[otherUser] ?? 0;
 
                               bool otherHasRead = otherUnread == 0;
-
                               final requestId = chatData['requestId'] ?? '';
+                              final requestStatus = chatData['requestStatus'] ?? '';
 
                               return InkWell(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 borderRadius: BorderRadius.circular(18.r),
-                                onTap: () => move(context, TheChat(
+                                onTap: () => move(context,
+                                  TheChat(
                                     otherUsername: otherUsername,
                                     otherUserImage: otherUserImage,
                                     otherUserId: otherUser,
                                     myId: myUserId,
                                     chatId: doc.id,
                                     requestId: requestId,
-                                  ),),
+                                    requestStatus: requestStatus,
+                                  ),
+                                ),
                                 child: Container(
                                   margin: EdgeInsetsDirectional.symmetric(horizontal: 2.w),
                                   padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w, vertical: 12.h,),

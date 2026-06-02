@@ -59,12 +59,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       decoration: BoxDecoration(
                         color: mainColor.withOpacity(0.10),
                         borderRadius: BorderRadius.circular(14.r),
-                        image: const DecorationImage(image: AssetImage('assets/logo.png'))
+                        image: const DecorationImage(image: AssetImage('assets/logo.png')),
+                        boxShadow: blueShadow
                       ),
                     ),
                     SizedBox(width: 10.w),
                     Text(
-                      'Homy',
+                      'هومي',
                       style: TextStyle(
                         color: mainColor,
                         fontSize: 20.sp,
@@ -73,10 +74,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                     const Spacer(),
                     defaultTextButton(
-                      onPressed: () => moveAndReplace(
-                        context,
-                        const SelectUserType(),
-                      ),
+                      onPressed: () => moveAndReplace(context, const SelectUserType(),),
                       text: 'تخطي',
                       isLined: false,
                       isBold: true,

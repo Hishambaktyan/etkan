@@ -576,8 +576,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
   Future<void> updateRequestStatus({
     required String requestId,
     required String status,
-  })
-  async {
+  }) async {
     try {
       emit(UpdateRequestStatusLoadingState());
 
@@ -585,8 +584,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
       if (status == 'مقبول') {
         timeField = 'acceptedAt';
-      }
-      else if (status == 'في الطريق') {
+      } else if (status == 'في الطريق') {
         timeField = 'onWayAt';
       } else if (status == 'مكتمل') {
         timeField = 'completedAt';
@@ -610,6 +608,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
       final oldRequestData = requestSnapshot.data()!;
 
       final customerId = oldRequestData['customerId']?.toString() ?? '';
+      final providerId = oldRequestData['providerId']?.toString() ?? '';
       final requestTitle = oldRequestData['title']?.toString() ?? 'حجز خدمة';
 
       final Map<String, dynamic> requestData = {
@@ -620,6 +619,14 @@ class WorkerCubit extends Cubit<WorkerStates>{
       if (timeField != null) {
         requestData['statusHistory.$timeField'] = FieldValue.serverTimestamp();
       }
+
+      final bool isChatClosed =
+          status == 'مكتمل' || status == 'قيد الانتظار';
+
+      final chatsSnapshot = await FirebaseFirestore.instance
+          .collection('chats')
+          .where('requestId', isEqualTo: requestId)
+          .get();
 
       final batch = FirebaseFirestore.instance.batch();
 
@@ -633,50 +640,60 @@ class WorkerCubit extends Cubit<WorkerStates>{
         },
       );
 
+      for (final chatDoc in chatsSnapshot.docs) {
+        batch.update(chatDoc.reference, {
+          'requestStatus': status,
+          'isChatClosed': isChatClosed,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+
       await batch.commit();
 
-      if (customerId.isNotEmpty)
-      {
+      emit(UpdateRequestStatusSuccessState());
+
+      if (customerId.isNotEmpty) {
         final notificationTitle = getStatusNotificationTitle(status);
+
         final notificationBody = getStatusNotificationBody(
           status: status,
           requestTitle: requestTitle,
         );
 
-        final customerDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(customerId)
-            .get();
-
-        final customerData = customerDoc.data() ?? {};
-
-        final receiverToken = customerData['token']?.toString() ?? '';
-
-        if (receiverToken.isNotEmpty) {
-          await NotificationService.sendNotification(
-            receiverToken: receiverToken,
+        Future.wait([
+          NotificationService.createNotificationInFirestore(
+            receiverId: customerId,
+            receiverType: 'user',
+            senderId: providerId,
             title: notificationTitle,
             body: notificationBody,
             type: 'booking_status',
             relatedId: requestId,
-            senderId: oldRequestData['providerId']?.toString() ?? '',
-          );
-        } else {
-        }
+          ),
 
-        await NotificationService.createNotificationInFirestore(
-          receiverId: customerId,
-          receiverType: 'user',
-          senderId: oldRequestData['providerId']?.toString() ?? '',
-          title: notificationTitle,
-          body: notificationBody,
-          type: 'booking_status',
-          relatedId: requestId,
-        );
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(customerId)
+              .get()
+              .then((customerDoc) async {
+            final customerData = customerDoc.data() ?? {};
+            final receiverToken = customerData['token']?.toString() ?? '';
 
+            if (receiverToken.isEmpty) return;
+
+            await NotificationService.sendNotification(
+              receiverToken: receiverToken,
+              title: notificationTitle,
+              body: notificationBody,
+              type: 'booking_status',
+              relatedId: requestId,
+              senderId: providerId,
+            );
+          }),
+        ]).catchError((error) {
+          print('خطأ أثناء إرسال أو حفظ إشعار تحديث الحجز: $error');
+        });
       }
-
-      emit(UpdateRequestStatusSuccessState());
     } catch (error) {
       emit(UpdateRequestStatusErrorState(error: error.toString()));
     }
@@ -687,6 +704,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
     required String providerId,
     required String requestTitle,
     required String requestId,
+    required String requestStatus,
     required Map<String, dynamic> customerData,
     required Map<String, dynamic> providerData,
   })
@@ -706,6 +724,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
         await chatRef.set({
           'chatId': chatId,
           'requestId': requestId,
+          'requestStatus': requestStatus,
           'requestTitle' : requestTitle,
           'users': [
             customerId,

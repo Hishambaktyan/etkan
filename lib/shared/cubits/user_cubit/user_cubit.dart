@@ -390,6 +390,7 @@ class UserCubit extends Cubit<UserStates> {
     required String providerId,
     required String requestTitle,
     required String requestId,
+    required String requestStatus,
     required Map<String, dynamic> customerData,
     required Map<String, dynamic> providerData,
   })
@@ -409,6 +410,7 @@ class UserCubit extends Cubit<UserStates> {
         await chatRef.set({
           'chatId': chatId,
           'requestId': requestId,
+          'requestStatus': requestStatus,
           'requestTitle' : requestTitle,
           'users': [
             customerId,

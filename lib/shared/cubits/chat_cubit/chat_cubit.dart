@@ -19,40 +19,25 @@ class ChatCubit extends Cubit<ChatStates>{
     if (!isMe) return const SizedBox.shrink();
 
     switch (status) {
-      case 'sending':
-        return SvgPicture.asset(
+      case 'sending': return SvgPicture.asset(
           'assets/timer.svg',
           width: 12.w,
           height: 12.h,
           color: Colors.grey.shade300,
         );
-
-      case 'sent':
-        return SvgPicture.asset(
+      case 'sent': return SvgPicture.asset(
           'assets/check.svg',
           width: 12.w,
           height: 12.h,
           color: Colors.green.shade100,
         );
-
-      case 'delivered':
-        return SvgPicture.asset(
-          'assets/checks.svg',
-          width: 12.w,
-          height: 12.h,
-          color: Colors.grey.shade300,
-        );
-
-      case 'seen':
-        return SvgPicture.asset(
+      case 'seen': return SvgPicture.asset(
           'assets/checks.svg',
           width: 12.w,
           height: 12.h,
           color: Colors.green.shade100,
         );
-
-      default:
-        return const SizedBox.shrink();
+      default: return const SizedBox.shrink();
     }
   }
 
@@ -111,19 +96,17 @@ class ChatCubit extends Cubit<ChatStates>{
       final String title = 'رسالة جديدة من $firstTwoNames';
       final String notificationBody = isImage ? 'تم إرسال صورة جديدة' : body;
 
-      await Future.wait([
-        NotificationService.sendNotification(
-          receiverToken: receiverToken,
-          title: title,
-          body: notificationBody,
-          type: 'new_message',
-          relatedId: chatId,
-          senderId: senderId,
-          senderName: senderName,
-          senderImage: senderImage,
-          requestId: requestId,
-        ),
-      ]);
+      await NotificationService.sendNotification(
+        receiverToken: receiverToken,
+        title: title,
+        body: notificationBody,
+        type: 'new_message',
+        relatedId: chatId,
+        senderId: senderId,
+        senderName: senderName,
+        senderImage: senderImage,
+        requestId: requestId,
+      );
     } catch (error) {
       print('خطأ أثناء إرسال إشعار الرسالة: $error');
     }
@@ -137,13 +120,12 @@ class ChatCubit extends Cubit<ChatStates>{
     required String text,
     String? replyText,
     String? replyName,
-  }) async {
+  })
+  async {
     try {
       final String finalText = text.trim();
 
       if (finalText.isEmpty) return;
-
-      isTyping = false;
 
       emit(SendMessageLoadingState());
 
@@ -315,8 +297,6 @@ class ChatCubit extends Cubit<ChatStates>{
       print('خطأ أثناء تحديث حالة القراءة: $e');
     }
   }
-
-  bool isTyping=false;
 
   @override
   Future<void> close() {

@@ -147,6 +147,7 @@ class NotificationCubit extends Cubit<NotificationStates> {
     if (type == 'new_message') {
       final String chatId = data['relatedId']?.toString() ?? '';
       final String requestId = data['requestId']?.toString() ?? '';
+      final String requestStatus = data['requestStatus']?.toString() ?? '';
       final String senderId = data['senderId']?.toString() ?? '';
       final String senderName = data['senderName']?.toString() ?? '';
       final String senderImage = data['senderImage']?.toString() ?? '';
@@ -166,6 +167,7 @@ class NotificationCubit extends Cubit<NotificationStates> {
               myId: myId,
               chatId: chatId,
               requestId: requestId,
+              requestStatus: requestStatus,
             ),
           ),
         );

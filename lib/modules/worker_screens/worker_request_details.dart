@@ -424,7 +424,6 @@ class WorkerRequestDetails extends StatelessWidget {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
-
             if (state is CreateOrGetChatLoadingState) {
               showLoadingDialog(context);
             }
@@ -438,6 +437,7 @@ class WorkerRequestDetails extends StatelessWidget {
                   myId: request['providerId'],
                   chatId: state.chatId,
                   requestId: request['id'],
+                  requestStatus: request['status'] ?? '',
                 ),
               );
             }
@@ -934,6 +934,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                     requestTitle: request['title'],
                                                     customerData: userData,
                                                     providerData: providerData,
+                                                    requestStatus: request['requestStatus']
                                                   );
                                                 },
                                                 text: 'دردشة',
