@@ -59,7 +59,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       decoration: BoxDecoration(
                         color: mainColor.withOpacity(0.10),
                         borderRadius: BorderRadius.circular(14.r),
-                        image: const DecorationImage(image: AssetImage('assets/logo.jpeg'))
+                        image: const DecorationImage(image: AssetImage('assets/logo.png'))
                       ),
                     ),
                     SizedBox(width: 10.w),
