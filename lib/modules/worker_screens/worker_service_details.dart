@@ -247,6 +247,41 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
     );
   }
 
+  Widget buildButton({
+    required BuildContext context,
+    required bool isDark,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? iconColor,
+    Color? backgroundColor,
+  }) {
+    return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: onTap,
+      child: Container(
+        width: 42.r,
+        height: 42.r,
+        decoration: BoxDecoration(
+          color: backgroundColor ??
+              (isDark
+                  ? darkBgColor.withOpacity(0.8)
+                  : Colors.white.withOpacity(0.8)),
+          borderRadius: BorderRadius.circular(15.r),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.6),
+            width: 1,
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: iconColor ?? Theme.of(context).iconTheme.color,
+          size: 23.r,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit,AppStates>(
@@ -293,72 +328,30 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.only(top: 20.h,start: 10.w,end: 10.w),
+                                  padding: EdgeInsetsDirectional.only(top: 35.h,start: 10.w,end: 10.w),
                                   child: Row(
                                     children: [
-                                      Padding(
-                                        padding:  EdgeInsetsDirectional.all(7.w),
-                                        child: InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
+                                      buildButton(
+                                          context: context,
+                                          isDark: appCubit.isDark,
+                                          icon: Icons.arrow_back_ios_new_rounded,
                                           onTap: () {
                                             Navigator.pop(context);
                                           },
-                                          child: Container(
-                                            width: 42.r,
-                                            height: 42.r,
-                                            decoration: BoxDecoration(
-                                              color: appCubit.isDark
-                                                  ? darkBgColor.withOpacity(0.8)
-                                                  : Colors.white.withOpacity(0.8),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.white.withOpacity(0.6),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Icon(
-                                              CupertinoIcons.back,
-                                              color: Theme.of(context).iconTheme.color,
-                                              size: 24.r,
-                                            ),
-                                          ),
-                                        ),
                                       ),
                                       const Spacer(),
-                                      Padding(
-                                        padding:  EdgeInsetsDirectional.all(7.w),
-                                        child: InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
-                                          onTap: () {
-                                            showServiceActionsSheet(
-                                              context: context,
-                                              service: service,
-                                              appCubit: appCubit,
-                                              workerCubit: workerCubit,
-                                            );
-                                          },
-                                          child: Container(
-                                            width: 42.r,
-                                            height: 42.r,
-                                            decoration: BoxDecoration(
-                                              color: appCubit.isDark
-                                                  ? darkBgColor.withOpacity(0.8)
-                                                  : Colors.white.withOpacity(0.8),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: Colors.white.withOpacity(0.6),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Icon(
-                                              Icons.more_vert_rounded,
-                                              color: Theme.of(context).iconTheme.color,
-                                              size: 24.r,
-                                            ),
-                                          ),
-                                        ),
+                                      buildButton(
+                                        context: context,
+                                        isDark: appCubit.isDark,
+                                        icon: Icons.more_vert_rounded,
+                                        onTap: () {
+                                          showServiceActionsSheet(
+                                            context: context,
+                                            service: service,
+                                            appCubit: appCubit,
+                                            workerCubit: workerCubit,
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),

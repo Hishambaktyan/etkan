@@ -120,8 +120,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.only(
-                          top: 20.h, start: 10.w, end: 10.w),
+                      padding: EdgeInsetsDirectional.only(top: 20.h, start: 10.w, end: 10.w),
                       child: Padding(
                         padding: EdgeInsetsDirectional.all(7.w),
                         child: buildButton(

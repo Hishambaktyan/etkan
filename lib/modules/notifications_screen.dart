@@ -188,8 +188,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final String time = formatNotificationTime(notification['createdAt']);
     final String notificationId =
         notification['notificationId']?.toString() ??
-            notification['id']?.toString() ??
-            '';
+            notification['id']?.toString() ?? '';
 
     return InkWell(
       onTap: () async {
@@ -230,7 +229,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ),
               ),
             ),
-
             Expanded(
               child: Padding(
                 padding: EdgeInsetsDirectional.all(15.r),
@@ -255,7 +253,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             color: mainColor,
                           ),
                         ),
-
                         if (!isRead)
                           PositionedDirectional(
                             top: -3.h,
@@ -277,9 +274,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           ),
                       ],
                     ),
-
                     SizedBox(width: 12.w),
-
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -481,18 +476,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return BlocBuilder<NotificationCubit, NotificationStates>(
           builder: (context, state) {
             NotificationCubit notificationCubit = NotificationCubit.get(context);
-            final notifications = notificationCubit.userNotifications;
 
+            final notifications = notificationCubit.userNotifications;
             final visibleNotifications = notifications.where((notification) {
               final String type = notification['type']?.toString() ?? '';
               return type != 'new_message';
             }).toList();
-
             final filteredNotifications = getFilteredNotifications(visibleNotifications);
-
             final int unreadVisibleCount = visibleNotifications
-                .where((notification) => notification['isRead'] != true)
-                .length;
+                .where((notification) => notification['isRead'] != true).length;
 
             return Directionality(
               textDirection: TextDirection.rtl,
@@ -587,8 +579,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             bottom: 20.h,
                           ),
                           itemCount: filteredNotifications.length,
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 15.h),
+                          separatorBuilder: (context, index) => SizedBox(height: 15.h),
                           itemBuilder: (context, index) {
                             return buildNotificationCard(
                               notification: filteredNotifications[index],

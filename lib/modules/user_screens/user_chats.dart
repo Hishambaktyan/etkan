@@ -58,45 +58,48 @@ class _UserChatsState extends State<UserChats> {
                           child: SizedBox(
                             height: MediaQuery.of(context).size.height * 0.55,
                             width: double.infinity,
-                            child:  Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 100.w,
-                                  height:100.w,
-                                  padding: EdgeInsets.all(15.r),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withOpacity(0.08),
-                                    shape: BoxShape.circle,
+                            child:  Padding(
+                              padding:  EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 100.w,
+                                    height:100.w,
+                                    padding: EdgeInsets.all(15.r),
+                                    decoration: BoxDecoration(
+                                      color: mainColor.withOpacity(0.08),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      'assets/chat.svg',
+                                      color: mainColor,
+                                    ),
                                   ),
-                                  child: SvgPicture.asset(
-                                    'assets/chat.svg',
-                                    color: mainColor,
+                                  SizedBox(height: 20.h),
+                                  Text(
+                                    'لا توجد محادثات لديك',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.sp,
+                                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 20.h),
-                                Text(
-                                  'لا توجد محادثات لديك',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.sp,
-                                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                                  SizedBox(height: 10.h),
+                                  Text(
+                                    'عند حجز أي خدمة وقبولها من طرف الفني ستظهر المحادثات للحجز هنا.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      height: 1.6,
+                                      color: appCubit.isDark
+                                          ? darkSubTextColor
+                                          : Colors.grey.shade600,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 10.h),
-                                Text(
-                                  'عند حجز أي خدمة ستظهر المحادثات للحجز هنا.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    height: 1.6,
-                                    color: appCubit.isDark
-                                        ? darkSubTextColor
-                                        : Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           )
                         ),

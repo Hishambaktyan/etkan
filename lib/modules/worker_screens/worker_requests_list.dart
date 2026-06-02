@@ -119,11 +119,9 @@ class _WorkerRequestsListState extends State<WorkerRequestsList> {
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 child: Column(
                                   children: [
-                                    headerWithSearch(
+                                    header(
                                         title: 'الحجوزات',
-                                        searchKeyWords: ['حجوزات مكتملة','حجوزات قيد الانتظار','حجوزات مقبولة'],
-                                        context: context,
-                                      appCubit: appCubit
+                                      context: context
                                     ),
                                     SizedBox(height: 20.h,),
                                     SizedBox(
@@ -169,25 +167,47 @@ class _WorkerRequestsListState extends State<WorkerRequestsList> {
                                     filteredList.isEmpty?SizedBox(
                                       height: MediaQuery.of(context).size.height * 0.55,
                                       width: double.infinity,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.inbox_rounded,
-                                            color: appCubit.isDark? Colors.grey.shade700: Colors.grey.shade400,
-                                            size: 100.w,
-                                          ),
-                                          SizedBox(height: 5.h,),
-                                          Text(
-                                            'لا توجد حجوزات لك',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20.sp,
-                                                color: appCubit.isDark? Colors.grey.shade700: Colors.grey.shade400
+                                      child:  Padding(padding:  EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 100.w,
+                                              height:100.w,
+                                              padding: EdgeInsets.all(15.r),
+                                              decoration: BoxDecoration(
+                                                color: mainColor.withOpacity(0.08),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: SvgPicture.asset(
+                                                'assets/ticket.svg',
+                                                color: mainColor,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'لا توجد حجوزات لك',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.sp,
+                                                color: Theme.of(context).textTheme.bodyLarge!.color,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Text(
+                                              'عند حجز أي خدمة من خدماتك ستظهر تفاصيل الحجز هنا.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 12.sp,
+                                                height: 1.6,
+                                                color: appCubit.isDark
+                                                    ? darkSubTextColor
+                                                    : Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ):ListView.builder(
                                       shrinkWrap: true,

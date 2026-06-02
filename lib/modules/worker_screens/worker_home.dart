@@ -132,12 +132,9 @@ late NotificationCubit notificationCubit;
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // hi there my namw
-                                headerWithSearch(
+                                header(
                                     title: 'مرحبا، ${workerCubit.workerName!.split(' ')[0] ?? ''}',
-                                    searchKeyWords:['ايحث عن خدماتك','ايحث عن حجوزاتك المكتملة','ايحث عن خدماتك الرائجة',] ,
                                     context: context,
-                                  appCubit: appCubit
                                 ),
                                 SizedBox(height: 10.h,),
                                 GridView.builder(

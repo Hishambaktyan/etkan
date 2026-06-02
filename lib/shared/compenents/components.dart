@@ -1249,11 +1249,12 @@ class WorkerHomeShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _shimmerBox(
-            height: 160.h,
+            height: 110.h,
             width: double.infinity,
             radius: 30,
           ),
