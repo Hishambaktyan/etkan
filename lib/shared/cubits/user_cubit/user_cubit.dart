@@ -14,18 +14,17 @@ class UserCubit extends Cubit<UserStates> {
   Map<String, dynamic> allUsers = {};
   bool isAllUsersLoaded = false;
 
+  Future<void> getAllUsers({bool forceRefresh = false}) async {
+    if (isAllUsersLoaded && !forceRefresh) {
+      return;
+    }
+    final snapshot = await FirebaseFirestore.instance.collection('users').get();
+    allUsers = {};
 
-  Future<void> getAllUsers({bool forceRefresh=false}) async {
-      if (isAllUsersLoaded && !forceRefresh) {
-        return;
-      }
-      final snapshot = await FirebaseFirestore.instance.collection('users').get();
-      allUsers = {};
-
-      for (var doc in snapshot.docs) {
+    for (var doc in snapshot.docs) {
       allUsers[doc.id] = doc.data();
     }
-      isAllUsersLoaded = true;
+    isAllUsersLoaded = true;
   }
 
   Map<String, List<Map<String, dynamic>>> loadedUserSpecServices = {};
@@ -34,14 +33,15 @@ class UserCubit extends Cubit<UserStates> {
 
   String? currentUserSpecServicesType;
 
-  Future<void> getUserSpecServices(String type, {bool forceRefresh = false})
-  async {
+  Future<void> getUserSpecServices(String type,
+      {bool forceRefresh = false}) async {
     try {
       final String categoryType = type.trim();
       currentUserSpecServicesType = categoryType;
 
       if (loadedUserSpecServices.containsKey(categoryType) && !forceRefresh) {
-        userSpecServices = List<Map<String, dynamic>>.from(loadedUserSpecServices[categoryType]!);
+        userSpecServices = List<Map<String, dynamic>>.from(
+            loadedUserSpecServices[categoryType]!);
         emit(GetUserSpecServicesSuccessState());
         return;
       }
@@ -75,10 +75,8 @@ class UserCubit extends Cubit<UserStates> {
   List<Map<String, dynamic>> userServices = [];
   bool isUserServicesLoaded = false;
 
-
-  Future<void> getUserServices({bool forceRefresh=false}) async {
+  Future<void> getUserServices({bool forceRefresh = false}) async {
     try {
-
       if (isUserServicesLoaded && !forceRefresh) {
         return;
       }
@@ -107,7 +105,7 @@ class UserCubit extends Cubit<UserStates> {
   List<Map<String, dynamic>> categories = [];
   bool isUserGetCategoriesLoaded = false;
 
-  Future<void> getCategories({bool forceRefresh=false}) async {
+  Future<void> getCategories({bool forceRefresh = false}) async {
     try {
       if (isUserGetCategoriesLoaded && !forceRefresh) {
         return;
@@ -119,14 +117,13 @@ class UserCubit extends Cubit<UserStates> {
           .where('isActive', isEqualTo: true)
           .get();
 
-      categories=[];
+      categories = [];
       for (var doc in categoriesSnapshot.docs) {
         final data = doc.data();
         data['id'] = doc.id;
         categories.add(data);
       }
       isUserGetCategoriesLoaded = true;
-
 
       emit(GetCategorySuccessState());
     } catch (e) {
@@ -137,7 +134,7 @@ class UserCubit extends Cubit<UserStates> {
   List<Map<String, dynamic>> userRequests = [];
   bool isUserRequestsLoaded = false;
 
-  Future<void> getUserRequests({bool forceRefresh=false}) async {
+  Future<void> getUserRequests({bool forceRefresh = false}) async {
     try {
       if (isUserRequestsLoaded && !forceRefresh) {
         return;
@@ -173,8 +170,7 @@ class UserCubit extends Cubit<UserStates> {
     required String duration,
     required int price,
     required Timestamp scheduledAt,
-  })
-  async {
+  }) async {
     try {
       emit(CreateRequestLoadingState());
 
@@ -245,8 +241,7 @@ class UserCubit extends Cubit<UserStates> {
     }
   }
 
-  Future<void> deleteStatusHistorySubCollection(String requestId)
-  async {
+  Future<void> deleteStatusHistorySubCollection(String requestId) async {
     final statusHistorySnapshot = await FirebaseFirestore.instance
         .collection('requests')
         .doc(requestId)
@@ -266,8 +261,7 @@ class UserCubit extends Cubit<UserStates> {
 
   Future<bool> deleteUserRequest({
     required String requestId,
-  })
-  async {
+  }) async {
     try {
       if (requestId.trim().isEmpty) {
         throw 'رقم الحجز غير صحيح';
@@ -295,8 +289,14 @@ class UserCubit extends Cubit<UserStates> {
 
       final String status = (requestData['status'] ?? '').toString();
 
-      if (status == 'مقبول' || status == 'في الطريق') {
-        throw 'لا يمكن حذف الحجز بعد قبوله أو أثناء التنفيذ';
+      final List<String> blockedDeleteStatuses = [
+        'مقبول',
+        'في الطريق',
+        'مكتمل',
+      ];
+
+      if (blockedDeleteStatuses.contains(status)) {
+        throw 'لا يمكن حذف الحجز بعد قبوله أو أثناء التنفيذ أو بعد اكتماله';
       }
 
       await deleteStatusHistorySubCollection(requestId);
@@ -339,8 +339,7 @@ class UserCubit extends Cubit<UserStates> {
     required String name,
     String? profileImagePath,
     String? oldProfileImage,
-  })
-  async {
+  }) async {
     emit(EditUserDataLoadingState());
 
     try {
@@ -393,16 +392,14 @@ class UserCubit extends Cubit<UserStates> {
     required String requestStatus,
     required Map<String, dynamic> customerData,
     required Map<String, dynamic> providerData,
-  })
-  async {
+  }) async {
     try {
       emit(CreateOrGetChatLoadingState());
 
       final String chatId = '${customerId}_${providerId}_$requestId';
 
-      final chatRef = FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId);
+      final chatRef =
+          FirebaseFirestore.instance.collection('chats').doc(chatId);
 
       final chatDoc = await chatRef.get();
 
@@ -411,7 +408,7 @@ class UserCubit extends Cubit<UserStates> {
           'chatId': chatId,
           'requestId': requestId,
           'requestStatus': requestStatus,
-          'requestTitle' : requestTitle,
+          'requestTitle': requestTitle,
           'users': [
             customerId,
             providerId,
@@ -443,7 +440,6 @@ class UserCubit extends Cubit<UserStates> {
       }
 
       emit(CreateOrGetChatSuccessState(chatId: chatId));
-
     } catch (error) {
       emit(CreateOrGetChatErrorState(error: error.toString()));
     }

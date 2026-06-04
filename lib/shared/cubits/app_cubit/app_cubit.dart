@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:trying_homy/modules/worker_screens/worker_services_list.dart';
 import '../../../modules/user_screens/user_requests_list.dart';
 import '../../../modules/user_screens/user_categories.dart';
 import '../../../modules/user_screens/user_home.dart';
@@ -19,16 +20,16 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../../networks/local/cache_helper.dart';
 import 'app_states.dart';
 
-class AppCubit extends Cubit<AppStates>{
+class AppCubit extends Cubit<AppStates> {
+  AppCubit() : super(InitState());
 
-  AppCubit(): super(InitState());
-
-  static AppCubit get(context)=>BlocProvider.of(context);
+  static AppCubit get(context) => BlocProvider.of(context);
 
   int currentIndex = 0;
 
   List<Widget> workerScreens = [
-     const WorkerHome(),
+    const WorkerHome(),
+    const WorkerServicesList(),
     const WorkerRequestsList(),
     const WorkerChats(),
     const WorkerAccount(),
@@ -42,44 +43,37 @@ class AppCubit extends Cubit<AppStates>{
     const UserAccount(),
   ];
 
-  void changeIndex(value){
-    currentIndex=value;
+  void changeIndex(value) {
+    currentIndex = value;
     emit(ChangeNavBarState());
   }
 
   bool isDark = true;
 
-  void  changeTheme({bool? fromShared}) {
-    if(fromShared != null){
+  void changeTheme({bool? fromShared}) {
+    if (fromShared != null) {
       isDark = fromShared;
-    }
-    else{
-      isDark=!isDark;
+    } else {
+      isDark = !isDark;
       CacheHelper.setBoolen(key: 'isDark', value: isDark).then(
-            (value) {
+        (value) {
           emit(ChangeThemeState());
         },
-      ).catchError(
-              (error){
-            print(error.toString());
-          }
-      );
+      ).catchError((error) {
+        print(error.toString());
+      });
     }
   }
 
-  Map<String,dynamic> allUsers = {};
+  Map<String, dynamic> allUsers = {};
 
   Future<void> getAllUsers() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('users').get();
 
-    allUsers={};
+    allUsers = {};
 
     for (var doc in snapshot.docs) {
       allUsers[doc.id] = doc.data();
     }
-
   }
-
 }

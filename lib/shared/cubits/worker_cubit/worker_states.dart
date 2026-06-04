@@ -1,14 +1,14 @@
 abstract class WorkerStates {}
 
-class WorkerInitState extends WorkerStates{}
+class WorkerInitState extends WorkerStates {}
 
 //////////////////////////////////////
 
-class GetWorkerDataSuccessState extends WorkerStates{}
+class GetWorkerDataSuccessState extends WorkerStates {}
 
-class GetWorkerDataLoadingState extends WorkerStates{}
+class GetWorkerDataLoadingState extends WorkerStates {}
 
-class GetWorkerDataErrorState extends WorkerStates{
+class GetWorkerDataErrorState extends WorkerStates {
   final String error;
 
   GetWorkerDataErrorState({required this.error});
@@ -16,13 +16,13 @@ class GetWorkerDataErrorState extends WorkerStates{
 
 //////////////////////////////////////
 
-class ChangeAvailabilityState extends WorkerStates{}
+class ChangeAvailabilityState extends WorkerStates {}
 
 //////////////////////////////////////
 
-class ChangeServiceActivitySuccessState extends WorkerStates{}
+class ChangeServiceActivitySuccessState extends WorkerStates {}
 
-class ChangeServiceActivityErrorState extends WorkerStates{
+class ChangeServiceActivityErrorState extends WorkerStates {
   final String error;
 
   ChangeServiceActivityErrorState({required this.error});
@@ -30,11 +30,11 @@ class ChangeServiceActivityErrorState extends WorkerStates{
 
 //////////////////////////////////////
 
-class GetWorkerServicesSuccessState extends WorkerStates{}
+class GetWorkerServicesSuccessState extends WorkerStates {}
 
-class GetWorkerServicesLoadingState extends WorkerStates{}
+class GetWorkerServicesLoadingState extends WorkerStates {}
 
-class GetWorkerServicesErrorState extends WorkerStates{
+class GetWorkerServicesErrorState extends WorkerStates {
   final String error;
 
   GetWorkerServicesErrorState({required this.error});
@@ -42,11 +42,11 @@ class GetWorkerServicesErrorState extends WorkerStates{
 
 //////////////////////////////////////
 
-class GetWorkerRequestsSuccessState extends WorkerStates{}
+class GetWorkerRequestsSuccessState extends WorkerStates {}
 
-class GetWorkerRequestsLoadingState extends WorkerStates{}
+class GetWorkerRequestsLoadingState extends WorkerStates {}
 
-class GetWorkerRequestsErrorState extends WorkerStates{
+class GetWorkerRequestsErrorState extends WorkerStates {
   final String error;
 
   GetWorkerRequestsErrorState({required this.error});
@@ -54,11 +54,11 @@ class GetWorkerRequestsErrorState extends WorkerStates{
 
 //////////////////////////////////////
 
-class UploadServiceLoadingState extends WorkerStates{}
+class UploadServiceLoadingState extends WorkerStates {}
 
-class UploadServiceSuccessState extends WorkerStates{}
+class UploadServiceSuccessState extends WorkerStates {}
 
-class UploadServiceErrorState extends WorkerStates{
+class UploadServiceErrorState extends WorkerStates {
   final String error;
   UploadServiceErrorState({required this.error});
 }
@@ -150,3 +150,15 @@ class SendVerificationRequestErrorState extends WorkerStates {
 
   SendVerificationRequestErrorState({required this.error});
 }
+
+//////////////////////////////////////
+class DeleteWorkerRequestLoadingState extends WorkerStates {}
+
+class DeleteWorkerRequestSuccessState extends WorkerStates {}
+
+class DeleteWorkerRequestErrorState extends WorkerStates {
+  final String error;
+
+  DeleteWorkerRequestErrorState({required this.error});
+}
+//////////////////////////////////////

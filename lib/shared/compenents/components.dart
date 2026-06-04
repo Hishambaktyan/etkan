@@ -321,19 +321,17 @@ Widget header(
 
 /////////////////////////////////////////////
 Widget headerWithSearch(
-    {
-      double headerHeight = 160,
-      required String title,
-       List<String>? searchKeyWords,
-      required AppCubit appCubit,
-      bool isLeading = false,
-      required BuildContext context,
-      bool isNotif = true,
-      bool isCustomSearch=false,
-      TextEditingController? searchController,
-      void Function(String)? onFieldSubmitted,
-      String searchLabel=''
-    }) {
+    {double headerHeight = 160,
+    required String title,
+    List<String>? searchKeyWords,
+    required AppCubit appCubit,
+    bool isLeading = false,
+    required BuildContext context,
+    bool isNotif = true,
+    bool isCustomSearch = false,
+    TextEditingController? searchController,
+    void Function(String)? onFieldSubmitted,
+    String searchLabel = ''}) {
   return ClipRRect(
     borderRadius:
         BorderRadiusDirectional.vertical(bottom: Radius.circular(30.r)),
@@ -448,125 +446,130 @@ Widget headerWithSearch(
                             color: Colors.white),
                       ),
                       const Spacer(),
-                      isNotif ?InkWell(
-                        highlightColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          move(context, const NotificationsScreen());
-                        },
-                        child: Container(
-                          width: 42.w,
-                          height: 42.h,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.16),
-                            borderRadius: BorderRadius.circular(15.r),
-                            border: Border.all(
-                                color: Colors.white.withOpacity(0.12)),
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/not.svg',
-                            width: 23.w,
-                            height: 23.h,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ) :const SizedBox.shrink(),
+                      isNotif
+                          ? InkWell(
+                              highlightColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              onTap: () {
+                                move(context, const NotificationsScreen());
+                              },
+                              child: Container(
+                                width: 42.w,
+                                height: 42.h,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.16),
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.12)),
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/not.svg',
+                                  width: 23.w,
+                                  height: 23.h,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ],
                   ),
                   const Spacer(),
-                  !isCustomSearch? InkWell(
-                    borderRadius: BorderRadius.circular(15.r),
-                    onTap: () => move(
-                      context,
-                      const SearchScreen(),
-                    ),
-                    child: Container(
-                      height: 52.h,
-                      padding: const EdgeInsets.symmetric(horizontal: 17),
-                      decoration: BoxDecoration(
-                        color: appCubit.isDark ? darkBgColor : Colors.white,
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      child: Row(
-                        children: [
-                          SvgPicture.asset(
-                            'assets/search.svg',
-                            color: Colors.grey,
+                  !isCustomSearch
+                      ? InkWell(
+                          borderRadius: BorderRadius.circular(15.r),
+                          onTap: () => move(
+                            context,
+                            const SearchScreen(),
                           ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                              child: IgnorePointer(
-                            child: SizedBox(
-                              height: 20,
-                              child: AnimatedTextKit(
-                                repeatForever: true,
-                                pause: const Duration(seconds: 2),
-                                animatedTexts: [
-                                  TyperAnimatedText(searchKeyWords![0],
-                                      textStyle:
-                                          const TextStyle(color: Colors.grey)),
-                                  TyperAnimatedText(searchKeyWords[1],
-                                      textStyle:
-                                          const TextStyle(color: Colors.grey)),
-                                  TyperAnimatedText(searchKeyWords[2],
-                                      textStyle:
-                                          const TextStyle(color: Colors.grey)),
-                                ],
+                          child: Container(
+                            height: 52.h,
+                            padding: const EdgeInsets.symmetric(horizontal: 17),
+                            decoration: BoxDecoration(
+                              color:
+                                  appCubit.isDark ? darkBgColor : Colors.white,
+                              borderRadius: BorderRadius.circular(30.r),
+                            ),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/search.svg',
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(width: 10.w),
+                                Expanded(
+                                    child: IgnorePointer(
+                                  child: SizedBox(
+                                    height: 20,
+                                    child: AnimatedTextKit(
+                                      repeatForever: true,
+                                      pause: const Duration(seconds: 2),
+                                      animatedTexts: [
+                                        TyperAnimatedText(searchKeyWords![0],
+                                            textStyle: const TextStyle(
+                                                color: Colors.grey)),
+                                        TyperAnimatedText(searchKeyWords[1],
+                                            textStyle: const TextStyle(
+                                                color: Colors.grey)),
+                                        TyperAnimatedText(searchKeyWords[2],
+                                            textStyle: const TextStyle(
+                                                color: Colors.grey)),
+                                      ],
+                                    ),
+                                  ),
+                                )),
+                              ],
+                            ),
+                          ),
+                        )
+                      : Container(
+                          height: 52.h,
+                          padding: const EdgeInsets.symmetric(horizontal: 17),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark ? darkBgColor : Colors.white,
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              TextFormField(
+                                controller: searchController,
+                                cursorColor: mainColor,
+                                keyboardType: TextInputType.text,
+                                textInputAction: TextInputAction.search,
+                                onFieldSubmitted: (value) {
+                                  onFieldSubmitted?.call(value);
+                                },
+                                style: TextStyle(
+                                    color: appCubit.isDark
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontSize: 14.sp,
+                                    height: 1),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  contentPadding: EdgeInsetsDirectional.only(
+                                    start: 45.w,
+                                    end: 18.w,
+                                    top: 15.h,
+                                    bottom: 15.h,
+                                  ),
+                                  hintText: searchLabel,
+                                ),
                               ),
-                            ),
-                          )),
-                        ],
-                      ),
-                    ),
-                  )
-                  : Container(
-                    height: 52.h,
-                    padding: const EdgeInsets.symmetric(horizontal: 17),
-                    decoration: BoxDecoration(
-                      color: appCubit.isDark ? darkBgColor : Colors.white,
-                      borderRadius: BorderRadius.circular(30.r),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.centerRight,
-                      children: [
-                        TextFormField(
-                          controller: searchController,
-                          cursorColor: mainColor,
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.search,
-                          onFieldSubmitted: (value){
-                            onFieldSubmitted?.call(value);
-                          },
-                          style: TextStyle(
-                            color: appCubit.isDark ? Colors.white : Colors.black,
-                            fontSize: 14.sp,
-                            height: 1
-                          ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            contentPadding: EdgeInsetsDirectional.only(
-                              start: 45.w,
-                              end: 18.w,
-                              top: 15.h,
-                              bottom: 15.h,
-                            ),
-                            hintText: searchLabel,
+                              PositionedDirectional(
+                                start: 10.w,
+                                child: SvgPicture.asset(
+                                  'assets/search.svg',
+                                  color: Colors.grey,
+                                  width: 22.w,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        PositionedDirectional(
-                          start: 10.w,
-                          child: SvgPicture.asset(
-                            'assets/search.svg',
-                            color: Colors.grey,
-                            width: 22.w,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -2477,9 +2480,7 @@ class AddressManagementShimmer extends StatelessWidget {
                             height: 70.h,
                             radius: 20,
                           ),
-
                           SizedBox(width: 15.w),
-
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2492,7 +2493,6 @@ class AddressManagementShimmer extends StatelessWidget {
                                         width: double.infinity,
                                       ),
                                     ),
-
                                     if (index == 0) ...[
                                       SizedBox(width: 10.w),
                                       _shimmerBox(
@@ -2503,9 +2503,7 @@ class AddressManagementShimmer extends StatelessWidget {
                                     ],
                                   ],
                                 ),
-
                                 SizedBox(height: 8.h),
-
                                 _shimmerBox(
                                   height: 12.h,
                                   width: 130.w,
@@ -2515,9 +2513,7 @@ class AddressManagementShimmer extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 15.h),
-
                       Container(
                         padding: EdgeInsets.all(12.r),
                         decoration: BoxDecoration(
@@ -2532,9 +2528,7 @@ class AddressManagementShimmer extends StatelessWidget {
                           ],
                         ),
                       ),
-
                       SizedBox(height: 15.h),
-
                       Row(
                         children: [
                           Expanded(
@@ -2546,9 +2540,7 @@ class AddressManagementShimmer extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 10.h),
-
                       _buttonShimmer(),
                     ],
                   ),
@@ -4990,7 +4982,8 @@ class UserProfileShimmer extends StatelessWidget {
   Color get highlightColor =>
       isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
 
-  Color get containerColor => isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  Color get containerColor =>
+      isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
 
   @override
   Widget build(BuildContext context) {
@@ -5004,7 +4997,12 @@ class UserProfileShimmer extends StatelessWidget {
             children: [
               _buildHeaderShimmer(),
               Padding(
-                padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
+                padding: EdgeInsetsDirectional.only(
+                  start: 10.w,
+                  end: 10.w,
+                  top: 20.h,
+                  bottom: 20.h,
+                ),
                 child: Column(
                   children: [
                     _buildStatsShimmer(),

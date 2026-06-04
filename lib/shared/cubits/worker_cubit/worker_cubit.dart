@@ -11,29 +11,24 @@ import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import '../../networks/local/cache_helper.dart';
 import '../../networks/remote/notification_service.dart';
 
-class WorkerCubit extends Cubit<WorkerStates>{
+class WorkerCubit extends Cubit<WorkerStates> {
+  WorkerCubit() : super(WorkerInitState());
 
-  WorkerCubit(): super(WorkerInitState());
+  static WorkerCubit get(context) => BlocProvider.of(context);
 
-  static WorkerCubit get(context)=>BlocProvider.of(context);
-
-  Map<String,dynamic> allUsers = {};
+  Map<String, dynamic> allUsers = {};
 
   Future<void> getAllUsers() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('users').get();
 
-    allUsers={};
+    allUsers = {};
 
     for (var doc in snapshot.docs) {
       allUsers[doc.id] = doc.data();
     }
-
   }
 
   bool amAvailable = true;
-
 
   Future<void> changeAvailability(bool value) async {
     try {
@@ -54,10 +49,11 @@ class WorkerCubit extends Cubit<WorkerStates>{
   Future<void> changeServiceActivity({
     required bool value,
     required String serviceId,
-  })
-  async {
+  }) async {
     try {
-      final index = workerServices.indexWhere((service) => service['id'] == serviceId,);
+      final index = workerServices.indexWhere(
+        (service) => service['id'] == serviceId,
+      );
 
       if (index != -1) {
         workerServices[index]['isActive'] = value;
@@ -82,8 +78,8 @@ class WorkerCubit extends Cubit<WorkerStates>{
   int? workerCompletedRequestsCount;
   double? workerRating;
 
-  List<Map<String,dynamic>> workerServices = [];
-  List<Map<String,dynamic>> workerRequests=[];
+  List<Map<String, dynamic>> workerServices = [];
+  List<Map<String, dynamic>> workerRequests = [];
 
   bool isWorkerDataLoaded = false;
   bool isWorkerRequestsLoaded = false;
@@ -111,10 +107,8 @@ class WorkerCubit extends Cubit<WorkerStates>{
       workerCompletedRequestsCount = 0;
       workerRating = 0.0;
 
-      final userFuture = FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userFuture =
+          FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       final completedRequestsCountFuture = FirebaseFirestore.instance
           .collection('requests')
@@ -134,7 +128,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
           .where('providerId', isEqualTo: uid)
           .get();
 
-       await Future.wait([
+      await Future.wait([
         userFuture,
         completedRequestsCountFuture,
         requestsCountFuture,
@@ -159,7 +153,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
       workerCompletedRequestsCount = completedRequestSnapshot.count ?? 0;
       workerRating = (userData['avgRating'] ?? 0.0).toDouble();
 
-      workerServices=[];
+      workerServices = [];
       for (var doc in getServicesSnapshot.docs) {
         var data = doc.data();
         data['id'] = doc.id;
@@ -177,7 +171,6 @@ class WorkerCubit extends Cubit<WorkerStates>{
   }
 
   Future<void> getWorkerServices({bool forceRefresh = false}) async {
-
     final uid = CacheHelper.getData(key: 'uid');
     if (uid == null) {
       print("لا يوجد مستخدم، تم إلغاء جلب البيانات");
@@ -187,8 +180,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
       return;
     }
 
-
-    workerServices=[];
+    workerServices = [];
 
     emit(GetWorkerServicesLoadingState());
     try {
@@ -206,34 +198,32 @@ class WorkerCubit extends Cubit<WorkerStates>{
       isWorkerServicesLoaded = true;
 
       emit(GetWorkerServicesSuccessState());
-
     } catch (e) {
       emit(GetWorkerServicesErrorState(error: e.toString()));
     }
   }
 
   Future<void> getWorkerRequests({bool forceRefresh = false}) async {
-
     final uid = CacheHelper.getData(key: 'uid');
     if (uid == null) {
-      emit(GetWorkerRequestsErrorState(error: 'لا يوجد مستخدم، تم إلغاء جلب البيانات'));
+      emit(GetWorkerRequestsErrorState(
+          error: 'لا يوجد مستخدم، تم إلغاء جلب البيانات'));
       return;
     }
     if (isWorkerRequestsLoaded && !forceRefresh) {
       return;
     }
 
-
     emit(GetWorkerRequestsLoadingState());
 
     try {
-      workerRequests=[];
+      workerRequests = [];
       final requestsSnapshot = await FirebaseFirestore.instance
           .collection('requests')
           .where('providerId', isEqualTo: uid)
           .get();
 
-      workerRequests=[];
+      workerRequests = [];
       for (var doc in requestsSnapshot.docs) {
         var data = doc.data();
         data['id'] = doc.id;
@@ -242,7 +232,6 @@ class WorkerCubit extends Cubit<WorkerStates>{
       isWorkerRequestsLoaded = true;
 
       emit(GetWorkerRequestsSuccessState());
-
     } catch (e) {
       emit(GetWorkerRequestsErrorState(error: e.toString()));
     }
@@ -275,8 +264,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
     return response.data['secure_url'];
   }
 
-  Future<List<String>> uploadImagesToCloudinary(List<String> imagePaths)
-  async {
+  Future<List<String>> uploadImagesToCloudinary(List<String> imagePaths) async {
     List<String> uploadedUrls = [];
 
     for (String path in imagePaths) {
@@ -327,8 +315,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
     required String servicePrice,
     required String servicePeriod,
     required String serviceImage,
-  })
-  async {
+  }) async {
     try {
       String serviceImageLink = '';
       emit(UploadServiceLoadingState());
@@ -339,10 +326,8 @@ class WorkerCubit extends Cubit<WorkerStates>{
         return;
       }
 
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userSnapshot.exists || userSnapshot.data() == null) {
         emit(UploadServiceErrorState(error: 'بيانات الفني غير موجودة'));
@@ -354,7 +339,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
       final serviceCategory = getCategoryFromSpecialization(specialization);
 
-      if(serviceImage.trim().isNotEmpty){
+      if (serviceImage.trim().isNotEmpty) {
         serviceImageLink = await uploadImageToCloudinary(serviceImage);
       }
 
@@ -379,7 +364,9 @@ class WorkerCubit extends Cubit<WorkerStates>{
         'reviews': [],
       };
 
-      final docRef = await FirebaseFirestore.instance.collection('services').add(serviceData);
+      final docRef = await FirebaseFirestore.instance
+          .collection('services')
+          .add(serviceData);
       serviceData['id'] = docRef.id;
 
       workerServices.add(serviceData);
@@ -388,7 +375,6 @@ class WorkerCubit extends Cubit<WorkerStates>{
       isWorkerServicesLoaded = true;
 
       emit(UploadServiceSuccessState());
-
     } catch (e) {
       emit(UploadServiceErrorState(error: e.toString()));
     }
@@ -402,14 +388,14 @@ class WorkerCubit extends Cubit<WorkerStates>{
     required String servicePeriod,
     String? newServiceImagePath,
     required String oldServiceImageUrl,
-  })
-  async {
+  }) async {
     emit(EditServiceLoadingState());
 
     try {
       String finalServiceImage = oldServiceImageUrl;
 
-      if (newServiceImagePath != null && newServiceImagePath.trim().isNotEmpty) {
+      if (newServiceImagePath != null &&
+          newServiceImagePath.trim().isNotEmpty) {
         finalServiceImage = await uploadImageToCloudinary(newServiceImagePath);
       }
 
@@ -432,7 +418,9 @@ class WorkerCubit extends Cubit<WorkerStates>{
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      final index = workerServices.indexWhere((service) => service['id'] == serviceId,);
+      final index = workerServices.indexWhere(
+        (service) => service['id'] == serviceId,
+      );
 
       if (index != -1) {
         workerServices[index]['name'] = serviceName.trim();
@@ -450,8 +438,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
 
   Future<void> deleteService({
     required String serviceId,
-  })
-  async {
+  }) async {
     emit(DeleteServiceLoadingState());
 
     try {
@@ -460,7 +447,9 @@ class WorkerCubit extends Cubit<WorkerStates>{
           .doc(serviceId)
           .delete();
 
-      workerServices.removeWhere((service) => service['id'] == serviceId,);
+      workerServices.removeWhere(
+        (service) => service['id'] == serviceId,
+      );
       workerServicesCount = workerServices.length;
 
       emit(DeleteServiceSuccessState());
@@ -477,8 +466,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
     String? profileImagePath,
     String? oldProfileImage,
     required List<String> previousWorks,
-  })
-  async {
+  }) async {
     emit(EditWorkerDataLoadingState());
 
     try {
@@ -497,13 +485,11 @@ class WorkerCubit extends Cubit<WorkerStates>{
         finalProfileImage = await uploadImageToCloudinary(profileImagePath);
       }
 
-      List<String> oldImages = previousWorks
-          .where((image) => image.startsWith('http'))
-          .toList();
+      List<String> oldImages =
+          previousWorks.where((image) => image.startsWith('http')).toList();
 
-      List<String> newImages = previousWorks
-          .where((image) => !image.startsWith('http'))
-          .toList();
+      List<String> newImages =
+          previousWorks.where((image) => !image.startsWith('http')).toList();
 
       List<String> uploadedNewImages = await Future.wait(
         newImages.map((imagePath) => uploadImageToCloudinary(imagePath)),
@@ -514,10 +500,8 @@ class WorkerCubit extends Cubit<WorkerStates>{
         ...uploadedNewImages,
       ];
 
-      List<String> finalExperiences = experiences
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
+      List<String> finalExperiences =
+          experiences.map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
 
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'name': name.trim(),
@@ -556,8 +540,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
   String getStatusNotificationBody({
     required String status,
     required String requestTitle,
-  })
-  {
+  }) {
     if (status == 'مقبول') {
       return 'تم قبول حجزك: $requestTitle';
     } else if (status == 'في الطريق') {
@@ -594,9 +577,8 @@ class WorkerCubit extends Cubit<WorkerStates>{
         timeField = 'cancelledAt';
       }
 
-      final requestRef = FirebaseFirestore.instance
-          .collection('requests')
-          .doc(requestId);
+      final requestRef =
+          FirebaseFirestore.instance.collection('requests').doc(requestId);
 
       final requestSnapshot = await requestRef.get();
 
@@ -620,8 +602,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
         requestData['statusHistory.$timeField'] = FieldValue.serverTimestamp();
       }
 
-      final bool isChatClosed =
-          status == 'مكتمل' || status == 'قيد الانتظار';
+      final bool isChatClosed = status == 'مكتمل' || status == 'قيد الانتظار';
 
       final chatsSnapshot = await FirebaseFirestore.instance
           .collection('chats')
@@ -670,7 +651,6 @@ class WorkerCubit extends Cubit<WorkerStates>{
             type: 'booking_status',
             relatedId: requestId,
           ),
-
           FirebaseFirestore.instance
               .collection('users')
               .doc(customerId)
@@ -707,16 +687,14 @@ class WorkerCubit extends Cubit<WorkerStates>{
     required String requestStatus,
     required Map<String, dynamic> customerData,
     required Map<String, dynamic> providerData,
-  })
-  async {
+  }) async {
     try {
       emit(CreateOrGetChatLoadingState());
 
       final String chatId = '${customerId}_${providerId}_$requestId';
 
-      final chatRef = FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId);
+      final chatRef =
+          FirebaseFirestore.instance.collection('chats').doc(chatId);
 
       final chatDoc = await chatRef.get();
 
@@ -725,7 +703,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
           'chatId': chatId,
           'requestId': requestId,
           'requestStatus': requestStatus,
-          'requestTitle' : requestTitle,
+          'requestTitle': requestTitle,
           'users': [
             customerId,
             providerId,
@@ -757,7 +735,6 @@ class WorkerCubit extends Cubit<WorkerStates>{
       }
 
       emit(CreateOrGetChatSuccessState(chatId: chatId));
-
     } catch (error) {
       emit(CreateOrGetChatErrorState(error: error.toString()));
     }
@@ -767,39 +744,37 @@ class WorkerCubit extends Cubit<WorkerStates>{
     required File transferImage,
     required Map<String, dynamic> plan,
     required Map<String, dynamic> paymentMethod,
-  })
-  async {
+  }) async {
     try {
       emit(SendSubscriptionRequestLoadingState());
 
       final uid = CacheHelper.getData(key: 'uid');
 
       if (uid == null || uid.toString().isEmpty) {
-        emit(SendSubscriptionRequestErrorState(error: 'لم يتم العثور على معرف الفني'));
+        emit(SendSubscriptionRequestErrorState(
+            error: 'لم يتم العثور على معرف الفني'));
         return;
       }
 
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userDoc.exists || userDoc.data() == null) {
-        emit(SendSubscriptionRequestErrorState(error: 'بيانات الفني غير موجودة'));
+        emit(SendSubscriptionRequestErrorState(
+            error: 'بيانات الفني غير موجودة'));
         return;
       }
 
       final userData = userDoc.data()!;
 
-      final String transferImageUrl = await uploadImageToCloudinary(transferImage.path);
+      final String transferImageUrl =
+          await uploadImageToCloudinary(transferImage.path);
 
-      final requestRef = FirebaseFirestore.instance
-          .collection('subscriptionRequests')
-          .doc();
+      final requestRef =
+          FirebaseFirestore.instance.collection('subscriptionRequests').doc();
 
       await requestRef.set({
         'requestId': requestRef.id,
-
         'providerId': uid,
         'providerName': userData['name'] ?? '',
         'providerPhone': userData['phone'] ?? '',
@@ -815,10 +790,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .update({
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'isSubscribed': false,
         'subscription': {
           'isActive': false,
@@ -846,22 +818,21 @@ class WorkerCubit extends Cubit<WorkerStates>{
     required File frontImage,
     required File backImage,
     required File personalImage,
-  })
-  async {
+  }) async {
     try {
       emit(SendVerificationRequestLoadingState());
 
       final uid = CacheHelper.getData(key: 'uid');
 
       if (uid == null || uid.toString().isEmpty) {
-        emit(SendVerificationRequestErrorState(error: 'لم يتم العثور على معرف الفني',));
+        emit(SendVerificationRequestErrorState(
+          error: 'لم يتم العثور على معرف الفني',
+        ));
         return;
       }
 
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userDoc.exists || userDoc.data() == null) {
         emit(SendVerificationRequestErrorState(
@@ -900,10 +871,7 @@ class WorkerCubit extends Cubit<WorkerStates>{
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .update({
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'verificationStatus': 'pending',
         'verificationRequestId': requestRef.id,
         'verification': {
@@ -922,4 +890,4 @@ class WorkerCubit extends Cubit<WorkerStates>{
       emit(SendVerificationRequestErrorState(error: error.toString()));
     }
   }
-  }
+}

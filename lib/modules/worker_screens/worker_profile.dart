@@ -286,20 +286,37 @@ class _WorkerProfileState extends State<WorkerProfile> {
             ),
             Padding(
               padding: EdgeInsetsDirectional.only(
-                top: 35.h,
-                start: 5.w,
-                end: 18.w,
-              ),
+                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(
-                            CupertinoIcons.back,
+                      InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        borderRadius: BorderRadius.circular(15.r),
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 42.w,
+                          height: 42.h,
+                          margin: EdgeInsetsDirectional.only(end: 10.w),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.16),
+                            borderRadius: BorderRadius.circular(15.r),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.12)),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios_new_rounded,
                             color: Colors.white,
-                          )),
+                            size: 18.sp,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 12.w,
+                      ),
                       Text(
                         'الحساب',
                         style: TextStyle(

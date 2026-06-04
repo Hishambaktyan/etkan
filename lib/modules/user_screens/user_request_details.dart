@@ -302,245 +302,6 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
     );
   }
 
-  void showBookingOptionsSheet({
-    required BuildContext context,
-    required AppCubit appCubit,
-    required Map<String, dynamic> request,
-  }) {
-    final String status = (request['status'] ?? '').toString();
-
-    final bool canDelete = status != 'مقبول' && status != 'في الطريق';
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Container(
-            margin: EdgeInsets.all(15.w),
-            padding: EdgeInsetsDirectional.only(
-              start: 15.w,
-              end: 15.w,
-              top: 12.h,
-              bottom: 15.h,
-            ),
-            decoration: BoxDecoration(
-              color: appCubit.isDark ? lightDarkColor : Colors.white,
-              borderRadius: BorderRadius.circular(25.r),
-              border: appCubit.isDark
-                  ? Border.all(color: const Color(0xFF30363D))
-                  : null,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 45.w,
-                    height: 5.h,
-                    margin: EdgeInsets.only(bottom: 15.h),
-                    decoration: BoxDecoration(
-                      color: appCubit.isDark
-                          ? Colors.white.withOpacity(0.25)
-                          : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
-                  bookingOptionItem(
-                    appCubit: appCubit,
-                    icon: Icons.delete_outline_rounded,
-                    title: 'حذف الحجز',
-                    subTitle: canDelete
-                        ? 'سيتم حذف الحجز نهائيًا من القائمة'
-                        : 'لا يمكن حذف الحجز بعد قبوله أو أثناء التنفيذ',
-                    color: canDelete ? Colors.red : Colors.grey,
-                    onTap: canDelete
-                        ? () {
-                            Navigator.pop(sheetContext);
-                            confirmDeleteBooking(
-                              context: context,
-                              appCubit: appCubit,
-                              request: request,
-                            );
-                          }
-                        : null,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget bookingOptionItem({
-    required AppCubit appCubit,
-    required IconData icon,
-    required String title,
-    required String subTitle,
-    required Color color,
-    required VoidCallback? onTap,
-    bool isMuted = false,
-  }) {
-    final Color itemColor = isMuted
-        ? appCubit.isDark
-            ? Colors.grey.shade500
-            : Colors.grey.shade500
-        : color;
-
-    final Color iconBgColor = isMuted
-        ? appCubit.isDark
-            ? Colors.grey.withOpacity(0.12)
-            : Colors.grey.withOpacity(0.10)
-        : color.withOpacity(0.12);
-
-    final Color containerColor = appCubit.isDark
-        ? darkBgColor.withOpacity(0.7)
-        : isMuted
-            ? Colors.grey.withOpacity(0.06)
-            : color.withOpacity(0.06);
-
-    final Color borderColor =
-        isMuted ? Colors.grey.withOpacity(0.18) : color.withOpacity(0.25);
-
-    return InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsetsDirectional.all(13.r),
-        decoration: BoxDecoration(
-          color: containerColor,
-          borderRadius: BorderRadius.circular(18.r),
-          border: Border.all(
-            color: borderColor,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 42.r,
-              height: 42.r,
-              padding: EdgeInsets.all(8.r),
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                borderRadius: BorderRadius.circular(14.r),
-              ),
-              child: SvgPicture.asset(
-                'assets/delete.svg',
-                color: itemColor,
-                width: 22.w,
-                height: 22.h,
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.bold,
-                      color: onTap == null
-                          ? Colors.grey
-                          : isMuted
-                              ? itemColor
-                              : appCubit.isDark
-                                  ? Colors.white
-                                  : Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 3.h),
-                  Text(
-                    subTitle,
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      color: onTap == null
-                          ? Colors.grey
-                          : appCubit.isDark
-                              ? darkSubTextColor
-                              : Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 15.r,
-              color: onTap == null ? Colors.grey : itemColor,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> confirmDeleteBooking({
-    required BuildContext context,
-    required AppCubit appCubit,
-    required Map<String, dynamic> request,
-  })
-  async {
-    final String requestId = (request['id'] ?? request['requestId'] ?? '').toString();
-
-    if (requestId.isEmpty) {
-      showSnackBar(Colors.red, 'رقم الحجز غير صحيح', context);
-      return;
-    }
-
-    defaultConfirmDialog(
-      context: context,
-      isDark: appCubit.isDark,
-      icon: 'assets/delete.svg',
-      iconColor: Colors.red,
-      title: 'حذف الحجز',
-      body:
-          'هل أنت متأكد أنك تريد حذف هذا الحجز؟ لا يمكن التراجع عن هذه العملية.',
-      confirmText: 'حذف',
-      cancelText: 'تراجع',
-      confirmColor: Colors.red,
-      onConfirm: () async {
-        Navigator.of(context, rootNavigator: true).pop();
-        showLoadingDialog(context);
-        final bool deleted = await UserCubit.get(context).deleteUserRequest(
-          requestId: requestId,
-        );
-
-        if (!context.mounted) return;
-        hideLoadingDialog(context);
-        if (deleted) {
-          showSnackBar(Colors.green, 'تم حذف الحجز بنجاح', context);
-
-          // الخروج من صفحة تفاصيل الحجز
-          Navigator.pop(context, true);
-        } else {
-          final state = UserCubit.get(context).state;
-
-          final String error = state is DeleteUserRequestErrorState
-              ? state.error
-              : 'حدث خطأ أثناء حذف الحجز';
-
-          showSnackBar(Colors.red, error, context);
-        }
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> request = widget.request;
@@ -570,16 +331,18 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
         }
         var userData = appCubit.allUsers[request['customerId']] ?? {};
         final String status = request['status'] ?? '';
-        final bool canContact = status == 'مقبول' || status == 'في الطريق' || status == 'مكتمل';
+        final bool canContact =
+            status == 'مقبول' || status == 'في الطريق' || status == 'مكتمل';
 
-        return BlocConsumer<UserCubit,UserStates>(
+        return BlocConsumer<UserCubit, UserStates>(
           listener: (context, state) {
             if (state is CreateOrGetChatLoadingState) {
               showLoadingDialog(context);
             }
             if (state is CreateOrGetChatSuccessState) {
               hideLoadingDialog(context);
-              move(context,
+              move(
+                context,
                 TheChat(
                   otherUsername: providerData['name'] ?? 'مستخدم',
                   otherUserImage: providerData['profileImage'] ?? '',
@@ -593,7 +356,11 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
             }
             if (state is CreateOrGetChatErrorState) {
               hideLoadingDialog(context);
-              showSnackBar(Colors.red, state.error, context,);
+              showSnackBar(
+                Colors.red,
+                state.error,
+                context,
+              );
             }
           },
           builder: (context, state) {
@@ -618,38 +385,21 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                   height: 300.h,
                                   errorBuilder: (context, error, stackTrace) =>
                                       Container(
-                                        height: 130.h,
-                                        color: Colors.grey.shade300,
-                                      ),
+                                    height: 130.h,
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                               ),
                               Padding(
                                 padding: EdgeInsetsDirectional.only(
                                     top: 30.h, start: 10.w, end: 10.w),
-                                child: Row(
-                                  children: [
-                                    buildButton(
-                                      context: context,
-                                      isDark: appCubit.isDark,
-                                      icon: CupertinoIcons.back,
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    const Spacer(),
-                                    buildButton(
-                                      context: context,
-                                      isDark: appCubit.isDark,
-                                      icon: Icons.more_vert_rounded,
-                                      onTap: () {
-                                        showBookingOptionsSheet(
-                                          context: context,
-                                          appCubit: appCubit,
-                                          request: request,
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                child: buildButton(
+                                  context: context,
+                                  isDark: appCubit.isDark,
+                                  icon: CupertinoIcons.back,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
                                 ),
                               ),
                               Align(
@@ -661,18 +411,19 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Container(
-                                        padding: EdgeInsetsDirectional.all(18.r),
+                                        padding:
+                                            EdgeInsetsDirectional.all(18.r),
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                             color: appCubit.isDark
                                                 ? lightDarkColor
                                                 : Colors.white,
-                                            borderRadius: BorderRadius.circular(25.r),
-                                            boxShadow: blueShadow
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(25.r),
+                                            boxShadow: blueShadow),
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               children: [
@@ -680,11 +431,13 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                   padding: EdgeInsets.all(8.r),
                                                   decoration: BoxDecoration(
                                                     color: appCubit.isDark
-                                                        ? mainColor.withOpacity(0.2)
+                                                        ? mainColor
+                                                            .withOpacity(0.2)
                                                         : mainColor
-                                                        .withOpacity(0.1),
+                                                            .withOpacity(0.1),
                                                     borderRadius:
-                                                    BorderRadius.circular(10.r),
+                                                        BorderRadius.circular(
+                                                            10.r),
                                                   ),
                                                   child: SvgPicture.asset(
                                                     'assets/ticket.svg',
@@ -699,7 +452,8 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                     'تفاصيل الحجز',
                                                     style: TextStyle(
                                                       fontSize: 14.sp,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       color: appCubit.isDark
                                                           ? Colors.white
                                                           : Colors.black,
@@ -714,13 +468,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                     color: statusColor
                                                         .withOpacity(0.1),
                                                     borderRadius:
-                                                    BorderRadius.circular(7.r),
+                                                        BorderRadius.circular(
+                                                            7.r),
                                                   ),
                                                   child: Text(
                                                     request['status'] ?? '',
                                                     style: TextStyle(
                                                       color: statusColor,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontSize: 11.sp,
                                                     ),
                                                   ),
@@ -755,14 +511,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                       SizedBox(width: 8.w),
                                                       Column(
                                                         crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             'التاريخ',
                                                             style: TextStyle(
                                                               fontSize: 10.sp,
-                                                              color: appCubit.isDark
+                                                              color: appCubit
+                                                                      .isDark
                                                                   ? darkSubTextColor
                                                                   : Colors.grey,
                                                             ),
@@ -772,12 +529,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                                 request['scheduledAt'] ??
                                                                     ''),
                                                             style: TextStyle(
-                                                              color: appCubit.isDark
+                                                              color: appCubit
+                                                                      .isDark
                                                                   ? Colors.white
-                                                                  : Colors.black87,
+                                                                  : Colors
+                                                                      .black87,
                                                               fontSize: 13.sp,
                                                               fontWeight:
-                                                              FontWeight.w500,
+                                                                  FontWeight
+                                                                      .w500,
                                                             ),
                                                           ),
                                                         ],
@@ -797,7 +557,8 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                   child: Row(
                                                     children: [
                                                       Icon(
-                                                        Icons.access_time_outlined,
+                                                        Icons
+                                                            .access_time_outlined,
                                                         size: 18.r,
                                                         color: appCubit.isDark
                                                             ? darkSubTextColor
@@ -806,14 +567,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                       SizedBox(width: 8.w),
                                                       Column(
                                                         crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             'الوقت',
                                                             style: TextStyle(
                                                               fontSize: 10.sp,
-                                                              color: appCubit.isDark
+                                                              color: appCubit
+                                                                      .isDark
                                                                   ? darkSubTextColor
                                                                   : Colors.grey,
                                                             ),
@@ -823,12 +585,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                                 request['scheduledAt'] ??
                                                                     ''),
                                                             style: TextStyle(
-                                                              color: appCubit.isDark
+                                                              color: appCubit
+                                                                      .isDark
                                                                   ? Colors.white
-                                                                  : Colors.black87,
+                                                                  : Colors
+                                                                      .black87,
                                                               fontSize: 13.sp,
                                                               fontWeight:
-                                                              FontWeight.w500,
+                                                                  FontWeight
+                                                                      .w500,
                                                             ),
                                                           ),
                                                         ],
@@ -861,14 +626,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                       SizedBox(width: 8.w),
                                                       Column(
                                                         crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             'السعر التقديري',
                                                             style: TextStyle(
                                                               fontSize: 10.sp,
-                                                              color: appCubit.isDark
+                                                              color: appCubit
+                                                                      .isDark
                                                                   ? darkSubTextColor
                                                                   : Colors.grey,
                                                             ),
@@ -879,7 +645,8 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                               color: mainColor,
                                                               fontSize: 14.sp,
                                                               fontWeight:
-                                                              FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                         ],
@@ -906,14 +673,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                       SizedBox(width: 8.w),
                                                       Column(
                                                         crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             'المدة المتوقعة',
                                                             style: TextStyle(
                                                               fontSize: 10.sp,
-                                                              color: appCubit.isDark
+                                                              color: appCubit
+                                                                      .isDark
                                                                   ? darkSubTextColor
                                                                   : Colors.grey,
                                                             ),
@@ -921,12 +689,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                           Text(
                                                             '${request['duration']} دقيقة',
                                                             style: TextStyle(
-                                                              color: appCubit.isDark
+                                                              color: appCubit
+                                                                      .isDark
                                                                   ? Colors.white
-                                                                  : Colors.black87,
+                                                                  : Colors
+                                                                      .black87,
                                                               fontSize: 14.sp,
                                                               fontWeight:
-                                                              FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                         ],
@@ -955,7 +726,9 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 15.h,),
+                        SizedBox(
+                          height: 15.h,
+                        ),
                         Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 16.w, vertical: 10.h),
@@ -966,7 +739,9 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                   title: 'مراحل التنفيذ',
                                   icon: Icons.route_outlined,
                                   cubit: appCubit),
-                              SizedBox(height: 10.h,),
+                              SizedBox(
+                                height: 10.h,
+                              ),
                               Container(
                                 padding: EdgeInsetsDirectional.all(15.r),
                                 decoration: BoxDecoration(
@@ -974,14 +749,13 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                         ? lightDarkColor
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow: blueShadow
-                                ),
+                                    boxShadow: blueShadow),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     buildHorizontalStepper(
-                                        currentStep:
-                                        getStepFromStatus(request['status']),
+                                        currentStep: getStepFromStatus(
+                                            request['status']),
                                         cubit: appCubit),
                                     SizedBox(height: 10.h),
                                     Center(
@@ -1009,12 +783,16 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 20.h,),
+                              SizedBox(
+                                height: 20.h,
+                              ),
                               buildSectionTitle(
                                   title: 'ملاحظات الحجز',
                                   icon: Icons.notes_rounded,
                                   cubit: appCubit),
-                              SizedBox(height: 10.h,),
+                              SizedBox(
+                                height: 10.h,
+                              ),
                               Container(
                                 width: double.infinity,
                                 padding: EdgeInsetsDirectional.all(15.r),
@@ -1023,8 +801,7 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                         ? lightDarkColor
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(20.r),
-                                    boxShadow: blueShadow
-                                ),
+                                    boxShadow: blueShadow),
                                 child: Column(
                                   children: [
                                     ReadMoreText(
@@ -1046,12 +823,16 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 20.h,),
+                              SizedBox(
+                                height: 20.h,
+                              ),
                               buildSectionTitle(
                                   title: 'معلومات الفني',
                                   icon: Icons.person_pin_outlined,
                                   cubit: appCubit),
-                              SizedBox(height: 10.h,),
+                              SizedBox(
+                                height: 10.h,
+                              ),
                               Container(
                                 padding: EdgeInsetsDirectional.all(18.r),
                                 width: double.infinity,
@@ -1060,8 +841,7 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                         ? lightDarkColor
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow: blueShadow
-                                ),
+                                    boxShadow: blueShadow),
                                 child: Column(
                                   children: [
                                     Row(
@@ -1069,7 +849,7 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                         CircleAvatar(
                                           radius: 25.r,
                                           backgroundColor:
-                                          mainColor.withOpacity(0.1),
+                                              mainColor.withOpacity(0.1),
                                           backgroundImage: NetworkImage(
                                             providerData['profileImage'] ?? '',
                                           ),
@@ -1077,7 +857,7 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                         SizedBox(width: 12.w),
                                         Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               providerData['name'] ?? '',
@@ -1090,7 +870,8 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                               ),
                                             ),
                                             Text(
-                                              providerData['specialization'] ?? '',
+                                              providerData['specialization'] ??
+                                                  '',
                                               style: TextStyle(
                                                 fontSize: 13.sp,
                                                 color: Colors.grey,
@@ -1101,7 +882,8 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                       ],
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 15.h),
                                       child: Divider(
                                           color: appCubit.isDark
                                               ? darkSubTextColor
@@ -1117,20 +899,30 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                               opacity: canContact ? 1.0 : 0.45,
                                               child: defaultButtonWithIcon(
                                                 onPressed: () async {
-                                                  await userCubit.createOrGetChat(
-                                                    customerId: request['customerId'],
-                                                    providerId: request['providerId'],
-                                                    requestId: request['id'],
-                                                    requestTitle: request['title'],
-                                                    customerData: userData,
-                                                    providerData: providerData,
-                                                    requestStatus: request['status']
-                                                  );
+                                                  await userCubit
+                                                      .createOrGetChat(
+                                                          customerId: request[
+                                                              'customerId'],
+                                                          providerId: request[
+                                                              'providerId'],
+                                                          requestId:
+                                                              request['id'],
+                                                          requestTitle:
+                                                              request['title'],
+                                                          customerData:
+                                                              userData,
+                                                          providerData:
+                                                              providerData,
+                                                          requestStatus:
+                                                              request[
+                                                                  'status']);
                                                 },
                                                 text: 'دردشة',
                                                 height: 45.h,
                                                 textSize: 13.sp,
-                                                background: canContact ? mainColor : Colors.grey,
+                                                background: canContact
+                                                    ? mainColor
+                                                    : Colors.grey,
                                                 icon: SvgPicture.asset(
                                                   'assets/chat.svg',
                                                   color: Colors.white,
@@ -1149,8 +941,9 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                                 context,
                                                 UserWorkerProfile(
                                                   providerId:
-                                                  "${widget.request['providerId'] ?? widget.providerData['uid'] ?? ''}",
-                                                  providerData: Map<String, dynamic>.from(
+                                                      "${widget.request['providerId'] ?? widget.providerData['uid'] ?? ''}",
+                                                  providerData:
+                                                      Map<String, dynamic>.from(
                                                     widget.providerData,
                                                   ),
                                                 ),
@@ -1159,14 +952,17 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                                             text: 'المزيد',
                                             fontSize: 13.sp,
                                             height: 45.h,
-                                            textColor:
-                                            appCubit.isDark ? Colors.white : mainColor,
-                                            border:
-                                            appCubit.isDark ? Colors.white : mainColor,
+                                            textColor: appCubit.isDark
+                                                ? Colors.white
+                                                : mainColor,
+                                            border: appCubit.isDark
+                                                ? Colors.white
+                                                : mainColor,
                                             icon: SvgPicture.asset(
                                               'assets/acc.svg',
-                                              color:
-                                              appCubit.isDark ? Colors.white : mainColor,
+                                              color: appCubit.isDark
+                                                  ? Colors.white
+                                                  : mainColor,
                                               width: 20.r,
                                               height: 20.r,
                                             ),
@@ -1185,13 +981,13 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                   ),
                   bottomNavigationBar: request['status'] == 'قيد الانتظار'
                       ? Padding(
-                    padding: EdgeInsetsDirectional.symmetric(
-                        horizontal: 15.w, vertical: 10.h),
-                    child: defaultButton(
-                        onPressed: () {},
-                        background: Colors.red,
-                        text: 'إلغاء الطلب'),
-                  )
+                          padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 15.w, vertical: 10.h),
+                          child: defaultButton(
+                              onPressed: () {},
+                              background: Colors.red,
+                              text: 'إلغاء الطلب'),
+                        )
                       : null),
             );
           },
