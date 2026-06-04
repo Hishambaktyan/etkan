@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
+import 'package:trying_homy/modules/worker_screens/worker_request_location.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
@@ -934,7 +935,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                     requestTitle: request['title'],
                                                     customerData: userData,
                                                     providerData: providerData,
-                                                    requestStatus: request['requestStatus']
+                                                    requestStatus: request['status'] ?? ''
                                                   );
                                                 },
                                                 text: 'دردشة',
@@ -958,8 +959,8 @@ class WorkerRequestDetails extends StatelessWidget {
                                             child: Opacity(
                                               opacity: canContact ? 1.0 : 0.45,
                                               child: defaultOutlinedButtonWithIcon(
-                                                onPressed: (){},
-                                                text: 'إتصال',
+                                                onPressed: ()=>move(context,WorkerRequestLocation(request: request)),
+                                                text: 'الموقع',
                                                 fontSize: 13.sp,
                                                 height: 45.h,
                                                 textColor: canContact
