@@ -152,13 +152,3 @@ class SendVerificationRequestErrorState extends WorkerStates {
 }
 
 //////////////////////////////////////
-class DeleteWorkerRequestLoadingState extends WorkerStates {}
-
-class DeleteWorkerRequestSuccessState extends WorkerStates {}
-
-class DeleteWorkerRequestErrorState extends WorkerStates {
-  final String error;
-
-  DeleteWorkerRequestErrorState({required this.error});
-}
-//////////////////////////////////////
