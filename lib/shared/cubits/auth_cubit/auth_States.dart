@@ -99,7 +99,6 @@ class SendPhoneCodeErrorState extends AuthStates {
 }
 
 //////////////////////////////////////
-
 class CheckPhoneCodeSuccessState extends AuthStates {
   final String phone;
   final String userType;
@@ -110,10 +109,24 @@ class CheckPhoneCodeSuccessState extends AuthStates {
   });
 }
 
+//////////////////////////////////////
 class CheckPhoneCodeLoadingState extends AuthStates {}
 
 class CheckPhoneCodeErrorState extends AuthStates {
   final String error;
 
   CheckPhoneCodeErrorState({required this.error});
+}
+
+//////////////////////////////////////
+class ResetPasswordLoadingState extends AuthStates {}
+
+class ResetPasswordSuccessState extends AuthStates {}
+
+class ResetPasswordErrorState extends AuthStates {
+  final String error;
+
+  ResetPasswordErrorState({
+    required this.error,
+  });
 }

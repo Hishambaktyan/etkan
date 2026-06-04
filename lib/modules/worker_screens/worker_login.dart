@@ -1,11 +1,10 @@
 import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_forgot_password.dart';
+import 'package:trying_homy/modules/user_screens/user_forgot_password.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
@@ -14,7 +13,6 @@ import '../../shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../../shared/compenents/components.dart';
 import '../../shared/cubits/worker_cubit/worker_cubit.dart';
-import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerLogin extends StatefulWidget {
   const WorkerLogin({super.key});
@@ -33,16 +31,19 @@ class _WorkerLoginState extends State<WorkerLogin> {
       builder: (context, state) {
         AuthCubit authCubit = AuthCubit.get(context);
         return BlocConsumer<AuthCubit, AuthStates>(
-          listener: (context, state){
+          listener: (context, state) {
             if (state is LoginLoadingState) {
-             showLoadingDialog(context);
+              showLoadingDialog(context);
             }
             if (state is LoginSuccessState) {
               hideLoadingDialog(context);
               authCubit.workerLoginPhoneController.clear();
               authCubit.workerLoginPasswordController.clear();
               WorkerCubit.get(context).isWorkerDataLoaded = false;
-              moveAndReplace(context, const WorkerMainScreen(),);
+              moveAndReplace(
+                context,
+                const WorkerMainScreen(),
+              );
             }
             if (state is LoginErrorState) {
               hideLoadingDialog(context);
@@ -127,29 +128,39 @@ class _WorkerLoginState extends State<WorkerLogin> {
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w),
+                                    padding: EdgeInsetsDirectional.only(
+                                        start: 10.w, end: 10.w),
                                     child: Row(
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(7),
-                                          child: Container(
-                                            width: 40.r,
-                                            height: 40.r,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.1),
-                                              shape: BoxShape.circle,
-                                              border:  Border.all(
-                                                color: Colors.white.withOpacity(0.2),
+                                          child: InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(15.r),
+                                            onTap: () => Navigator.pop(context),
+                                            child: Container(
+                                              width: 42.w,
+                                              height: 42.h,
+                                              margin:
+                                                  EdgeInsetsDirectional.only(
+                                                      end: 10.w),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white
+                                                    .withOpacity(0.16),
+                                                borderRadius:
+                                                    BorderRadius.circular(15.r),
+                                                border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.12)),
                                               ),
-                                            ),
-                                            child: InkWell(
-                                              borderRadius: BorderRadius.circular(50.r),
-                                              splashColor: Colors.transparent,
-                                              highlightColor: Colors.transparent,
-                                              onTap: () => Navigator.pop(context),
-                                              child: const Icon(
-                                                CupertinoIcons.back,
+                                              child: Icon(
+                                                Icons
+                                                    .arrow_back_ios_new_rounded,
                                                 color: Colors.white,
+                                                size: 18.sp,
                                               ),
                                             ),
                                           ),
@@ -211,7 +222,8 @@ class _WorkerLoginState extends State<WorkerLogin> {
                       child: Container(
                         height: 450.h,
                         width: double.infinity,
-                        padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
+                        padding: EdgeInsetsDirectional.symmetric(
+                            horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
                           color: appCubit.isDark ? darkBgColor : bgColor,
                           borderRadius: BorderRadius.only(
@@ -246,9 +258,9 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                     cubit: appCubit,
                                     text: 'كلمة المرور',
                                     prefixIcon: 'assets/lock.svg',
-                                    errorMes:
-                                        'كلمة المرور يجب ان لا تكون فارغ',
-                                    controller: authCubit.workerLoginPasswordController,
+                                    errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
+                                    controller:
+                                        authCubit.workerLoginPasswordController,
                                     type: TextInputType.visiblePassword,
                                     isPassword: authCubit.isPassword,
                                     isSuffixIcon: true,
@@ -260,8 +272,12 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                   alignment: AlignmentDirectional.centerStart,
                                   child: TextButton(
                                     onPressed: () {
-                                      move(context,
-                                          const WorkerForgotPassword());
+                                      move(
+                                        context,
+                                        const UserForgotPassword(
+                                          userType: 'provider',
+                                        ),
+                                      );
                                     },
                                     child: Text(
                                       'نسيت كلمة المرور؟',
@@ -275,17 +291,21 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                 ),
                                 SizedBox(height: 20.h),
                                 defaultButton(
-                                        onPressed: () async {
-                                          if (formKey.currentState!.validate()) {
-                                            await authCubit.loginUser(
-                                                phone: authCubit.workerLoginPhoneController.text.trim(),
-                                                password: authCubit.workerLoginPasswordController.text.trim(),
-                                                requiredRole: 'provider'
-                                            );
-                                          }
-                                        },
-                                        text: 'دخول',
-                                        height: 50.h),
+                                    onPressed: () async {
+                                      if (formKey.currentState!.validate()) {
+                                        await authCubit.loginUser(
+                                            phone: authCubit
+                                                .workerLoginPhoneController.text
+                                                .trim(),
+                                            password: authCubit
+                                                .workerLoginPasswordController
+                                                .text
+                                                .trim(),
+                                            requiredRole: 'provider');
+                                      }
+                                    },
+                                    text: 'دخول',
+                                    height: 50.h),
                                 SizedBox(height: 20.h),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

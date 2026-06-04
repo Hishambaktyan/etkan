@@ -37,8 +37,14 @@ class _UserSignUpState extends State<UserSignUp> {
             }
             if (state is SendPhoneCodeSuccessState) {
               hideLoadingDialog(context);
-              showSnackBar(Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
-              move(context, VerifiedPhone(phone: state.phone, userType: state.userType,),
+              showSnackBar(
+                  Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
+              move(
+                context,
+                VerifiedPhone(
+                  phone: state.phone,
+                  userType: state.userType,
+                ),
               );
             }
             if (state is SendPhoneCodeErrorState) {
@@ -193,8 +199,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                   text: 'كلمة المرور',
                                   prefixIcon: 'assets/lock.svg',
                                   errorMes: 'كلمة المرور يجب ان لا تكون فارغة',
-                                  controller:
-                                      authCubit.userPasswordController,
+                                  controller: authCubit.userPasswordController,
                                   type: TextInputType.visiblePassword,
                                   isPassword: isPassword,
                                   isSuffixIcon: true,
@@ -209,18 +214,20 @@ class _UserSignUpState extends State<UserSignUp> {
                                   },
                                 ),
                                 SizedBox(height: 20.h),
-                                 defaultButton(
-                                        onPressed: () async {
-                                          if (userSignupFormKey.currentState!.validate()) {
-                                            authCubit.requestCode(
-                                                phone: authCubit.userPhoneController.text.trim(),
-                                                userType: 'user'
-                                            );
-                                          }
-                                        },
-                                        text: 'تسجيل',
-                                        height: 50.h,
-                                      ),
+                                defaultButton(
+                                  onPressed: () async {
+                                    if (userSignupFormKey.currentState!
+                                        .validate()) {
+                                      authCubit.requestCode(
+                                          phone: authCubit
+                                              .userPhoneController.text
+                                              .trim(),
+                                          userType: 'user');
+                                    }
+                                  },
+                                  text: 'تسجيل',
+                                  height: 50.h,
+                                ),
                                 SizedBox(height: 10.h),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

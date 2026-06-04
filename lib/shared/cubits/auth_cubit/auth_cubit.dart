@@ -10,7 +10,6 @@ import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
-
   AuthCubit() : super(AuthInitSatate());
 
   static AuthCubit get(context) => BlocProvider.of(context);
@@ -21,7 +20,8 @@ class AuthCubit extends Cubit<AuthStates> {
   }
 
   bool isPassword = true;
-  String get suffixIcon => isPassword ? 'assets/eye.svg' : 'assets/eye-slash.svg';
+  String get suffixIcon =>
+      isPassword ? 'assets/eye.svg' : 'assets/eye-slash.svg';
 
   String generateCode() {
     final random = Random();
@@ -31,65 +31,123 @@ class AuthCubit extends Cubit<AuthStates> {
   Future<void> requestCode({
     required String phone,
     required String userType,
-})
-  async{
-    try{
+    String purpose = 'signup',
+  }) async {
+    try {
       emit(SendPhoneCodeLoadingState());
-      final code = generateCode();
-      final now = DateTime.now();
+
+      final String formattedPhone = phone.trim();
+
+      if (formattedPhone.isEmpty) {
+        emit(SendPhoneCodeErrorState(
+          error: 'يرجى إدخال رقم الهاتف',
+        ));
+        return;
+      }
+
+      // في حالة نسيان كلمة المرور، نتأكد أولًا أن الحساب موجود
+      if (purpose == 'reset_password') {
+        final userQuery = await FirebaseFirestore.instance
+            .collection('users')
+            .where('phone', isEqualTo: formattedPhone)
+            .where('role', isEqualTo: userType)
+            .limit(1)
+            .get();
+
+        if (userQuery.docs.isEmpty) {
+          emit(SendPhoneCodeErrorState(
+            error: userType == 'provider'
+                ? 'لا يوجد حساب فني مسجل بهذا الرقم'
+                : 'لا يوجد حساب مستخدم مسجل بهذا الرقم',
+          ));
+          return;
+        }
+      }
+
+      final String code = generateCode();
+      final DateTime now = DateTime.now();
 
       await FirebaseFirestore.instance.collection('verification_requests').add({
-        'clientPhone': phone,
+        'clientPhone': formattedPhone,
         'code': code,
+        'userType': userType,
+        'purpose': purpose,
         'status': 'pending',
         'sentByAdmin': false,
         'verified': false,
+        'used': false,
         'createdAt': Timestamp.fromDate(now),
-        'expiresAt': Timestamp.fromDate(now.add(const Duration(minutes: 10))),
+        'expiresAt': Timestamp.fromDate(
+          now.add(const Duration(minutes: 10)),
+        ),
         'sentAt': null,
       });
 
-      emit(SendPhoneCodeSuccessState(phone: phone,userType: userType));
-    }catch(e){
+      emit(SendPhoneCodeSuccessState(
+        phone: formattedPhone,
+        userType: userType,
+      ));
+    } catch (e) {
       emit(SendPhoneCodeErrorState(error: e.toString()));
     }
-}
+  }
 
   Future<bool> checkCode({
     required String phone,
     required String code,
     required String userType,
-  })
-  async {
+    String purpose = 'signup',
+  }) async {
     emit(CheckPhoneCodeLoadingState());
 
     try {
       final query = await FirebaseFirestore.instance
           .collection('verification_requests')
-          .where('clientPhone', isEqualTo: phone)
-          .where('code', isEqualTo: code)
+          .where('clientPhone', isEqualTo: phone.trim())
+          .where('code', isEqualTo: code.trim())
           .where('verified', isEqualTo: false)
           .get();
 
-      if (query.docs.isEmpty) {
-        emit(CheckPhoneCodeErrorState(error: 'الكود غير صحيح'));
+      final matchingRequests = query.docs.where((doc) {
+        final data = doc.data();
+
+        final String requestPurpose = data['purpose']?.toString() ?? 'signup';
+
+        final String requestUserType = data['userType']?.toString() ?? userType;
+
+        return requestPurpose == purpose && requestUserType == userType;
+      }).toList();
+
+      if (matchingRequests.isEmpty) {
+        emit(CheckPhoneCodeErrorState(
+          error: 'الكود غير صحيح',
+        ));
         return false;
       }
 
-      final doc = query.docs.first;
-      final expiresAt = doc['expiresAt'] as Timestamp;
+      final doc = matchingRequests.first;
+      final data = doc.data();
 
-      if (expiresAt.toDate().isBefore(DateTime.now())) {
-        emit(CheckPhoneCodeErrorState(error: 'انتهت صلاحية الكود'));
+      final Timestamp? expiresAt = data['expiresAt'] as Timestamp?;
+
+      if (expiresAt == null || expiresAt.toDate().isBefore(DateTime.now())) {
+        emit(CheckPhoneCodeErrorState(
+          error: 'انتهت صلاحية الكود',
+        ));
         return false;
       }
 
       await doc.reference.update({
         'verified': true,
         'status': 'verified',
+        'verifiedAt': FieldValue.serverTimestamp(),
       });
 
-      emit(CheckPhoneCodeSuccessState(userType: userType,phone: phone));
+      emit(CheckPhoneCodeSuccessState(
+        userType: userType,
+        phone: phone.trim(),
+      ));
+
       return true;
     } catch (e) {
       emit(CheckPhoneCodeErrorState(error: e.toString()));
@@ -101,21 +159,15 @@ class AuthCubit extends Cubit<AuthStates> {
   var userPasswordController = TextEditingController();
   var userPhoneController = TextEditingController();
 
-
-  Future<void> signUpUser({
-    required String name,
-    required String phone,
-    required String password
-})
-  async {
+  Future<void> signUpUser(
+      {required String name,
+      required String phone,
+      required String password}) async {
     try {
       emit(UserSignUpLoadingState());
 
       final formattedPhone = phone.trim();
-      final uid = FirebaseFirestore.instance
-          .collection('users')
-          .doc()
-          .id;
+      final uid = FirebaseFirestore.instance.collection('users').doc().id;
 
       final existingUser = await FirebaseFirestore.instance
           .collection('users')
@@ -156,13 +208,11 @@ class AuthCubit extends Cubit<AuthStates> {
   var workerAddController = TextEditingController();
   var workerPhoneController = TextEditingController();
 
-
   Future<void> workerSignUpUser({
-      required String name,
-      required String phone,
-      required String password,
-})
-  async {
+    required String name,
+    required String phone,
+    required String password,
+  }) async {
     try {
       emit(WorkerSignUpLoadingState());
 
@@ -209,11 +259,99 @@ class AuthCubit extends Cubit<AuthStates> {
       await CacheHelper.saveData(key: 'role', value: 'provider');
 
       emit(WorkerSignUpSuccessState());
-    }  catch (e) {
+    } catch (e) {
       emit(WorkerSignUpErrorState(error: e.toString()));
     }
   }
 
+  Future<void> resetPassword({
+    required String phone,
+    required String userType,
+    required String newPassword,
+  }) async {
+    try {
+      emit(ResetPasswordLoadingState());
+
+      final String formattedPhone = phone.trim();
+      final String formattedPassword = newPassword.trim();
+
+      if (formattedPassword.length < 6) {
+        emit(ResetPasswordErrorState(
+          error: 'كلمة المرور يجب أن تحتوي على 6 أحرف أو أرقام على الأقل',
+        ));
+        return;
+      }
+
+      final verificationQuery = await FirebaseFirestore.instance
+          .collection('verification_requests')
+          .where('clientPhone', isEqualTo: formattedPhone)
+          .get();
+
+      QueryDocumentSnapshot<Map<String, dynamic>>? validRequest;
+
+      for (final doc in verificationQuery.docs) {
+        final data = doc.data();
+
+        final Timestamp? expiresAt = data['expiresAt'] as Timestamp?;
+
+        final bool isValid = data['purpose'] == 'reset_password' &&
+            data['userType'] == userType &&
+            data['verified'] == true &&
+            data['used'] != true &&
+            expiresAt != null &&
+            expiresAt.toDate().isAfter(DateTime.now());
+
+        if (isValid) {
+          validRequest = doc;
+          break;
+        }
+      }
+
+      final requestDoc = validRequest;
+
+      if (requestDoc == null) {
+        emit(ResetPasswordErrorState(
+          error: 'يجب التحقق من رقم الهاتف أولًا',
+        ));
+        return;
+      }
+
+      final userQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: formattedPhone)
+          .where('role', isEqualTo: userType)
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isEmpty) {
+        emit(ResetPasswordErrorState(
+          error: 'لم يتم العثور على الحساب',
+        ));
+        return;
+      }
+
+      final userDoc = userQuery.docs.first;
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.update(userDoc.reference, {
+        'password': formattedPassword,
+        'passwordUpdatedAt': FieldValue.serverTimestamp(),
+      });
+
+      batch.update(requestDoc.reference, {
+        'used': true,
+        'status': 'completed',
+        'usedAt': FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
+
+      emit(ResetPasswordSuccessState());
+    } catch (e) {
+      emit(ResetPasswordErrorState(error: e.toString()));
+    }
+  }
 
   Future<String> uploadImageToCloudinary(String imagePath) async {
     final dio = Dio();
@@ -241,8 +379,7 @@ class AuthCubit extends Cubit<AuthStates> {
     required List<String> experiences,
     required List<String> previousWorks,
     required String profileImage,
-  })
-  async {
+  }) async {
     try {
       emit(CompleteWorkerProfileLoadingState());
 
@@ -263,7 +400,9 @@ class AuthCubit extends Cubit<AuthStates> {
       final uid = CacheHelper.getData(key: 'uid');
 
       if (uid == null || uid.toString().isEmpty) {
-        emit(CompleteWorkerProfileErrorState(error: 'تعذر العثور على معرف المستخدم',));
+        emit(CompleteWorkerProfileErrorState(
+          error: 'تعذر العثور على معرف المستخدم',
+        ));
         return;
       }
 
@@ -294,8 +433,7 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String password,
     required String requiredRole,
-  })
-  async {
+  }) async {
     try {
       emit(LoginLoadingState());
 
@@ -352,10 +490,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final String? uid = CacheHelper.getData(key: 'uid');
 
       if (uid != null && uid.isNotEmpty) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .update({
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
           'token': '',
         });
       }
@@ -377,10 +512,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final String? uid = CacheHelper.getData(key: 'uid');
 
       if (uid != null && uid.isNotEmpty) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .delete();
+        await FirebaseFirestore.instance.collection('users').doc(uid).delete();
       }
 
       await CacheHelper.removeData(key: 'uid');
@@ -398,10 +530,7 @@ class AuthCubit extends Cubit<AuthStates> {
       String? token = await FirebaseMessaging.instance.getToken();
 
       if (token != null) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .set({
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
           'token': token,
           'tokenUpdatedAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
@@ -412,5 +541,4 @@ class AuthCubit extends Cubit<AuthStates> {
       print("خطأ أثناء حفظ الـ Token: ${e.toString()}");
     }
   }
-
 }

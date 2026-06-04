@@ -1,9 +1,9 @@
 import 'dart:ui';
- import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/select_user_type.dart';
 import 'package:trying_homy/modules/user_screens/user_forgot_password.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -13,7 +13,6 @@ import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../../shared/compenents/components.dart';
 import '../../layout/user_layout/user_main_screen.dart';
-import '../../shared/networks/local/cache_helper.dart';
 
 class UserLogin extends StatefulWidget {
   const UserLogin({super.key});
@@ -34,7 +33,7 @@ class _UserLoginState extends State<UserLogin> {
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
             if (state is LoginLoadingState) {
-            showLoadingDialog(context);
+              showLoadingDialog(context);
             }
             if (state is LoginSuccessState) {
               hideLoadingDialog(context);
@@ -125,29 +124,40 @@ class _UserLoginState extends State<UserLogin> {
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w),
+                                    padding: EdgeInsetsDirectional.only(
+                                        start: 10.w, end: 10.w),
                                     child: Row(
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(7),
-                                          child: Container(
-                                            width: 40.r,
-                                            height: 40.r,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.1),
-                                              shape: BoxShape.circle,
-                                              border:  Border.all(
-                                                color: Colors.white.withOpacity(0.2),
+                                          child: InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(15.r),
+                                            onTap: () => move(context,
+                                                const SelectUserType()),
+                                            child: Container(
+                                              width: 42.w,
+                                              height: 42.h,
+                                              margin:
+                                                  EdgeInsetsDirectional.only(
+                                                      end: 10.w),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white
+                                                    .withOpacity(0.16),
+                                                borderRadius:
+                                                    BorderRadius.circular(15.r),
+                                                border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.12)),
                                               ),
-                                            ),
-                                            child: InkWell(
-                                              borderRadius: BorderRadius.circular(50.r),
-                                              splashColor: Colors.transparent,
-                                              highlightColor: Colors.transparent,
-                                              onTap: () => Navigator.pop(context),
-                                              child: const Icon(
-                                                CupertinoIcons.back,
+                                              child: Icon(
+                                                Icons
+                                                    .arrow_back_ios_new_rounded,
                                                 color: Colors.white,
+                                                size: 18.sp,
                                               ),
                                             ),
                                           ),
@@ -209,7 +219,8 @@ class _UserLoginState extends State<UserLogin> {
                       child: Container(
                         height: 450.h,
                         width: double.infinity,
-                        padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
+                        padding: EdgeInsetsDirectional.symmetric(
+                            horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
                           color: appCubit.isDark ? darkBgColor : bgColor,
                           borderRadius: BorderRadius.only(
@@ -234,7 +245,8 @@ class _UserLoginState extends State<UserLogin> {
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
                                   errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
-                                  controller: authCubit.userLoginPhoneController,
+                                  controller:
+                                      authCubit.userLoginPhoneController,
                                   type: TextInputType.phone,
                                 ),
                                 SizedBox(height: 20.h),
@@ -243,7 +255,8 @@ class _UserLoginState extends State<UserLogin> {
                                     text: 'كلمة المرور',
                                     prefixIcon: 'assets/lock.svg',
                                     errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
-                                    controller: authCubit.userLoginPasswordController,
+                                    controller:
+                                        authCubit.userLoginPasswordController,
                                     type: TextInputType.visiblePassword,
                                     isPassword: authCubit.isPassword,
                                     isSuffixIcon: true,
@@ -255,8 +268,12 @@ class _UserLoginState extends State<UserLogin> {
                                   alignment: AlignmentDirectional.centerStart,
                                   child: TextButton(
                                     onPressed: () {
-                                      move(context,
-                                          const UserForgotPassword());
+                                      move(
+                                        context,
+                                        const UserForgotPassword(
+                                          userType: 'user',
+                                        ),
+                                      );
                                     },
                                     child: Text(
                                       'نسيت كلمة المرور؟',
@@ -269,18 +286,22 @@ class _UserLoginState extends State<UserLogin> {
                                   ),
                                 ),
                                 SizedBox(height: 20.h),
-                                 defaultButton(
-                                        onPressed: () async {
-                                          if (formKey.currentState!.validate()) {
-                                            await authCubit.loginUser(
-                                                phone: authCubit.userLoginPhoneController.text.trim(),
-                                                password: authCubit.userLoginPasswordController.text.trim(),
-                                                requiredRole: 'user'
-                                            );
-                                          }
-                                        },
-                                        text: 'دخول',
-                                        height: 50.h),
+                                defaultButton(
+                                    onPressed: () async {
+                                      if (formKey.currentState!.validate()) {
+                                        await authCubit.loginUser(
+                                            phone: authCubit
+                                                .userLoginPhoneController.text
+                                                .trim(),
+                                            password: authCubit
+                                                .userLoginPasswordController
+                                                .text
+                                                .trim(),
+                                            requiredRole: 'user');
+                                      }
+                                    },
+                                    text: 'دخول',
+                                    height: 50.h),
                                 SizedBox(height: 20.h),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

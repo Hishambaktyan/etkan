@@ -300,7 +300,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                               borderRadius: BorderRadiusDirectional.vertical(
                                   bottom: Radius.circular(15.r)),
                               child: Image.network(
-                                'https://i.pinimg.com/1200x/8a/ad/ab/8aadabe22db683b98c994d8557962e42.jpg',
+                                '${service['serviceImage'] ?? ''}',
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: 300.h,
