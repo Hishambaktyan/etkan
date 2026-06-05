@@ -204,50 +204,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsetsDirectional.symmetric(
-                              horizontal: 10.w, vertical: 6.h),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? lightDarkColor.withOpacity(0.92)
-                                : Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                isActive ? 'نشط' : 'معطل',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: isActive ? Colors.green : Colors.red,
-                                ),
-                              ),
-                              SizedBox(width: 10.w),
-                              SizedBox(
-                                height: 20.h,
-                                width: 30.w,
-                                child: Transform.scale(
-                                  scale: 0.8,
-                                  child: Switch.adaptive(
-                                    value: isActive,
-                                    activeColor: Colors.green,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isActive = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   SizedBox(height: 10.h),

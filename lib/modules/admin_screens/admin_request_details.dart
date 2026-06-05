@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
+import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
+import 'package:trying_homy/modules/admin_screens/admin_user_info.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
@@ -814,9 +816,10 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                               ),
                               SizedBox(height: 20.h),
                               defaultOutlinedButtonWithIcon(
-                                onPressed: () {
-                                  move(context, const WorkerProfile());
-                                },
+                                onPressed: () => move(
+                                  context,
+                                  AdminProviderInfo(provider: providerData),
+                                ),
                                 text: 'المزيد',
                                 fontSize: 13.sp,
                                 height: 45.h,
@@ -891,9 +894,10 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                               ),
                               SizedBox(height: 20.h),
                               defaultOutlinedButtonWithIcon(
-                                onPressed: () {
-                                  move(context, const WorkerProfile());
-                                },
+                                onPressed: () => move(
+                                  context,
+                                  AdminUserInfo(user: userData),
+                                ),
                                 text: 'المزيد',
                                 fontSize: 13.sp,
                                 height: 45.h,

@@ -106,10 +106,14 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                           const Spacer(),
                           Container(
                             padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 12.w, vertical: 6.h),
+                                horizontal: 12.w, vertical: 10.h),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(20.r),
+                              color: cubit.isDark ? Colors.black : Colors.white,
+                              borderRadius: BorderRadius.circular(15.r),
+                              border: Border.all(
+                                  color: cubit.isDark
+                                      ? Colors.white
+                                      : Colors.grey.shade300),
                             ),
                             child: Row(
                               children: [
