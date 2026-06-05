@@ -413,14 +413,14 @@ Widget headerWithSearch(
                     children: [
                       if (isLeading)
                         InkWell(
-                          highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
+                          highlightColor: Colors.transparent,
+                          borderRadius: BorderRadius.circular(15.r),
+                          onTap: () => Navigator.pop(context),
                           child: Container(
                             width: 42.w,
                             height: 42.h,
+                            margin: EdgeInsetsDirectional.only(end: 10.w),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.16),
@@ -429,14 +429,14 @@ Widget headerWithSearch(
                                   color: Colors.white.withOpacity(0.12)),
                             ),
                             child: Icon(
-                              CupertinoIcons.back,
-                              color: Theme.of(context).iconTheme.color,
-                              size: 24.r,
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white,
+                              size: 18.sp,
                             ),
                           ),
                         ),
                       SizedBox(
-                        width: 12.w,
+                        width: 5.w,
                       ),
                       Text(
                         title,
@@ -831,7 +831,10 @@ Widget buildButton({
                 : Colors.white.withOpacity(0.8)),
         borderRadius: BorderRadius.circular(15.r),
         border: Border.all(
-          color: Colors.white.withOpacity(0.6),
+          color: backgroundColor ??
+              (isDark
+                  ? Colors.white.withOpacity(0.8)
+                  : darkBgColor.withOpacity(0.8)),
           width: 1,
         ),
       ),
@@ -4748,27 +4751,6 @@ class UserWorkerProfileShimmer extends StatelessWidget {
             shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
             borderRadius: isCircle ? null : BorderRadius.circular(radius.r),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _headerShimmerBox({
-    required double height,
-    required double width,
-    double radius = 12,
-    bool isCircle = false,
-  }) {
-    return Shimmer.fromColors(
-      baseColor: Colors.white.withOpacity(0.25),
-      highlightColor: Colors.white.withOpacity(0.55),
-      child: Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
-          borderRadius: isCircle ? null : BorderRadius.circular(radius.r),
         ),
       ),
     );

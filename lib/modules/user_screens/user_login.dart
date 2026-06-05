@@ -135,7 +135,7 @@ class _UserLoginState extends State<UserLogin> {
                                             highlightColor: Colors.transparent,
                                             borderRadius:
                                                 BorderRadius.circular(15.r),
-                                            onTap: () => move(context,
+                                            onTap: () => moveAndReplace(context,
                                                 const SelectUserType()),
                                             child: Container(
                                               width: 42.w,

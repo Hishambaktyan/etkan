@@ -1,18 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/user_complete_request_info.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
-import '../images_view.dart';
 
 class UserServiceDetails extends StatefulWidget {
   final String category;
@@ -120,7 +116,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.only(top: 20.h, start: 10.w, end: 10.w),
+                      padding: EdgeInsetsDirectional.only(
+                          top: 20.h, start: 10.w, end: 10.w),
                       child: Padding(
                         padding: EdgeInsetsDirectional.all(7.w),
                         child: buildButton(

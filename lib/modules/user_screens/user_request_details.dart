@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
 import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
 import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -15,7 +12,6 @@ import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/cubits/user_cubit/user_cubit.dart';
 import '../../shared/styles/colors.dart';
-import '../images_view.dart';
 import '../the_chat.dart';
 
 class UserRequestDetails extends StatefulWidget {

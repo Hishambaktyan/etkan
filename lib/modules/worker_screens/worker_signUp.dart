@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/verified_phone.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login.dart';
@@ -21,7 +20,6 @@ class WorkerSignup extends StatefulWidget {
 }
 
 class _WorkerSignupState extends State<WorkerSignup> {
-
   var formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -36,8 +34,14 @@ class _WorkerSignupState extends State<WorkerSignup> {
             }
             if (state is SendPhoneCodeSuccessState) {
               hideLoadingDialog(context);
-              showSnackBar(Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
-              move(context, VerifiedPhone(phone: state.phone, userType: state.userType,),
+              showSnackBar(
+                  Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
+              move(
+                context,
+                VerifiedPhone(
+                  phone: state.phone,
+                  userType: state.userType,
+                ),
               );
             }
             if (state is SendPhoneCodeErrorState) {
@@ -59,13 +63,13 @@ class _WorkerSignupState extends State<WorkerSignup> {
                               begin: Alignment.topRight,
                               end: Alignment.bottomLeft,
                               colors: [
-                                mainColor.withOpacity(0.9),
-                                const Color(0xFF0F0F1E),
-                              ],
+                            mainColor.withOpacity(0.9),
+                            const Color(0xFF0F0F1E),
+                          ],
                               stops: const [
-                                0.0,
-                                0.8,
-                              ])),
+                            0.0,
+                            0.8,
+                          ])),
                       child: Stack(
                         children: [
                           Positioned(
@@ -178,7 +182,9 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   controller: authCubit.workerNameController,
                                   type: TextInputType.text,
                                 ),
-                                SizedBox(height: 15.0.h,),
+                                SizedBox(
+                                  height: 15.0.h,
+                                ),
                                 defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
@@ -187,14 +193,16 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   controller: authCubit.workerPhoneController,
                                   type: TextInputType.phone,
                                 ),
-                                SizedBox(height: 15.0.h,),
+                                SizedBox(
+                                  height: 15.0.h,
+                                ),
                                 defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'كلمة المرور',
                                   prefixIcon: 'assets/lock.svg',
                                   errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
                                   controller:
-                                  authCubit.workerPasswordController,
+                                      authCubit.workerPasswordController,
                                   type: TextInputType.visiblePassword,
                                   isPassword: authCubit.isPassword,
                                   isSuffixIcon: true,
@@ -202,15 +210,17 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   suffixPressed: () =>
                                       authCubit.changePasswordVisiability(),
                                 ),
-
-                                SizedBox(height: 20.h,),
-                                 defaultButton(
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                                defaultButton(
                                     onPressed: () async {
-                                      if(formKey.currentState!.validate()){
+                                      if (formKey.currentState!.validate()) {
                                         authCubit.requestCode(
-                                            phone: authCubit.workerPhoneController.text.trim(),
-                                            userType: 'provider'
-                                        );
+                                            phone: authCubit
+                                                .workerPhoneController.text
+                                                .trim(),
+                                            userType: 'provider');
                                       }
                                     },
                                     text: 'التالي',
@@ -228,8 +238,8 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                           color: Colors.grey),
                                     ),
                                     defaultTextButton(
-                                        onPressed: () => move(
-                                            context, const WorkerLogin()),
+                                        onPressed: () =>
+                                            move(context, const WorkerLogin()),
                                         text: 'سجل دخول')
                                   ],
                                 ),

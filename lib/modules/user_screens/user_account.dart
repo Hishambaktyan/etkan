@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/aboutApp_screen.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_edit_profile.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/notifications_screen.dart';
 import 'package:trying_homy/modules/privacy_policy_screen.dart';

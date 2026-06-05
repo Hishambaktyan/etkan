@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_edit_profile.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
 import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
@@ -19,7 +18,6 @@ import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 import '../aboutApp_screen.dart';
-import '../notifications_screen.dart';
 import '../on_boarding.dart';
 import '../privacy_policy_screen.dart';
 import '../terms_conditions_screen.dart';
@@ -195,17 +193,16 @@ class _WorkerAccountState extends State<WorkerAccount> {
             if (state is LogOutErrorState) {
               showSnackBar(Colors.red, state.error, context);
             }
-            if( state is DeleteUserAccLoadingState){
+            if (state is DeleteUserAccLoadingState) {
               showLoadingDialog(context);
             }
-            if( state is DeleteUserAccSuccessState){
+            if (state is DeleteUserAccSuccessState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.green, 'تم حسب حسابك بنجاح', context);
               moveAndReplace(context, const OnBoardingScreen());
               appCubit.changeIndex(0);
-
             }
-            if( state is DeleteUserAccErrorState){
+            if (state is DeleteUserAccErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
@@ -397,7 +394,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                                 icon: 'assets/delete.svg',
                                 iconColor: Colors.red,
                                 title: 'حذف الحساب',
-                                body: 'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+                                body:
+                                    'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
                                 cancelText: 'إلغاء',
                                 confirmText: 'حذف',
                                 onConfirm: () {

@@ -54,7 +54,7 @@ class _UserForgotPasswordState extends State<UserForgotPassword> {
 
               showSnackBar(
                 Colors.green,
-                'تم إنشاء رمز التحقق بنجاح',
+                'تم إرسال رمز التحقق الى رقم الهاتف ',
                 context,
               );
 
@@ -251,6 +251,10 @@ class _UserForgotPasswordState extends State<UserForgotPassword> {
                               defaultButton(
                                 onPressed: () {
                                   if (formKey.currentState!.validate()) {
+                                    // إغلاق الكيبورد قبل إرسال الطلب
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+
                                     authCubit.requestCode(
                                       phone: phoneController.text.trim(),
                                       userType: widget.userType,

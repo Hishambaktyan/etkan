@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/select_user_type.dart';
 import 'package:trying_homy/modules/user_screens/user_forgot_password.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
@@ -139,7 +140,8 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                             highlightColor: Colors.transparent,
                                             borderRadius:
                                                 BorderRadius.circular(15.r),
-                                            onTap: () => Navigator.pop(context),
+                                            onTap: () => moveAndReplace(context,
+                                                const SelectUserType()),
                                             child: Container(
                                               width: 42.w,
                                               height: 42.h,

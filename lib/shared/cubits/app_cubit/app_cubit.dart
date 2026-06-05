@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:trying_homy/modules/worker_screens/worker_services_list.dart';
 import '../../../modules/user_screens/user_requests_list.dart';
 import '../../../modules/user_screens/user_categories.dart';
@@ -13,10 +11,6 @@ import '../../../modules/worker_screens/worker_account.dart';
 import '../../../modules/worker_screens/worker_requests_list.dart';
 import '../../../modules/worker_screens/worker_chats.dart';
 import '../../../modules/worker_screens/worker_home.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:googleapis_auth/auth_io.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import '../../networks/local/cache_helper.dart';
 import 'app_states.dart';
 

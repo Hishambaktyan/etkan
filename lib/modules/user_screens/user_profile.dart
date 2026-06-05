@@ -30,7 +30,6 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-
   Widget buildSectionHeader({
     required String title,
     required Widget icon,
@@ -232,7 +231,7 @@ class _UserProfileState extends State<UserProfile> {
                         ),
                       ),
                       SizedBox(
-                        width: 12.w,
+                        width: 5.w,
                       ),
                       Text(
                         'الحساب',
@@ -537,7 +536,8 @@ class _UserProfileState extends State<UserProfile> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-        Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? widget.user;
+        Map<String, dynamic> user =
+            appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? widget.user;
         return BlocBuilder<UserCubit, UserStates>(
           builder: (context, bookingState) {
             UserCubit userCubit = UserCubit.get(context);
@@ -556,9 +556,17 @@ class _UserProfileState extends State<UserProfile> {
                     body: SingleChildScrollView(
                       child: Column(
                         children: [
-                          buildHeader(appCubit: appCubit, user: user,),
+                          buildHeader(
+                            appCubit: appCubit,
+                            user: user,
+                          ),
                           Padding(
-                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
+                            padding: EdgeInsetsDirectional.only(
+                              start: 10.w,
+                              end: 10.w,
+                              top: 20.h,
+                              bottom: 20.h,
+                            ),
                             child: Column(
                               children: [
                                 buildQuickStats(

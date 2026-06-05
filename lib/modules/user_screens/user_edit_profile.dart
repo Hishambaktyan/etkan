@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -282,7 +281,8 @@ class _UserEditProfileState extends State<UserEditProfile> {
                             UserCubit.get(context).editUserData(
                               name: nameController.text.trim(),
                               profileImagePath: profileImage,
-                              oldProfileImage: widget.user['profileImage'] ?? '',
+                              oldProfileImage:
+                                  widget.user['profileImage'] ?? '',
                             );
                           },
                           text: 'حفظ التعديلات',

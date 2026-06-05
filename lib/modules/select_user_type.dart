@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/admin_screens/admin_home_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_login.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
@@ -55,7 +54,8 @@ class _SelectUserTypeState extends State<SelectUserType> {
                       buildUserTypeCard(
                         index: 0,
                         title: 'أنا عميل',
-                        description: 'أبحث عن خدمات مهنية وأريد توظيف خبراء لمشاريعي القادمة.',
+                        description:
+                            'أبحث عن خدمات مهنية وأريد توظيف خبراء لمشاريعي القادمة.',
                         image: 'assets/client.jpg',
                         icon: Icons.person_search_rounded,
                         appCubit: appCubit,
@@ -64,7 +64,8 @@ class _SelectUserTypeState extends State<SelectUserType> {
                       buildUserTypeCard(
                         index: 1,
                         title: 'أنا فني',
-                        description: 'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
+                        description:
+                            'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
                         image: 'assets/provider.jfif',
                         icon: Icons.build_circle_rounded,
                         appCubit: appCubit,
@@ -121,7 +122,11 @@ class _SelectUserTypeState extends State<SelectUserType> {
           color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
-            color: isSelected ? mainColor : (appCubit.isDark ? const Color(0xFF30363D) : Colors.transparent),
+            color: isSelected
+                ? mainColor
+                : (appCubit.isDark
+                    ? const Color(0xFF30363D)
+                    : Colors.transparent),
             width: 2,
           ),
           boxShadow: isSelected ? [] : (appCubit.isDark ? [] : blueShadow),
@@ -184,7 +189,9 @@ class _SelectUserTypeState extends State<SelectUserType> {
                   ),
                 ),
                 Icon(
-                  isSelected ? Icons.check_circle_rounded : Icons.radio_button_off_rounded,
+                  isSelected
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_off_rounded,
                   color: isSelected ? mainColor : Colors.grey.shade300,
                   size: 24.sp,
                 ),
