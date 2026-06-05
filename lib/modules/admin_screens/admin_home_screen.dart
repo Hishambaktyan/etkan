@@ -8,6 +8,7 @@ import 'package:trying_homy/modules/admin_screens/admin_request_details.dart';
 import 'package:trying_homy/modules/admin_screens/admin_services_list.dart';
 import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
 import 'package:trying_homy/modules/admin_screens/admin_requests_list.dart';
+import 'package:trying_homy/modules/admin_screens/admin_user_info.dart';
 import 'package:trying_homy/modules/admin_screens/manage_dept.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -1041,11 +1042,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold,
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .textTheme
-                                                                        .bodyLarge!
-                                                                        .color,
+                                                                    color: appCubit.isDark
+                                                                        ? Colors
+                                                                            .white
+                                                                        : Colors
+                                                                            .black,
                                                                   ),
                                                                 ),
                                                                 Text(
@@ -1272,8 +1273,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold,
-                                                                    color: Colors
-                                                                        .black,
+                                                                    color: appCubit.isDark
+                                                                        ? Colors
+                                                                            .white
+                                                                        : Colors
+                                                                            .black,
                                                                   ),
                                                                 ),
                                                               ),
@@ -1486,7 +1490,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     itemBuilder: (context, index) {
                                       final user = adminCubit.users[index];
                                       return InkWell(
-                                        onTap: () {},
+                                        onTap: () => move(
+                                            context, AdminUserInfo(user: user)),
                                         splashColor: Colors.transparent,
                                         highlightColor: Colors.transparent,
                                         borderRadius:

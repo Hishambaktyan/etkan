@@ -9,6 +9,7 @@ import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/admin_cubit/admin_cubit.dart';
 import '../../shared/cubits/admin_cubit/admin_states.dart';
+import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/styles/colors.dart';
 
 class AdminServicesList extends StatefulWidget {
@@ -23,14 +24,15 @@ class _AdminServicesListState extends State<AdminServicesList> {
     required String title,
     required String value,
     required String icon,
+    required AppCubit appCubit,
   }) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(15.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow: blueShadow,
+          boxShadow: appCubit.isDark ? [] : blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +57,7 @@ class _AdminServicesListState extends State<AdminServicesList> {
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: appCubit.isDark ? Colors.white : Colors.black,
                   ),
                 ),
               ],
@@ -68,7 +70,7 @@ class _AdminServicesListState extends State<AdminServicesList> {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey,
+                color: appCubit.isDark ? darkSubTextColor : Colors.grey,
               ),
             ),
           ],
@@ -85,9 +87,12 @@ class _AdminServicesListState extends State<AdminServicesList> {
 
   @override
   Widget build(BuildContext context) {
+    final AppCubit appCubit = context.watch<AppCubit>();
+
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
+          backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
           body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
@@ -112,14 +117,16 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                 buildStatCard(
                                     title: 'الخدمات المفعلة',
                                     value: '2',
-                                    icon: 'assets/all.svg'),
+                                    icon: 'assets/all.svg',
+                                    appCubit: appCubit),
                                 SizedBox(
                                   width: 10.w,
                                 ),
                                 buildStatCard(
                                     title: 'الخدمات المعطلة',
                                     value: '2',
-                                    icon: 'assets/dis.svg'),
+                                    icon: 'assets/dis.svg',
+                                    appCubit: appCubit),
                               ],
                             ),
                           ),
@@ -148,9 +155,12 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                 child: Container(
                                   width: 300.w,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: appCubit.isDark
+                                        ? lightDarkColor
+                                        : Colors.white,
                                     borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow: blueShadow,
+                                    boxShadow:
+                                        appCubit.isDark ? [] : blueShadow,
                                   ),
                                   child: Column(
                                     crossAxisAlignment:
@@ -170,12 +180,17 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                                       stackTrace) =>
                                                   Container(
                                                 height: 150.h,
-                                                color: Colors.grey.shade200,
-                                                child: const Center(
+                                                color: appCubit.isDark
+                                                    ? darkBgColor
+                                                    : Colors.grey.shade200,
+                                                child: Center(
                                                   child: Icon(
-                                                      Icons
-                                                          .image_not_supported_outlined,
-                                                      color: Colors.grey),
+                                                    Icons
+                                                        .image_not_supported_outlined,
+                                                    color: appCubit.isDark
+                                                        ? darkSubTextColor
+                                                        : Colors.grey,
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -221,8 +236,11 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                                       horizontal: 10.w,
                                                       vertical: 4.h),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.white
-                                                        .withOpacity(0.7),
+                                                    color: appCubit.isDark
+                                                        ? lightDarkColor
+                                                            .withOpacity(0.85)
+                                                        : Colors.white
+                                                            .withOpacity(0.7),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10.r),
@@ -256,7 +274,9 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14.sp,
-                                                color: Colors.black,
+                                                color: appCubit.isDark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                               ),
                                             ),
                                             Row(
@@ -273,7 +293,9 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                                   child: Text(
                                                     '${service['rate']}',
                                                     style: TextStyle(
-                                                      color: Colors.grey,
+                                                      color: appCubit.isDark
+                                                          ? darkSubTextColor
+                                                          : Colors.grey,
                                                       fontSize: 12.sp,
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -284,8 +306,9 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                                 Icon(
                                                   Icons
                                                       .arrow_forward_ios_rounded,
-                                                  color: mainColor
-                                                      .withOpacity(0.2),
+                                                  color: mainColor.withOpacity(
+                                                    appCubit.isDark ? 0.5 : 0.2,
+                                                  ),
                                                   size: 14.sp,
                                                 ),
                                               ],
@@ -294,8 +317,9 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                             Container(
                                               padding: EdgeInsets.all(8.r),
                                               decoration: BoxDecoration(
-                                                color:
-                                                    mainColor.withOpacity(0.05),
+                                                color: mainColor.withOpacity(
+                                                  appCubit.isDark ? 0.12 : 0.05,
+                                                ),
                                                 borderRadius:
                                                     BorderRadius.circular(15.r),
                                               ),
@@ -324,11 +348,10 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                                             fontSize: 11.sp,
                                                             fontWeight:
                                                                 FontWeight.bold,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyLarge!
-                                                                .color,
+                                                            color: appCubit
+                                                                    .isDark
+                                                                ? Colors.white
+                                                                : Colors.black,
                                                           ),
                                                         ),
                                                         Text(
@@ -339,7 +362,10 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                                               .ellipsis,
                                                           style: TextStyle(
                                                             fontSize: 9.sp,
-                                                            color: Colors.grey,
+                                                            color: appCubit
+                                                                    .isDark
+                                                                ? darkSubTextColor
+                                                                : Colors.grey,
                                                           ),
                                                         ),
                                                       ],

@@ -3230,17 +3230,30 @@ class AdminHomeShimmer extends StatelessWidget {
 class AdminCategoriesShimmer extends StatelessWidget {
   const AdminCategoriesShimmer({super.key});
 
-  Color get baseColor => const Color(0xFFE3F2FD);
+  Color baseColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  }
 
-  Color get highlightColor => const Color(0xFFF8FCFF);
+  Color highlightColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  }
 
-  Color get containerColor => const Color(0xFFF2F9FF);
+  Color containerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  }
+
+  Color innerContainerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final AppCubit appCubit = AppCubit.get(context);
+
     return Column(
       children: [
         _shimmerBox(
+          cubit: appCubit,
           height: 80.h,
           width: double.infinity,
           margin: EdgeInsetsDirectional.all(10.w),
@@ -3262,7 +3275,7 @@ class AdminCategoriesShimmer extends StatelessWidget {
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
-                  color: containerColor,
+                  color: containerColor(appCubit),
                   borderRadius: BorderRadius.circular(25.r),
                 ),
                 child: Column(
@@ -3275,13 +3288,14 @@ class AdminCategoriesShimmer extends StatelessWidget {
                             width: double.infinity,
                             padding: EdgeInsetsDirectional.all(15.r),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEAF4FF),
+                              color: innerContainerColor(appCubit),
                               borderRadius: BorderRadius.vertical(
                                 top: Radius.circular(25.r),
                               ),
                             ),
                             child: Center(
                               child: _shimmerBox(
+                                cubit: appCubit,
                                 width: 85.w,
                                 height: 85.h,
                                 radius: 20,
@@ -3292,6 +3306,7 @@ class AdminCategoriesShimmer extends StatelessWidget {
                             top: 10.h,
                             end: 10.w,
                             child: _shimmerBox(
+                              cubit: appCubit,
                               width: 32.w,
                               height: 32.h,
                               radius: 50,
@@ -3309,12 +3324,14 @@ class AdminCategoriesShimmer extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _shimmerBox(
+                            cubit: appCubit,
                             width: 100.w,
                             height: 14.h,
                             radius: 8,
                           ),
                           SizedBox(height: 8.h),
                           _shimmerBox(
+                            cubit: appCubit,
                             width: 25.w,
                             height: 3.h,
                             radius: 10,
@@ -3333,6 +3350,7 @@ class AdminCategoriesShimmer extends StatelessWidget {
   }
 
   Widget _shimmerBox({
+    required AppCubit cubit,
     required double height,
     required double width,
     double radius = 12,
@@ -3341,8 +3359,8 @@ class AdminCategoriesShimmer extends StatelessWidget {
     return Container(
       margin: margin,
       child: Shimmer.fromColors(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
+        baseColor: baseColor(cubit),
+        highlightColor: highlightColor(cubit),
         child: Container(
           height: height,
           width: width,
@@ -3357,25 +3375,29 @@ class AdminCategoriesShimmer extends StatelessWidget {
 }
 
 class AdminUsersShimmer extends StatelessWidget {
-  final bool isDark;
+  const AdminUsersShimmer({super.key});
 
-  const AdminUsersShimmer({super.key, required this.isDark});
+  Color baseColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  }
 
-  Color get baseColor =>
-      isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  Color highlightColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  }
 
-  Color get highlightColor =>
-      isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
-
-  Color get containerColor =>
-      isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  Color containerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final AppCubit appCubit = AppCubit.get(context);
+
     return SingleChildScrollView(
       child: Column(
         children: [
           _shimmerBox(
+            cubit: appCubit,
             height: 55.h,
             width: double.infinity,
             margin: EdgeInsetsDirectional.all(15.w),
@@ -3398,13 +3420,14 @@ class AdminUsersShimmer extends StatelessWidget {
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
-                  color: containerColor,
+                  color: containerColor(appCubit),
                   borderRadius: BorderRadius.circular(25.r),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _shimmerBox(
+                      cubit: appCubit,
                       height: 120.h,
                       width: double.infinity,
                       radius: 25,
@@ -3419,11 +3442,13 @@ class AdminUsersShimmer extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _shimmerBox(
+                            cubit: appCubit,
                             height: 12.h,
                             width: double.infinity,
                           ),
                           SizedBox(height: 12.h),
                           _shimmerBox(
+                            cubit: appCubit,
                             height: 35.h,
                             width: double.infinity,
                             radius: 12,
@@ -3442,6 +3467,7 @@ class AdminUsersShimmer extends StatelessWidget {
   }
 
   Widget _shimmerBox({
+    required AppCubit cubit,
     required double height,
     required double width,
     double radius = 12,
@@ -3450,8 +3476,8 @@ class AdminUsersShimmer extends StatelessWidget {
     return Container(
       margin: margin,
       child: Shimmer.fromColors(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
+        baseColor: baseColor(cubit),
+        highlightColor: highlightColor(cubit),
         child: Container(
           height: height,
           width: width,
@@ -3468,20 +3494,31 @@ class AdminUsersShimmer extends StatelessWidget {
 class AdminServicesShimmer extends StatelessWidget {
   const AdminServicesShimmer({super.key});
 
-  Color get baseColor => const Color(0xFFE3F2FD);
+  Color baseColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  }
 
-  Color get highlightColor => const Color(0xFFF8FCFF);
+  Color highlightColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  }
 
-  Color get containerColor => const Color(0xFFF2F9FF);
+  Color containerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  }
 
-  Color get innerContainerColor => const Color(0xFFEAF4FF);
+  Color innerContainerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final AppCubit appCubit = AppCubit.get(context);
+
     return SingleChildScrollView(
       child: Column(
         children: [
           _shimmerBox(
+            cubit: appCubit,
             height: 55.h,
             width: double.infinity,
             margin: EdgeInsetsDirectional.all(15.w),
@@ -3499,7 +3536,7 @@ class AdminServicesShimmer extends StatelessWidget {
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
-                  color: containerColor,
+                  color: containerColor(appCubit),
                   borderRadius: BorderRadius.circular(25.r),
                 ),
                 child: Column(
@@ -3508,6 +3545,7 @@ class AdminServicesShimmer extends StatelessWidget {
                     Stack(
                       children: [
                         _shimmerBox(
+                          cubit: appCubit,
                           height: 150.h,
                           width: double.infinity,
                           radius: 25,
@@ -3516,6 +3554,7 @@ class AdminServicesShimmer extends StatelessWidget {
                           bottom: 12.h,
                           end: 12.w,
                           child: _shimmerBox(
+                            cubit: appCubit,
                             width: 70.w,
                             height: 28.h,
                             radius: 15,
@@ -3525,6 +3564,7 @@ class AdminServicesShimmer extends StatelessWidget {
                           top: 12.h,
                           start: 12.w,
                           child: _shimmerBox(
+                            cubit: appCubit,
                             width: 80.w,
                             height: 25.h,
                             radius: 10,
@@ -3538,6 +3578,7 @@ class AdminServicesShimmer extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _shimmerBox(
+                            cubit: appCubit,
                             height: 14.h,
                             width: double.infinity,
                           ),
@@ -3545,11 +3586,13 @@ class AdminServicesShimmer extends StatelessWidget {
                           Row(
                             children: [
                               _shimmerBox(
+                                cubit: appCubit,
                                 width: 70.w,
                                 height: 12.h,
                               ),
                               const Spacer(),
                               _shimmerBox(
+                                cubit: appCubit,
                                 width: 15.w,
                                 height: 15.h,
                                 radius: 20,
@@ -3560,12 +3603,13 @@ class AdminServicesShimmer extends StatelessWidget {
                           Container(
                             padding: EdgeInsets.all(8.r),
                             decoration: BoxDecoration(
-                              color: innerContainerColor,
+                              color: innerContainerColor(appCubit),
                               borderRadius: BorderRadius.circular(15.r),
                             ),
                             child: Row(
                               children: [
                                 _shimmerBox(
+                                  cubit: appCubit,
                                   width: 35.w,
                                   height: 35.h,
                                   radius: 30,
@@ -3577,11 +3621,13 @@ class AdminServicesShimmer extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       _shimmerBox(
+                                        cubit: appCubit,
                                         height: 10.h,
                                         width: double.infinity,
                                       ),
                                       SizedBox(height: 6.h),
                                       _shimmerBox(
+                                        cubit: appCubit,
                                         height: 8.h,
                                         width: 100.w,
                                       ),
@@ -3605,6 +3651,7 @@ class AdminServicesShimmer extends StatelessWidget {
   }
 
   Widget _shimmerBox({
+    required AppCubit cubit,
     required double height,
     required double width,
     double radius = 12,
@@ -3613,8 +3660,8 @@ class AdminServicesShimmer extends StatelessWidget {
     return Container(
       margin: margin,
       child: Shimmer.fromColors(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
+        baseColor: baseColor(cubit),
+        highlightColor: highlightColor(cubit),
         child: Container(
           height: height,
           width: width,
@@ -3631,20 +3678,31 @@ class AdminServicesShimmer extends StatelessWidget {
 class AdminRequestsShimmer extends StatelessWidget {
   const AdminRequestsShimmer({super.key});
 
-  Color get baseColor => const Color(0xFFE3F2FD);
+  Color baseColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  }
 
-  Color get highlightColor => const Color(0xFFF8FCFF);
+  Color highlightColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  }
 
-  Color get containerColor => const Color(0xFFF2F9FF);
+  Color containerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  }
 
-  Color get innerContainerColor => const Color(0xFFEAF4FF);
+  Color innerContainerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final AppCubit appCubit = AppCubit.get(context);
+
     return SingleChildScrollView(
       child: Column(
         children: [
           _shimmerBox(
+            cubit: appCubit,
             height: 55.h,
             width: double.infinity,
             margin: EdgeInsetsDirectional.all(15.w),
@@ -3664,6 +3722,7 @@ class AdminRequestsShimmer extends StatelessWidget {
                 return Padding(
                   padding: EdgeInsetsDirectional.only(end: 10.w),
                   child: _shimmerBox(
+                    cubit: appCubit,
                     width: 90.w,
                     height: 40.h,
                     radius: 15,
@@ -3687,7 +3746,7 @@ class AdminRequestsShimmer extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(15.r),
                   decoration: BoxDecoration(
-                    color: containerColor,
+                    color: containerColor(appCubit),
                     borderRadius: BorderRadius.circular(25.r),
                   ),
                   child: Column(
@@ -3696,6 +3755,7 @@ class AdminRequestsShimmer extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _shimmerBox(
+                            cubit: appCubit,
                             width: 70.w,
                             height: 70.h,
                             radius: 20,
@@ -3709,12 +3769,14 @@ class AdminRequestsShimmer extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: _shimmerBox(
+                                        cubit: appCubit,
                                         height: 14.h,
                                         width: double.infinity,
                                       ),
                                     ),
                                     SizedBox(width: 10.w),
                                     _shimmerBox(
+                                      cubit: appCubit,
                                       width: 65.w,
                                       height: 24.h,
                                       radius: 30,
@@ -3723,6 +3785,7 @@ class AdminRequestsShimmer extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10.h),
                                 _shimmerBox(
+                                  cubit: appCubit,
                                   width: 80.w,
                                   height: 12.h,
                                 ),
@@ -3735,42 +3798,48 @@ class AdminRequestsShimmer extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(12.r),
                         decoration: BoxDecoration(
-                          color: innerContainerColor,
+                          color: innerContainerColor(appCubit),
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                         child: Column(
                           children: [
-                            _detailRow(),
+                            _detailRow(appCubit),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 vertical: 10.h,
                               ),
                               child: Divider(
-                                color: Colors.white,
+                                color: appCubit.isDark
+                                    ? const Color(0xFF30363D)
+                                    : Colors.white,
                                 height: 1,
                               ),
                             ),
-                            _detailRow(),
+                            _detailRow(appCubit),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 vertical: 10.h,
                               ),
                               child: Divider(
-                                color: Colors.white,
+                                color: appCubit.isDark
+                                    ? const Color(0xFF30363D)
+                                    : Colors.white,
                                 height: 1,
                               ),
                             ),
-                            _detailRow(),
+                            _detailRow(appCubit),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 vertical: 10.h,
                               ),
                               child: Divider(
-                                color: Colors.white,
+                                color: appCubit.isDark
+                                    ? const Color(0xFF30363D)
+                                    : Colors.white,
                                 height: 1,
                               ),
                             ),
-                            _detailRow(),
+                            _detailRow(appCubit),
                           ],
                         ),
                       ),
@@ -3786,6 +3855,7 @@ class AdminRequestsShimmer extends StatelessWidget {
   }
 
   Widget _shimmerBox({
+    required AppCubit cubit,
     required double height,
     required double width,
     double radius = 12,
@@ -3794,8 +3864,8 @@ class AdminRequestsShimmer extends StatelessWidget {
     return Container(
       margin: margin,
       child: Shimmer.fromColors(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
+        baseColor: baseColor(cubit),
+        highlightColor: highlightColor(cubit),
         child: Container(
           height: height,
           width: width,
@@ -3808,22 +3878,25 @@ class AdminRequestsShimmer extends StatelessWidget {
     );
   }
 
-  Widget _detailRow() {
+  Widget _detailRow(AppCubit appCubit) {
     return Row(
       children: [
         _shimmerBox(
+          cubit: appCubit,
           width: 35.w,
           height: 35.h,
           radius: 12,
         ),
         SizedBox(width: 10.w),
         _shimmerBox(
+          cubit: appCubit,
           width: 80.w,
           height: 10.h,
         ),
         SizedBox(width: 10.w),
         Expanded(
           child: _shimmerBox(
+            cubit: appCubit,
             height: 10.h,
             width: double.infinity,
           ),
@@ -3836,18 +3909,27 @@ class AdminRequestsShimmer extends StatelessWidget {
 class AdminProvidersShimmer extends StatelessWidget {
   const AdminProvidersShimmer({super.key});
 
-  Color get baseColor => const Color(0xFFE3F2FD);
+  Color baseColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
+  }
 
-  Color get highlightColor => const Color(0xFFF8FCFF);
+  Color highlightColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
+  }
 
-  Color get containerColor => const Color(0xFFF2F9FF);
+  Color containerColor(AppCubit cubit) {
+    return cubit.isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final AppCubit appCubit = AppCubit.get(context);
+
     return SingleChildScrollView(
       child: Column(
         children: [
           _shimmerBox(
+            cubit: appCubit,
             height: 55.h,
             width: double.infinity,
             margin: EdgeInsetsDirectional.all(15.w),
@@ -3870,7 +3952,7 @@ class AdminProvidersShimmer extends StatelessWidget {
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
-                  color: containerColor,
+                  color: containerColor(appCubit),
                   borderRadius: BorderRadius.circular(25.r),
                 ),
                 child: Column(
@@ -3879,6 +3961,7 @@ class AdminProvidersShimmer extends StatelessWidget {
                     Stack(
                       children: [
                         _shimmerBox(
+                          cubit: appCubit,
                           height: 120.h,
                           width: double.infinity,
                           radius: 25,
@@ -3887,6 +3970,7 @@ class AdminProvidersShimmer extends StatelessWidget {
                           top: 10.h,
                           start: 10.w,
                           child: _shimmerBox(
+                            cubit: appCubit,
                             width: 50.w,
                             height: 24.h,
                             radius: 8,
@@ -3900,16 +3984,19 @@ class AdminProvidersShimmer extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _shimmerBox(
+                            cubit: appCubit,
                             height: 14.h,
                             width: double.infinity,
                           ),
                           SizedBox(height: 8.h),
                           _shimmerBox(
+                            cubit: appCubit,
                             height: 10.h,
                             width: 90.w,
                           ),
                           SizedBox(height: 15.h),
                           _shimmerBox(
+                            cubit: appCubit,
                             height: 35.h,
                             width: double.infinity,
                             radius: 12,
@@ -3928,6 +4015,7 @@ class AdminProvidersShimmer extends StatelessWidget {
   }
 
   Widget _shimmerBox({
+    required AppCubit cubit,
     required double height,
     required double width,
     double radius = 12,
@@ -3936,8 +4024,8 @@ class AdminProvidersShimmer extends StatelessWidget {
     return Container(
       margin: margin,
       child: Shimmer.fromColors(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
+        baseColor: baseColor(cubit),
+        highlightColor: highlightColor(cubit),
         child: Container(
           height: height,
           width: width,

@@ -97,7 +97,7 @@ class _AdminUsersListState extends State<AdminUsersList> {
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
               return state is GetUsersLoadingState
-                  ? AdminUsersShimmer(isDark: appCubit.isDark)
+                  ? const AdminUsersShimmer()
                   : SingleChildScrollView(
                       child: Column(
                         children: [

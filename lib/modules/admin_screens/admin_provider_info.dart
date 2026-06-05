@@ -9,6 +9,7 @@ import 'package:trying_homy/modules/images_view.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class AdminProviderInfo extends StatefulWidget {
@@ -51,6 +52,18 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
 
   bool isActive = true;
 
+  AppCubit get appCubit => AppCubit.get(context);
+
+  bool get isDark => appCubit.isDark;
+
+  Color get cardColor => isDark ? lightDarkColor : Colors.white;
+
+  Color get primaryTextColor => isDark ? Colors.white : Colors.black;
+
+  Color get secondaryTextColor => isDark ? darkSubTextColor : Colors.grey;
+
+  List<BoxShadow> get cardShadow => isDark ? [] : blueShadow;
+
   Widget buildWhiteCard({
     required Widget child,
     EdgeInsetsGeometry? padding,
@@ -59,9 +72,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       width: double.infinity,
       padding: padding ?? EdgeInsetsDirectional.all(18.r),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(25.r),
-        boxShadow: blueShadow,
+        boxShadow: cardShadow,
       ),
       child: child,
     );
@@ -76,7 +89,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         Container(
           padding: EdgeInsetsDirectional.all(8.r),
           decoration: BoxDecoration(
-            color: mainColor.withOpacity(0.10),
+            color: mainColor.withOpacity(isDark ? 0.20 : 0.10),
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: SvgPicture.asset(
@@ -91,7 +104,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.sp,
-            color: Colors.black,
+            color: primaryTextColor,
           ),
         ),
       ],
@@ -199,7 +212,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                           padding: EdgeInsetsDirectional.symmetric(
                               horizontal: 10.w, vertical: 6.h),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
+                            color: isDark
+                                ? lightDarkColor.withOpacity(0.92)
+                                : Colors.white.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(20.r),
                           ),
                           child: Row(
@@ -372,9 +387,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       child: Container(
         padding: EdgeInsets.all(18.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow: blueShadow,
+          boxShadow: cardShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,7 +402,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: primaryTextColor,
                   ),
                 ),
                 Container(
@@ -412,7 +427,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey,
+                color: secondaryTextColor,
               ),
             ),
           ],
@@ -447,7 +462,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         widget.provider['about'] ?? 'لا توجد نبذة عن هذا العامل.',
         style: TextStyle(
           fontSize: 12.sp,
-          color: Colors.black87,
+          color: isDark ? Colors.white : Colors.black87,
           height: 1.8,
         ),
       ),
@@ -461,7 +476,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               'لا توجد خبرات مضافة.',
               style: TextStyle(
                 fontSize: 13.sp,
-                color: Colors.grey,
+                color: secondaryTextColor,
                 fontWeight: FontWeight.w600,
               ),
             )
@@ -490,7 +505,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                           exp,
                           style: TextStyle(
                             fontSize: 13.sp,
-                            color: Colors.black87,
+                            color: isDark ? Colors.white : Colors.black87,
                             height: 1.6,
                           ),
                         ),
@@ -521,7 +536,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   children: [
                     Icon(
                       Icons.inbox_rounded,
-                      color: Colors.grey.shade400,
+                      color: isDark ? darkSubTextColor : Colors.grey.shade400,
                       size: 55.w,
                     ),
                     SizedBox(height: 5.h),
@@ -530,7 +545,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15.sp,
-                        color: Colors.grey.shade400,
+                        color: isDark ? darkSubTextColor : Colors.grey.shade400,
                       ),
                     ),
                   ],
@@ -551,7 +566,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         width: 175.w,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16.r),
-                          color: Colors.grey.shade100,
+                          color: isDark ? darkBgColor : Colors.grey.shade100,
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16.r),
@@ -560,10 +575,12 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                color: Colors.grey.shade200,
+                                color:
+                                    isDark ? darkBgColor : Colors.grey.shade200,
                                 child: Icon(
                                   Icons.image_not_supported_outlined,
-                                  color: Colors.grey,
+                                  color:
+                                      isDark ? darkSubTextColor : Colors.grey,
                                   size: 35.r,
                                 ),
                               );
@@ -608,7 +625,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: primaryTextColor,
                   ),
                 ),
                 SizedBox(height: 5.h),
@@ -618,7 +635,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                       : 'هذا العامل لا يمتلك اشتراكًا نشطًا حاليًا.',
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: Colors.grey,
+                    color: secondaryTextColor,
                     height: 1.5,
                   ),
                 ),
@@ -737,7 +754,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           child: Text(
             title,
             style: TextStyle(
-              color: Colors.grey,
+              color: secondaryTextColor,
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -750,7 +767,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: Colors.black,
+              color: primaryTextColor,
               fontSize: 12.sp,
               fontWeight: FontWeight.bold,
             ),
@@ -765,7 +782,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       padding: EdgeInsets.symmetric(vertical: 12.h),
       child: Divider(
         height: 1,
-        color: Colors.grey.withOpacity(0.15),
+        color: isDark
+            ? darkSubTextColor.withOpacity(0.18)
+            : Colors.grey.withOpacity(0.15),
       ),
     );
   }
@@ -808,9 +827,12 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       },
       builder: (context, state) {
         final adminCubit = AdminCubit.get(context);
+        final AppCubit appCubit = context.watch<AppCubit>();
+
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
+            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
             body: SingleChildScrollView(
               child: Column(
                 children: [
