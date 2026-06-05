@@ -18,21 +18,21 @@ class AdminUsersList extends StatefulWidget {
 }
 
 class _AdminUsersListState extends State<AdminUsersList> {
-  
   var searchController = TextEditingController();
 
   Widget buildStatCard({
     required String title,
     required String value,
     required String icon,
+    required AppCubit appCubit,
   }) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(15.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow:  blueShadow,
+          boxShadow: appCubit.isDark ? [] : blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +57,7 @@ class _AdminUsersListState extends State<AdminUsersList> {
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: appCubit.isDark ? Colors.white : Colors.black,
                   ),
                 ),
               ],
@@ -70,7 +70,7 @@ class _AdminUsersListState extends State<AdminUsersList> {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey,
+                color: appCubit.isDark ? darkSubTextColor : Colors.grey,
               ),
             ),
           ],
@@ -84,115 +84,168 @@ class _AdminUsersListState extends State<AdminUsersList> {
     AdminCubit.get(context).getUsers();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
+    final AppCubit appCubit = context.watch<AppCubit>();
+
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          body: BlocBuilder<AdminCubit,AdminStates>(
+          backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
+          body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
-              return state is GetUsersLoadingState ? const AdminUsersShimmer(isDark: false)
+              return state is GetUsersLoadingState
+                  ? AdminUsersShimmer(isDark: appCubit.isDark)
                   : SingleChildScrollView(
-                    child: Column(
-                    children: [
-                      header(title: 'إدارة المستخدمين', context: context,isLeading: true,isNotif: false),
-                      SizedBox(height: 10.h,),
-                      Padding(
-                      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                      child: Row(
+                      child: Column(
                         children: [
-                          buildStatCard(title: 'الحسابات المفعلة', value: '2', icon: 'assets/all.svg'),
-                          SizedBox(width: 10.w,),
-                          buildStatCard(title: 'الحسابات المعطلة', value: '2', icon: 'assets/dis.svg'),
-                        ],
-                      ),
-                    ),
-                      SizedBox(height: 20.h,),
-                      GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 15.h,
-                          crossAxisSpacing: 10.w,
-                          childAspectRatio: 0.78
-                      ),
-                      padding:  EdgeInsetsDirectional.only(start: 10.w,end:10.w,bottom: 20.h),
-                      itemCount: adminCubit.users.length,
-                      itemBuilder:(context, index) {
-                        final user = adminCubit.users[index];
-                        return InkWell(
-                          onTap: ()=>move(context, AdminUserInfo(user: user)),
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          borderRadius: BorderRadius.circular(25.r),
-                          child: Container(
-                            width: 190.w,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: blueShadow,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
+                          header(
+                              title: 'إدارة المستخدمين',
+                              context: context,
+                              isLeading: true,
+                              isNotif: false),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 10.w),
+                            child: Row(
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(25.r),
-                                  child: Image.network(
-                                    user['profileImage'] ?? '',
-                                    height: 120.h,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(
-                                      height: 120.h,
-                                      width: double.infinity,
-                                      color: Colors.grey.shade200,
-                                      child: Icon(Icons.person, color: Colors.grey, size: 35.r),
-                                    ),
-                                  ),
+                                buildStatCard(
+                                    title: 'الحسابات المفعلة',
+                                    value: '2',
+                                    icon: 'assets/all.svg',
+                                    appCubit: appCubit),
+                                SizedBox(
+                                  width: 10.w,
                                 ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.only(top: 15.h,start: 10.w,end: 10.w),
+                                buildStatCard(
+                                    title: 'الحسابات المعطلة',
+                                    value: '2',
+                                    icon: 'assets/dis.svg',
+                                    appCubit: appCubit),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20.h,
+                          ),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: 15.h,
+                                    crossAxisSpacing: 10.w,
+                                    childAspectRatio: 0.78),
+                            padding: EdgeInsetsDirectional.only(
+                                start: 10.w, end: 10.w, bottom: 20.h),
+                            itemCount: adminCubit.users.length,
+                            itemBuilder: (context, index) {
+                              final user = adminCubit.users[index];
+                              return InkWell(
+                                onTap: () =>
+                                    move(context, AdminUserInfo(user: user)),
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                borderRadius: BorderRadius.circular(25.r),
+                                child: Container(
+                                  width: 190.w,
+                                  decoration: BoxDecoration(
+                                    color: appCubit.isDark
+                                        ? lightDarkColor
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(25.r),
+                                    boxShadow:
+                                        appCubit.isDark ? [] : blueShadow,
+                                  ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text(
-                                        user['name'] ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13.sp,
-                                          color: Colors.black,
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(25.r),
+                                        child: Image.network(
+                                          user['profileImage'] ?? '',
+                                          height: 120.h,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                            height: 120.h,
+                                            width: double.infinity,
+                                            color: appCubit.isDark
+                                                ? darkBgColor
+                                                : Colors.grey.shade200,
+                                            child: Icon(Icons.person,
+                                                color: Colors.grey, size: 35.r),
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(height: 10.h),
-                                      Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsetsDirectional.symmetric(horizontal: 5.w, vertical: 6.h),
-                                        decoration: BoxDecoration(
-                                          color: mainColor.withOpacity(0.05),
-                                          borderRadius: BorderRadius.circular(12.r),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.only(
+                                            top: 15.h, start: 10.w, end: 10.w),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'عرض الملف الشخصي',
+                                              user['name'] ?? '',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                fontSize: 9.sp,
                                                 fontWeight: FontWeight.bold,
-                                                color: mainColor,
+                                                fontSize: 13.sp,
+                                                color: appCubit.isDark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                               ),
                                             ),
-                                            SizedBox(width: 5.w),
-                                            Icon(
-                                              Icons.arrow_forward_ios_rounded,
-                                              color: mainColor,
-                                              size: 10.sp,
+                                            SizedBox(height: 10.h),
+                                            Container(
+                                              width: double.infinity,
+                                              padding: EdgeInsetsDirectional
+                                                  .symmetric(
+                                                      horizontal: 5.w,
+                                                      vertical: 6.h),
+                                              decoration: BoxDecoration(
+                                                color: mainColor.withOpacity(
+                                                    appCubit.isDark
+                                                        ? 0.12
+                                                        : 0.05),
+                                                borderRadius:
+                                                    BorderRadius.circular(12.r),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'عرض الملف الشخصي',
+                                                    style: TextStyle(
+                                                      fontSize: 9.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: mainColor,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 5.w),
+                                                  Icon(
+                                                    Icons
+                                                        .arrow_forward_ios_rounded,
+                                                    color: mainColor,
+                                                    size: 10.sp,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -200,18 +253,14 @@ class _AdminUsersListState extends State<AdminUsersList> {
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    ],
-                    ),
-              );
+                        ],
+                      ),
+                    );
             },
           ),
-        )
-    );
+        ));
   }
 }

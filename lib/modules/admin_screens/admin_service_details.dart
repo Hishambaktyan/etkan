@@ -10,7 +10,7 @@ import '../../shared/compenents/components.dart';
 import '../../shared/styles/colors.dart';
 
 class AdminServiceDetails extends StatefulWidget {
-  final Map<String,dynamic> service;
+  final Map<String, dynamic> service;
   final List<dynamic> reviews;
 
   const AdminServiceDetails({
@@ -24,7 +24,6 @@ class AdminServiceDetails extends StatefulWidget {
 }
 
 class _AdminServiceDetailsState extends State<AdminServiceDetails> {
-
   bool isActive = true;
 
   Widget buildSectionTitle({
@@ -89,24 +88,25 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.only(top: 20.h, start: 10.w, end: 10.w),
+                      padding: EdgeInsetsDirectional.only(
+                          top: 30.h, start: 10.w, end: 10.w),
                       child: Row(
                         children: [
                           Padding(
-                            padding:  EdgeInsetsDirectional.all(7.w),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white.withOpacity(0.8),
-                              child: InkWell(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () => Navigator.pop(context),
-                                child: const Icon(CupertinoIcons.back),
-                              ),
+                            padding: EdgeInsetsDirectional.all(7.w),
+                            child: buildButton(
+                              context: context,
+                              isDark: cubit.isDark,
+                              icon: CupertinoIcons.back,
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
                             ),
                           ),
                           const Spacer(),
                           Container(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w, vertical: 6.h),
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 12.w, vertical: 6.h),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.9),
                               borderRadius: BorderRadius.circular(20.r),
@@ -145,7 +145,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                       alignment: Alignment.bottomCenter,
                       child: Padding(
                         padding:
-                        EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                            EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -167,9 +167,8 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                   ],
                                   border: cubit.isDark
                                       ? Border.all(
-                                      color: const Color(0xFF30363D)
-                                  ) : null
-                              ),
+                                          color: const Color(0xFF30363D))
+                                      : null),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -216,11 +215,15 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            SvgPicture.asset('assets/money.svg',color: Colors.grey,width: 20.w,),
+                                            SvgPicture.asset(
+                                              'assets/money.svg',
+                                              color: Colors.grey,
+                                              width: 20.w,
+                                            ),
                                             SizedBox(width: 8.w),
                                             Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   'السعر التقديري',
@@ -255,11 +258,15 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            SvgPicture.asset('assets/timer.svg',color: Colors.grey,width: 20.w,),
+                                            SvgPicture.asset(
+                                              'assets/timer.svg',
+                                              color: Colors.grey,
+                                              width: 20.w,
+                                            ),
                                             SizedBox(width: 8.w),
                                             Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   'المدة المتوقعة',
@@ -287,14 +294,14 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 10.h,),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
                                   Text(
                                     '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
                                     style: TextStyle(
                                         color: Colors.grey.shade400,
-                                        fontSize: 8.sp
-                                    ),
-
+                                        fontSize: 8.sp),
                                   ),
                                 ],
                               ),
@@ -306,13 +313,18 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                   ],
                 ),
               ),
-              SizedBox(height: 10.h,),
+              SizedBox(
+                height: 10.h,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildSectionTitle(title: 'وصف الخدمة', icon: Icons.notes_rounded, cubit: cubit),
+                    buildSectionTitle(
+                        title: 'وصف الخدمة',
+                        icon: Icons.notes_rounded,
+                        cubit: cubit),
                     SizedBox(height: 10.h),
                     Container(
                       width: double.infinity,
@@ -338,7 +350,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                             style: TextStyle(
                                 fontSize: 12.sp,
                                 color:
-                                cubit.isDark ? Colors.white : Colors.black,
+                                    cubit.isDark ? Colors.white : Colors.black,
                                 height: 1.5),
                             trimLines: 3,
                             colorClickableText: mainColor,
@@ -346,13 +358,16 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                             trimCollapsedText: ' عرض المزيد',
                             trimExpandedText: ' عرض أقل',
                             moreStyle:
-                            TextStyle(fontSize: 12.sp, color: mainColor),
+                                TextStyle(fontSize: 12.sp, color: mainColor),
                           ),
                         ],
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    buildSectionTitle(title: 'معلومات الفني', icon: Icons.person_pin_outlined, cubit: cubit),
+                    buildSectionTitle(
+                        title: 'معلومات الفني',
+                        icon: Icons.person_pin_outlined,
+                        cubit: cubit),
                     SizedBox(height: 10.h),
                     Container(
                       padding: EdgeInsetsDirectional.all(18.r),
@@ -422,14 +437,11 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                             text: 'المزيد',
                             fontSize: 13.sp,
                             height: 45.h,
-                            textColor:
-                            cubit.isDark ? Colors.white : mainColor,
-                            border:
-                            cubit.isDark ? Colors.white : mainColor,
+                            textColor: cubit.isDark ? Colors.white : mainColor,
+                            border: cubit.isDark ? Colors.white : mainColor,
                             icon: SvgPicture.asset(
                               'assets/acc.svg',
-                              color:
-                              cubit.isDark ? Colors.white : mainColor,
+                              color: cubit.isDark ? Colors.white : mainColor,
                               width: 20.r,
                               height: 20.r,
                             ),
@@ -438,7 +450,10 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    buildSectionTitle(title: 'التقييمات والمراجعات', icon: Icons.star_outline_rounded, cubit: cubit),
+                    buildSectionTitle(
+                        title: 'التقييمات والمراجعات',
+                        icon: Icons.star_outline_rounded,
+                        cubit: cubit),
                     SizedBox(height: 10.h),
                     Container(
                       padding: EdgeInsetsDirectional.all(18.r),
@@ -462,8 +477,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                         child: Column(
                           children: [
                             CircleAvatar(
-                              backgroundColor:
-                              Colors.orange.withOpacity(0.15),
+                              backgroundColor: Colors.orange.withOpacity(0.15),
                               radius: 35.r,
                               child: Text(
                                 '${service['rate'] ?? ''}',

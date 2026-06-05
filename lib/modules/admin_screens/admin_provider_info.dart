@@ -24,10 +24,12 @@ class AdminProviderInfo extends StatefulWidget {
 }
 
 class _AdminProviderInfoState extends State<AdminProviderInfo> {
-  bool get isSubscribed => widget.provider['isSubscribed'] == true ||
-          widget.provider['subscription']?['isActive'] == true;
+  bool get isSubscribed =>
+      widget.provider['isSubscribed'] == true ||
+      widget.provider['subscription']?['isActive'] == true;
 
-  Map<String, dynamic> get subscription => widget.provider['subscription'] is Map<String, dynamic>
+  Map<String, dynamic> get subscription =>
+      widget.provider['subscription'] is Map<String, dynamic>
           ? widget.provider['subscription']
           : {};
 
@@ -151,18 +153,36 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               ),
             ),
             Padding(
-              padding: EdgeInsetsDirectional.only(top: 35.h, start: 5.w, end: 18.w,),
+              padding: EdgeInsetsDirectional.only(
+                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: Colors.white,
+                      InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        borderRadius: BorderRadius.circular(15.r),
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 42.w,
+                          height: 42.h,
+                          margin: EdgeInsetsDirectional.only(end: 10.w),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.16),
+                            borderRadius: BorderRadius.circular(15.r),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.12)),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 18.sp,
+                          ),
                         ),
                       ),
+                      SizedBox(width: 5.w),
                       Text(
                         'حساب الفني',
                         style: TextStyle(
@@ -171,10 +191,13 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(width: 10.w,),
+                      SizedBox(
+                        width: 10.w,
+                      ),
                       Expanded(
                         child: Container(
-                          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w, vertical: 6.h),
+                          padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 10.w, vertical: 6.h),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(20.r),
@@ -236,22 +259,22 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                           child: CircleAvatar(
                             radius: 48.r,
                             backgroundColor: Colors.white.withOpacity(0.12),
-                            backgroundImage:
-                            widget.provider['profileImage'] != null &&
-                                widget.provider['profileImage']
-                                    .toString()
-                                    .isNotEmpty
+                            backgroundImage: widget.provider['profileImage'] !=
+                                        null &&
+                                    widget.provider['profileImage']
+                                        .toString()
+                                        .isNotEmpty
                                 ? NetworkImage(widget.provider['profileImage'])
                                 : null,
                             child: widget.provider['profileImage'] == null ||
-                                widget.provider['profileImage']
-                                    .toString()
-                                    .isEmpty
+                                    widget.provider['profileImage']
+                                        .toString()
+                                        .isEmpty
                                 ? Icon(
-                              Icons.person_rounded,
-                              color: Colors.white,
-                              size: 48.r,
-                            )
+                                    Icons.person_rounded,
+                                    color: Colors.white,
+                                    size: 48.r,
+                                  )
                                 : null,
                           ),
                         ),
@@ -266,7 +289,12 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         ),
                         SizedBox(height: 7.h),
                         Container(
-                          padding: EdgeInsetsDirectional.only(start: 12.w, end: 15.w, top: 5.h, bottom: 5.h,),
+                          padding: EdgeInsetsDirectional.only(
+                            start: 12.w,
+                            end: 15.w,
+                            top: 5.h,
+                            bottom: 5.h,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.14),
                             borderRadius: BorderRadius.circular(30.r),
@@ -281,7 +309,10 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         ),
                         SizedBox(height: 10.h),
                         Container(
-                          padding: EdgeInsetsDirectional.symmetric(horizontal: 14.w, vertical: 7.h,),
+                          padding: EdgeInsetsDirectional.symmetric(
+                            horizontal: 14.w,
+                            vertical: 7.h,
+                          ),
                           decoration: BoxDecoration(
                             color: isSubscribed
                                 ? Colors.green.withOpacity(0.18)
@@ -427,48 +458,48 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
     return buildWhiteCard(
       child: experiences.isEmpty
           ? Text(
-        'لا توجد خبرات مضافة.',
-        style: TextStyle(
-          fontSize: 13.sp,
-          color: Colors.grey,
-          fontWeight: FontWeight.w600,
-        ),
-      )
+              'لا توجد خبرات مضافة.',
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
+              ),
+            )
           : Column(
-        children: experiences.map((exp) {
-          return Padding(
-            padding: EdgeInsetsDirectional.only(bottom: 10.h),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsetsDirectional.all(3.r),
-                  decoration: BoxDecoration(
-                    color: mainColor.withOpacity(0.10),
-                    shape: BoxShape.circle,
+              children: experiences.map((exp) {
+                return Padding(
+                  padding: EdgeInsetsDirectional.only(bottom: 10.h),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsetsDirectional.all(3.r),
+                        decoration: BoxDecoration(
+                          color: mainColor.withOpacity(0.10),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check_rounded,
+                          color: mainColor,
+                          size: 14.r,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          exp,
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: Colors.black87,
+                            height: 1.6,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Icon(
-                    Icons.check_rounded,
-                    color: mainColor,
-                    size: 14.r,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(
-                    exp,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: Colors.black87,
-                      height: 1.6,
-                    ),
-                  ),
-                ),
-              ],
+                );
+              }).toList(),
             ),
-          );
-        }).toList(),
-      ),
     );
   }
 
@@ -486,63 +517,63 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           height: 155.h,
           child: previousWorks.isEmpty
               ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.inbox_rounded,
-                color: Colors.grey.shade400,
-                size: 55.w,
-              ),
-              SizedBox(height: 5.h),
-              Text(
-                'لا توجد أعمال سابقة',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.sp,
-                  color: Colors.grey.shade400,
-                ),
-              ),
-            ],
-          )
-              : ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: previousWorks.length,
-            separatorBuilder: (context, index) => SizedBox(width: 12.w),
-            itemBuilder: (context, index) {
-              final work = previousWorks[index];
-
-              return InkWell(
-                onTap: () => move(
-                  context,
-                  ImageViewerPage(imageUrl: work),
-                ),
-                child: Container(
-                  width: 175.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.r),
-                    color: Colors.grey.shade100,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: Image.network(
-                      work,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade200,
-                          child: Icon(
-                            Icons.image_not_supported_outlined,
-                            color: Colors.grey,
-                            size: 35.r,
-                          ),
-                        );
-                      },
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.inbox_rounded,
+                      color: Colors.grey.shade400,
+                      size: 55.w,
                     ),
-                  ),
+                    SizedBox(height: 5.h),
+                    Text(
+                      'لا توجد أعمال سابقة',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.sp,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ],
+                )
+              : ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: previousWorks.length,
+                  separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                  itemBuilder: (context, index) {
+                    final work = previousWorks[index];
+
+                    return InkWell(
+                      onTap: () => move(
+                        context,
+                        ImageViewerPage(imageUrl: work),
+                      ),
+                      child: Container(
+                        width: 175.w,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.r),
+                          color: Colors.grey.shade100,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16.r),
+                          child: Image.network(
+                            work,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade200,
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: Colors.grey,
+                                  size: 35.r,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ),
     );
@@ -688,15 +719,18 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
     return Row(
       children: [
         Container(
-          width: 38.w,
-          height: 38.h,
-          padding: EdgeInsetsDirectional.all(7.w),
-          decoration: BoxDecoration(
-            color: mainColor.withOpacity(0.08),
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
-        ),
+            width: 38.w,
+            height: 38.h,
+            padding: EdgeInsetsDirectional.all(7.w),
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: mainColor,
+              width: 20.w,
+            )),
         SizedBox(width: 10.w),
         SizedBox(
           width: 95.w,
@@ -782,7 +816,12 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                 children: [
                   buildHeader(),
                   Padding(
-                    padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
+                    padding: EdgeInsetsDirectional.only(
+                      start: 10.w,
+                      end: 10.w,
+                      top: 20.h,
+                      bottom: 20.h,
+                    ),
                     child: Column(
                       children: [
                         buildQuickStats(),
@@ -794,7 +833,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         SizedBox(height: 10.h),
                         buildContactCard(),
                         SizedBox(height: 20.h),
-
                         buildSectionHeader(
                           title: 'نبذة عن العامل',
                           icon: 'assets/info.svg',
@@ -802,7 +840,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         SizedBox(height: 10.h),
                         buildAboutCard(),
                         SizedBox(height: 20.h),
-
                         buildSectionHeader(
                           title: 'الخبرات',
                           icon: 'assets/subs.svg',
@@ -810,7 +847,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         SizedBox(height: 10.h),
                         buildExperiencesCard(),
                         SizedBox(height: 20.h),
-
                         buildSectionHeader(
                           title: 'الأعمال السابقة',
                           icon: 'assets/image.svg',
@@ -818,7 +854,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         SizedBox(height: 10.h),
                         buildPreviousWorksCard(),
                         SizedBox(height: 20.h),
-
                         buildSectionHeader(
                           title: 'حالة الاشتراك',
                           icon: 'assets/subs.svg',
@@ -826,7 +861,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         SizedBox(height: 10.h),
                         buildSubscriptionStatusCard(),
                         SizedBox(height: 20.h),
-
                         buildSectionHeader(
                           title: 'تفاصيل الاشتراك',
                           icon: 'assets/info.svg',
@@ -834,7 +868,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         SizedBox(height: 10.h),
                         buildSubscriptionDetailsCard(),
                         SizedBox(height: 20.h),
-
                         buildSectionHeader(
                           title: 'إدارة الاشتراك',
                           icon: 'assets/pen.svg',

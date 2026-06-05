@@ -2699,19 +2699,19 @@ class AdminHomeShimmer extends StatelessWidget {
   const AdminHomeShimmer({super.key});
 
   Color baseColor(AppCubit cubit) {
-    return cubit.isDark ? const Color(0xFF2A3139) : const Color(0xFFE3F2FD);
+    return cubit.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE3F2FD);
   }
 
   Color highlightColor(AppCubit cubit) {
-    return cubit.isDark ? const Color(0xFF3A444F) : const Color(0xFFF8FCFF);
+    return cubit.isDark ? const Color(0xFF3A3A3A) : const Color(0xFFF8FCFF);
   }
 
   Color containerColor(AppCubit cubit) {
-    return cubit.isDark ? lightDarkColor : const Color(0xFFF2F9FF);
+    return cubit.isDark ? const Color(0xFF161B22) : const Color(0xFFF2F9FF);
   }
 
   Color innerContainerColor(AppCubit cubit) {
-    return cubit.isDark ? darkBgColor : Colors.white;
+    return cubit.isDark ? const Color(0xFF0D1117) : const Color(0xFFEAF4FF);
   }
 
   BoxDecoration cardDecoration(
@@ -2721,11 +2721,6 @@ class AdminHomeShimmer extends StatelessWidget {
     return BoxDecoration(
       color: containerColor(cubit),
       borderRadius: BorderRadius.circular(radius.r),
-      border: cubit.isDark
-          ? Border.all(
-              color: const Color(0xFF30363D),
-            )
-          : null,
     );
   }
 
@@ -2733,176 +2728,173 @@ class AdminHomeShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppCubit appCubit = AppCubit.get(context);
 
-    return ColoredBox(
-      color: appCubit.isDark ? darkBgColor : bgColor,
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _shimmerBox(
-              cubit: appCubit,
-              height: 110.h,
-              width: double.infinity,
-              radius: 25,
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _shimmerBox(
+            cubit: appCubit,
+            height: 110.h,
+            width: double.infinity,
+            radius: 25,
+          ),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 4,
+            padding: EdgeInsetsDirectional.only(
+              start: 10.w,
+              end: 10.w,
+              top: 20.h,
+              bottom: 15.h,
             ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 15.h,
+              crossAxisSpacing: 12.w,
+              childAspectRatio: 1.2,
+            ),
+            itemBuilder: (context, index) {
+              return Container(
+                padding: EdgeInsets.all(15.r),
+                decoration: cardDecoration(appCubit),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _shimmerBox(
+                          cubit: appCubit,
+                          width: 45.w,
+                          height: 45.h,
+                          radius: 15,
+                        ),
+                        _shimmerBox(
+                          cubit: appCubit,
+                          width: 40.w,
+                          height: 22.h,
+                          radius: 8,
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    _shimmerBox(
+                      cubit: appCubit,
+                      width: 90.w,
+                      height: 14.h,
+                      radius: 8,
+                    ),
+                    SizedBox(height: 8.h),
+                    _shimmerBox(
+                      cubit: appCubit,
+                      width: 30.w,
+                      height: 4.h,
+                      radius: 10,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          _sectionTitleShimmer(appCubit),
+          GridView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsetsDirectional.symmetric(
+              horizontal: 10.w,
+            ),
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 4,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 10.h,
+              crossAxisSpacing: 10.w,
+              childAspectRatio: 2.1,
+            ),
+            itemBuilder: (context, index) {
+              return _smallCategoryCard(appCubit);
+            },
+          ),
+          SizedBox(height: 20.h),
+          _sectionTitleShimmer(appCubit),
+          SizedBox(
+            height: 270.h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
               itemCount: 4,
               padding: EdgeInsetsDirectional.only(
-                start: 10.w,
-                end: 10.w,
-                top: 20.h,
+                start: 15.w,
+                end: 15.w,
                 bottom: 15.h,
               ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 15.h,
-                crossAxisSpacing: 12.w,
-                childAspectRatio: 1.2,
-              ),
+              separatorBuilder: (context, index) => SizedBox(width: 15.w),
               itemBuilder: (context, index) {
-                return Container(
-                  padding: EdgeInsets.all(15.r),
-                  decoration: cardDecoration(appCubit),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _shimmerBox(
-                            cubit: appCubit,
-                            width: 45.w,
-                            height: 45.h,
-                            radius: 15,
-                          ),
-                          _shimmerBox(
-                            cubit: appCubit,
-                            width: 40.w,
-                            height: 22.h,
-                            radius: 8,
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      _shimmerBox(
-                        cubit: appCubit,
-                        width: 90.w,
-                        height: 14.h,
-                        radius: 8,
-                      ),
-                      SizedBox(height: 8.h),
-                      _shimmerBox(
-                        cubit: appCubit,
-                        width: 30.w,
-                        height: 4.h,
-                        radius: 10,
-                      ),
-                    ],
-                  ),
+                return _personCardShimmer(
+                  cubit: appCubit,
+                  height: 270.h,
                 );
               },
             ),
-            _sectionTitleShimmer(appCubit),
-            GridView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsetsDirectional.symmetric(
-                horizontal: 10.w,
-              ),
-              physics: const NeverScrollableScrollPhysics(),
+          ),
+          SizedBox(height: 20.h),
+          _sectionTitleShimmer(appCubit),
+          SizedBox(
+            height: 310.h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
               itemCount: 4,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 10.h,
-                crossAxisSpacing: 10.w,
-                childAspectRatio: 2.1,
+              padding: EdgeInsetsDirectional.only(
+                start: 15.w,
+                end: 15.w,
+                bottom: 10.h,
               ),
+              separatorBuilder: (context, index) => SizedBox(width: 15.w),
               itemBuilder: (context, index) {
-                return _smallCategoryCard(appCubit);
+                return _serviceCardShimmer(appCubit);
               },
             ),
-            SizedBox(height: 20.h),
-            _sectionTitleShimmer(appCubit),
-            SizedBox(
-              height: 270.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 4,
-                padding: EdgeInsetsDirectional.only(
-                  start: 15.w,
-                  end: 15.w,
-                  bottom: 15.h,
-                ),
-                separatorBuilder: (context, index) => SizedBox(width: 15.w),
-                itemBuilder: (context, index) {
-                  return _personCardShimmer(
-                    cubit: appCubit,
-                    height: 270.h,
-                  );
-                },
+          ),
+          SizedBox(height: 20.h),
+          _sectionTitleShimmer(appCubit),
+          SizedBox(
+            height: 380.h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: 4,
+              padding: EdgeInsetsDirectional.only(
+                start: 15.w,
+                end: 15.w,
               ),
+              separatorBuilder: (context, index) => SizedBox(width: 15.w),
+              itemBuilder: (context, index) {
+                return _requestCardShimmer(appCubit);
+              },
             ),
-            SizedBox(height: 20.h),
-            _sectionTitleShimmer(appCubit),
-            SizedBox(
-              height: 310.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 4,
-                padding: EdgeInsetsDirectional.only(
-                  start: 15.w,
-                  end: 15.w,
-                  bottom: 10.h,
-                ),
-                separatorBuilder: (context, index) => SizedBox(width: 15.w),
-                itemBuilder: (context, index) {
-                  return _serviceCardShimmer(appCubit);
-                },
+          ),
+          SizedBox(height: 20.h),
+          _sectionTitleShimmer(appCubit),
+          SizedBox(
+            height: 250.h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: 4,
+              padding: EdgeInsetsDirectional.only(
+                start: 15.w,
+                end: 15.w,
+                bottom: 10.h,
               ),
+              separatorBuilder: (context, index) => SizedBox(width: 15.w),
+              itemBuilder: (context, index) {
+                return _personCardShimmer(
+                  cubit: appCubit,
+                  height: 250.h,
+                );
+              },
             ),
-            SizedBox(height: 20.h),
-            _sectionTitleShimmer(appCubit),
-            SizedBox(
-              height: 380.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 4,
-                padding: EdgeInsetsDirectional.only(
-                  start: 15.w,
-                  end: 15.w,
-                ),
-                separatorBuilder: (context, index) => SizedBox(width: 15.w),
-                itemBuilder: (context, index) {
-                  return _requestCardShimmer(appCubit);
-                },
-              ),
-            ),
-            SizedBox(height: 20.h),
-            _sectionTitleShimmer(appCubit),
-            SizedBox(
-              height: 250.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 4,
-                padding: EdgeInsetsDirectional.only(
-                  start: 15.w,
-                  end: 15.w,
-                  bottom: 10.h,
-                ),
-                separatorBuilder: (context, index) => SizedBox(width: 15.w),
-                itemBuilder: (context, index) {
-                  return _personCardShimmer(
-                    cubit: appCubit,
-                    height: 250.h,
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 20.h),
-          ],
-        ),
+          ),
+          SizedBox(height: 20.h),
+        ],
       ),
     );
   }
@@ -3071,11 +3063,6 @@ class AdminHomeShimmer extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: innerContainerColor(cubit),
                     borderRadius: BorderRadius.circular(15.r),
-                    border: cubit.isDark
-                        ? Border.all(
-                            color: const Color(0xFF30363D),
-                          )
-                        : null,
                   ),
                   child: Row(
                     children: [
@@ -3168,11 +3155,6 @@ class AdminHomeShimmer extends StatelessWidget {
             decoration: BoxDecoration(
               color: innerContainerColor(cubit),
               borderRadius: BorderRadius.circular(20.r),
-              border: cubit.isDark
-                  ? Border.all(
-                      color: const Color(0xFF30363D),
-                    )
-                  : null,
             ),
             child: Column(
               children: [
@@ -3236,7 +3218,7 @@ class AdminHomeShimmer extends StatelessWidget {
           height: height,
           width: width,
           decoration: BoxDecoration(
-            color: baseColor(cubit),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(radius.r),
           ),
         ),

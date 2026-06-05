@@ -22,7 +22,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   int currentIndex = 0;
 
-  final List<Map<String, dynamic>> data = [
+  List<Map<String, dynamic>> data = [
     {
       'title': 'خدمات الصيانة بين يديك',
       'body':
@@ -47,12 +47,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   ];
 
   @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
@@ -61,19 +55,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : Colors.white,
+            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
             body: SafeArea(
               child: Column(
                 children: [
-                  /*
-                  ==============================
-                  الهيدر العلوي
-                  ==============================
-                  */
                   Padding(
                     padding: EdgeInsetsDirectional.only(
                       start: 18.w,
-                      end: 10.w,
                       top: 10.h,
                     ),
                     child: Row(
@@ -82,22 +70,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                           height: 42.h,
                           width: 42.w,
                           decoration: BoxDecoration(
-                            color: appCubit.isDark
-                                ? lightDarkColor
-                                : mainColor.withOpacity(0.10),
+                            color: mainColor.withOpacity(0.10),
                             borderRadius: BorderRadius.circular(14.r),
-                            border: appCubit.isDark
-                                ? Border.all(
-                                    color: const Color(0xFF30363D),
-                                  )
-                                : null,
                             image: const DecorationImage(
-                              image: AssetImage(
-                                'assets/logo.png',
-                              ),
-                              fit: BoxFit.cover,
+                              image: AssetImage('assets/logo.png'),
                             ),
-                            boxShadow: appCubit.isDark ? [] : blueShadow,
+                            boxShadow: blueShadow,
                           ),
                         ),
                         SizedBox(width: 10.w),
@@ -111,12 +89,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         ),
                         const Spacer(),
                         defaultTextButton(
-                          onPressed: () {
-                            moveAndReplace(
-                              context,
-                              const SelectUserType(),
-                            );
-                          },
+                          onPressed: () => moveAndReplace(
+                            context,
+                            const SelectUserType(),
+                          ),
                           text: 'تخطي',
                           isLined: false,
                           isBold: true,
@@ -125,12 +101,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                   ),
                   SizedBox(height: 20.h),
-
-                  /*
-                  ==============================
-                  صفحات التعريف
-                  ==============================
-                  */
                   Expanded(
                     child: PageView.builder(
                       controller: controller,
@@ -151,112 +121,56 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
-                                    /*
-                                    الدائرة الزخرفية العلوية
-                                    */
                                     PositionedDirectional(
                                       top: 25.h,
                                       start: 10.w,
                                       child: CircleAvatar(
                                         radius: 42.r,
-                                        backgroundColor: mainColor.withOpacity(
-                                          appCubit.isDark ? 0.14 : 0.08,
-                                        ),
+                                        backgroundColor:
+                                            mainColor.withOpacity(0.08),
                                       ),
                                     ),
-
-                                    /*
-                                    الدائرة الزخرفية السفلية
-                                    */
                                     PositionedDirectional(
                                       bottom: 45.h,
                                       end: 5.w,
                                       child: CircleAvatar(
                                         radius: 55.r,
-                                        backgroundColor: mainColor.withOpacity(
-                                          appCubit.isDark ? 0.10 : 0.06,
-                                        ),
+                                        backgroundColor:
+                                            mainColor.withOpacity(0.06),
                                       ),
                                     ),
-
-                                    /*
-                                    البطاقة الرئيسية
-                                    */
                                     Container(
                                       width: double.infinity,
-                                      padding: EdgeInsetsDirectional.all(
-                                        16.r,
-                                      ),
+                                      padding: EdgeInsetsDirectional.all(16.r),
                                       decoration: BoxDecoration(
                                         color: appCubit.isDark
                                             ? lightDarkColor
                                             : Colors.white,
-                                        borderRadius: BorderRadius.circular(
-                                          30.r,
-                                        ),
-                                        border: appCubit.isDark
-                                            ? Border.all(
-                                                color: const Color(
-                                                  0xFF30363D,
-                                                ),
-                                              )
-                                            : null,
-                                        boxShadow:
-                                            appCubit.isDark ? [] : blueShadow,
+                                        borderRadius:
+                                            BorderRadius.circular(30.r),
+                                        boxShadow: blueShadow,
                                       ),
                                       child: Column(
                                         children: [
                                           Expanded(
                                             child: ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.circular(
-                                                24.r,
-                                              ),
-                                              child: Stack(
-                                                fit: StackFit.expand,
-                                                children: [
-                                                  Image.asset(
-                                                    data[index]['image'],
-                                                    width: double.infinity,
-                                                    fit: BoxFit.cover,
-                                                  ),
-
-                                                  /*
-                                                  طبقة خفيفة فوق الصورة
-                                                  في الوضع الداكن
-                                                  */
-                                                  if (appCubit.isDark)
-                                                    Container(
-                                                      color: Colors.black
-                                                          .withOpacity(
-                                                        0.08,
-                                                      ),
-                                                    ),
-                                                ],
+                                                  BorderRadius.circular(24.r),
+                                              child: Image.asset(
+                                                data[index]['image'],
+                                                width: double.infinity,
+                                                fit: BoxFit.cover,
                                               ),
                                             ),
                                           ),
                                           SizedBox(height: 15.h),
-
-                                          /*
-                                          أيقونة الصفحة
-                                          */
                                           Container(
                                             height: 58.w,
                                             width: 58.w,
                                             decoration: BoxDecoration(
-                                              color: mainColor.withOpacity(
-                                                appCubit.isDark ? 0.18 : 0.10,
-                                              ),
+                                              color:
+                                                  mainColor.withOpacity(0.10),
                                               shape: BoxShape.circle,
-                                              border: appCubit.isDark
-                                                  ? Border.all(
-                                                      color:
-                                                          mainColor.withOpacity(
-                                                        0.25,
-                                                      ),
-                                                    )
-                                                  : null,
                                             ),
                                             child: Center(
                                               child: SvgPicture.asset(
@@ -274,10 +188,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 ),
                               ),
                               SizedBox(height: 28.h),
-
-                              /*
-                              عنوان الصفحة
-                              */
                               Text(
                                 data[index]['title'],
                                 textAlign: TextAlign.center,
@@ -286,16 +196,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                   fontSize: 22.sp,
                                   color: Theme.of(context)
                                       .textTheme
-                                      .bodyLarge
-                                      ?.color,
+                                      .bodyLarge!
+                                      .color,
                                   height: 1.4,
                                 ),
                               ),
                               SizedBox(height: 12.h),
-
-                              /*
-                              وصف الصفحة
-                              */
                               Text(
                                 data[index]['body'],
                                 textAlign: TextAlign.center,
@@ -314,12 +220,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                   ),
                   SizedBox(height: 25.h),
-
-                  /*
-                  ==============================
-                  مؤشر الصفحات
-                  ==============================
-                  */
                   SmoothPageIndicator(
                     controller: controller,
                     count: data.length,
@@ -328,19 +228,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       dotWidth: 8.w,
                       activeDotColor: mainColor,
                       dotColor: appCubit.isDark
-                          ? Colors.white.withOpacity(0.18)
+                          ? const Color(0xFF3A3A3A)
                           : Colors.grey.shade300,
                       expansionFactor: 3.5,
                       spacing: 6.w,
                     ),
                   ),
                   SizedBox(height: 25.h),
-
-                  /*
-                  ==============================
-                  أزرار التنقل
-                  ==============================
-                  */
                   Padding(
                     padding: EdgeInsetsDirectional.only(
                       start: 20.w,
@@ -351,13 +245,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       children: [
                         if (currentIndex != 0)
                           InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
                             onTap: () {
                               controller.previousPage(
-                                duration: const Duration(
-                                  milliseconds: 300,
-                                ),
+                                duration: const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
                               );
                             },
@@ -366,17 +256,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               height: 55.h,
                               width: 55.w,
                               decoration: BoxDecoration(
-                                color: appCubit.isDark
-                                    ? lightDarkColor
-                                    : mainColor.withOpacity(0.08),
+                                color: mainColor.withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(15.r),
-                                border: Border.all(
-                                  color: appCubit.isDark
-                                      ? const Color(0xFF30363D)
-                                      : mainColor.withOpacity(
-                                          0.12,
-                                        ),
-                                ),
                               ),
                               child: Icon(
                                 Icons.arrow_back_ios_new_rounded,
@@ -396,9 +277,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 );
                               } else {
                                 controller.nextPage(
-                                  duration: const Duration(
-                                    milliseconds: 300,
-                                  ),
+                                  duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
                                 );
                               }
@@ -406,7 +285,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             text: currentIndex == data.length - 1
                                 ? 'ابدأ الآن'
                                 : 'التالي',
-                            height: 55.h,
+                            height: 55,
                           ),
                         ),
                       ],
