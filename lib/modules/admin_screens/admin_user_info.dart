@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/admin_cubit/admin_cubit.dart';
@@ -31,143 +32,155 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
 
   @override
   Widget build(BuildContext context) {
-    AdminCubit adminCubit = AdminCubit.get(context);
+    AppCubit appCubit = AppCubit.get(context);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        body: BlocConsumer<AdminCubit, AdminStates>(
-          listener: (context, state) {
-            if(state is EditUserLoadingState){
-              showLoadingDialog(context);
-            }
-            if(state is EditUserSuccessState){
-              showSnackBar(Colors.green, 'تم تعديل المستخدم', context);
-              hideLoadingDialog(context);
-              Navigator.pop(context);
-              adminCubit.getUsers();
-            }
-          },
-          builder: (context, state) {
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  header(
-                    title: 'إدارة المستخدم',
-                    context: context,
-                    isNotif: false,
-                    isLeading: true,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(15.r),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(20.r),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(25.r),
-                            boxShadow: blueShadow,
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 110.r,
-                                width: 110.r,
-                                decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.05),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: mainColor.withOpacity(0.2),
-                                    width: 2,
-                                  ),
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(
-                                        widget.user['profileImage'] ?? ''
+        body: BlocBuilder<AppCubit, AppStates>(builder: (context, appState) {
+          AdminCubit adminCubit = AdminCubit.get(context);
+          return BlocConsumer<AdminCubit, AdminStates>(
+            listener: (context, state) {
+              if (state is EditUserLoadingState) {
+                showLoadingDialog(context);
+              }
+              if (state is EditUserSuccessState) {
+                showSnackBar(Colors.green, 'تم تعديل المستخدم', context);
+                hideLoadingDialog(context);
+                Navigator.pop(context);
+                adminCubit.getUsers();
+              }
+            },
+            builder: (context, state) {
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    header(
+                      title: 'إدارة المستخدم',
+                      context: context,
+                      isNotif: false,
+                      isLeading: true,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(15.r),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(20.r),
+                            decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(25.r),
+                              boxShadow: blueShadow,
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 110.r,
+                                  width: 110.r,
+                                  decoration: BoxDecoration(
+                                    color: mainColor.withOpacity(0.05),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: mainColor.withOpacity(0.2),
+                                      width: 2,
+                                    ),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                          widget.user['profileImage'] ?? ''),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(height: 25.h),
-                              defaultTextFormField(
-                                text: 'اسم المستخدم',
-                                prefixIcon: 'assets/acc.svg',
-                                errorMes: '',
-                                controller: userName,
-                                type: TextInputType.text,
-                                cubit: AppCubit.get(context),
-                                isReadOnly: true
-                              ),
-                              SizedBox(height: 15.h),
-                              defaultTextFormField(
-                                text: 'رقم المستخدم',
-                                prefixIcon: 'assets/phone.svg',
-                                errorMes: '',
-                                controller: userPhone,
-                                type: TextInputType.phone,
-                                cubit: AppCubit.get(context),
-                                  isReadOnly: true
-                              ),
-                              SizedBox(height: 15.h),
-                              Container(
-                                padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w, vertical: 5.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  boxShadow: blueShadow,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(8.r),
-                                      decoration: BoxDecoration(
-                                        color: mainColor.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10.r),
-                                      ),
-                                      child: SvgPicture.asset('assets/power.svg',color: mainColor,)
-                                    ),
-                                    SizedBox(width: 12.w),
-                                    Expanded(
-                                      child: Text(
-                                        'حالة الحساب (نشط / معطل)',
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black,
+                                SizedBox(height: 25.h),
+                                defaultTextFormField(
+                                    text: 'اسم المستخدم',
+                                    prefixIcon: 'assets/acc.svg',
+                                    errorMes: '',
+                                    controller: userName,
+                                    type: TextInputType.text,
+                                    cubit: AppCubit.get(context),
+                                    isReadOnly: true),
+                                SizedBox(height: 15.h),
+                                defaultTextFormField(
+                                    text: 'رقم المستخدم',
+                                    prefixIcon: 'assets/phone.svg',
+                                    errorMes: '',
+                                    controller: userPhone,
+                                    type: TextInputType.phone,
+                                    cubit: AppCubit.get(context),
+                                    isReadOnly: true),
+                                SizedBox(height: 15.h),
+                                Container(
+                                  padding: EdgeInsetsDirectional.symmetric(
+                                      horizontal: 12.w, vertical: 5.h),
+                                  decoration: BoxDecoration(
+                                    color: appCubit.isDark
+                                        ? lightDarkColor
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(20.r),
+                                    boxShadow: blueShadow,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                          padding: EdgeInsets.all(8.r),
+                                          decoration: BoxDecoration(
+                                            color: mainColor.withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(10.r),
+                                          ),
+                                          child: SvgPicture.asset(
+                                            'assets/power.svg',
+                                            color: mainColor,
+                                          )),
+                                      SizedBox(width: 12.w),
+                                      Expanded(
+                                        child: Text(
+                                          'حالة الحساب (نشط / معطل)',
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: appCubit.isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Switch.adaptive(
-                                      value: isActive,
-                                      activeColor: mainColor,
-                                      activeTrackColor: mainColor.withOpacity(0.3),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          isActive = value;
-                                        });
-                                      },
-                                    ),
-                                  ],
+                                      Switch.adaptive(
+                                        value: isActive,
+                                        activeColor: mainColor,
+                                        activeTrackColor:
+                                            mainColor.withOpacity(0.3),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            isActive = value;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 30.h),
-                        defaultButton(
-                          onPressed: () async =>adminCubit.editUser(docId: widget.user['id'], isActive: isActive),
-                          text: 'حفظ التعديلات',
-                          height: 50.h,
-                        ),
-                      ],
+                          SizedBox(height: 30.h),
+                          defaultButton(
+                            onPressed: () async => adminCubit.editUser(
+                                docId: widget.user['id'], isActive: isActive),
+                            text: 'حفظ التعديلات',
+                            height: 50.h,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                  ],
+                ),
+              );
+            },
+          );
+        }),
       ),
     );
   }
