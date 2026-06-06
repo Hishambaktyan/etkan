@@ -199,7 +199,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
             }
             if (state is DeleteUserAccSuccessState) {
               hideLoadingDialog(context);
-              showSnackBar(Colors.green, 'تم حسب حسابك بنجاح', context);
+              showSnackBar(Colors.green, 'تم حذف حسابك بنجاح', context);
               moveAndReplace(context, const OnBoardingScreen());
               appCubit.changeIndex(0);
             }
@@ -408,8 +408,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
                                 cancelText: 'إلغاء',
                                 confirmText: 'حذف',
                                 onConfirm: () {
-                                  moveAndReplace(
-                                      context, const OnBoardingScreen());
+                                  Navigator.pop(context);
                                   authCubit.deleteUser();
                                 },
                               );

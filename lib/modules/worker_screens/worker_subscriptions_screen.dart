@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trying_homy/main.dart';
+import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_confirm_Subscription.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -14,7 +15,12 @@ import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerSubscriptionsScreen extends StatefulWidget {
-  const WorkerSubscriptionsScreen({super.key});
+  final bool isFromOnboarding;
+
+  const WorkerSubscriptionsScreen({
+    super.key,
+    this.isFromOnboarding = false,
+  });
 
   @override
   State<WorkerSubscriptionsScreen> createState() =>
@@ -808,11 +814,11 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
           SizedBox(height: 12.h),
           _buildNoteText(
             cubit,
-            'يستطيع الفني غير المشترك إضافة 5 خدمات وإكمال 5 حجوزات فقط.',
+            'يمكنك تجربة التطبيق مجانًا بإضافة 5 خدمات وإكمال 5 حجوزات فقط، وبعد ذلك يجب الاشتراك.',
           ),
           _buildNoteText(
             cubit,
-            'يبدأ الاشتراك من تاريخ موافقة الإدارة على طلبك.',
+            'الاشتراك يفتح لك إضافة خدمات واستقبال حجوزات غير محدودة طوال مدة الباقة.',
           ),
           _buildNoteText(
             cubit,
@@ -895,6 +901,25 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
     );
   }
 
+
+  void _goToWorkerHome() {
+    moveAndReplace(
+      context,
+      const WorkerMainScreen(),
+    );
+  }
+
+  Widget _buildSkipSubscriptionButton(AppCubit cubit, {String text = 'تخطي الاشتراك الآن'}) {
+    return defaultOutlinedButton(
+      onPressed: _goToWorkerHome,
+      text: text,
+      textColor: mainColor,
+      border: mainColor,
+      bgColor: cubit.isDark ? lightDarkColor : Colors.white,
+      fontSize: 14,
+    );
+  }
+
   Widget _buildSubscribeButton(AppCubit cubit, String status) {
     String buttonText = 'متابعة الاشتراك';
 
@@ -915,25 +940,35 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
         color: cubit.isDark ? darkBgColor : Colors.white,
         boxShadow: blueShadow,
       ),
-      child: defaultButton(
-        onPressed: () {
-          final selectedPlanData = plans.firstWhere(
-            (plan) => plan['id'] == selectedPlan,
-          );
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          defaultButton(
+            onPressed: () {
+              final selectedPlanData = plans.firstWhere(
+                (plan) => plan['id'] == selectedPlan,
+              );
 
-          final selectedPaymentData = paymentMethods.firstWhere(
-            (paymentMethod) => paymentMethod['id'] == selectedPaymentMethod,
-          );
+              final selectedPaymentData = paymentMethods.firstWhere(
+                (paymentMethod) => paymentMethod['id'] == selectedPaymentMethod,
+              );
 
-          move(
-            context,
-            WorkerConfirmSubscription(
-              plan: selectedPlanData,
-              paymentMethod: selectedPaymentData,
-            ),
-          );
-        },
-        text: buttonText,
+              move(
+                context,
+                WorkerConfirmSubscription(
+                  plan: selectedPlanData,
+                  paymentMethod: selectedPaymentData,
+                  isFromOnboarding: widget.isFromOnboarding,
+                ),
+              );
+            },
+            text: buttonText,
+          ),
+          if (widget.isFromOnboarding) ...[
+            SizedBox(height: 10.h),
+            _buildSkipSubscriptionButton(cubit),
+          ],
+        ],
       ),
     );
   }
@@ -1021,7 +1056,13 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                     child: InkWell(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        if (widget.isFromOnboarding) {
+                          _goToWorkerHome();
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      },
                       child: Icon(
                         CupertinoIcons.back,
                         color: Theme.of(context).iconTheme.color,
@@ -1131,6 +1172,25 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                     _getCurrentStatus(userData, subscription);
 
                 if (!canChooseSubscription(currentStatus)) {
+                  if (widget.isFromOnboarding) {
+                    return Container(
+                      padding: EdgeInsetsDirectional.only(
+                        start: 20.w,
+                        end: 20.w,
+                        top: 10.h,
+                        bottom: 20.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cubit.isDark ? darkBgColor : Colors.white,
+                        boxShadow: blueShadow,
+                      ),
+                      child: _buildSkipSubscriptionButton(
+                        cubit,
+                        text: 'الدخول إلى التطبيق',
+                      ),
+                    );
+                  }
+
                   return const SizedBox.shrink();
                 }
 

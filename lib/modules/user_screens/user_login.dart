@@ -306,6 +306,9 @@ class _UserLoginState extends State<UserLogin> {
                                 SizedBox(height: 20.h),
                                 defaultButton(
                                     onPressed: () async {
+                                      // إغلاق الكيبورد قبل إرسال الطلب
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
                                       if (formKey.currentState!.validate()) {
                                         await authCubit.loginUser(
                                             phone: authCubit

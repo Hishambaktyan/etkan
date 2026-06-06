@@ -313,6 +313,9 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                 defaultButton(
                                     onPressed: () async {
                                       if (formKey.currentState!.validate()) {
+                                        // إغلاق الكيبورد قبل إرسال الطلب
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
                                         await authCubit.loginUser(
                                             phone: authCubit
                                                 .workerLoginPhoneController.text

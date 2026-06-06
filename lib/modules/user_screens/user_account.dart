@@ -601,8 +601,7 @@ class _UserAccountState extends State<UserAccount> {
                                     cancelText: 'إلغاء',
                                     confirmText: 'حذف',
                                     onConfirm: () {
-                                      moveAndReplace(
-                                          context, const OnBoardingScreen());
+                                      Navigator.pop(context);
                                       authCubit.deleteUser();
                                     },
                                   );

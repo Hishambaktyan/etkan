@@ -808,6 +808,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
     required String phone,
     required String about,
     required List<String> experiences,
+    String? address,
+    String? specialization,
     String? profileImagePath,
     String? oldProfileImage,
     required List<String> previousWorks,
@@ -848,14 +850,24 @@ class WorkerCubit extends Cubit<WorkerStates> {
       List<String> finalExperiences =
           experiences.map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
 
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      final Map<String, dynamic> updatedData = {
         'name': name.trim(),
         'phone': phone.trim(),
         'about': about.trim(),
         'experiences': finalExperiences,
         'previousWorks': finalPreviousWorks,
         'profileImage': finalProfileImage,
-      });
+      };
+
+      if (address != null) {
+        updatedData['address'] = address.trim();
+      }
+
+      if (specialization != null) {
+        updatedData['specialization'] = specialization.trim();
+      }
+
+      await FirebaseFirestore.instance.collection('users').doc(uid).update(updatedData);
 
       workerName = name.trim();
 

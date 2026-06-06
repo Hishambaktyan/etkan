@@ -171,9 +171,65 @@ class _UserForgotPasswordState extends State<UserForgotPassword> {
                             Align(
                               alignment: AlignmentDirectional.topCenter,
                               child: Padding(
-                                padding: EdgeInsetsDirectional.only(top: 120.h),
+                                padding: EdgeInsetsDirectional.only(top: 30.h),
                                 child: Column(
                                   children: [
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.only(
+                                          start: 10.w, end: 10.w),
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(7),
+                                            child: InkWell(
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(15.r),
+                                              onTap: () {
+                                                if (widget.userType ==
+                                                    'provider') {
+                                                  moveAndReplace(
+                                                    context,
+                                                    const WorkerLogin(),
+                                                  );
+                                                } else {
+                                                  moveAndReplace(
+                                                    context,
+                                                    const UserLogin(),
+                                                  );
+                                                }
+                                              },
+                                              child: Container(
+                                                width: 42.w,
+                                                height: 42.h,
+                                                margin:
+                                                    EdgeInsetsDirectional.only(
+                                                        end: 10.w),
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.16),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15.r),
+                                                  border: Border.all(
+                                                      color: Colors.white
+                                                          .withOpacity(0.12)),
+                                                ),
+                                                child: Icon(
+                                                  Icons
+                                                      .arrow_back_ios_new_rounded,
+                                                  color: Colors.white,
+                                                  size: 18.sp,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     Align(
                                       alignment: AlignmentDirectional.topCenter,
                                       child: Container(
@@ -193,7 +249,7 @@ class _UserForgotPasswordState extends State<UserForgotPassword> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 40.h),
+                                    SizedBox(height: 30.h),
                                     Text(
                                       'نسيت كلمة المرور؟',
                                       textAlign: TextAlign.center,
@@ -233,7 +289,7 @@ class _UserForgotPasswordState extends State<UserForgotPassword> {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
-                          height: 350.h,
+                          height: 400.h,
                           width: double.infinity,
                           padding: EdgeInsetsDirectional.symmetric(
                               horizontal: 20.w, vertical: 30.h),

@@ -324,6 +324,9 @@ class _UserSignUpState extends State<UserSignUp> {
                                 SizedBox(height: 20.h),
                                 defaultButton(
                                   onPressed: () async {
+                                    // إغلاق الكيبورد قبل إرسال الطلب
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
                                     if (userSignupFormKey.currentState!
                                         .validate()) {
                                       FocusScope.of(context).unfocus();

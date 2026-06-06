@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:trying_homy/main.dart';
+import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -15,7 +17,12 @@ import 'package:trying_homy/shared/styles/colors.dart';
 import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerAccountVerification extends StatefulWidget {
-  const WorkerAccountVerification({super.key});
+  final bool isFromOnboarding;
+
+  const WorkerAccountVerification({
+    super.key,
+    this.isFromOnboarding = false,
+  });
 
   @override
   State<WorkerAccountVerification> createState() =>
@@ -615,6 +622,29 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
     );
   }
 
+
+  void _goToSubscription() {
+    moveAndReplace(
+      context,
+      const WorkerSubscriptionsScreen(isFromOnboarding: true),
+    );
+  }
+
+  Widget _buildOnboardingSkipButton(AppCubit cubit) {
+    if (!widget.isFromOnboarding) {
+      return const SizedBox.shrink();
+    }
+
+    return defaultOutlinedButton(
+      onPressed: _goToSubscription,
+      text: 'تخطي التوثيق الآن',
+      textColor: mainColor,
+      border: mainColor,
+      bgColor: cubit.isDark ? lightDarkColor : Colors.white,
+      fontSize: 14,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
@@ -627,8 +657,13 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
             }
             if (state is SendVerificationRequestSuccessState) {
               hideLoadingDialog(context);
-              Navigator.pop(context);
-              showSnackBar(Colors.green, 'تم ارسال طلب التوثيق بنجاح', context);
+              showSnackBar(Colors.green, 'تم إرسال طلب التوثيق بنجاح', context);
+
+              if (widget.isFromOnboarding) {
+                _goToSubscription();
+              } else {
+                Navigator.pop(context);
+              }
             }
             if (state is SendVerificationRequestErrorState) {
               hideLoadingDialog(context);
@@ -652,7 +687,13 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                         child: InkWell(
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            if (widget.isFromOnboarding) {
+                              _goToSubscription();
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
                           child: Icon(
                             CupertinoIcons.back,
                             color: Theme.of(context).iconTheme.color,
@@ -745,7 +786,26 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                             'not_submitted';
 
                     if (!canSendVerificationRequest(currentStatus)) {
-                      return const SizedBox.shrink();
+                      if (!widget.isFromOnboarding) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Container(
+                        padding: EdgeInsetsDirectional.only(
+                          start: 20.w,
+                          end: 20.w,
+                          top: 10.h,
+                          bottom: 20.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cubit.isDark ? darkBgColor : Colors.white,
+                          boxShadow: blueShadow,
+                        ),
+                        child: defaultButton(
+                          onPressed: _goToSubscription,
+                          text: 'المتابعة إلى الاشتراك',
+                        ),
+                      );
                     }
 
                     return Container(
@@ -759,28 +819,37 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                         color: cubit.isDark ? darkBgColor : Colors.white,
                         boxShadow: blueShadow,
                       ),
-                      child: defaultButton(
-                        onPressed: () {
-                          if (verificationItems[0]['image'] != null &&
-                              verificationItems[1]['image'] != null &&
-                              verificationItems[2]['image'] != null) {
-                            workerCubit.sendVerificationRequest(
-                              documentType: selectedDocumentType,
-                              frontImage: verificationItems[0]['image'],
-                              backImage: verificationItems[1]['image'],
-                              personalImage: verificationItems[2]['image'],
-                            );
-                          } else {
-                            showSnackBar(
-                              Colors.red,
-                              'يرجى رفع كل الوثائق المطلوبة',
-                              context,
-                            );
-                          }
-                        },
-                        text: currentStatus == 'rejected'
-                            ? 'إعادة إرسال طلب التوثيق'
-                            : 'إرسال طلب التوثيق',
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          defaultButton(
+                            onPressed: () {
+                              if (verificationItems[0]['image'] != null &&
+                                  verificationItems[1]['image'] != null &&
+                                  verificationItems[2]['image'] != null) {
+                                workerCubit.sendVerificationRequest(
+                                  documentType: selectedDocumentType,
+                                  frontImage: verificationItems[0]['image'],
+                                  backImage: verificationItems[1]['image'],
+                                  personalImage: verificationItems[2]['image'],
+                                );
+                              } else {
+                                showSnackBar(
+                                  Colors.red,
+                                  'يرجى رفع كل الوثائق المطلوبة',
+                                  context,
+                                );
+                              }
+                            },
+                            text: currentStatus == 'rejected'
+                                ? 'إعادة إرسال طلب التوثيق'
+                                : 'إرسال طلب التوثيق',
+                          ),
+                          if (widget.isFromOnboarding) ...[
+                            SizedBox(height: 10.h),
+                            _buildOnboardingSkipButton(cubit),
+                          ],
+                        ],
                       ),
                     );
                   },

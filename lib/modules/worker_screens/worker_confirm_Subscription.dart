@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
+import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
@@ -16,11 +18,13 @@ import 'package:trying_homy/shared/styles/colors.dart';
 class WorkerConfirmSubscription extends StatefulWidget {
   final Map<String, dynamic> plan;
   final Map<String, dynamic> paymentMethod;
+  final bool isFromOnboarding;
 
   const WorkerConfirmSubscription({
     super.key,
     required this.plan,
     required this.paymentMethod,
+    this.isFromOnboarding = false,
   });
 
   @override
@@ -220,7 +224,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
                       )),
                   SizedBox(height: 12.h),
                   Text(
-                    'ارفع صورة سند التحويل',
+                    'ارفع صورة سند الدفع',
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
@@ -357,9 +361,14 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
             }
             if (state is SendSubscriptionRequestSuccessState) {
               hideLoadingDialog(context);
-              Navigator.pop(context);
-              Navigator.pop(context);
               showSnackBar(Colors.green, 'تم إرسال طلب اشتراكك بنجاح', context);
+
+              if (widget.isFromOnboarding) {
+                moveAndReplace(context, const WorkerMainScreen());
+              } else {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              }
             }
             if (state is SendSubscriptionRequestErrorState) {
               hideLoadingDialog(context);
@@ -452,7 +461,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
                       _buildBankInfoCard(cubit),
                       SizedBox(height: 20.h),
                       _buildSectionTitle(
-                        'سند التحويل',
+                        'سند الدفع',
                         'assets/upload.svg',
                         cubit,
                       ),
@@ -480,7 +489,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
                           if (transferImage == null) {
                             showSnackBar(
                               Colors.red,
-                              'يرجى رفع صورة سند التحويل',
+                              'يرجى رفع صورة سند الدفع',
                               context,
                             );
                             return;

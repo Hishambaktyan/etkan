@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,84 +31,162 @@ class _WorkerProfileState extends State<WorkerProfile> {
         return BlocBuilder<WorkerCubit, WorkerStates>(
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
-            Map<String, dynamic> user =
-                appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
+            final String uid =
+                CacheHelper.getData(key: 'uid')?.toString() ?? '';
+
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
-                body: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      buildHeader(appCubit: appCubit, user: user),
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(
-                          start: 10.w,
-                          end: 10.w,
-                          top: 20.h,
-                          bottom: 20.h,
+                body: uid.isEmpty
+                    ? Center(
+                        child: Text(
+                          'تعذر جلب معرف الحساب',
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        child: Column(
-                          children: [
-                            buildQuickStats(
-                                cubit: appCubit,
-                                user: user,
-                                workerCubit: workerCubit),
-                            SizedBox(height: 25.h),
-                            buildSectionHeader(
-                                title: 'معلومات التواصل',
-                                icon: SvgPicture.asset(
-                                  'assets/contact.svg',
-                                  color: mainColor,
-                                  width: 25.w,
+                      )
+                    : StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(uid)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: mainColor,
+                              ),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text(
+                                'حدث خطأ أثناء جلب بيانات الحساب',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                cubit: appCubit),
-                            SizedBox(height: 10.h),
-                            buildContactCard(user: user, cubit: appCubit),
-                            SizedBox(height: 20.h),
-                            buildSectionHeader(
-                                title: 'نبذة عن العامل',
-                                icon: SvgPicture.asset(
-                                  'assets/info.svg',
-                                  color: mainColor,
-                                  width: 25.w,
+                              ),
+                            );
+                          }
+
+                          if (!snapshot.hasData || !snapshot.data!.exists) {
+                            return Center(
+                              child: Text(
+                                'تعذر العثور على بيانات الحساب',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                cubit: appCubit),
-                            SizedBox(height: 10.h),
-                            buildAboutCard(cubit: appCubit, user: user),
-                            SizedBox(height: 20.h),
-                            buildSectionHeader(
-                                title: 'الخبرات',
-                                icon: SvgPicture.asset(
-                                  'assets/subs.svg',
-                                  color: mainColor,
-                                  width: 25.w,
+                              ),
+                            );
+                          }
+
+                          final Map<String, dynamic> user =
+                              snapshot.data!.data() ?? {};
+
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                buildHeader(appCubit: appCubit, user: user),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.only(
+                                    start: 10.w,
+                                    end: 10.w,
+                                    top: 20.h,
+                                    bottom: 20.h,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      buildQuickStats(
+                                        cubit: appCubit,
+                                        user: user,
+                                        workerCubit: workerCubit,
+                                      ),
+                                      SizedBox(height: 25.h),
+                                      buildSectionHeader(
+                                        title: 'معلومات التواصل',
+                                        icon: SvgPicture.asset(
+                                          'assets/contact.svg',
+                                          color: mainColor,
+                                          width: 25.w,
+                                        ),
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      buildContactCard(
+                                        user: user,
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      buildSectionHeader(
+                                        title: 'نبذة عن العامل',
+                                        icon: SvgPicture.asset(
+                                          'assets/info.svg',
+                                          color: mainColor,
+                                          width: 25.w,
+                                        ),
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      buildAboutCard(
+                                        cubit: appCubit,
+                                        user: user,
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      buildSectionHeader(
+                                        title: 'الخبرات',
+                                        icon: SvgPicture.asset(
+                                          'assets/subs.svg',
+                                          color: mainColor,
+                                          width: 25.w,
+                                        ),
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      buildExperiencesCard(
+                                        user: user,
+                                        cubit: appCubit,
+                                        experiences: user['experiences'] ?? [],
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      buildSectionHeader(
+                                        title: 'الأعمال السابقة',
+                                        icon: SvgPicture.asset(
+                                          'assets/image.svg',
+                                          color: mainColor,
+                                          width: 25.w,
+                                        ),
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      buildPreviousWorksCard(
+                                        user: user,
+                                        cubit: appCubit,
+                                        previousWorks:
+                                            user['previousWorks'] ?? [],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                cubit: appCubit),
-                            SizedBox(height: 10.h),
-                            buildExperiencesCard(
-                                user: user,
-                                cubit: appCubit,
-                                experiences: user['experiences'] ?? []),
-                            SizedBox(height: 20.h),
-                            buildSectionHeader(
-                                title: 'الأعمال السابقة',
-                                icon: SvgPicture.asset(
-                                  'assets/image.svg',
-                                  color: mainColor,
-                                  width: 25.w,
-                                ),
-                                cubit: appCubit),
-                            SizedBox(height: 10.h),
-                            buildPreviousWorksCard(
-                                user: user,
-                                cubit: appCubit,
-                                previousWorks: user['previousWorks'] ?? []),
-                          ],
-                        ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                ),
               ),
             );
           },
@@ -212,6 +291,11 @@ class _WorkerProfileState extends State<WorkerProfile> {
     required AppCubit appCubit,
     required Map<String, dynamic> user,
   }) {
+    final String profileImage = '${user['profileImage'] ?? ''}'.trim();
+    final String workerName = '${user['name'] ?? 'الاسم'}'.trim();
+    final String specialization =
+        '${user['specialization'] ?? 'المهنة'}'.trim();
+
     return ClipRRect(
       borderRadius: BorderRadiusDirectional.vertical(
         bottom: Radius.circular(35.r),
@@ -385,9 +469,10 @@ class _WorkerProfileState extends State<WorkerProfile> {
                           child: CircleAvatar(
                             radius: 48.r,
                             backgroundColor: Colors.white.withOpacity(0.12),
-                            backgroundImage:
-                                NetworkImage('${user['profileImage'] ?? ''}'),
-                            child: user['profileImage'] == null
+                            backgroundImage: profileImage.isNotEmpty
+                                ? NetworkImage(profileImage)
+                                : null,
+                            child: profileImage.isEmpty
                                 ? Icon(
                                     Icons.person_rounded,
                                     color: Colors.white,
@@ -398,7 +483,7 @@ class _WorkerProfileState extends State<WorkerProfile> {
                         ),
                         SizedBox(height: 10.h),
                         Text(
-                          user['name'] ?? 'الاسم',
+                          workerName.isEmpty ? 'الاسم' : workerName,
                           style: TextStyle(
                             fontSize: 20.sp,
                             color: Colors.white,
@@ -414,7 +499,7 @@ class _WorkerProfileState extends State<WorkerProfile> {
                             borderRadius: BorderRadius.circular(30.r),
                           ),
                           child: Text(
-                            user['specialization'] ?? 'المهنة',
+                            specialization.isEmpty ? 'المهنة' : specialization,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 14.sp,
@@ -446,7 +531,7 @@ class _WorkerProfileState extends State<WorkerProfile> {
             color: mainColor,
             width: 30.w,
           ),
-          value: '${user['avgRating']}' ?? '',
+          value: '${user['avgRating'] ?? 0}',
           title: 'التقييم',
         ),
         SizedBox(width: 15.w),
@@ -457,7 +542,7 @@ class _WorkerProfileState extends State<WorkerProfile> {
             color: mainColor,
             width: 30.w,
           ),
-          value: '${workerCubit.workerCompletedRequestsCount}' ?? '',
+          value: '${workerCubit.workerCompletedRequestsCount}',
           title: 'عمل مكتمل',
         ),
       ],
