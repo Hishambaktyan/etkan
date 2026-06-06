@@ -886,10 +886,11 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
   }) async {
     final TextEditingController reasonController = TextEditingController();
 
-    await showDialog(
+    final String? rejectionReason = await showDialog<String>(
       context: context,
       barrierColor: Colors.black.withOpacity(0.25),
       barrierDismissible: false,
+      useRootNavigator: true,
       builder: (BuildContext dialogContext) {
         bool showReasonError = false;
 
@@ -1013,7 +1014,12 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                                 Expanded(
                                   child: defaultButton(
                                     onPressed: () {
-                                      Navigator.pop(dialogContext);
+                                      FocusScope.of(dialogContext).unfocus();
+
+                                      Navigator.of(
+                                        dialogContext,
+                                        rootNavigator: true,
+                                      ).pop();
                                     },
                                     text: 'إلغاء',
                                   ),
@@ -1032,8 +1038,12 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                                         return;
                                       }
 
-                                      Navigator.pop(dialogContext);
-                                      onConfirm(reason);
+                                      FocusScope.of(dialogContext).unfocus();
+
+                                      Navigator.of(
+                                        dialogContext,
+                                        rootNavigator: true,
+                                      ).pop(reason);
                                     },
                                     text: 'رفض',
                                     border: Colors.red,
@@ -1055,7 +1065,18 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       },
     );
 
+    await Future<void>.delayed(
+      const Duration(milliseconds: 300),
+    );
+
     reasonController.dispose();
+
+    if (!mounted || rejectionReason == null || rejectionReason.trim().isEmpty) {
+      return;
+    }
+
+    // يتم تنفيذ الرفض بعد إغلاق نافذة السبب بالكامل.
+    onConfirm(rejectionReason.trim());
   }
 
   Widget buildSubscriptionDetailsCard() {
