@@ -404,7 +404,23 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                 Container(
                                   padding: EdgeInsetsDirectional.all(18.r),
                                   width: double.infinity,
-                                  decoration: cardDecoration(appCubit),
+                                  decoration: BoxDecoration(
+                                      color: appCubit.isDark
+                                          ? lightDarkColor
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: mainColor.withOpacity(0.2),
+                                          spreadRadius: 1.0,
+                                          blurRadius: 7.0,
+                                          offset: const Offset(2, 5),
+                                        ),
+                                      ],
+                                      border: appCubit.isDark
+                                          ? Border.all(
+                                              color: const Color(0xFF30363D))
+                                          : null),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -692,7 +708,22 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                         ),
                         Container(
                           padding: EdgeInsetsDirectional.all(15.r),
-                          decoration: cardDecoration(appCubit),
+                          decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(25.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: mainColor.withOpacity(0.2),
+                                  spreadRadius: 1.0,
+                                  blurRadius: 7.0,
+                                  offset: const Offset(2, 5),
+                                ),
+                              ],
+                              border: appCubit.isDark
+                                  ? Border.all(color: const Color(0xFF30363D))
+                                  : null),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -737,7 +768,22 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                         Container(
                           width: double.infinity,
                           padding: EdgeInsetsDirectional.all(15.r),
-                          decoration: cardDecoration(appCubit),
+                          decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(25.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: mainColor.withOpacity(0.2),
+                                  spreadRadius: 1.0,
+                                  blurRadius: 7.0,
+                                  offset: const Offset(2, 5),
+                                ),
+                              ],
+                              border: appCubit.isDark
+                                  ? Border.all(color: const Color(0xFF30363D))
+                                  : null),
                           child: Column(
                             children: [
                               ReadMoreText(
@@ -769,7 +815,22 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                         Container(
                           padding: EdgeInsetsDirectional.all(18.r),
                           width: double.infinity,
-                          decoration: cardDecoration(appCubit),
+                          decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(25.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: mainColor.withOpacity(0.2),
+                                  spreadRadius: 1.0,
+                                  blurRadius: 7.0,
+                                  offset: const Offset(2, 5),
+                                ),
+                              ],
+                              border: appCubit.isDark
+                                  ? Border.all(color: const Color(0xFF30363D))
+                                  : null),
                           child: Column(
                             children: [
                               Row(
@@ -847,7 +908,22 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                         Container(
                           padding: EdgeInsetsDirectional.all(18.r),
                           width: double.infinity,
-                          decoration: cardDecoration(appCubit),
+                          decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(25.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: mainColor.withOpacity(0.2),
+                                  spreadRadius: 1.0,
+                                  blurRadius: 7.0,
+                                  offset: const Offset(2, 5),
+                                ),
+                              ],
+                              border: appCubit.isDark
+                                  ? Border.all(color: const Color(0xFF30363D))
+                                  : null),
                           child: Column(
                             children: [
                               Row(

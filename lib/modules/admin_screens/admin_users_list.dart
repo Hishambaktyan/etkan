@@ -32,7 +32,7 @@ class _AdminUsersListState extends State<AdminUsersList> {
         decoration: BoxDecoration(
           color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow: appCubit.isDark ? [] : blueShadow,
+          boxShadow: blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,8 +160,7 @@ class _AdminUsersListState extends State<AdminUsersList> {
                                         ? lightDarkColor
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow:
-                                        appCubit.isDark ? [] : blueShadow,
+                                    boxShadow: blueShadow,
                                   ),
                                   child: Column(
                                     crossAxisAlignment:

@@ -118,15 +118,200 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
 
   AppCubit get appCubit => AppCubit.get(context);
 
-  bool get isDark => appCubit.isDark;
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AdminCubit, AdminStates>(
+      listener: (context, state) {
+        final bool isActionLoading =
+            state is ApproveSubscriptionRequestLoadingState ||
+                state is RejectSubscriptionRequestLoadingState ||
+                state is StopProviderSubscriptionLoadingState ||
+                state is ApproveVerificationRequestLoadingState ||
+                state is RejectVerificationRequestLoadingState;
 
-  Color get cardColor => isDark ? lightDarkColor : Colors.white;
+        if (isActionLoading) {
+          showLoadingDialog(context);
+        }
 
-  Color get primaryTextColor => isDark ? Colors.white : Colors.black;
+        if (state is ApproveSubscriptionRequestSuccessState) {
+          hideLoadingDialog(context);
+          showSnackBar(
+            Colors.green,
+            'تم قبول طلب الاشتراك وتفعيل الباقة بنجاح',
+            context,
+          );
+        }
 
-  Color get secondaryTextColor => isDark ? darkSubTextColor : Colors.grey;
+        if (state is RejectSubscriptionRequestSuccessState) {
+          hideLoadingDialog(context);
+          showSnackBar(
+            Colors.green,
+            'تم رفض طلب الاشتراك وإبلاغ الفني',
+            context,
+          );
+        }
 
-  List<BoxShadow> get cardShadow => isDark ? [] : blueShadow;
+        if (state is StopProviderSubscriptionSuccessState) {
+          hideLoadingDialog(context);
+          showSnackBar(
+            Colors.green,
+            'تم إيقاف اشتراك الفني',
+            context,
+          );
+        }
+
+        if (state is ApproveVerificationRequestSuccessState) {
+          hideLoadingDialog(context);
+          showSnackBar(
+            Colors.green,
+            'تم قبول طلب التوثيق وتوثيق حساب الفني',
+            context,
+          );
+        }
+
+        if (state is RejectVerificationRequestSuccessState) {
+          hideLoadingDialog(context);
+          showSnackBar(
+            Colors.green,
+            'تم رفض طلب التوثيق وإبلاغ الفني',
+            context,
+          );
+        }
+
+        String? error;
+
+        if (state is ApproveSubscriptionRequestErrorState) {
+          error = state.error;
+        } else if (state is RejectSubscriptionRequestErrorState) {
+          error = state.error;
+        } else if (state is StopProviderSubscriptionErrorState) {
+          error = state.error;
+        } else if (state is ApproveVerificationRequestErrorState) {
+          error = state.error;
+        } else if (state is RejectVerificationRequestErrorState) {
+          error = state.error;
+        } else if (state is GetProviderReviewRequestsErrorState) {
+          error = state.error;
+        }
+
+        if (error != null) {
+          if (isActionLoading == false &&
+              state is! GetProviderReviewRequestsErrorState) {
+            hideLoadingDialog(context);
+          } else if (state is! GetProviderReviewRequestsErrorState) {
+            hideLoadingDialog(context);
+          }
+
+          showSnackBar(
+            Colors.red,
+            error,
+            context,
+          );
+        }
+      },
+      builder: (context, state) {
+        final adminCubit = AdminCubit.get(context);
+        final AppCubit appCubit = context.watch<AppCubit>();
+
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  buildHeader(),
+                  Padding(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 10.w,
+                      end: 10.w,
+                      top: 20.h,
+                      bottom: 20.h,
+                    ),
+                    child: Column(
+                      children: [
+                        buildQuickStats(),
+                        SizedBox(height: 25.h),
+                        buildSectionHeader(
+                          title: 'معلومات التواصل',
+                          icon: 'assets/contact.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildContactCard(),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'نبذة عن العامل',
+                          icon: 'assets/info.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildAboutCard(),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'الخبرات',
+                          icon: 'assets/subs.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildExperiencesCard(),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'الأعمال السابقة',
+                          icon: 'assets/image.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildPreviousWorksCard(),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'حالة التوثيق',
+                          icon: 'assets/doc.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildVerificationStatusCard(),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'مراجعة طلب التوثيق',
+                          icon: 'assets/pen.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildVerificationRequestCard(adminCubit),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'حالة الاشتراك',
+                          icon: 'assets/subs.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildSubscriptionStatusCard(),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'مراجعة طلب الاشتراك',
+                          icon: 'assets/pen.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildSubscriptionRequestCard(adminCubit),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'تفاصيل الاشتراك',
+                          icon: 'assets/info.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildSubscriptionDetailsCard(),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'إدارة الاشتراك',
+                          icon: 'assets/pen.svg',
+                        ),
+                        SizedBox(height: 10.h),
+                        buildActionsCard(adminCubit),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Widget buildWhiteCard({
     required Widget child,
@@ -136,9 +321,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       width: double.infinity,
       padding: padding ?? EdgeInsetsDirectional.all(18.r),
       decoration: BoxDecoration(
-        color: cardColor,
+        color: appCubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(25.r),
-        boxShadow: cardShadow,
+        boxShadow: blueShadow,
       ),
       child: child,
     );
@@ -153,7 +338,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         Container(
           padding: EdgeInsetsDirectional.all(8.r),
           decoration: BoxDecoration(
-            color: mainColor.withOpacity(isDark ? 0.20 : 0.10),
+            color: mainColor.withOpacity(appCubit.isDark ? 0.20 : 0.10),
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: SvgPicture.asset(
@@ -168,7 +353,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.sp,
-            color: primaryTextColor,
+            color: appCubit.isDark ? Colors.white : Colors.black,
           ),
         ),
       ],
@@ -407,9 +592,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       child: Container(
         padding: EdgeInsets.all(18.r),
         decoration: BoxDecoration(
-          color: cardColor,
+          color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow: cardShadow,
+          boxShadow: blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -422,7 +607,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
-                    color: primaryTextColor,
+                    color: appCubit.isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 Container(
@@ -447,7 +632,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
-                color: secondaryTextColor,
+                color: appCubit.isDark ? darkSubTextColor : Colors.grey,
               ),
             ),
           ],
@@ -482,7 +667,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         providerData['about'] ?? 'لا توجد نبذة عن هذا العامل.',
         style: TextStyle(
           fontSize: 12.sp,
-          color: isDark ? Colors.white : Colors.black87,
+          color: appCubit.isDark ? Colors.white : Colors.black87,
           height: 1.8,
         ),
       ),
@@ -496,7 +681,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               'لا توجد خبرات مضافة.',
               style: TextStyle(
                 fontSize: 13.sp,
-                color: secondaryTextColor,
+                color: appCubit.isDark ? darkSubTextColor : Colors.grey,
                 fontWeight: FontWeight.w600,
               ),
             )
@@ -525,7 +710,8 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                           exp,
                           style: TextStyle(
                             fontSize: 13.sp,
-                            color: isDark ? Colors.white : Colors.black87,
+                            color:
+                                appCubit.isDark ? Colors.white : Colors.black87,
                             height: 1.6,
                           ),
                         ),
@@ -556,7 +742,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   children: [
                     Icon(
                       Icons.inbox_rounded,
-                      color: isDark ? darkSubTextColor : Colors.grey.shade400,
+                      color: appCubit.isDark
+                          ? darkSubTextColor
+                          : Colors.grey.shade400,
                       size: 55.w,
                     ),
                     SizedBox(height: 5.h),
@@ -565,7 +753,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15.sp,
-                        color: isDark ? darkSubTextColor : Colors.grey.shade400,
+                        color: appCubit.isDark
+                            ? darkSubTextColor
+                            : Colors.grey.shade400,
                       ),
                     ),
                   ],
@@ -586,7 +776,9 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         width: 175.w,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16.r),
-                          color: isDark ? darkBgColor : Colors.grey.shade100,
+                          color: appCubit.isDark
+                              ? darkBgColor
+                              : Colors.grey.shade100,
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16.r),
@@ -595,12 +787,14 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                color:
-                                    isDark ? darkBgColor : Colors.grey.shade200,
+                                color: appCubit.isDark
+                                    ? darkBgColor
+                                    : Colors.grey.shade200,
                                 child: Icon(
                                   Icons.image_not_supported_outlined,
-                                  color:
-                                      isDark ? darkSubTextColor : Colors.grey,
+                                  color: appCubit.isDark
+                                      ? darkSubTextColor
+                                      : Colors.grey,
                                   size: 35.r,
                                 ),
                               );
@@ -769,7 +963,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
-                    color: primaryTextColor,
+                    color: appCubit.isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 SizedBox(height: 5.h),
@@ -777,7 +971,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   subtitle,
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: secondaryTextColor,
+                    color: appCubit.isDark ? darkSubTextColor : Colors.grey,
                     height: 1.5,
                   ),
                 ),
@@ -823,10 +1017,10 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         width: 105.w,
         padding: EdgeInsetsDirectional.all(8.r),
         decoration: BoxDecoration(
-          color: isDark ? darkBgColor : Colors.grey.shade100,
+          color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(18.r),
           border: Border.all(
-            color: isDark
+            color: appCubit.isDark
                 ? darkSubTextColor.withOpacity(0.15)
                 : Colors.grey.shade200,
           ),
@@ -840,10 +1034,13 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                 height: 82.h,
                 child: imageUrl.isEmpty
                     ? Container(
-                        color: isDark ? lightDarkColor : Colors.grey.shade200,
+                        color: appCubit.isDark
+                            ? lightDarkColor
+                            : Colors.grey.shade200,
                         child: Icon(
                           Icons.image_not_supported_outlined,
-                          color: secondaryTextColor,
+                          color:
+                              appCubit.isDark ? darkSubTextColor : Colors.grey,
                         ),
                       )
                     : Image.network(
@@ -851,11 +1048,14 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            color:
-                                isDark ? lightDarkColor : Colors.grey.shade200,
+                            color: appCubit.isDark
+                                ? lightDarkColor
+                                : Colors.grey.shade200,
                             child: Icon(
                               Icons.broken_image_outlined,
-                              color: secondaryTextColor,
+                              color: appCubit.isDark
+                                  ? darkSubTextColor
+                                  : Colors.grey,
                             ),
                           );
                         },
@@ -869,7 +1069,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: primaryTextColor,
+                color: appCubit.isDark ? Colors.white : Colors.black,
                 fontSize: 10.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -911,7 +1111,8 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                   ),
                   Center(
                     child: AlertDialog(
-                      backgroundColor: isDark ? lightDarkColor : Colors.white,
+                      backgroundColor:
+                          appCubit.isDark ? lightDarkColor : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadiusDirectional.circular(22.r),
                       ),
@@ -969,14 +1170,15 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                               decoration: InputDecoration(
                                 hintText: 'اكتب سبب الرفض هنا...',
                                 hintStyle: TextStyle(
-                                  color: isDark
+                                  color: appCubit.isDark
                                       ? darkSubTextColor
                                       : Colors.grey.shade500,
                                   fontSize: 12.sp,
                                 ),
                                 filled: true,
-                                fillColor:
-                                    isDark ? darkBgColor : Colors.grey.shade100,
+                                fillColor: appCubit.isDark
+                                    ? darkBgColor
+                                    : Colors.grey.shade100,
                                 contentPadding: EdgeInsetsDirectional.all(15.r),
                                 errorText: showReasonError
                                     ? 'يرجى كتابة سبب الرفض'
@@ -1153,7 +1355,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           children: [
             Icon(
               Icons.inbox_outlined,
-              color: secondaryTextColor,
+              color: appCubit.isDark ? darkSubTextColor : Colors.grey,
               size: 28.sp,
             ),
             SizedBox(width: 12.w),
@@ -1161,7 +1363,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               child: Text(
                 'لا يوجد طلب اشتراك قيد المراجعة لهذا الفني.',
                 style: TextStyle(
-                  color: secondaryTextColor,
+                  color: appCubit.isDark ? darkSubTextColor : Colors.grey,
                   fontSize: 12.sp,
                   height: 1.5,
                 ),
@@ -1215,7 +1417,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
             child: Text(
               'سند الدفع',
               style: TextStyle(
-                color: primaryTextColor,
+                color: appCubit.isDark ? Colors.white : Colors.black,
                 fontSize: 13.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -1293,7 +1495,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           children: [
             Icon(
               Icons.inbox_outlined,
-              color: secondaryTextColor,
+              color: appCubit.isDark ? darkSubTextColor : Colors.grey,
               size: 28.sp,
             ),
             SizedBox(width: 12.w),
@@ -1301,7 +1503,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               child: Text(
                 'لا يوجد طلب توثيق قيد المراجعة لهذا الفني.',
                 style: TextStyle(
-                  color: secondaryTextColor,
+                  color: appCubit.isDark ? darkSubTextColor : Colors.grey,
                   fontSize: 12.sp,
                   height: 1.5,
                 ),
@@ -1334,7 +1536,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           Text(
             'المستندات المرفوعة',
             style: TextStyle(
-              color: primaryTextColor,
+              color: appCubit.isDark ? Colors.white : Colors.black,
               fontSize: 13.sp,
               fontWeight: FontWeight.bold,
             ),
@@ -1414,7 +1616,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           children: [
             Icon(
               Icons.info_outline_rounded,
-              color: secondaryTextColor,
+              color: appCubit.isDark ? darkSubTextColor : Colors.grey,
               size: 28.sp,
             ),
             SizedBox(width: 12.w),
@@ -1422,7 +1624,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
               child: Text(
                 'يتم تفعيل الاشتراك بعد مراجعة طلب الاشتراك المرسل من الفني والموافقة عليه.',
                 style: TextStyle(
-                  color: secondaryTextColor,
+                  color: appCubit.isDark ? darkSubTextColor : Colors.grey,
                   fontSize: 12.sp,
                   height: 1.5,
                 ),
@@ -1438,7 +1640,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         onPressed: () {
           defaultConfirmDialog(
             context: context,
-            isDark: isDark,
+            isDark: appCubit.isDark,
             icon: 'assets/info.svg',
             iconColor: Colors.red,
             title: 'إيقاف الاشتراك',
@@ -1490,7 +1692,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
           child: Text(
             title,
             style: TextStyle(
-              color: secondaryTextColor,
+              color: appCubit.isDark ? darkSubTextColor : Colors.grey,
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -1503,7 +1705,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: primaryTextColor,
+              color: appCubit.isDark ? Colors.white : Colors.black,
               fontSize: 12.sp,
               fontWeight: FontWeight.bold,
             ),
@@ -1518,7 +1720,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       padding: EdgeInsets.symmetric(vertical: 12.h),
       child: Divider(
         height: 1,
-        color: isDark
+        color: appCubit.isDark
             ? darkSubTextColor.withOpacity(0.18)
             : Colors.grey.withOpacity(0.15),
       ),
@@ -1539,200 +1741,5 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
     }
 
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<AdminCubit, AdminStates>(
-      listener: (context, state) {
-        final bool isActionLoading =
-            state is ApproveSubscriptionRequestLoadingState ||
-                state is RejectSubscriptionRequestLoadingState ||
-                state is StopProviderSubscriptionLoadingState ||
-                state is ApproveVerificationRequestLoadingState ||
-                state is RejectVerificationRequestLoadingState;
-
-        if (isActionLoading) {
-          showLoadingDialog(context);
-        }
-
-        if (state is ApproveSubscriptionRequestSuccessState) {
-          hideLoadingDialog(context);
-          showSnackBar(
-            Colors.green,
-            'تم قبول طلب الاشتراك وتفعيل الباقة بنجاح',
-            context,
-          );
-        }
-
-        if (state is RejectSubscriptionRequestSuccessState) {
-          hideLoadingDialog(context);
-          showSnackBar(
-            Colors.green,
-            'تم رفض طلب الاشتراك وإبلاغ الفني',
-            context,
-          );
-        }
-
-        if (state is StopProviderSubscriptionSuccessState) {
-          hideLoadingDialog(context);
-          showSnackBar(
-            Colors.green,
-            'تم إيقاف اشتراك الفني',
-            context,
-          );
-        }
-
-        if (state is ApproveVerificationRequestSuccessState) {
-          hideLoadingDialog(context);
-          showSnackBar(
-            Colors.green,
-            'تم قبول طلب التوثيق وتوثيق حساب الفني',
-            context,
-          );
-        }
-
-        if (state is RejectVerificationRequestSuccessState) {
-          hideLoadingDialog(context);
-          showSnackBar(
-            Colors.green,
-            'تم رفض طلب التوثيق وإبلاغ الفني',
-            context,
-          );
-        }
-
-        String? error;
-
-        if (state is ApproveSubscriptionRequestErrorState) {
-          error = state.error;
-        } else if (state is RejectSubscriptionRequestErrorState) {
-          error = state.error;
-        } else if (state is StopProviderSubscriptionErrorState) {
-          error = state.error;
-        } else if (state is ApproveVerificationRequestErrorState) {
-          error = state.error;
-        } else if (state is RejectVerificationRequestErrorState) {
-          error = state.error;
-        } else if (state is GetProviderReviewRequestsErrorState) {
-          error = state.error;
-        }
-
-        if (error != null) {
-          if (isActionLoading == false &&
-              state is! GetProviderReviewRequestsErrorState) {
-            hideLoadingDialog(context);
-          } else if (state is! GetProviderReviewRequestsErrorState) {
-            hideLoadingDialog(context);
-          }
-
-          showSnackBar(
-            Colors.red,
-            error,
-            context,
-          );
-        }
-      },
-      builder: (context, state) {
-        final adminCubit = AdminCubit.get(context);
-        final AppCubit appCubit = context.watch<AppCubit>();
-
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  buildHeader(),
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 10.w,
-                      end: 10.w,
-                      top: 20.h,
-                      bottom: 20.h,
-                    ),
-                    child: Column(
-                      children: [
-                        buildQuickStats(),
-                        SizedBox(height: 25.h),
-                        buildSectionHeader(
-                          title: 'معلومات التواصل',
-                          icon: 'assets/contact.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildContactCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'نبذة عن العامل',
-                          icon: 'assets/info.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildAboutCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'الخبرات',
-                          icon: 'assets/subs.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildExperiencesCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'الأعمال السابقة',
-                          icon: 'assets/image.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildPreviousWorksCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'حالة التوثيق',
-                          icon: 'assets/doc.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildVerificationStatusCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'مراجعة طلب التوثيق',
-                          icon: 'assets/pen.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildVerificationRequestCard(adminCubit),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'حالة الاشتراك',
-                          icon: 'assets/subs.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildSubscriptionStatusCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'مراجعة طلب الاشتراك',
-                          icon: 'assets/pen.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildSubscriptionRequestCard(adminCubit),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'تفاصيل الاشتراك',
-                          icon: 'assets/info.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildSubscriptionDetailsCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'إدارة الاشتراك',
-                          icon: 'assets/pen.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildActionsCard(adminCubit),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 }

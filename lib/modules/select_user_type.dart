@@ -82,7 +82,7 @@ class _SelectUserTypeState extends State<SelectUserType> {
           decoration: BoxDecoration(
             color: appCubit.isDark ? lightDarkColor : Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-            boxShadow: appCubit.isDark ? [] : blueShadow,
+            boxShadow: blueShadow,
           ),
           child: defaultButton(
             onPressed: () {

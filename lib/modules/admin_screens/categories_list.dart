@@ -81,8 +81,7 @@ class _CategoriesListState extends State<CategoriesList> {
                                         ? lightDarkColor
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow:
-                                        appCubit.isDark ? [] : blueShadow,
+                                    boxShadow: blueShadow,
                                   ),
                                   child: Column(
                                     crossAxisAlignment:

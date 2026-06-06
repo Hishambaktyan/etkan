@@ -83,7 +83,7 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
-        boxShadow: appCubit.isDark ? [] : blueShadow,
+        boxShadow: blueShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,11 +153,21 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
         int pendingCount = adminCubit.requests
             .where((r) => r['status'] == 'قيد الانتظار')
             .length;
+
         int acceptedCount =
             adminCubit.requests.where((r) => r['status'] == 'مقبول').length;
-        int canceledCount = adminCubit.requests
-            .where((r) => r['status'] == 'ملغي' || r['status'] == 'مرفوض')
-            .length;
+
+        int onWayCount =
+            adminCubit.requests.where((r) => r['status'] == 'في الطريق').length;
+
+        int completedCount =
+            adminCubit.requests.where((r) => r['status'] == 'مكتمل').length;
+
+        int rejectedCount =
+            adminCubit.requests.where((r) => r['status'] == 'مرفوض').length;
+
+        int cancelledCount =
+            adminCubit.requests.where((r) => r['status'] == 'ملغي').length;
 
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -201,25 +211,25 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
                                   ),
                                   buildStatCard(
                                     title: 'في الطريق',
-                                    value: pendingCount.toString(),
+                                    value: onWayCount.toString(),
                                     icon: 'assets/timer.svg',
                                     appCubit: appCubit,
                                   ),
                                   buildStatCard(
                                     title: 'مكتملة',
-                                    value: acceptedCount.toString(),
+                                    value: completedCount.toString(),
                                     icon: 'assets/grid.svg',
                                     appCubit: appCubit,
                                   ),
                                   buildStatCard(
                                     title: 'مرفوضة',
-                                    value: canceledCount.toString(),
+                                    value: rejectedCount.toString(),
                                     icon: 'assets/delete.svg',
                                     appCubit: appCubit,
                                   ),
                                   buildStatCard(
                                     title: 'ملغية',
-                                    value: canceledCount.toString(),
+                                    value: cancelledCount.toString(),
                                     icon: 'assets/delete.svg',
                                     appCubit: appCubit,
                                   ),
@@ -351,8 +361,7 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
                                           ? lightDarkColor
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(25.r),
-                                      boxShadow:
-                                          appCubit.isDark ? [] : blueShadow,
+                                      boxShadow: blueShadow,
                                     ),
                                     child: Column(
                                       children: [

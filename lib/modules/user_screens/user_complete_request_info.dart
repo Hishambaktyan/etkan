@@ -153,7 +153,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
       padding: padding ?? EdgeInsets.all(15.r),
       decoration: BoxDecoration(
         color: appCubit.isDark ? lightDarkColor : Colors.white,
-        boxShadow: appCubit.isDark ? [] : blueShadow,
+        boxShadow: blueShadow,
         borderRadius: BorderRadius.circular(20.r),
         border:
             appCubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
