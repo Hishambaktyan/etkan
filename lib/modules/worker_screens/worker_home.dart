@@ -547,96 +547,98 @@ class _WorkerHomeState extends State<WorkerHome> {
                                     itemBuilder: (context, index) {
                                       final service = publishedServices[index];
 
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          color: appCubit.isDark
-                                              ? lightDarkColor
-                                              : Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(25.r),
-                                          boxShadow: blueShadow,
+                                      return InkWell(
+                                        onTap: () => move(
+                                          context,
+                                          WorkerServiceDetails(
+                                              service: service),
                                         ),
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 135.h,
-                                              child: Stack(
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            25.r),
-                                                    child: Image.network(
-                                                      '${service['serviceImage'] ?? ''}',
-                                                      height: 120.h,
-                                                      width: double.infinity,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (
-                                                        context,
-                                                        error,
-                                                        stackTrace,
-                                                      ) =>
-                                                          Container(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: appCubit.isDark
+                                                ? lightDarkColor
+                                                : Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(25.r),
+                                            boxShadow: blueShadow,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 135.h,
+                                                child: Stack(
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              25.r),
+                                                      child: Image.network(
+                                                        '${service['serviceImage'] ?? ''}',
                                                         height: 120.h,
-                                                        color: Colors
-                                                            .grey.shade100,
-                                                        child: Icon(
-                                                          Icons
-                                                              .wifi_off_rounded,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) =>
+                                                            Container(
+                                                          height: 120.h,
                                                           color: Colors
-                                                              .grey.shade400,
-                                                          size: 30.sp,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  PositionedDirectional(
-                                                    bottom: 5.h,
-                                                    end: 10.w,
-                                                    child: Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                        horizontal: 12.w,
-                                                        vertical: 6.h,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color: mainColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15.r),
-                                                        boxShadow: const [
-                                                          BoxShadow(
-                                                            color:
-                                                                Colors.black26,
-                                                            blurRadius: 8,
+                                                              .grey.shade100,
+                                                          child: Icon(
+                                                            Icons
+                                                                .wifi_off_rounded,
+                                                            color: Colors
+                                                                .grey.shade400,
+                                                            size: 30.sp,
                                                           ),
-                                                        ],
-                                                        border: Border.all(
-                                                          color: Colors.white,
-                                                          width: 1.5,
-                                                        ),
-                                                      ),
-                                                      child: Text(
-                                                        '${service['price'] ?? ''} ﷼',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 11.sp,
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                    PositionedDirectional(
+                                                      bottom: 5.h,
+                                                      end: 10.w,
+                                                      child: Container(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                          horizontal: 12.w,
+                                                          vertical: 6.h,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: mainColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      15.r),
+                                                          boxShadow: const [
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .black26,
+                                                              blurRadius: 8,
+                                                            ),
+                                                          ],
+                                                          border: Border.all(
+                                                            color: Colors.white,
+                                                            width: 1.5,
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          '${service['price'] ?? ''} ﷼',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 11.sp,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            InkWell(
-                                              onTap: () => move(
-                                                context,
-                                                WorkerServiceDetails(
-                                                    service: service),
-                                              ),
-                                              child: Padding(
+                                              Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     horizontal: 12.w),
                                                 child: Column(
@@ -695,8 +697,8 @@ class _WorkerHomeState extends State<WorkerHome> {
                                                   ],
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       );
                                     },

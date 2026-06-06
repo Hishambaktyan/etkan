@@ -83,6 +83,83 @@ class UserCubit extends Cubit<UserStates> {
         status == 'approved';
   }
 
+  bool _hasVisibleActiveSubscription(Map<String, dynamic> userData) {
+    if (_isSubscriptionExpired(userData)) {
+      return false;
+    }
+
+    final subscription = _getSubscriptionData(userData);
+    final String status = subscription['status']?.toString() ?? 'not_submitted';
+
+    return userData['isSubscribed'] == true &&
+        subscription['isActive'] == true &&
+        (status == 'active' || status == 'approved');
+  }
+
+  Future<Set<String>> _getActiveProviderIds() async {
+    final providersSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('role', isEqualTo: 'provider')
+        .get();
+
+    final Set<String> activeProviderIds = {};
+    final batch = FirebaseFirestore.instance.batch();
+    bool hasExpiredSubscriptions = false;
+
+    for (final providerDoc in providersSnapshot.docs) {
+      final providerData = providerDoc.data();
+      final subscription = _getSubscriptionData(providerData);
+      final String status =
+          subscription['status']?.toString() ?? 'not_submitted';
+
+      if (_isSubscriptionExpired(providerData)) {
+        final bool needsExpirationUpdate =
+            providerData['isSubscribed'] == true ||
+                subscription['isActive'] == true ||
+                status != 'expired';
+
+        if (needsExpirationUpdate) {
+          batch.update(providerDoc.reference, {
+            'isSubscribed': false,
+            'subscription.isActive': false,
+            'subscription.status': 'expired',
+            'subscription.expiredAt': FieldValue.serverTimestamp(),
+          });
+
+          hasExpiredSubscriptions = true;
+        }
+
+        continue;
+      }
+
+      if (_hasVisibleActiveSubscription(providerData)) {
+        activeProviderIds.add(providerDoc.id);
+      }
+    }
+
+    if (hasExpiredSubscriptions) {
+      try {
+        await batch.commit();
+      } catch (error) {
+        print('تعذر تحديث حالات الاشتراكات المنتهية: $error');
+      }
+    }
+
+    return activeProviderIds;
+  }
+
+  bool _isServiceVisibleToCustomers(
+    Map<String, dynamic> service,
+    Set<String> activeProviderIds,
+  ) {
+    final String providerId = service['providerId']?.toString() ?? '';
+    final bool isServiceActive = service['isActive'] != false;
+
+    return isServiceActive &&
+        providerId.isNotEmpty &&
+        activeProviderIds.contains(providerId);
+  }
+
   Map<String, dynamic> allUsers = {};
   bool isAllUsersLoaded = false;
 
@@ -111,26 +188,32 @@ class UserCubit extends Cubit<UserStates> {
       final String categoryType = type.trim();
       currentUserSpecServicesType = categoryType;
 
-      if (loadedUserSpecServices.containsKey(categoryType) && !forceRefresh) {
-        userSpecServices = List<Map<String, dynamic>>.from(
-            loadedUserSpecServices[categoryType]!);
-        emit(GetUserSpecServicesSuccessState());
-        return;
-      }
-
       emit(GetUserSpecServicesLoadingState());
 
-      final getServicesSnapshot = await FirebaseFirestore.instance
+      final activeProviderIdsFuture = _getActiveProviderIds();
+
+      final servicesFuture = FirebaseFirestore.instance
           .collection('services')
           .where('category', isEqualTo: categoryType)
           .get();
+
+      await Future.wait([
+        activeProviderIdsFuture,
+        servicesFuture,
+      ]);
+
+      final activeProviderIds = await activeProviderIdsFuture;
+      final getServicesSnapshot = await servicesFuture;
 
       final List<Map<String, dynamic>> services = [];
 
       for (var doc in getServicesSnapshot.docs) {
         final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
-        services.add(data);
+
+        if (_isServiceVisibleToCustomers(data, activeProviderIds)) {
+          services.add(data);
+        }
       }
 
       loadedUserSpecServices[categoryType] = services;
@@ -149,22 +232,31 @@ class UserCubit extends Cubit<UserStates> {
 
   Future<void> getUserServices({bool forceRefresh = false}) async {
     try {
-      if (isUserServicesLoaded && !forceRefresh) {
-        return;
-      }
-
       emit(GetUserAllServicesLoadingState());
 
       userServices.clear();
 
-      final servicesSnapshot =
-          await FirebaseFirestore.instance.collection('services').get();
+      final activeProviderIdsFuture = _getActiveProviderIds();
+      final servicesFuture =
+          FirebaseFirestore.instance.collection('services').get();
+
+      await Future.wait([
+        activeProviderIdsFuture,
+        servicesFuture,
+      ]);
+
+      final activeProviderIds = await activeProviderIdsFuture;
+      final servicesSnapshot = await servicesFuture;
 
       for (var doc in servicesSnapshot.docs) {
-        var data = doc.data();
+        final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
-        userServices.add(data);
+
+        if (_isServiceVisibleToCustomers(data, activeProviderIds)) {
+          userServices.add(data);
+        }
       }
+
       isUserServicesLoaded = true;
 
       emit(GetUserAllServicesSuccessState());
@@ -289,6 +381,14 @@ class UserCubit extends Cubit<UserStates> {
         emit(CreateRequestErrorState(
           error:
               'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',
+        ));
+        return;
+      }
+
+      if (!_hasVisibleActiveSubscription(providerData)) {
+        emit(CreateRequestErrorState(
+          error:
+              'اشتراك هذا الفني غير نشط، ولا يمكنه استقبال حجوزات جديدة حالياً.',
         ));
         return;
       }

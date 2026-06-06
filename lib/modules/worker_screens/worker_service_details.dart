@@ -135,11 +135,13 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
     required AppCubit appCubit,
     required WorkerCubit workerCubit,
   }) {
+    final BuildContext parentContext = context;
     final bool isActive = service['isActive'] ?? true;
+
     showModalBottomSheet(
-      context: context,
+      context: parentContext,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (sheetContext) {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
@@ -185,14 +187,15 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                        color:
+                            Theme.of(parentContext).textTheme.bodyLarge!.color,
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: 10.h),
                 buildServiceActionItem(
-                  context: context,
+                  context: parentContext,
                   appCubit: appCubit,
                   icon: isActive ? 'assets/eye-slash.svg' : 'assets/eye.svg',
                   iconColor: isActive ? Colors.orange : Colors.green,
@@ -201,7 +204,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                       ? 'لن تظهر هذه الخدمة للعملاء'
                       : 'ستظهر هذه الخدمة للعملاء',
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(sheetContext);
                     workerCubit.changeServiceActivity(
                       serviceId: service['id'],
                       value: !isActive,
@@ -210,46 +213,53 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                 ),
                 SizedBox(height: 10.h),
                 buildServiceActionItem(
-                  context: context,
+                  context: parentContext,
                   appCubit: appCubit,
                   icon: 'assets/pen.svg',
                   iconColor: mainColor,
                   title: 'تعديل الخدمة',
                   subtitle: 'تعديل الاسم، السعر، المدة أو الصورة',
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(sheetContext);
                     move(
-                      context,
+                      parentContext,
                       WorkerEditService(service: service),
                     );
                   },
                 ),
                 SizedBox(height: 10.h),
                 buildServiceActionItem(
-                  context: context,
+                  context: parentContext,
                   appCubit: appCubit,
                   icon: 'assets/delete.svg',
                   iconColor: Colors.red,
                   title: 'حذف الخدمة',
                   subtitle: 'حذف الخدمة نهائيًا من قائمة خدماتك',
                   onTap: () {
-                    Navigator.pop(context);
-                    defaultConfirmDialog(
-                      context: context,
-                      isDark: appCubit.isDark,
-                      icon: 'assets/delete.svg',
-                      iconColor: Colors.red,
-                      title: 'حذف الخدمة',
-                      body:
-                          'هل أنت متأكد أنك تريد حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.',
-                      confirmText: 'حذف',
-                      cancelText: 'إلغاء',
-                      onConfirm: () {
-                        workerCubit.deleteService(
-                          serviceId: service['id'],
-                        );
-                      },
-                    );
+                    Navigator.pop(sheetContext);
+
+                    Future.delayed(const Duration(milliseconds: 150), () {
+                      if (!mounted) return;
+
+                      defaultConfirmDialog(
+                        context: parentContext,
+                        isDark: appCubit.isDark,
+                        icon: 'assets/delete.svg',
+                        iconColor: Colors.red,
+                        title: 'حذف الخدمة',
+                        body:
+                            'هل أنت متأكد أنك تريد حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.',
+                        confirmText: 'حذف',
+                        cancelText: 'إلغاء',
+                        onConfirm: () {
+                          Navigator.pop(parentContext);
+
+                          workerCubit.deleteService(
+                            serviceId: service['id'],
+                          );
+                        },
+                      );
+                    });
                   },
                 ),
               ],
@@ -283,9 +293,40 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
           },
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
-            Map<String, dynamic> service = workerCubit.workerServices
-                .firstWhere((service) => service['id'] == widget.service['id']);
-            List<dynamic> reviews = service['reviews'];
+
+            final int serviceIndex = workerCubit.workerServices.indexWhere(
+              (service) => service['id'] == widget.service['id'],
+            );
+
+            if (serviceIndex == -1) {
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  body: Center(
+                    child: Padding(
+                      padding: EdgeInsetsDirectional.all(20.r),
+                      child: Text(
+                        'تم حذف الخدمة أو لم تعد موجودة.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            Map<String, dynamic> service = Map<String, dynamic>.from(
+                workerCubit.workerServices[serviceIndex]);
+
+            List<dynamic> reviews = service['reviews'] is List
+                ? List<dynamic>.from(service['reviews'])
+                : [];
+
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -18,6 +19,10 @@ class WorkerCubit extends Cubit<WorkerStates> {
   bool isSubscriptionActive = false;
   String subscriptionStatus = 'not_submitted';
   DateTime? subscriptionEndDate;
+  Timer? _subscriptionExpiryTimer;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      _workerSubscriptionListener;
+  String? _listenedWorkerId;
 
   bool get isSubscriptionExpired => subscriptionStatus == 'expired';
 
@@ -187,9 +192,78 @@ class WorkerCubit extends Cubit<WorkerStates> {
       subscriptionStatus = 'expired';
       isSubscriptionActive = false;
     }
+
+    final String uid = userData['uid']?.toString() ??
+        CacheHelper.getData(key: 'uid')?.toString() ??
+        '';
+
+    _scheduleSubscriptionExpiry(uid);
+  }
+
+  void _listenToSubscriptionChanges(String uid) {
+    if (uid.isEmpty || _listenedWorkerId == uid) {
+      return;
+    }
+
+    _workerSubscriptionListener?.cancel();
+    _listenedWorkerId = uid;
+
+    _workerSubscriptionListener = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .listen(
+      (snapshot) {
+        if (!snapshot.exists || snapshot.data() == null) {
+          return;
+        }
+
+        _setSubscriptionInfo(snapshot.data()!);
+
+        if (!isClosed && isWorkerDataLoaded) {
+          emit(GetWorkerDataSuccessState());
+        }
+      },
+      onError: (error) {
+        print('خطأ أثناء متابعة حالة الاشتراك: $error');
+      },
+    );
+  }
+
+  void _scheduleSubscriptionExpiry(String uid) {
+    _subscriptionExpiryTimer?.cancel();
+
+    if (uid.isEmpty || !isSubscriptionActive || subscriptionEndDate == null) {
+      return;
+    }
+
+    final Duration remaining = subscriptionEndDate!.difference(DateTime.now());
+
+    if (remaining <= Duration.zero) {
+      Future.microtask(() async {
+        try {
+          await _markSubscriptionAsExpired(uid);
+          emit(GetWorkerDataSuccessState());
+        } catch (error) {
+          print('خطأ أثناء إيقاف الاشتراك المنتهي: $error');
+        }
+      });
+      return;
+    }
+
+    _subscriptionExpiryTimer = Timer(remaining, () async {
+      try {
+        await _markSubscriptionAsExpired(uid);
+        emit(GetWorkerDataSuccessState());
+      } catch (error) {
+        print('خطأ أثناء إيقاف الاشتراك المنتهي: $error');
+      }
+    });
   }
 
   Future<void> _markSubscriptionAsExpired(String uid) async {
+    _subscriptionExpiryTimer?.cancel();
+
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'isSubscribed': false,
       'subscription.isActive': false,
@@ -277,6 +351,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
       emit(GetWorkerDataErrorState(error: 'لم يتم العثور على معرف المستخدم'));
       return;
     }
+
+    _listenToSubscriptionChanges(uid.toString());
 
     if (isWorkerDataLoaded && !forceRefresh) {
       if (isSubscriptionActive &&
@@ -1315,5 +1391,12 @@ class WorkerCubit extends Cubit<WorkerStates> {
     } catch (error) {
       emit(SendVerificationRequestErrorState(error: error.toString()));
     }
+  }
+
+  @override
+  Future<void> close() async {
+    _subscriptionExpiryTimer?.cancel();
+    await _workerSubscriptionListener?.cancel();
+    return super.close();
   }
 }

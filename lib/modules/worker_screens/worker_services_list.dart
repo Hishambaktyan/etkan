@@ -82,39 +82,41 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
                       onRetry: () =>
                           checkConnectionAndGetData(forceRefresh: true),
                     ),
-                    fallback: (context) => PopScope(
-                      canPop: false,
-                      onPopInvokedWithResult: (didPop, result) {
-                        if (didPop) result;
-                        moveAndReplace(context, const WorkerMainScreen());
-                      },
-                      child: RefreshIndicator(
-                        onRefresh: () =>
-                            checkConnectionAndGetData(forceRefresh: true),
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Column(
-                            children: [
-                              header(title: 'الخدمات', context: context),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              GridView.builder(
-                                itemCount: workerCubit.workerServices.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                padding: EdgeInsetsDirectional.symmetric(
-                                    horizontal: 10.w, vertical: 10.h),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        mainAxisExtent: 230.h,
-                                        crossAxisCount: 2,
-                                        crossAxisSpacing: 10.w,
-                                        mainAxisSpacing: 15.h),
-                                itemBuilder: (context, index) {
-                                  final service =
-                                      workerCubit.workerServices[index];
-                                  return Container(
+                    fallback: (context) => RefreshIndicator(
+                      onRefresh: () =>
+                          checkConnectionAndGetData(forceRefresh: true),
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          children: [
+                            header(title: 'الخدمات', context: context),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            GridView.builder(
+                              itemCount: workerCubit.workerServices.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              padding: EdgeInsetsDirectional.symmetric(
+                                  horizontal: 10.w, vertical: 10.h),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      mainAxisExtent: 230.h,
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 10.w,
+                                      mainAxisSpacing: 15.h),
+                              itemBuilder: (context, index) {
+                                final service =
+                                    workerCubit.workerServices[index];
+                                return InkWell(
+                                  onTap: () => move(
+                                      context,
+                                      WorkerServiceDetails(
+                                        service: service,
+                                      )),
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  child: Container(
                                     decoration: BoxDecoration(
                                       color: appCubit.isDark
                                           ? lightDarkColor
@@ -225,76 +227,65 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
                                             ],
                                           ),
                                         ),
-                                        InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
-                                          onTap: () => move(
-                                              context,
-                                              WorkerServiceDetails(
-                                                service: service,
-                                              )),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 12.w),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Icon(Icons.star_rounded,
-                                                        color: Colors.amber,
-                                                        size: 16.sp),
-                                                    SizedBox(width: 4.w),
-                                                    Text(
-                                                      '${service['rate'] ?? ''}',
-                                                      style: TextStyle(
-                                                          fontSize: 10.sp,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.grey),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 6.h),
-                                                Text(
-                                                  '${service['name'] ?? ''}',
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w900,
-                                                    fontSize: 13.sp,
-                                                    color: appCubit.isDark
-                                                        ? Colors.white
-                                                        : Colors.black,
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 12.w),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.star_rounded,
+                                                      color: Colors.amber,
+                                                      size: 16.sp),
+                                                  SizedBox(width: 4.w),
+                                                  Text(
+                                                    '${service['rate'] ?? ''}',
+                                                    style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.grey),
                                                   ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 6.h),
+                                              Text(
+                                                '${service['name'] ?? ''}',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 13.sp,
+                                                  color: appCubit.isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
-                                                SizedBox(height: 4.h),
-                                                Text(
-                                                  '${service['description'] ?? ''}',
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 9.sp,
-                                                    height: 1.3,
-                                                    color: appCubit.isDark
-                                                        ? darkSubTextColor
-                                                        : Colors.grey.shade600,
-                                                  ),
+                                              ),
+                                              SizedBox(height: 4.h),
+                                              Text(
+                                                '${service['description'] ?? ''}',
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 9.sp,
+                                                  height: 1.3,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey.shade600,
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -305,7 +296,7 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
           },
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
+          onPressed: () async {
             final workerCubit = WorkerCubit.get(context);
             final message = workerCubit.addServiceRestrictionMessage;
 
@@ -314,7 +305,16 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
               return;
             }
 
-            move(context, const WorkerAddService());
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const WorkerAddService(),
+              ),
+            );
+
+            if (result == true && mounted) {
+              await checkConnectionAndGetData(forceRefresh: true);
+            }
           },
           backgroundColor: mainColor,
           label: const Text(

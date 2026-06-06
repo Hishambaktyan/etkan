@@ -52,7 +52,7 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
         if (state is UploadServiceSuccessState) {
           hideLoadingDialog(context);
           showSnackBar(Colors.green, 'تم إضافة الخدمة بنجاح', context);
-          moveAndReplace(context,  const WorkerServicesList());
+          Navigator.pop(context, true);
         }
         if (state is UploadServiceErrorState) {
           hideLoadingDialog(context);
@@ -67,16 +67,19 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
             appBar: AppBar(
               automaticallyImplyLeading: false,
               leading: IconButton(
-                  onPressed: (){Navigator.pop(context);},
-                  icon: Icon(Icons.arrow_back_ios,color: Theme.of(context).iconTheme.color,)
-              ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).iconTheme.color,
+                  )),
               title: Text(
                 'إضافة الخدمة',
                 style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                     fontSize: 20.sp,
-                    fontWeight: FontWeight.bold
-                ),
+                    fontWeight: FontWeight.bold),
               ),
             ),
             body: SingleChildScrollView(
@@ -99,42 +102,43 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                           height: 160.h,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
                             image: serviceImage != null
                                 ? DecorationImage(
-                              fit: BoxFit.cover,
-                              image: FileImage(serviceImage!),
-                            )
+                                    fit: BoxFit.cover,
+                                    image: FileImage(serviceImage!),
+                                  )
                                 : null,
                           ),
                           child: serviceImage == null
                               ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(12.r),
-                                decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: SvgPicture.asset(
-                                  'assets/image.svg',
-                                  color: mainColor,
-                                  width: 30.w,
-                                ),
-                              ),
-                              SizedBox(height: 10.h),
-                              Text(
-                                'اضغط لرفع صورة الخدمة',
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          )
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(12.r),
+                                      decoration: BoxDecoration(
+                                        color: mainColor.withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/image.svg',
+                                        color: mainColor,
+                                        width: 30.w,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      'اضغط لرفع صورة الخدمة',
+                                      style: TextStyle(
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                )
                               : const SizedBox(),
                         ),
                       ),
@@ -189,16 +193,21 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                             TextFormField(
                               style: TextStyle(
                                 fontSize: 13.sp,
-                                color: appCubit.isDark ? Colors.white : Colors.black,
+                                color: appCubit.isDark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                               maxLines: 5,
                               controller: workerCubit.serviceDesc,
-                              validator: (value) => value!.isEmpty ? 'يرجى إدخال الوصف' : null,
+                              validator: (value) =>
+                                  value!.isEmpty ? 'يرجى إدخال الوصف' : null,
                               decoration: InputDecoration(
                                 hintText: 'وصف الخدمة بالتفصيل...',
-                                hintStyle: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                                hintStyle: TextStyle(
+                                    fontSize: 12.sp, color: Colors.grey),
                                 filled: true,
-                                fillColor: appCubit.isDark ? darkBgColor : bgColor,
+                                fillColor:
+                                    appCubit.isDark ? darkBgColor : bgColor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.r),
                                   borderSide: BorderSide.none,
@@ -206,12 +215,15 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.r),
                                   borderSide: BorderSide(
-                                    color: appCubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade100,
+                                    color: appCubit.isDark
+                                        ? const Color(0xFF30363D)
+                                        : Colors.grey.shade100,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.r),
-                                  borderSide: const BorderSide(color: mainColor),
+                                  borderSide:
+                                      const BorderSide(color: mainColor),
                                 ),
                               ),
                             ),
@@ -237,21 +249,23 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
               decoration: BoxDecoration(
                 color: appCubit.isDark ? lightDarkColor : Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                boxShadow:  blueShadow,
+                boxShadow: blueShadow,
               ),
               child: defaultButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     if (serviceImage == null) {
-                      showSnackBar(Colors.red, 'يرجى اختيار صورة للخدمة', context);
+                      showSnackBar(
+                          Colors.red, 'يرجى اختيار صورة للخدمة', context);
                     } else {
                       workerCubit.uploadService(
-                        serviceName: workerCubit.serviceName.text.trim(),
-                        serviceDescription: workerCubit.serviceDesc.text.trim(),
-                        servicePrice: workerCubit.servicePrice.text.trim(),
-                        servicePeriod: workerCubit.serviceDuration.text.trim(),
-                        serviceImage: serviceImage!.path
-                      );
+                          serviceName: workerCubit.serviceName.text.trim(),
+                          serviceDescription:
+                              workerCubit.serviceDesc.text.trim(),
+                          servicePrice: workerCubit.servicePrice.text.trim(),
+                          servicePeriod:
+                              workerCubit.serviceDuration.text.trim(),
+                          serviceImage: serviceImage!.path);
                     }
                   }
                 },
