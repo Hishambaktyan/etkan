@@ -1344,6 +1344,10 @@ class WorkerHomeShimmer extends StatelessWidget {
             radius: 30,
           ),
           SizedBox(height: 15.h),
+          _statusCardShimmer(),
+          SizedBox(height: 10.h),
+          _statusCardShimmer(),
+          SizedBox(height: 15.h),
           Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
             child: GridView.builder(
@@ -1599,6 +1603,51 @@ class WorkerHomeShimmer extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(radius.r),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _statusCardShimmer() {
+    return Padding(
+      padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsetsDirectional.all(15.r),
+        decoration: BoxDecoration(
+          color: containerColor,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Row(
+          children: [
+            _shimmerBox(
+              width: 45.w,
+              height: 45.h,
+              radius: 14,
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _shimmerBox(
+                    height: 13.h,
+                    width: 140.w,
+                  ),
+                  SizedBox(height: 8.h),
+                  _shimmerBox(
+                    height: 11.h,
+                    width: double.infinity,
+                  ),
+                  SizedBox(height: 6.h),
+                  _shimmerBox(
+                    height: 11.h,
+                    width: 180.w,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

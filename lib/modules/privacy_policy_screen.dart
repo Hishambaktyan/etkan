@@ -9,37 +9,39 @@ import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
-   PrivacyPolicyScreen({super.key});
+  PrivacyPolicyScreen({super.key});
 
-  Widget _buildHeaderCard(AppCubit cubit)  {
+  Widget _buildHeaderCard(AppCubit cubit) {
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25.r),
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            mainColor,
-            mainColor.withOpacity(0.75),
-          ],
-        ),
-        boxShadow: blueShadow
-      ),
+          borderRadius: BorderRadius.circular(25.r),
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              mainColor,
+              mainColor.withOpacity(0.75),
+            ],
+          ),
+          boxShadow: blueShadow),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsetsDirectional.all(15.r),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.25),
+              padding: EdgeInsetsDirectional.all(15.r),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.25),
+                ),
               ),
-            ),
-            child: SvgPicture.asset('assets/reports.svg',color: Colors.white,width: 40.w,)
-          ),
+              child: SvgPicture.asset(
+                'assets/reports.svg',
+                color: Colors.white,
+                width: 40.w,
+              )),
           SizedBox(width: 10.w),
           Expanded(
             child: Column(
@@ -82,13 +84,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsetsDirectional.all(8.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: SvgPicture.asset('assets/update.svg',color: mainColor,width: 20.w,)
-          ),
+              padding: EdgeInsetsDirectional.all(8.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: SvgPicture.asset(
+                'assets/update.svg',
+                color: mainColor,
+                width: 20.w,
+              )),
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
@@ -122,13 +127,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: EdgeInsetsDirectional.all(8.r),
-          decoration: BoxDecoration(
-            color: mainColor.withOpacity(0.10),
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
-        ),
+            padding: EdgeInsetsDirectional.all(8.r),
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: mainColor,
+              width: 25.w,
+            )),
         SizedBox(width: 8.w),
         Text(
           title,
@@ -174,13 +182,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
           collapsedIconColor:
               cubit.isDark ? Colors.white.withOpacity(0.6) : Colors.grey,
           leading: Container(
-            padding: EdgeInsets.all(9.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(11.r),
-            ),
-            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
-          ),
+              padding: EdgeInsets.all(9.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(11.r),
+              ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 20.w,
+              )),
           title: Text(
             title,
             style: TextStyle(
@@ -221,13 +232,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsetsDirectional.all(8.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              shape: BoxShape.circle,
-            ),
-            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
-          ),
+              padding: EdgeInsetsDirectional.all(8.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 20.w,
+              )),
           SizedBox(width: 10.w),
           Expanded(
             child: Column(
@@ -263,37 +277,37 @@ class PrivacyPolicyScreen extends StatelessWidget {
       'title': 'البيانات التي نقوم بجمعها',
       'icon': 'assets/folder.svg',
       'body':
-      'قد نقوم بجمع بعض البيانات الأساسية مثل الاسم، رقم الهاتف، البريد الإلكتروني، الموقع، نوع الحساب، بيانات الطلبات، التقييمات، والمحادثات المرتبطة بالخدمة، وذلك بهدف تشغيل التطبيق وتحسين تجربة المستخدم.',
+          'قد نقوم بجمع بعض البيانات الأساسية مثل الاسم، رقم الهاتف، البريد الإلكتروني، الموقع، نوع الحساب، بيانات الطلبات، التقييمات، والمحادثات المرتبطة بالخدمة، وذلك بهدف تشغيل التطبيق وتحسين تجربة المستخدم.',
     },
     {
       'title': 'استخدام بيانات الموقع',
-      'icon':'assets/loc.svg',
+      'icon': 'assets/loc.svg',
       'body':
-      'يتم استخدام الموقع لتحديد مكان العميل عند إنشاء الطلب، ولمساعدة العامل على معرفة عنوان الخدمة. لا يتم استخدام الموقع خارج نطاق تقديم الخدمة أو تحسين عملية الحجز داخل التطبيق.',
+          'يتم استخدام الموقع لتحديد مكان العميل عند إنشاء الطلب، ولمساعدة العامل على معرفة عنوان الخدمة. لا يتم استخدام الموقع خارج نطاق تقديم الخدمة أو تحسين عملية الحجز داخل التطبيق.',
     },
     {
       'title': 'حماية البيانات',
-      'icon':'assets/lock.svg',
+      'icon': 'assets/lock.svg',
       'body':
-      'نحرص على حماية بيانات المستخدمين من الوصول غير المصرح به، ونستخدم الخدمات الآمنة لتخزين البيانات وإدارتها. كما ننصح المستخدم بعدم مشاركة بيانات الدخول مع أي شخص آخر.',
+          'نحرص على حماية بيانات المستخدمين من الوصول غير المصرح به، ونستخدم الخدمات الآمنة لتخزين البيانات وإدارتها. كما ننصح المستخدم بعدم مشاركة بيانات الدخول مع أي شخص آخر.',
     },
     {
       'title': 'مشاركة البيانات',
       'icon': 'assets/share.svg',
       'body':
-      'لا يتم بيع بيانات المستخدمين أو مشاركتها مع جهات خارجية لأغراض تسويقية. قد يتم مشاركة بعض المعلومات الضرورية بين العميل والعامل لإتمام الخدمة، مثل الاسم ورقم التواصل والعنوان.',
+          'لا يتم بيع بيانات المستخدمين أو مشاركتها مع جهات خارجية لأغراض تسويقية. قد يتم مشاركة بعض المعلومات الضرورية بين العميل والعامل لإتمام الخدمة، مثل الاسم ورقم التواصل والعنوان.',
     },
     {
       'title': 'الصور والمرفقات',
       'icon': 'assets/image.svg',
       'body':
-      'قد يطلب التطبيق رفع صور متعلقة بالخدمة أو مستندات توثيق حساب العامل. يتم استخدام هذه الصور فقط للأغراض المرتبطة بالخدمة أو التحقق من الحساب.',
+          'قد يطلب التطبيق رفع صور متعلقة بالخدمة أو مستندات توثيق حساب العامل. يتم استخدام هذه الصور فقط للأغراض المرتبطة بالخدمة أو التحقق من الحساب.',
     },
     {
       'title': 'حقوق المستخدم',
       'icon': 'assets/acc_setting.svg',
       'body':
-      'يحق للمستخدم تعديل بياناته الشخصية، إدارة عناوينه، طلب حذف حسابه، أو التواصل مع الدعم في حال وجود أي استفسار متعلق بالخصوصية أو استخدام البيانات.',
+          'يحق للمستخدم تعديل بياناته الشخصية، إدارة عناوينه، طلب حذف حسابه، أو التواصل مع الدعم في حال وجود أي استفسار متعلق بالخصوصية أو استخدام البيانات.',
     },
   ];
 
@@ -330,7 +344,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     'سياسة الخصوصية',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
+                      fontSize: 20.sp,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
@@ -339,7 +353,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
+              padding: EdgeInsetsDirectional.only(
+                start: 10.w,
+                end: 10.w,
+                top: 10.h,
+                bottom: 20.h,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -382,17 +401,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   ListView.builder(
                     itemCount: policies.length,
                     shrinkWrap: true,
-                      physics:const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
                       final police = policies[index];
-                        return _buildPolicyCard(
-                            context: context,
-                            cubit: cubit,
-                            title: police['title'],
-                            body: police['body'],
-                            icon: police['icon']
-                        );
-                      },
+                      return _buildPolicyCard(
+                          context: context,
+                          cubit: cubit,
+                          title: police['title'],
+                          body: police['body'],
+                          icon: police['icon']);
+                    },
                   ),
                 ],
               ),

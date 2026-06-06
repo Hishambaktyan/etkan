@@ -1,10 +1,12 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/worker_add_service.dart';
+import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
 import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
 import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
@@ -14,6 +16,7 @@ import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
+import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerHome extends StatefulWidget {
   const WorkerHome({super.key});
@@ -119,6 +122,439 @@ class _WorkerHomeState extends State<WorkerHome> {
     );
   }
 
+  Map<String, dynamic> _getMapData(dynamic data) {
+    if (data is Map) {
+      return Map<String, dynamic>.from(data);
+    }
+    return {};
+  }
+
+  DateTime? _getDateFromFirebase(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    if (value is String) {
+      return DateTime.tryParse(value);
+    }
+
+    return null;
+  }
+
+  bool _isDateExpired(dynamic value) {
+    final DateTime? date = _getDateFromFirebase(value);
+
+    if (date == null) {
+      return false;
+    }
+
+    return !date.isAfter(DateTime.now());
+  }
+
+  String _formatDate(dynamic value) {
+    final DateTime? date = _getDateFromFirebase(value);
+
+    if (date == null) {
+      return '';
+    }
+
+    final List<String> months = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  bool _hasActiveSubscriptionFromUserData(Map<String, dynamic> userData) {
+    final Map<String, dynamic> subscription =
+        _getMapData(userData['subscription']);
+
+    final String status = subscription['status']?.toString() ?? '';
+
+    final dynamic endDate = subscription['endDate'] ??
+        subscription['endAt'] ??
+        subscription['expiresAt'];
+
+    final bool isExpired = status == 'expired' || _isDateExpired(endDate);
+
+    if (isExpired) {
+      return false;
+    }
+
+    return userData['isSubscribed'] == true ||
+        subscription['isActive'] == true ||
+        status == 'active' ||
+        status == 'approved';
+  }
+
+  Widget _buildSmallStatusButton({
+    required String text,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14.r),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(14.r),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 11.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccountStatusCard({
+    required AppCubit appCubit,
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String body,
+    String? buttonText,
+    VoidCallback? onTap,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsetsDirectional.only(bottom: 10.h),
+      padding: EdgeInsetsDirectional.all(15.r),
+      decoration: BoxDecoration(
+        color: appCubit.isDark ? lightDarkColor : Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: color.withOpacity(0.30),
+        ),
+        boxShadow: blueShadow,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsetsDirectional.all(9.r),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 24.sp,
+            ),
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5.h),
+                Text(
+                  body,
+                  style: TextStyle(
+                    color: appCubit.isDark
+                        ? darkSubTextColor
+                        : Colors.grey.shade700,
+                    fontSize: 11.sp,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (buttonText != null && onTap != null) ...[
+            SizedBox(width: 8.w),
+            _buildSmallStatusButton(
+              text: buttonText,
+              color: color,
+              onTap: onTap,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVerificationStatusCard({
+    required AppCubit appCubit,
+    required Map<String, dynamic> userData,
+  }) {
+    final Map<String, dynamic> verification =
+        _getMapData(userData['verification']);
+
+    final String status = verification['status']?.toString() ??
+        userData['verificationStatus']?.toString() ??
+        'not_submitted';
+
+    final String rejectionReason =
+        verification['rejectionReason']?.toString() ?? '';
+
+    final bool isVerified = userData['isVerified'] == true ||
+        status == 'approved' ||
+        status == 'active';
+
+    if (isVerified) {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.verified_rounded,
+        color: Colors.green,
+        title: 'حسابك موثق',
+        body: 'تم توثيق حسابك بنجاح، ويمكن للعملاء رؤية علامة التوثيق في ملفك.',
+      );
+    }
+
+    if (status == 'pending') {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.access_time_rounded,
+        color: Colors.orangeAccent,
+        title: 'طلب التوثيق قيد المراجعة',
+        body: 'تم إرسال طلب التوثيق إلى الإدارة، وسيتم إشعارك بعد مراجعته.',
+        buttonText: 'عرض',
+        onTap: () => move(
+          context,
+          const WorkerAccountVerification(),
+        ),
+      );
+    }
+
+    if (status == 'rejected') {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.cancel_rounded,
+        color: Colors.redAccent,
+        title: 'تم رفض طلب التوثيق',
+        body: rejectionReason.trim().isNotEmpty
+            ? 'سبب الرفض: $rejectionReason'
+            : 'يمكنك رفع مستندات أوضح وإرسال طلب التوثيق مرة أخرى.',
+        buttonText: 'إعادة التوثيق',
+        onTap: () => move(
+          context,
+          const WorkerAccountVerification(),
+        ),
+      );
+    }
+
+    return _buildAccountStatusCard(
+      appCubit: appCubit,
+      icon: Icons.verified_user_outlined,
+      color: mainColor,
+      title: 'حسابك غير موثق',
+      body: 'وثّق حسابك لزيادة ثقة العملاء وإظهار علامة التوثيق بجانب اسمك.',
+      buttonText: 'توثيق الآن',
+      onTap: () => move(
+        context,
+        const WorkerAccountVerification(),
+      ),
+    );
+  }
+
+  Widget _buildSubscriptionStatusCard({
+    required AppCubit appCubit,
+    required Map<String, dynamic> userData,
+  }) {
+    final Map<String, dynamic> subscription =
+        _getMapData(userData['subscription']);
+
+    String status = subscription['status']?.toString() ?? 'not_submitted';
+    final String requestId = subscription['requestId']?.toString() ?? '';
+
+    if (status == 'pending' && requestId.isEmpty) {
+      status = 'not_submitted';
+    }
+
+    final dynamic endDate = subscription['endDate'] ??
+        subscription['endAt'] ??
+        subscription['expiresAt'];
+
+    final String packageName = subscription['packageName']?.toString() ??
+        subscription['planName']?.toString() ??
+        'الباقة الحالية';
+
+    final String rejectionReason =
+        subscription['rejectionReason']?.toString() ?? '';
+
+    final String endDateText = _formatDate(endDate);
+    final bool isExpired = status == 'expired' || _isDateExpired(endDate);
+    final bool isActive = _hasActiveSubscriptionFromUserData(userData);
+
+    if (isActive) {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.workspace_premium_rounded,
+        color: Colors.green,
+        title: 'اشتراكك نشط',
+        body: endDateText.isNotEmpty
+            ? 'الباقة: $packageName، وينتهي الاشتراك في $endDateText.'
+            : 'الباقة: $packageName. يمكنك إضافة خدمات واستقبال حجوزات بلا حدود.',
+        buttonText: 'عرض',
+        onTap: () => move(
+          context,
+          const WorkerSubscriptionsScreen(),
+        ),
+      );
+    }
+
+    if (status == 'pending') {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.access_time_rounded,
+        color: Colors.orangeAccent,
+        title: 'طلب الاشتراك قيد المراجعة',
+        body:
+            'تم إرسال طلب الاشتراك إلى الإدارة، وسيتم تفعيل الباقة بعد مراجعة سند الدفع.',
+        buttonText: 'عرض',
+        onTap: () => move(
+          context,
+          const WorkerSubscriptionsScreen(),
+        ),
+      );
+    }
+
+    if (isExpired) {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.history_rounded,
+        color: Colors.redAccent,
+        title: 'انتهى اشتراكك',
+        body:
+            'جدّد اشتراكك لإضافة خدمات جديدة واستقبال حجوزات جديدة من العملاء.',
+        buttonText: 'تجديد',
+        onTap: () => move(
+          context,
+          const WorkerSubscriptionsScreen(),
+        ),
+      );
+    }
+
+    if (status == 'rejected') {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.cancel_rounded,
+        color: Colors.redAccent,
+        title: 'تم رفض طلب الاشتراك',
+        body: rejectionReason.trim().isNotEmpty
+            ? 'سبب الرفض: $rejectionReason'
+            : 'يمكنك مراجعة بيانات الدفع وإرسال طلب اشتراك جديد.',
+        buttonText: 'إعادة الإرسال',
+        onTap: () => move(
+          context,
+          const WorkerSubscriptionsScreen(),
+        ),
+      );
+    }
+
+    return _buildAccountStatusCard(
+      appCubit: appCubit,
+      icon: Icons.card_membership_rounded,
+      color: mainColor,
+      title: 'أنت على الخطة المجانية',
+      body:
+          'يمكنك إضافة 5 خدمات وإكمال 5 حجوزات فقط، وبعدها يجب الاشتراك للاستمرار بلا حدود.',
+      buttonText: 'الاشتراك',
+      onTap: () => move(
+        context,
+        const WorkerSubscriptionsScreen(),
+      ),
+    );
+  }
+
+  Widget _buildWorkerAccountStatusSection(AppCubit appCubit) {
+    final uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
+
+    if (uid.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream:
+          FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            width: double.infinity,
+            margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+            padding: EdgeInsetsDirectional.all(16.r),
+            decoration: BoxDecoration(
+              color: appCubit.isDark ? lightDarkColor : Colors.white,
+              borderRadius: BorderRadius.circular(20.r),
+              boxShadow: blueShadow,
+            ),
+            child: Row(
+              children: [
+                const CircularProgressIndicator(
+                  color: mainColor,
+                  strokeWidth: 2,
+                ),
+                SizedBox(width: 12.w),
+                Text(
+                  'جاري فحص حالة الحساب...',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || !snapshot.data!.exists) {
+          return const SizedBox.shrink();
+        }
+
+        final Map<String, dynamic> userData = snapshot.data!.data() ?? {};
+
+        return Padding(
+          padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+          child: Column(
+            children: [
+              _buildVerificationStatusCard(
+                appCubit: appCubit,
+                userData: userData,
+              ),
+              _buildSubscriptionStatusCard(
+                appCubit: appCubit,
+                userData: userData,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildSectionTitle({
     required String title,
     required String icon,
@@ -219,9 +655,13 @@ class _WorkerHomeState extends State<WorkerHome> {
                           children: [
                             header(
                               title:
-                                  'مرحبا، ${workerCubit.workerName!.split(' ')[0] ?? ''}',
+                                  'مرحبا، ${(workerCubit.workerName ?? '').trim().split(RegExp(r'\s+')).where((name) => name.isNotEmpty).take(2).join(' ')}',
                               context: context,
                             ),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            _buildWorkerAccountStatusSection(appCubit),
                             SizedBox(
                               height: 10.h,
                             ),

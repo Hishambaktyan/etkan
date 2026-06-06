@@ -452,7 +452,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                   'assets/grid.svg',
                   width: 15.w,
                   height: 15.h,
-                  color: cubit.isDark ? darkSubTextColor : mainColor,
+                  color: mainColor,
                 ),
               ),
               hintText: 'اختر القسم من الأقسام المتاحة',
