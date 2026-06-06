@@ -23,17 +23,16 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25.r),
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            mainColor,
-            mainColor.withOpacity(0.75),
-          ],
-        ),
-        boxShadow: blueShadow
-      ),
+          borderRadius: BorderRadius.circular(25.r),
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              mainColor,
+              mainColor.withOpacity(0.75),
+            ],
+          ),
+          boxShadow: blueShadow),
       child: Row(
         children: [
           Container(
@@ -45,7 +44,11 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                 color: Colors.white.withOpacity(0.25),
               ),
             ),
-            child: SvgPicture.asset('assets/tool.svg',color: Colors.white,width: 40.w,),
+            child: SvgPicture.asset(
+              'assets/tool.svg',
+              color: Colors.white,
+              width: 40.w,
+            ),
           ),
           SizedBox(width: 10.w),
           Expanded(
@@ -94,8 +97,11 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                 color: mainColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(10.r),
               ),
-              child: SvgPicture.asset('assets/update.svg',color: mainColor,width: 20.w,)
-          ),
+              child: SvgPicture.asset(
+                'assets/update.svg',
+                color: mainColor,
+                width: 20.w,
+              )),
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
@@ -129,13 +135,16 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     return Row(
       children: [
         Container(
-          padding: EdgeInsets.all(8.r),
-          decoration: BoxDecoration(
-            color: mainColor.withOpacity(0.10),
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
-        ),
+            padding: EdgeInsets.all(8.r),
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: mainColor,
+              width: 25.w,
+            )),
         SizedBox(width: 8.w),
         Text(
           title,
@@ -182,8 +191,11 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                 color: mainColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(11.r),
               ),
-              child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
-          ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 20.w,
+              )),
           title: Text(
             title,
             style: TextStyle(
@@ -222,13 +234,16 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsetsDirectional.all(9.r),
-            decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.15),
-              shape: BoxShape.circle,
-            ),
-            child: SvgPicture.asset('assets/reports.svg',color: Colors.orange.shade900,width: 20.w,)
-          ),
+              padding: EdgeInsetsDirectional.all(9.r),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(
+                'assets/reports.svg',
+                color: Colors.orange.shade900,
+                width: 20.w,
+              )),
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
@@ -266,13 +281,16 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: SvgPicture.asset(icon,color: mainColor,width: 20.w,)
-          ),
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 20.w,
+              )),
           SizedBox(width: 10.w),
           Expanded(
             child: Column(
@@ -303,94 +321,48 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     );
   }
 
-  Widget _buildAcceptanceCard(BuildContext context, AppCubit cubit) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(15.r),
-      decoration: BoxDecoration(
-        color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(
-          color: isAccepted
-              ? mainColor
-              : cubit.isDark
-                  ? const Color(0xFF30363D)
-                  : Colors.grey.shade200,
-        ),
-        boxShadow: blueShadow,
-      ),
-      child: Row(
-        children: [
-          Checkbox(
-            value: isAccepted,
-            activeColor: mainColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.r),
-            ),
-            onChanged: (value) {
-              setState(() {
-                isAccepted = value!;
-              });
-            },
-          ),
-          Expanded(
-            child: Text(
-              'أوافق على الشروط والأحكام وسياسة استخدام التطبيق',
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge!.color,
-                fontSize: 13.sp,
-                height: 1.5,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   final List<Map<String, dynamic>> terms = [
     {
       'title': 'استخدام التطبيق',
       'icon': 'assets/mobile.svg',
       'body':
-      'يجب استخدام التطبيق للأغراض المخصصة له فقط، وهي طلب خدمات الصيانة المنزلية أو تقديمها بطريقة نظامية ومحترمة دون إساءة استخدام أي ميزة من ميزات التطبيق.',
+          'يجب استخدام التطبيق للأغراض المخصصة له فقط، وهي طلب خدمات الصيانة المنزلية أو تقديمها بطريقة نظامية ومحترمة دون إساءة استخدام أي ميزة من ميزات التطبيق.',
     },
     {
       'title': 'بيانات الحساب',
       'icon': 'assets/acc.svg',
       'body':
-      'يلتزم المستخدم بإدخال بيانات صحيحة عند إنشاء الحساب، مثل الاسم ورقم الهاتف والبريد الإلكتروني والعنوان. يتحمل المستخدم مسؤولية أي بيانات غير صحيحة يتم إدخالها.',
+          'يلتزم المستخدم بإدخال بيانات صحيحة عند إنشاء الحساب، مثل الاسم ورقم الهاتف والبريد الإلكتروني والعنوان. يتحمل المستخدم مسؤولية أي بيانات غير صحيحة يتم إدخالها.',
     },
     {
       'title': 'التسعير والدفع',
       'icon': 'assets/money.svg',
       'body':
-      ' يتم تحديد سعر مبدئي للخدمة، ويمكن الاتفاق على التفاصيل النهائية بين العميل والعامل حسب طبيعة المشكلة. يجب الالتزام بطريقة الدفع المعتمدة داخل التطبيق.',
+          ' يتم تحديد سعر مبدئي للخدمة، ويمكن الاتفاق على التفاصيل النهائية بين العميل والعامل حسب طبيعة المشكلة. يجب الالتزام بطريقة الدفع المعتمدة داخل التطبيق.',
     },
     {
       'title': 'التقييمات والبلاغات',
       'icon': 'assets/review.svg',
       'body':
-      'يحق للعميل تقييم العامل بعد اكتمال الخدمة، كما يمكنه إرسال بلاغ في حال وجود مشكلة في جودة العمل أو مخالفة في التعامل. يجب أن تكون التقييمات والبلاغات صادقة وغير مسيئة.',
+          'يحق للعميل تقييم العامل بعد اكتمال الخدمة، كما يمكنه إرسال بلاغ في حال وجود مشكلة في جودة العمل أو مخالفة في التعامل. يجب أن تكون التقييمات والبلاغات صادقة وغير مسيئة.',
     },
     {
       'title': 'حساب العامل',
       'icon': 'assets/providers.svg',
       'body':
-      'يلتزم العامل بتقديم خدماته بجودة مناسبة، واحترام مواعيد الطلبات، وعدم استخدام بيانات العملاء خارج إطار تنفيذ الخدمة. قد يتم إيقاف حساب العامل عند تكرار المخالفات.',
+          'يلتزم العامل بتقديم خدماته بجودة مناسبة، واحترام مواعيد الطلبات، وعدم استخدام بيانات العملاء خارج إطار تنفيذ الخدمة. قد يتم إيقاف حساب العامل عند تكرار المخالفات.',
     },
     {
       'title': 'إيقاف أو حذف الحساب',
       'icon': 'assets/block.svg',
       'body':
-      'يحق لإدارة التطبيق إيقاف أو حذف الحساب في حال وجود إساءة استخدام، بيانات مزيفة، بلاغات متكررة، أو مخالفة واضحة للشروط والأحكام.',
+          'يحق لإدارة التطبيق إيقاف أو حذف الحساب في حال وجود إساءة استخدام، بيانات مزيفة، بلاغات متكررة، أو مخالفة واضحة للشروط والأحكام.',
     },
     {
       'title': 'تعديل الشروط',
       'icon': 'assets/pen.svg',
       'body':
-      'قد يتم تعديل هذه الشروط عند الحاجة، وسيتم عرض آخر تحديث داخل هذه الصفحة. استمرار استخدام التطبيق بعد التعديل يعني الموافقة على الشروط الجديدة.',
+          'قد يتم تعديل هذه الشروط عند الحاجة، وسيتم عرض آخر تحديث داخل هذه الصفحة. استمرار استخدام التطبيق بعد التعديل يعني الموافقة على الشروط الجديدة.',
     },
   ];
 
@@ -435,7 +407,12 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
+              padding: EdgeInsetsDirectional.only(
+                start: 10.w,
+                end: 10.w,
+                top: 10.h,
+                bottom: 20.h,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -478,74 +455,20 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                   SizedBox(height: 15.h),
                   ListView.builder(
                     itemCount: terms.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final term = terms[index];
-                        return _buildTermCard(
-                          context: context,
-                          cubit: cubit,
-                          title: term['title'],
-                          body: term['body'],
-                          icon: term['icon'],
-                        );
-                      },
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final term = terms[index];
+                      return _buildTermCard(
+                        context: context,
+                        cubit: cubit,
+                        title: term['title'],
+                        body: term['body'],
+                        icon: term['icon'],
+                      );
+                    },
                   ),
-                  SizedBox(height: 10.h),
-                  _buildAcceptanceCard(context, cubit),
                 ],
-              ),
-            ),
-            bottomNavigationBar: Container(
-              padding: EdgeInsetsDirectional.only(
-                start: 20.w,
-                end: 20.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
-              decoration: BoxDecoration(
-                color: cubit.isDark ? darkBgColor : Colors.white,
-                boxShadow: cubit.isDark
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 12,
-                          offset: const Offset(0, -4),
-                        ),
-                      ],
-              ),
-              child: SizedBox(
-                height: 50.h,
-                child: ElevatedButton(
-                  onPressed: isAccepted
-                      ? () {
-                          showSnackBar(
-                            Colors.green,
-                            'تمت الموافقة على الشروط والأحكام',
-                            context,
-                          );
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: mainColor,
-                    disabledBackgroundColor: cubit.isDark
-                        ? Colors.grey.shade800
-                        : Colors.grey.shade300,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                  ),
-                  child: Text(
-                    'موافق ومتابعة',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
               ),
             ),
           ),

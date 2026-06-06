@@ -27,6 +27,38 @@ class AuthCubit extends Cubit<AuthStates> {
     return (100000 + random.nextInt(900000)).toString();
   }
 
+  String normalizeYemeniPhone(String phone) {
+    String formattedPhone = phone.trim().replaceAll(RegExp(r'[\s\-()]'), '');
+
+    if (formattedPhone.startsWith('+967')) {
+      formattedPhone = formattedPhone.substring(4);
+    } else if (formattedPhone.startsWith('00967')) {
+      formattedPhone = formattedPhone.substring(5);
+    } else if (formattedPhone.startsWith('967') && formattedPhone.length == 12) {
+      formattedPhone = formattedPhone.substring(3);
+    }
+
+    return formattedPhone;
+  }
+
+  bool isValidYemeniPhone(String phone) {
+    final String formattedPhone = normalizeYemeniPhone(phone);
+    return RegExp(r'^7[0-9]{8}$').hasMatch(formattedPhone);
+  }
+
+  String normalizeQuadName(String name) {
+    return name.trim().replaceAll(RegExp(r'\s+'), ' ');
+  }
+
+  bool isValidQuadName(String name) {
+    final List<String> nameParts = normalizeQuadName(name)
+        .split(' ')
+        .where((part) => part.trim().isNotEmpty)
+        .toList();
+
+    return nameParts.length == 4;
+  }
+
   Future<void> requestCode({
     required String phone,
     required String userType,
@@ -35,11 +67,18 @@ class AuthCubit extends Cubit<AuthStates> {
     try {
       emit(SendPhoneCodeLoadingState());
 
-      final String formattedPhone = phone.trim();
+      final String formattedPhone = normalizeYemeniPhone(phone);
 
       if (formattedPhone.isEmpty) {
         emit(SendPhoneCodeErrorState(
           error: 'يرجى إدخال رقم الهاتف',
+        ));
+        return;
+      }
+
+      if (!isValidYemeniPhone(formattedPhone)) {
+        emit(SendPhoneCodeErrorState(
+          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
         ));
         return;
       }
@@ -165,7 +204,23 @@ class AuthCubit extends Cubit<AuthStates> {
     try {
       emit(UserSignUpLoadingState());
 
-      final formattedPhone = phone.trim();
+      final formattedPhone = normalizeYemeniPhone(phone);
+      final formattedName = normalizeQuadName(name);
+
+      if (!isValidQuadName(formattedName)) {
+        emit(UserSignUpErrorState(
+          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
+        ));
+        return;
+      }
+
+      if (!isValidYemeniPhone(formattedPhone)) {
+        emit(UserSignUpErrorState(
+          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
+        ));
+        return;
+      }
+
       final uid = FirebaseFirestore.instance.collection('users').doc().id;
 
       final existingUser = await FirebaseFirestore.instance
@@ -181,7 +236,7 @@ class AuthCubit extends Cubit<AuthStates> {
 
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'uid': uid,
-        'name': name.trim(),
+        'name': formattedName,
         'phone': formattedPhone,
         'password': password,
         'role': 'user',
@@ -215,11 +270,28 @@ class AuthCubit extends Cubit<AuthStates> {
     try {
       emit(WorkerSignUpLoadingState());
 
+      final formattedPhone = normalizeYemeniPhone(phone);
+      final formattedName = normalizeQuadName(name);
+
+      if (!isValidQuadName(formattedName)) {
+        emit(WorkerSignUpErrorState(
+          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
+        ));
+        return;
+      }
+
+      if (!isValidYemeniPhone(formattedPhone)) {
+        emit(WorkerSignUpErrorState(
+          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
+        ));
+        return;
+      }
+
       final uid = FirebaseFirestore.instance.collection('users').doc().id;
 
       final existingUser = await FirebaseFirestore.instance
           .collection('users')
-          .where('phone', isEqualTo: phone.trim())
+          .where('phone', isEqualTo: formattedPhone)
           .limit(1)
           .get();
 
@@ -230,8 +302,8 @@ class AuthCubit extends Cubit<AuthStates> {
 
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'uid': uid,
-        'phone': phone.trim(),
-        'name': name.trim(),
+        'phone': formattedPhone,
+        'name': formattedName,
         'password': password,
         'role': 'provider',
         'specialization': '',
@@ -287,7 +359,7 @@ class AuthCubit extends Cubit<AuthStates> {
     try {
       emit(ResetPasswordLoadingState());
 
-      final String formattedPhone = phone.trim();
+      final String formattedPhone = normalizeYemeniPhone(phone);
       final String formattedPassword = newPassword.trim();
 
       if (formattedPassword.length < 6) {
@@ -454,7 +526,7 @@ class AuthCubit extends Cubit<AuthStates> {
 
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .where('phone', isEqualTo: phone.trim())
+          .where('phone', isEqualTo: normalizeYemeniPhone(phone))
           .where('password', isEqualTo: password.trim())
           .where('role', isEqualTo: requiredRole)
           .limit(1)

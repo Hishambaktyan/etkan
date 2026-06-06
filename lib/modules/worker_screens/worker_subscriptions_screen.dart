@@ -257,10 +257,10 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                 color: Colors.white.withOpacity(0.25),
               ),
             ),
-            child: Icon(
-              getSubscriptionStatusIcon(status),
+            child: SvgPicture.asset(
+              'assets/subs.svg',
               color: Colors.white,
-              size: 40.r,
+              width: 40.w,
             ),
           ),
           SizedBox(width: 14.w),
@@ -325,10 +325,10 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
               color: statusColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              getSubscriptionStatusIcon(status),
+            child: SvgPicture.asset(
+              'assets/subs.svg',
               color: statusColor,
-              size: 22.r,
+              width: 22.w,
             ),
           ),
           SizedBox(width: 10.w),
@@ -337,7 +337,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'حالة ${getSubscriptionStatusText(status)}',
+                  getSubscriptionStatusText(status),
                   style: TextStyle(
                     color: statusColor,
                     fontSize: 13.sp,
@@ -356,16 +356,16 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                     ),
                   ),
                 ],
-                SizedBox(height: 4.h),
-                Text(
-                  'قيمة الاشتراك: ${subscription['price'] ?? ''} ريال',
-                  style: TextStyle(
-                    color: cubit.isDark ? darkSubTextColor : Colors.grey,
-                    fontSize: 11.sp,
-                  ),
-                ),
                 if ((status == 'active' || status == 'expired') &&
                     endDateText.isNotEmpty) ...[
+                  SizedBox(height: 4.h),
+                  Text(
+                    'قيمة الاشتراك: ${subscription['price'] ?? ''} ريال',
+                    style: TextStyle(
+                      color: cubit.isDark ? darkSubTextColor : Colors.grey,
+                      fontSize: 11.sp,
+                    ),
+                  ),
                   SizedBox(height: 4.h),
                   Text(
                     'بداية الاشتراك في: ${_formatSubscriptionDate(subscription['startDate'] ?? subscription['startAt'])}',

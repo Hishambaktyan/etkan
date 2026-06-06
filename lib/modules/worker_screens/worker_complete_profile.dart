@@ -21,7 +21,6 @@ class WorkerCompleteProfile extends StatefulWidget {
 }
 
 class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
-
   final TextEditingController addressController = TextEditingController();
   final TextEditingController aboutController = TextEditingController();
   final TextEditingController experienceController = TextEditingController();
@@ -129,8 +128,7 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
           fontSize: 12.sp,
         ),
         filled: true,
-        fillColor:
-        cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.1),
+        fillColor: cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.1),
         contentPadding: EdgeInsets.all(15.r),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.r),
@@ -165,478 +163,525 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-        return BlocConsumer<AuthCubit,AuthStates>(
+        return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
             bool isCreatingAccount = false;
-            if(state is CompleteWorkerProfileLoadingState){
+            if (state is CompleteWorkerProfileLoadingState) {
               showLoadingDialog(context);
-            }
-            else if(state is CompleteWorkerProfileSuccessState && !isCreatingAccount){
+            } else if (state is CompleteWorkerProfileSuccessState &&
+                !isCreatingAccount) {
               isCreatingAccount = true;
               showSnackBar(Colors.green, 'تم إكمال إعداد حسابك بنجاح', context);
               hideLoadingDialog(context);
               moveAndReplace(context, const WorkerMainScreen());
-            }
-            else if(state is CompleteWorkerProfileErrorState){
-              showSnackBar(Colors.red,state.error.toString(), context);
+            } else if (state is CompleteWorkerProfileErrorState) {
+              showSnackBar(Colors.red, state.error.toString(), context);
               hideLoadingDialog(context);
             }
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: Scaffold(
-                  body: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        header(
-                          title: 'إكمال الملف المهني',
-                          context: context,
-                          isNotif: false,
-                        ),
-                        SizedBox(height: 10.h,),
-                        Padding(
-                          padding: EdgeInsetsDirectional.all(10.r),
-                          child: Column(
-                            children: [
-                              buildSectionHeader(
-                                title: 'المعلومات الأساسية',
-                                icon: SvgPicture.asset(
-                                  'assets/contact.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      header(
+                        title: 'إكمال الملف المهني',
+                        context: context,
+                        isNotif: false,
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.all(10.r),
+                        child: Column(
+                          children: [
+                            buildSectionHeader(
+                              title: 'المعلومات الأساسية',
+                              icon: SvgPicture.asset(
+                                'assets/contact.svg',
+                                color: mainColor,
+                                width: 22.w,
                               ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
-                                cubit: appCubit,
-                                child: Column(
-                                  children: [
-                                    Center(
-                                      child: Stack(
-                                        alignment: Alignment.bottomRight,
-                                        children: [
-                                          Container(
-                                            width: 100.r,
-                                            height: 100.r,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              boxShadow: blueShadow,
-                                            ),
-                                            child: CircleAvatar(
-                                              radius: 48.r,
-                                              backgroundColor: appCubit.isDark
-                                                  ? darkBgColor
-                                                  : Colors.grey.shade200,
-                                              backgroundImage: profileImageFile != null
-                                                  ? FileImage(profileImageFile!)
-                                                  : null,
-                                              child: profileImageFile == null
-                                                  ? Icon(
-                                                Icons.person,
-                                                size: 40.sp,
-                                                color: Colors.grey,
-                                              )
-                                                  : null,
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Stack(
+                                      alignment: Alignment.bottomRight,
+                                      children: [
+                                        Container(
+                                          width: 100.r,
+                                          height: 100.r,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            boxShadow: blueShadow,
+                                          ),
+                                          child: CircleAvatar(
+                                            radius: 48.r,
+                                            backgroundColor: appCubit.isDark
+                                                ? darkBgColor
+                                                : Colors.grey.shade200,
+                                            backgroundImage: profileImageFile !=
+                                                    null
+                                                ? FileImage(profileImageFile!)
+                                                : null,
+                                            child: profileImageFile == null
+                                                ? Icon(
+                                                    Icons.person,
+                                                    size: 40.sp,
+                                                    color: Colors.grey,
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: pickProfileImage,
+                                          child: CircleAvatar(
+                                            radius: 16.r,
+                                            backgroundColor: mainColor,
+                                            child: SvgPicture.asset(
+                                              'assets/camera.svg',
+                                              color: Colors.white,
+                                              width: 18.w,
                                             ),
                                           ),
-                                          InkWell(
-                                            onTap: pickProfileImage,
-                                            child: CircleAvatar(
-                                              radius: 16.r,
-                                              backgroundColor: mainColor,
-                                              child: SvgPicture.asset(
-                                                'assets/camera.svg',
-                                                color: Colors.white,
-                                                width: 18.w,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 25.h),
-                                    DropdownButtonFormField<String>(
-                                      dropdownColor: appCubit.isDark ? darkBgColor : Colors.white,
-                                      isExpanded: false,
-                                      alignment: AlignmentDirectional.centerStart,
-                                      icon: Icon(
-                                        Icons.keyboard_arrow_down_rounded,
-                                        color: Colors.grey.shade600,
-                                        size: 20.sp,
-                                      ),
-                                      decoration: InputDecoration(
-                                        prefixIcon: Padding(
-                                          padding: const EdgeInsets.all(12),
-                                          child: SvgPicture.asset('assets/work.svg',
-                                              width: 12.w,
-                                              height: 12.h,
-                                              color: appCubit.isDark
-                                                  ? darkSubTextColor
-                                                  : mainColor),
-                                        ),
-                                        contentPadding: EdgeInsetsDirectional.symmetric(
-                                            vertical: 14.h, horizontal: 10.w),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15.r),
-                                          borderSide: BorderSide(
-                                            color: Colors.grey.shade100
-                                          )
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15.r),
-                                          borderSide: BorderSide(
-                                            color: Colors.grey.shade100
-                                          )
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15.r),
-                                          borderSide: BorderSide(
-                                            color: Colors.grey.shade100
-                                          )
-                                        ),
-                                        errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15.r),
-                                          borderSide: BorderSide(
-                                            color: Colors.grey.shade100
-                                          )
-                                        ),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15.r),
-                                          borderSide: BorderSide(
-                                            color: Colors.grey.shade100
-                                          )
-                                        ),
-                                        errorStyle: TextStyle(fontSize: 10.sp),
-                                      ),
-                                      hint: Text(
-                                        'اختر القسم',
-                                        style: TextStyle(
-                                            fontSize: 12.sp,
+                                  ),
+                                  SizedBox(height: 25.h),
+                                  DropdownButtonFormField<String>(
+                                    dropdownColor: appCubit.isDark
+                                        ? darkBgColor
+                                        : Colors.white,
+                                    isExpanded: false,
+                                    alignment: AlignmentDirectional.centerStart,
+                                    icon: Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: Colors.grey.shade600,
+                                      size: 20.sp,
+                                    ),
+                                    decoration: InputDecoration(
+                                      prefixIcon: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: SvgPicture.asset(
+                                            'assets/work.svg',
+                                            width: 12.w,
+                                            height: 12.h,
                                             color: appCubit.isDark
                                                 ? darkSubTextColor
-                                                : Colors.grey),
+                                                : mainColor),
                                       ),
-                                      borderRadius: BorderRadius.circular(12.r),
-                                      value: authCubit.selectedCategory,
-                                      items: const [
-                                        DropdownMenuItem(
-                                          value: 'كهرباء',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('كهرباء')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'سباكة',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('سباكة')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'الماء',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('الماء')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'التكييف',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('التكييف')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'البناء',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('البناء')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'الحدادة',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('الحدادة')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'النجارة',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('النجارة')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'الدهان',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('الدهان')),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'أخرى',
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Text('أخرى')),
-                                        ),
-                                      ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          authCubit.selectedCategory = value;
-                                        });
-                                      },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'يرجى اختيار القسم';
-                                        }
-                                        return null;
-                                      },
+                                      contentPadding:
+                                          EdgeInsetsDirectional.symmetric(
+                                              vertical: 14.h, horizontal: 10.w),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade100)),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade100)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade100)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade100)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade100)),
+                                      errorStyle: TextStyle(fontSize: 10.sp),
                                     ),
-                                    SizedBox(height: 15.h),
-                                    defaultTextFormField(
-                                      text: 'العنوان',
-                                      prefixIcon: 'assets/loc.svg',
-                                      errorMes: '',
-                                      controller: addressController,
-                                      type: TextInputType.text,
-                                      cubit: appCubit,
+                                    hint: Text(
+                                      'اختر القسم',
+                                      style: TextStyle(
+                                          fontSize: 12.sp,
+                                          color: appCubit.isDark
+                                              ? darkSubTextColor
+                                              : Colors.grey),
                                     ),
-                                  ],
-                                ),
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    value: authCubit.selectedCategory,
+                                    items: [
+                                      DropdownMenuItem(
+                                        value: 'كهرباء',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('كهرباء',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'سباكة',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('سباكة',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'الماء',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('الماء',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'التكييف',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('التكييف',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'البناء',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('البناء',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'الحدادة',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('الحدادة',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'النجارة',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('النجارة',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'الدهان',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('الدهان',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'أخرى',
+                                        child: Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text('أخرى',
+                                                style: TextStyle(
+                                                    color: appCubit.isDark
+                                                        ? Colors.white
+                                                        : Colors.black))),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        authCubit.selectedCategory = value;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'يرجى اختيار القسم';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  defaultTextFormField(
+                                    text: 'العنوان',
+                                    prefixIcon: 'assets/loc.svg',
+                                    errorMes: '',
+                                    controller: addressController,
+                                    type: TextInputType.text,
+                                    cubit: appCubit,
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 20.h),
-
-                              buildSectionHeader(
-                                title: 'نبذة عنك',
-                                icon: SvgPicture.asset(
-                                  'assets/info.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
+                            ),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                              title: 'نبذة عنك',
+                              icon: SvgPicture.asset(
+                                'assets/info.svg',
+                                color: mainColor,
+                                width: 22.w,
                               ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: buildInputField(
+                                controller: aboutController,
                                 cubit: appCubit,
-                                child: buildInputField(
-                                  controller: aboutController,
-                                  cubit: appCubit,
-                                  maxLines: 6,
-                                  hint: 'اكتب نبذة مختصرة عن خبرتك ومهاراتك',
-                                ),
+                                maxLines: 6,
+                                hint: 'اكتب نبذة مختصرة عن خبرتك ومهاراتك',
                               ),
-                              SizedBox(height: 20.h),
-
-                              buildSectionHeader(
-                                title: 'الخبرات',
-                                icon: SvgPicture.asset(
-                                  'assets/subs.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
+                            ),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                              title: 'الخبرات',
+                              icon: SvgPicture.asset(
+                                'assets/subs.svg',
+                                color: mainColor,
+                                width: 22.w,
                               ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
-                                cubit: appCubit,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: defaultTextFormField(
-                                            text: 'أضف خبرة',
-                                            prefixIcon: 'assets/subs.svg',
-                                            errorMes: '',
-                                            controller: experienceController,
-                                            type: TextInputType.text,
-                                            cubit: appCubit,
-                                          ),
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: defaultTextFormField(
+                                          text: 'أضف خبرة',
+                                          prefixIcon: 'assets/subs.svg',
+                                          errorMes: '',
+                                          controller: experienceController,
+                                          type: TextInputType.text,
+                                          cubit: appCubit,
                                         ),
-                                        SizedBox(width: 10.w),
-                                        IconButton(
-                                          onPressed: () {
-                                            if (experienceController.text.trim().isNotEmpty) {
-                                              setState(() {
-                                                experiences.add(
-                                                  experienceController.text.trim(),
-                                                );
-                                                experienceController.clear();
-                                              });
-                                            }
-                                          },
-                                          icon: Icon(
-                                            Icons.add_box_rounded,
-                                            color: mainColor,
-                                            size: 35.r,
-                                          ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      IconButton(
+                                        onPressed: () {
+                                          if (experienceController.text
+                                              .trim()
+                                              .isNotEmpty) {
+                                            setState(() {
+                                              experiences.add(
+                                                experienceController.text
+                                                    .trim(),
+                                              );
+                                              experienceController.clear();
+                                            });
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.add_box_rounded,
+                                          color: mainColor,
+                                          size: 35.r,
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 15.h),
-                                    ListView.builder(
-                                      itemCount: experiences.length,
-                                      shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        final experience = experiences[index];
-                                        return Padding(
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  ListView.builder(
+                                    itemCount: experiences.length,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      final experience = experiences[index];
+                                      return Padding(
+                                        padding: EdgeInsetsDirectional.only(
+                                            bottom: 10.h),
+                                        child: Container(
                                           padding:
-                                          EdgeInsetsDirectional.only(bottom: 10.h),
-                                          child: Container(
-                                            padding: EdgeInsetsDirectional.symmetric(
-                                              horizontal: 10.w,
-                                              vertical: 8.h,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: appCubit.isDark
-                                                  ? const Color(0xFF0D1117)
-                                                  : mainColor.withOpacity(0.1),
-                                              borderRadius:
-                                              BorderRadius.circular(20.r),
-                                            ),
-                                            child: Row(
+                                              EdgeInsetsDirectional.symmetric(
+                                            horizontal: 10.w,
+                                            vertical: 8.h,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: appCubit.isDark
+                                                ? const Color(0xFF0D1117)
+                                                : mainColor.withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(20.r),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              SvgPicture.asset(
+                                                'assets/all.svg',
+                                                color: mainColor,
+                                              ),
+                                              SizedBox(width: 10.w),
+                                              Expanded(
+                                                child: Text(
+                                                  experience,
+                                                  style: TextStyle(
+                                                      fontSize: 13.sp),
+                                                ),
+                                              ),
+                                              IconButton(
+                                                onPressed: () => setState(
+                                                  () => experiences
+                                                      .removeAt(index),
+                                                ),
+                                                icon: SvgPicture.asset(
+                                                  'assets/delete.svg',
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                              title: 'الأعمال السابقة',
+                              icon: SvgPicture.asset(
+                                'assets/image.svg',
+                                color: mainColor,
+                                width: 22.w,
+                              ),
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: Column(
+                                children: [
+                                  defaultOutlinedButtonWithIcon(
+                                    onPressed: pickWorkImage,
+                                    text: 'إضافة عمل جديد',
+                                    icon: const Icon(
+                                      Icons.add_rounded,
+                                      color: mainColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  SizedBox(
+                                    height: 120.h,
+                                    child: previousWorks.isEmpty
+                                        ? Column(
+                                            children: [
+                                              Icon(
+                                                Icons.inbox_rounded,
+                                                color: Colors.grey.shade400,
+                                                size: 60.w,
+                                              ),
+                                              SizedBox(height: 5.h),
+                                              Text(
+                                                'لا توجد أعمال مضافة حتى الآن',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15.sp,
+                                                  color: Colors.grey.shade400,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : ListView.separated(
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: previousWorks.length,
+                                            separatorBuilder:
+                                                (context, index) =>
+                                                    SizedBox(width: 12.w),
+                                            itemBuilder: (context, index) =>
+                                                Stack(
                                               children: [
-                                                SvgPicture.asset(
-                                                  'assets/all.svg',
-                                                  color: mainColor,
-                                                ),
-                                                SizedBox(width: 10.w),
-                                                Expanded(
-                                                  child: Text(
-                                                    experience,
-                                                    style: TextStyle(fontSize: 13.sp),
+                                                Container(
+                                                  width: 120.w,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.r),
+                                                    color: mainColor
+                                                        .withOpacity(0.1),
+                                                    image: DecorationImage(
+                                                      image: FileImage(
+                                                        File(previousWorks[
+                                                            index]),
+                                                      ),
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
                                                 ),
-                                                IconButton(
-                                                  onPressed: () => setState(
-                                                        () => experiences.removeAt(index),
-                                                  ),
-                                                  icon: SvgPicture.asset(
-                                                    'assets/delete.svg',
-                                                    color: Colors.red,
+                                                Positioned(
+                                                  top: 5,
+                                                  left: 5,
+                                                  child: InkWell(
+                                                    onTap: () => setState(
+                                                      () => previousWorks
+                                                          .removeAt(index),
+                                                    ),
+                                                    child: const CircleAvatar(
+                                                      radius: 12,
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      child: Icon(
+                                                        Icons.close,
+                                                        size: 15,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 20.h),
-
-                              buildSectionHeader(
-                                title: 'الأعمال السابقة',
-                                icon: SvgPicture.asset(
-                                  'assets/image.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
-                              ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
-                                cubit: appCubit,
-                                child: Column(
-                                  children: [
-                                    defaultOutlinedButtonWithIcon(
-                                      onPressed: pickWorkImage,
-                                      text: 'إضافة عمل جديد',
-                                      icon: const Icon(
-                                        Icons.add_rounded,
-                                        color: mainColor,
-                                      ),
-                                    ),
-                                    SizedBox(height: 15.h),
-                                    SizedBox(
-                                      height: 120.h,
-                                      child: previousWorks.isEmpty
-                                          ? Column(
-                                        children: [
-                                          Icon(
-                                            Icons.inbox_rounded,
-                                            color: Colors.grey.shade400,
-                                            size: 60.w,
-                                          ),
-                                          SizedBox(height: 5.h),
-                                          Text(
-                                            'لا توجد أعمال مضافة حتى الآن',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15.sp,
-                                              color: Colors.grey.shade400,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                          : ListView.separated(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: previousWorks.length,
-                                        separatorBuilder: (context, index) =>
-                                            SizedBox(width: 12.w),
-                                        itemBuilder: (context, index) => Stack(
-                                          children: [
-                                            Container(
-                                              width: 120.w,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                BorderRadius.circular(15.r),
-                                                color: mainColor.withOpacity(0.1),
-                                                image: DecorationImage(
-                                                  image: FileImage(
-                                                    File(previousWorks[index]),
-                                                  ),
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: 5,
-                                              left: 5,
-                                              child: InkWell(
-                                                onTap: () => setState(() => previousWorks.removeAt(index),
-                                                ),
-                                                child: const CircleAvatar(
-                                                  radius: 12,
-                                                  backgroundColor: Colors.red,
-                                                  child: Icon(
-                                                    Icons.close,
-                                                    size: 15,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 40.h),
-
-                              defaultButton(
-                                onPressed: ()=>authCubit.completeWorkerProfile(
+                            ),
+                            SizedBox(height: 40.h),
+                            defaultButton(
+                              onPressed: () => authCubit.completeWorkerProfile(
                                   about: aboutController.text.trim(),
                                   address: addressController.text.trim(),
                                   experiences: experiences,
                                   profileImage: profileImageFile!.path,
                                   specialization: authCubit.selectedCategory!,
-                                  previousWorks: previousWorks
-                                ),
-                                text: 'إكمال التسجيل',
-                                height: 50.h,
-                              ),
-                            ],
-                          ),
+                                  previousWorks: previousWorks),
+                              text: 'إكمال التسجيل',
+                              height: 50.h,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
+              ),
+            );
+          },
         );
       },
     );

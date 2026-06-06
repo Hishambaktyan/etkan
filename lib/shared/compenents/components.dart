@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -784,7 +785,13 @@ Widget defaultTextFormField(
         double? fontSize,
         required AppCubit cubit,
         bool isCovered = false,
-        bool isReadOnly = false}) =>
+        bool isReadOnly = false,
+        TextDirection textDirection = TextDirection.rtl,
+        TextAlign textAlign = TextAlign.start,
+        List<TextInputFormatter>? inputFormatters,
+        String? Function(String?)? validator,
+        Function(String)? onChanged,
+        Widget? suffixWidget}) =>
     TextFormField(
       style: TextStyle(
         fontSize: 14.sp,
@@ -792,13 +799,21 @@ Widget defaultTextFormField(
       ),
       readOnly: isReadOnly,
       keyboardType: type,
-      textDirection: TextDirection.rtl,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return errorMes;
+      textDirection: textDirection,
+      textAlign: textAlign,
+      inputFormatters: inputFormatters,
+      onChanged: (value) {
+        if (onChanged != null) {
+          onChanged(value);
         }
-        return null;
       },
+      validator: validator ??
+          (value) {
+            if (value == null || value.isEmpty) {
+              return errorMes;
+            }
+            return null;
+          },
       controller: controller,
       obscureText: isPassword,
       decoration: InputDecoration(
@@ -828,7 +843,7 @@ Widget defaultTextFormField(
                 ),
                 highlightColor: Colors.transparent,
               )
-            : null,
+            : suffixWidget,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.r),
           borderSide: BorderSide(

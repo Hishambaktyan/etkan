@@ -1,9 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/verified_phone.dart';
+import 'package:trying_homy/modules/signup_terms_agreement_screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
@@ -21,34 +22,80 @@ class WorkerSignup extends StatefulWidget {
 
 class _WorkerSignupState extends State<WorkerSignup> {
   var formKey = GlobalKey<FormState>();
+
+  List<String> getNameParts(String value) {
+    return value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.trim().isNotEmpty)
+        .toList();
+  }
+
+  void limitNameToFourWords(TextEditingController controller, String value) {
+    final List<String> nameParts = getNameParts(value);
+
+    if (nameParts.length > 4) {
+      final String newValue = nameParts.take(4).join(' ');
+
+      controller.value = TextEditingValue(
+        text: newValue,
+        selection: TextSelection.collapsed(offset: newValue.length),
+      );
+    }
+  }
+
+  String? validateQuadName(String? value) {
+    final List<String> nameParts = getNameParts(value ?? '');
+
+    if (nameParts.isEmpty) {
+      return 'الاسم الرباعي يجب أن لا يكون فارغًا';
+    }
+
+    if (nameParts.length != 4) {
+      return 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط';
+    }
+
+    return null;
+  }
+
+  String? validateYemeniPhone(String? value) {
+    final String phone = value?.trim() ?? '';
+
+    if (phone.isEmpty) {
+      return 'رقم الهاتف يجب أن لا يكون فارغًا';
+    }
+
+    if (!RegExp(r'^7[0-9]{8}$').hasMatch(phone)) {
+      return 'أدخل رقمًا يمنيًا صحيحًا مكونًا من 9 أرقام ويبدأ بـ 7';
+    }
+
+    return null;
+  }
+
+  Widget buildPhoneSuffix(AppCubit appCubit) {
+    return Container(
+      width: 62.w,
+      alignment: Alignment.center,
+      margin: EdgeInsetsDirectional.only(end: 5.w),
+      child: Text(
+        '+967',
+        textDirection: TextDirection.ltr,
+        style: TextStyle(
+          color: mainColor,
+          fontSize: 13.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppCubit appCubit = AppCubit.get(context);
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AuthCubit authCubit = AuthCubit.get(context);
-        return BlocConsumer<AuthCubit, AuthStates>(
-          listener: (context, state) {
-            if (state is SendPhoneCodeLoadingState) {
-              showLoadingDialog(context);
-            }
-            if (state is SendPhoneCodeSuccessState) {
-              hideLoadingDialog(context);
-              showSnackBar(
-                  Colors.green, 'تم إرسال كود التحقق إلى رقمك', context);
-              move(
-                context,
-                VerifiedPhone(
-                  phone: state.phone,
-                  userType: state.userType,
-                ),
-              );
-            }
-            if (state is SendPhoneCodeErrorState) {
-              hideLoadingDialog(context);
-              showSnackBar(Colors.red, state.error, context);
-            }
-          },
+        return BlocBuilder<AuthCubit, AuthStates>(
           builder: (context, state) {
             return Directionality(
               textDirection: TextDirection.rtl,
@@ -70,82 +117,132 @@ class _WorkerSignupState extends State<WorkerSignup> {
                             0.0,
                             0.8,
                           ])),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: -50.h,
-                            left: -50.w,
-                            child: CircleAvatar(
-                              radius: 100.r,
-                              backgroundColor: Colors.white.withOpacity(0.15),
-                            ),
+                      child: Stack(children: [
+                        Positioned(
+                          top: -50.h,
+                          left: -50.w,
+                          child: CircleAvatar(
+                            radius: 100.r,
+                            backgroundColor: Colors.white.withOpacity(0.15),
                           ),
-                          Positioned(
-                            top: 80.h,
-                            right: -60.w,
-                            child: Container(
-                              width: 250.r,
-                              height: 250.r,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    const Color(0xFF00F2FF).withOpacity(0.5),
-                                    const Color(0xFF00F2FF).withOpacity(0),
-                                  ],
-                                ),
+                        ),
+                        Positioned(
+                          top: 80.h,
+                          right: -60.w,
+                          child: Container(
+                            width: 250.r,
+                            height: 250.r,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  const Color(0xFF00F2FF).withOpacity(0.5),
+                                  const Color(0xFF00F2FF).withOpacity(0),
+                                ],
                               ),
                             ),
                           ),
-                          Positioned(
-                            top: 200.h,
-                            left: -40.w,
-                            child: Container(
-                              width: 200.r,
-                              height: 200.r,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    mainColor.withOpacity(0.4),
-                                    mainColor.withOpacity(0),
-                                  ],
-                                ),
+                        ),
+                        Positioned(
+                          top: 200.h,
+                          left: -40.w,
+                          child: Container(
+                            width: 200.r,
+                            height: 200.r,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  mainColor.withOpacity(0.4),
+                                  mainColor.withOpacity(0),
+                                ],
                               ),
                             ),
                           ),
-                          Positioned.fill(
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                  sigmaX: 50,
-                                  sigmaY: 50), // تنعيم الألوان لتصبح مثل الضوء
-                              child: Container(color: Colors.transparent),
-                            ),
+                        ),
+                        Positioned.fill(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+                            child: Container(color: Colors.transparent),
                           ),
-                          Align(
+                        ),
+                        Align(
                             alignment: AlignmentDirectional.topCenter,
                             child: Padding(
-                              padding: EdgeInsetsDirectional.only(top: 100.h),
-                              child: Text(
-                                'إنشاء حساب\nفني جديد',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 32.sp,
-                                  fontWeight: FontWeight.bold,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.white.withOpacity(0.4),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 0),
+                                padding: EdgeInsetsDirectional.only(top: 30.h),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.only(
+                                          start: 10.w, end: 10.w),
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(7),
+                                            child: InkWell(
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(15.r),
+                                              onTap: () => moveAndReplace(
+                                                  context, const WorkerLogin()),
+                                              child: Container(
+                                                width: 42.w,
+                                                height: 42.h,
+                                                margin:
+                                                    EdgeInsetsDirectional.only(
+                                                        end: 10.w),
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.16),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15.r),
+                                                  border: Border.all(
+                                                      color: Colors.white
+                                                          .withOpacity(0.12)),
+                                                ),
+                                                child: Icon(
+                                                  Icons
+                                                      .arrow_back_ios_new_rounded,
+                                                  color: Colors.white,
+                                                  size: 18.sp,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: AlignmentDirectional.topCenter,
+                                      child: Padding(
+                                        padding: EdgeInsetsDirectional.only(
+                                            top: 50.h),
+                                        child: Text(
+                                          'إنشاء حساب\nفني جديد',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 32.sp,
+                                            fontWeight: FontWeight.bold,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.white
+                                                    .withOpacity(0.4),
+                                                blurRadius: 20,
+                                                offset: const Offset(0, 0),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                                )))
+                      ]),
                     ),
                     Align(
                       alignment: Alignment.bottomCenter,
@@ -176,11 +273,17 @@ class _WorkerSignupState extends State<WorkerSignup> {
                               children: [
                                 defaultTextFormField(
                                   cubit: appCubit,
-                                  text: 'الأسم الكامل',
+                                  text: 'الاسم الرباعي',
                                   prefixIcon: 'assets/acc.svg',
-                                  errorMes: 'الاسم يجب ان لا يكون فارغ',
+                                  errorMes:
+                                      'الاسم الرباعي يجب أن لا يكون فارغًا',
                                   controller: authCubit.workerNameController,
-                                  type: TextInputType.text,
+                                  type: TextInputType.name,
+                                  validator: validateQuadName,
+                                  onChanged: (value) => limitNameToFourWords(
+                                    authCubit.workerNameController,
+                                    value,
+                                  ),
                                 ),
                                 SizedBox(
                                   height: 15.0.h,
@@ -189,9 +292,17 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
-                                  errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
+                                  errorMes: 'رقم الهاتف يجب أن لا يكون فارغًا',
                                   controller: authCubit.workerPhoneController,
                                   type: TextInputType.phone,
+                                  textDirection: TextDirection.ltr,
+                                  textAlign: TextAlign.right,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(9),
+                                  ],
+                                  validator: validateYemeniPhone,
+                                  suffixWidget: buildPhoneSuffix(appCubit),
                                 ),
                                 SizedBox(
                                   height: 15.0.h,
@@ -216,11 +327,16 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                 defaultButton(
                                     onPressed: () async {
                                       if (formKey.currentState!.validate()) {
-                                        authCubit.requestCode(
+                                        FocusScope.of(context).unfocus();
+                                        move(
+                                          context,
+                                          SignupTermsAgreementScreen(
                                             phone: authCubit
                                                 .workerPhoneController.text
                                                 .trim(),
-                                            userType: 'provider');
+                                            userType: 'provider',
+                                          ),
+                                        );
                                       }
                                     },
                                     text: 'التالي',

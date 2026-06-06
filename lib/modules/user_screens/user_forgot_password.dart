@@ -35,6 +35,23 @@ class _UserForgotPasswordState extends State<UserForgotPassword> {
     super.dispose();
   }
 
+  Widget buildPhoneSuffix(AppCubit appCubit) {
+    return Container(
+      width: 62.w,
+      alignment: Alignment.center,
+      margin: EdgeInsetsDirectional.only(end: 5.w),
+      child: Text(
+        '+967',
+        textDirection: TextDirection.ltr,
+        style: TextStyle(
+          color: mainColor,
+          fontSize: 13.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppCubit appCubit = AppCubit.get(context);
@@ -245,6 +262,7 @@ class _UserForgotPasswordState extends State<UserForgotPassword> {
                                   errorMes: 'رقم الهاتف يجب أن لا يكون فارغًا',
                                   controller: phoneController,
                                   type: TextInputType.phone,
+                                  suffixWidget: buildPhoneSuffix(appCubit),
                                 ),
                               ),
                               SizedBox(height: 25.h),

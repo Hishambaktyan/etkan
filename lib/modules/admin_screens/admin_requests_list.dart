@@ -134,6 +134,8 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
   @override
   void initState() {
     AdminCubit.get(context).getRequests();
+    AdminCubit.get(context).getUsers();
+    AdminCubit.get(context).getProviders();
     super.initState();
   }
 

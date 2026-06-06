@@ -21,6 +21,23 @@ class UserLogin extends StatefulWidget {
   State<UserLogin> createState() => _UserLoginState();
 }
 
+Widget buildPhoneSuffix(AppCubit appCubit) {
+  return Container(
+    width: 62.w,
+    alignment: Alignment.center,
+    margin: EdgeInsetsDirectional.only(end: 5.w),
+    child: Text(
+      '+967',
+      textDirection: TextDirection.ltr,
+      style: TextStyle(
+        color: mainColor,
+        fontSize: 13.sp,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+}
+
 class _UserLoginState extends State<UserLogin> {
   var formKey = GlobalKey<FormState>();
 
@@ -248,6 +265,7 @@ class _UserLoginState extends State<UserLogin> {
                                   controller:
                                       authCubit.userLoginPhoneController,
                                   type: TextInputType.phone,
+                                  suffixWidget: buildPhoneSuffix(appCubit),
                                 ),
                                 SizedBox(height: 20.h),
                                 defaultTextFormField(
