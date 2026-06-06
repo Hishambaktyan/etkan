@@ -31,15 +31,18 @@ class AboutAppScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-              color: cubit.isDark
-                  ? mainColor.withOpacity(0.20)
-                  : mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
-          ),
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                color: cubit.isDark
+                    ? mainColor.withOpacity(0.20)
+                    : mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 25.w,
+              )),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -88,13 +91,16 @@ class AboutAppScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              shape: BoxShape.circle,
-            ),
-            child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
-          ),
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(
+                icon,
+                color: mainColor,
+                width: 25.w,
+              )),
           SizedBox(height: 20.h),
           Text(
             title,
@@ -120,13 +126,16 @@ class AboutAppScreen extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: EdgeInsetsDirectional.all(10.r),
-          decoration: BoxDecoration(
-            color: mainColor.withOpacity(0.10),
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: SvgPicture.asset(icon,color: mainColor,width: 25.w,)
-        ),
+            padding: EdgeInsetsDirectional.all(10.r),
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: mainColor,
+              width: 25.w,
+            )),
         SizedBox(width: 8.w),
         Text(
           title,
@@ -152,13 +161,15 @@ class AboutAppScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: SvgPicture.asset('assets/info.svg',color: mainColor,)
-          ),
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: SvgPicture.asset(
+                'assets/info.svg',
+                color: mainColor,
+              )),
           SizedBox(width: 12.w),
           Expanded(
             child: Text(
@@ -217,7 +228,7 @@ class AboutAppScreen extends StatelessWidget {
                     'حول التطبيق',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
+                      fontSize: 20.sp,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
@@ -226,7 +237,12 @@ class AboutAppScreen extends StatelessWidget {
             ),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 10.h, bottom: 20.h,),
+              padding: EdgeInsetsDirectional.only(
+                start: 10.w,
+                end: 10.w,
+                top: 10.h,
+                bottom: 20.h,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

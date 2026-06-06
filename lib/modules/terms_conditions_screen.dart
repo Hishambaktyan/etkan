@@ -398,7 +398,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                     'الشروط والأحكام',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
+                      fontSize: 20.sp,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),

@@ -18,7 +18,8 @@ class _FaqScreenState extends State<FaqScreen> {
   List<Map<String, dynamic>> faqData = [
     {
       'question': 'كيف يمكنني حجز خدمة جديدة؟',
-      'answer': 'يمكنك ذلك من خلال الصفحة الرئيسية، اختر القسم المطلوب ثم الخدمة، واضغط على زر "احجز الآن".',
+      'answer':
+          'يمكنك ذلك من خلال الصفحة الرئيسية، اختر القسم المطلوب ثم الخدمة، واضغط على زر "احجز الآن".',
       'category': 'الحجز',
     },
     {
@@ -33,147 +34,160 @@ class _FaqScreenState extends State<FaqScreen> {
     },
     {
       'question': 'كيف يتم اختيار العمال في التطبيق؟',
-      'answer': 'نتبع معايير صارمة تشمل فحص الهوية، الخبرة السابقة، وتقييمات العملاء لضمان جودة الخدمة.',
+      'answer':
+          'نتبع معايير صارمة تشمل فحص الهوية، الخبرة السابقة، وتقييمات العملاء لضمان جودة الخدمة.',
       'category': 'الأمان',
     },
     {
       'question': 'ماذا أفعل إذا لم أكن راضياً عن الخدمة؟',
-      'answer': 'نحن نهتم برأيك! يمكنك تقديم شكوى عبر صفحة الطلب أو التواصل مع الدعم الفني مباشرة.',
+      'answer':
+          'نحن نهتم برأيك! يمكنك تقديم شكوى عبر صفحة الطلب أو التواصل مع الدعم الفني مباشرة.',
       'category': 'الدعم',
     },
     {
       'question': 'كيف يمكنني تغيير موقع الخدمة؟',
-      'answer': 'يمكنك تعديل العنوان من خلال إعدادات الحساب أو عند تأكيد الطلب قبل البدء.',
+      'answer':
+          'يمكنك تعديل العنوان من خلال إعدادات الحساب أو عند تأكيد الطلب قبل البدء.',
       'category': 'الحساب',
     },
     {
       'question': 'لماذا يختلف السعر أحياناً عن السعر التقديري؟',
-      'answer': 'السعر التقديري يعتمد على وصفك الأولي، وقد يختلف السعر النهائي بعد معاينة العامل للأدوات المطلوبة.',
+      'answer':
+          'السعر التقديري يعتمد على وصفك الأولي، وقد يختلف السعر النهائي بعد معاينة العامل للأدوات المطلوبة.',
       'category': 'الأسعار',
     },
     {
       'question': 'كيف يمكنني تحديث بيانات حسابي؟',
-      'answer': 'اذهب إلى صفحة "الملف الشخصي" ثم اختر "تعديل البيانات" لتحديث رقم الهاتف أو الاسم.',
+      'answer':
+          'اذهب إلى صفحة "الملف الشخصي" ثم اختر "تعديل البيانات" لتحديث رقم الهاتف أو الاسم.',
       'category': 'الحساب',
     },
     {
       'question': 'هل التطبيق يعمل في جميع المدن؟',
-      'answer': 'حالياً نغطي مدينة عدن بشكل كامل، وقريباً سنتوسع لتشمل خدماتنا بقية المحافظات.',
+      'answer':
+          'حالياً نغطي مدينة عدن بشكل كامل، وقريباً سنتوسع لتشمل خدماتنا بقية المحافظات.',
       'category': 'عن التطبيق',
     },
     {
       'question': 'كيف أحصل على خصومات أو كوبونات؟',
-      'answer': 'تابع صفحاتنا على مواقع التواصل الاجتماعي وفعل التنبيهات لتصلك أحدث العروض الحصرية.',
+      'answer':
+          'تابع صفحاتنا على مواقع التواصل الاجتماعي وفعل التنبيهات لتصلك أحدث العروض الحصرية.',
       'category': 'العروض',
     },
     {
       'question': 'نسيت كلمة المرور، كيف أستعيدها؟',
-      'answer': 'في صفحة تسجيل الدخول، اضغط على "نسيت كلمة المرور" وسنرسل لك رمز تحقق إلى رقمك المسجل.',
+      'answer':
+          'في صفحة تسجيل الدخول، اضغط على "نسيت كلمة المرور" وسنرسل لك رمز تحقق إلى رقمك المسجل.',
       'category': 'الحساب',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit  = AppCubit.get(context);
-    return BlocConsumer<AppCubit,AppStates>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                elevation: 0,
-                scrolledUnderElevation: 0,
-                title: Row(
-                  children: [
-                    IconButton(
-                        onPressed: ()=>Navigator.pop(context),
-                        icon: Icon(
-                          CupertinoIcons.back,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+    AppCubit cubit = AppCubit.get(context);
+    return BlocConsumer<AppCubit, AppStates>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              title: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      CupertinoIcons.back,
+                      color: Theme.of(context).iconTheme.color,
                     ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    Text(
-                      'الأسئلة الشائعة',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 23.sp,
-                          color: Theme.of(context).textTheme.bodyLarge!.color
-                      ),
-                    ),
-                  ],
-                ),
-                centerTitle: true,
+                  ),
+                  SizedBox(
+                    width: 10.w,
+                  ),
+                  Text(
+                    'الأسئلة الشائعة',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.sp,
+                        color: Theme.of(context).textTheme.bodyLarge!.color),
+                  ),
+                ],
               ),
-              body: ListView.separated(
-                padding: EdgeInsetsDirectional.all(10.r),
-                itemCount: faqData.length,
-                separatorBuilder: (context, index) => SizedBox(height: 20.h),
-                itemBuilder: (context, index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: cubit.isDark? const Color(0xFF161B22): Colors.white,
+              centerTitle: true,
+            ),
+            body: ListView.separated(
+              padding: EdgeInsetsDirectional.all(10.r),
+              itemCount: faqData.length,
+              separatorBuilder: (context, index) => SizedBox(height: 20.h),
+              itemBuilder: (context, index) {
+                return Container(
+                  decoration: BoxDecoration(
+                      color:
+                          cubit.isDark ? const Color(0xFF161B22) : Colors.white,
                       borderRadius: BorderRadius.circular(25.r),
-                      boxShadow: blueShadow
-                    ),
-                    child: Theme(
-                      data: Theme.of(context).copyWith(
-                          dividerColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent
-                      ),
-                      child: ExpansionTile(
-                        iconColor: mainColor,
-                        collapsedIconColor: Colors.grey,
-                        tilePadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
-                        childrenPadding: EdgeInsetsDirectional.only(start: 15.w, end: 15.w, bottom: 15.h),
-                        title: Text(
-                          faqData[index]['question'],
-                          style: TextStyle(
+                      boxShadow: blueShadow),
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                        dividerColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent),
+                    child: ExpansionTile(
+                      iconColor: mainColor,
+                      collapsedIconColor: Colors.grey,
+                      tilePadding:
+                          EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
+                      childrenPadding: EdgeInsetsDirectional.only(
+                          start: 15.w, end: 15.w, bottom: 15.h),
+                      title: Text(
+                        faqData[index]['question'],
+                        style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).textTheme.bodyLarge!.color
-                          ),
-                        ),
-                        leading: Container(
-                          padding: EdgeInsets.all(8.r),
-                          decoration: BoxDecoration(
-                            color: mainColor.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(Icons.help_outline_rounded, color: mainColor, size: 20.r),
-                        ),
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(12.r),
-                            decoration: BoxDecoration(
-                              color: cubit.isDark?const Color(0xFF161B22):Colors.white,
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                            child: Text(
-                              faqData[index]['answer'],
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: cubit.isDark?Colors.white:Colors.grey.shade700,
-                                height: 1.6,
-                              ),
-                            ),
-                          ),
-                        ],
+                            color:
+                                Theme.of(context).textTheme.bodyLarge!.color),
                       ),
+                      leading: Container(
+                        padding: EdgeInsets.all(8.r),
+                        decoration: BoxDecoration(
+                          color: mainColor.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.help_outline_rounded,
+                            color: mainColor, size: 20.r),
+                      ),
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(12.r),
+                          decoration: BoxDecoration(
+                            color: cubit.isDark
+                                ? const Color(0xFF161B22)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Text(
+                            faqData[index]['answer'],
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              color: cubit.isDark
+                                  ? Colors.white
+                                  : Colors.grey.shade700,
+                              height: 1.6,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        );
+      },
     );
   }
 }

@@ -509,7 +509,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Text(
                         'الإشعارات',
                         style: TextStyle(
-                          fontSize: 23.sp,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),

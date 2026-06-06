@@ -404,7 +404,7 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
                         'تأكيد الاشتراك',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 23.sp,
+                          fontSize: 20.sp,
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),
                       ),
