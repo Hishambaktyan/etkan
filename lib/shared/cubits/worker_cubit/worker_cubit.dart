@@ -805,7 +805,6 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
   Future<void> editWorkerData({
     required String name,
-    required String phone,
     required String about,
     required List<String> experiences,
     String? address,
@@ -852,7 +851,6 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       final Map<String, dynamic> updatedData = {
         'name': name.trim(),
-        'phone': phone.trim(),
         'about': about.trim(),
         'experiences': finalExperiences,
         'previousWorks': finalPreviousWorks,
@@ -867,7 +865,10 @@ class WorkerCubit extends Cubit<WorkerStates> {
         updatedData['specialization'] = specialization.trim();
       }
 
-      await FirebaseFirestore.instance.collection('users').doc(uid).update(updatedData);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update(updatedData);
 
       workerName = name.trim();
 

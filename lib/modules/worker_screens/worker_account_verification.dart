@@ -622,7 +622,6 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
     );
   }
 
-
   void _goToSubscription() {
     moveAndReplace(
       context,
@@ -705,7 +704,7 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                         'توثيق الحساب',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 23.sp,
+                          fontSize: 20.sp,
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),
                       ),

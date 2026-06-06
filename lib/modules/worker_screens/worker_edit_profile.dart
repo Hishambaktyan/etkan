@@ -30,7 +30,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
   String? selectedCategory;
 
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController aboutController = TextEditingController();
   final TextEditingController experienceController = TextEditingController();
@@ -75,7 +74,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
   @override
   void initState() {
     nameController.text = widget.worker['name']?.toString() ?? '';
-    phoneController.text = widget.worker['phone']?.toString() ?? '';
     addressController.text = widget.worker['address']?.toString() ?? '';
     aboutController.text = widget.worker['about']?.toString() ?? '';
     selectedCategory = widget.worker['specialization']?.toString();
@@ -87,7 +85,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
   @override
   void dispose() {
     nameController.dispose();
-    phoneController.dispose();
     addressController.dispose();
     aboutController.dispose();
     experienceController.dispose();
@@ -774,7 +771,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
     workerCubit.editWorkerData(
       name: nameController.text.trim(),
-      phone: phoneController.text.trim(),
       about: aboutController.text.trim(),
       address: addressController.text.trim(),
       specialization: selectedCategory!.trim(),
@@ -815,23 +811,36 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
               child: Scaffold(
                 backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
                 appBar: AppBar(
+                  titleSpacing: 10,
                   elevation: 0,
-                  centerTitle: true,
                   scrolledUnderElevation: 0,
-                  leading: IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(
-                      CupertinoIcons.back,
-                      color: Theme.of(context).iconTheme.color,
-                    ),
-                  ),
-                  title: Text(
-                    'تعديل الملف الشخصي',
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  automaticallyImplyLeading: false,
+                  title: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(7),
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(
+                            CupertinoIcons.back,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Text(
+                        'تعديل الملف الشخصي',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.sp,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 body: SingleChildScrollView(
@@ -874,22 +883,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                         if (value == null ||
                                             value.trim().isEmpty) {
                                           return 'يرجى إدخال الاسم';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    SizedBox(height: 15.h),
-                                    defaultTextFormField(
-                                      text: 'رقم الهاتف',
-                                      prefixIcon: 'assets/phone.svg',
-                                      errorMes: 'يرجى إدخال رقم الهاتف',
-                                      controller: phoneController,
-                                      type: TextInputType.phone,
-                                      cubit: appCubit,
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.trim().isEmpty) {
-                                          return 'يرجى إدخال رقم الهاتف';
                                         }
                                         return null;
                                       },

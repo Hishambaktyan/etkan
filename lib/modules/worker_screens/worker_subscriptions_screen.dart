@@ -901,7 +901,6 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
     );
   }
 
-
   void _goToWorkerHome() {
     moveAndReplace(
       context,
@@ -909,7 +908,8 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
     );
   }
 
-  Widget _buildSkipSubscriptionButton(AppCubit cubit, {String text = 'تخطي الاشتراك الآن'}) {
+  Widget _buildSkipSubscriptionButton(AppCubit cubit,
+      {String text = 'تخطي الاشتراك الآن'}) {
     return defaultOutlinedButton(
       onPressed: _goToWorkerHome,
       text: text,
@@ -1074,7 +1074,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                     'الاشتراك',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
+                      fontSize: 20.sp,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
