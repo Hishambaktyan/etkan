@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
@@ -276,7 +277,15 @@ class _WorkerAccountState extends State<WorkerAccount> {
                             appCubit: appCubit,
                             title: 'مشاركة التطبيق',
                             icon: 'assets/share.svg',
-                            onTap: () {},
+                            onTap: () async {
+                              const String appLink =
+                                  'https://play.google.com/store/apps/details?id=com.homy.app';
+
+                              await Share.share(
+                                'حمّل تطبيق هومي لطلب خدمات الصيانة المنزلية بسهولة 👇\n$appLink',
+                                subject: 'تطبيق هومي',
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -399,7 +408,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                                 cancelText: 'إلغاء',
                                 confirmText: 'حذف',
                                 onConfirm: () {
-                                  Navigator.pop(context);
+                                  moveAndReplace(
+                                      context, const OnBoardingScreen());
                                   authCubit.deleteUser();
                                 },
                               );

@@ -126,9 +126,13 @@ class _UserProfileState extends State<UserProfile> {
     required AppCubit appCubit,
     required Map<String, dynamic> user,
   }) {
-    String name = user['name'] ?? 'مستخدم';
-    String phone = user['phone'] ?? '';
-    String image = user['profileImage'] ?? '';
+    String name = user['name']?.toString().trim() ?? '';
+    String phone = user['phone']?.toString().trim() ?? '';
+    String image = user['profileImage']?.toString().trim() ?? '';
+
+    if (name.isEmpty) {
+      name = 'مستخدم';
+    }
 
     return ClipRRect(
       borderRadius: BorderRadiusDirectional.vertical(
@@ -405,14 +409,18 @@ class _UserProfileState extends State<UserProfile> {
             cubit: cubit,
             icon: 'assets/acc.svg',
             title: 'الاسم',
-            value: user['name'] ?? 'مستخدم',
+            value: user['name']?.toString().trim().isNotEmpty == true
+                ? user['name'].toString().trim()
+                : 'مستخدم',
           ),
           SizedBox(height: 15.h),
           buildInfoRow(
             cubit: cubit,
             icon: 'assets/phone.svg',
             title: 'رقم الهاتف',
-            value: user['phone'] ?? 'غير متوفر',
+            value: user['phone']?.toString().trim().isNotEmpty == true
+                ? user['phone'].toString().trim()
+                : 'غير متوفر',
           ),
         ],
       ),
@@ -536,8 +544,17 @@ class _UserProfileState extends State<UserProfile> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-        Map<String, dynamic> user =
-            appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? widget.user;
+
+        final String uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
+
+        Map<String, dynamic> user = widget.user;
+
+        final dynamic currentUserData = appCubit.allUsers[uid];
+
+        if (currentUserData is Map) {
+          user = Map<String, dynamic>.from(currentUserData);
+        }
+
         return BlocBuilder<UserCubit, UserStates>(
           builder: (context, bookingState) {
             UserCubit userCubit = UserCubit.get(context);

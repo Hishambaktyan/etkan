@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +30,40 @@ class _UserEditProfileState extends State<UserEditProfile> {
   String profileImage = '';
 
   final TextEditingController nameController = TextEditingController();
+  List<String> getNameParts(String value) {
+    return value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.trim().isNotEmpty)
+        .toList();
+  }
+
+  void limitNameToFourWords(TextEditingController controller, String value) {
+    final List<String> nameParts = getNameParts(value);
+
+    if (nameParts.length > 4) {
+      final String newValue = nameParts.take(4).join(' ');
+
+      controller.value = TextEditingValue(
+        text: newValue,
+        selection: TextSelection.collapsed(offset: newValue.length),
+      );
+    }
+  }
+
+  String? validateQuadName(String? value) {
+    final List<String> nameParts = getNameParts(value ?? '');
+
+    if (nameParts.isEmpty) {
+      return 'الاسم الرباعي يجب أن لا يكون فارغًا';
+    }
+
+    if (nameParts.length != 4) {
+      return 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط';
+    }
+
+    return null;
+  }
 
   @override
   void initState() {
@@ -240,12 +273,17 @@ class _UserEditProfileState extends State<UserEditProfile> {
                               ),
                               SizedBox(height: 25.h),
                               defaultTextFormField(
-                                text: 'الاسم الكامل',
+                                text: 'الاسم الرباعي',
                                 prefixIcon: 'assets/acc.svg',
-                                errorMes: 'الاسم يجب أن لا يكون فارغًا',
+                                errorMes: 'الاسم الرباعي يجب أن لا يكون فارغًا',
                                 controller: nameController,
-                                type: TextInputType.text,
+                                type: TextInputType.name,
                                 cubit: appCubit,
+                                validator: validateQuadName,
+                                onChanged: (value) => limitNameToFourWords(
+                                  nameController,
+                                  value,
+                                ),
                               ),
                             ],
                           ),
@@ -278,6 +316,9 @@ class _UserEditProfileState extends State<UserEditProfile> {
                         defaultButton(
                           onPressed: () {
                             if (!formKey.currentState!.validate()) return;
+
+                            FocusScope.of(context).unfocus();
+
                             UserCubit.get(context).editUserData(
                               name: nameController.text.trim(),
                               profileImagePath: profileImage,
