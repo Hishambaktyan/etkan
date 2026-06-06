@@ -4,6 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/modules/worker_screens/worker_request_details.dart';
+import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
+import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
 import 'package:trying_homy/shared/cubits/notification_cubit/notification_states.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../../main.dart';
@@ -208,13 +210,39 @@ class NotificationCubit extends Cubit<NotificationStates> {
 
       return;
     }
+
+    if (type == 'subscription_status' || type == 'subscription_limit') {
+      _runWhenNavigatorReady(() {
+        navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (_) => const WorkerSubscriptionsScreen(),
+          ),
+        );
+      });
+
+      return;
+    }
+
+    if (type == 'verification_status') {
+      _runWhenNavigatorReady(() {
+        navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (_) => const WorkerAccountVerification(),
+          ),
+        );
+      });
+
+      return;
+    }
   }
 
   Future<void> initFirebaseMessaging() async {
-    print('------------------------------------------------initFirebaseMessaging STARTED');
+    print(
+        '------------------------------------------------initFirebaseMessaging STARTED');
 
     if (isFirebaseMessagingInitialized) {
-      print('----------------------------------------------initFirebaseMessaging already initialized');
+      print(
+          '----------------------------------------------initFirebaseMessaging already initialized');
       return;
     }
 
@@ -230,7 +258,8 @@ class NotificationCubit extends Cubit<NotificationStates> {
       print('Notification permission: ${settings.authorizationStatus}');
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-        print('إشعار وصل والتطبيق مفتوح----------------------------------------------');
+        print(
+            'إشعار وصل والتطبيق مفتوح----------------------------------------------');
         print('Data: ${message.data}');
 
         await showLocalNotification(message);
@@ -248,8 +277,8 @@ class NotificationCubit extends Cubit<NotificationStates> {
         emit(NotificationOpenedState());
       });
 
-
-      final RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+      final RemoteMessage? initialMessage =
+          await FirebaseMessaging.instance.getInitialMessage();
 
       if (pendingNotificationData != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -297,7 +326,8 @@ class NotificationCubit extends Cubit<NotificationStates> {
         userNotifications = [];
         isNotificationsLoaded = true;
         isNotificationsLoading = false;
-        emit(GetNotificationsErrorState(error: 'لم يتم العثور على معرف المستخدم'));
+        emit(GetNotificationsErrorState(
+            error: 'لم يتم العثور على معرف المستخدم'));
         return;
       }
 
@@ -353,10 +383,9 @@ class NotificationCubit extends Cubit<NotificationStates> {
       });
 
       final index = userNotifications.indexWhere((notification) {
-        final String id =
-            notification['notificationId']?.toString() ??
-                notification['id']?.toString() ??
-                '';
+        final String id = notification['notificationId']?.toString() ??
+            notification['id']?.toString() ??
+            '';
 
         return id == notificationId;
       });
@@ -407,5 +436,4 @@ class NotificationCubit extends Cubit<NotificationStates> {
       print('خطأ أثناء جعل كل الإشعارات مقروءة: $error');
     }
   }
-
 }

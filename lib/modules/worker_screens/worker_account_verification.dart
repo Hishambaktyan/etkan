@@ -526,6 +526,95 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
     );
   }
 
+  bool canSendVerificationRequest(String status) {
+    return status != 'pending' && status != 'approved';
+  }
+
+  Widget _buildRejectionReasonCard(
+    AppCubit cubit,
+    Map<String, dynamic> verificationData,
+  ) {
+    final String reason = verificationData['rejectionReason']?.toString() ?? '';
+
+    if (reason.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(top: 12.h),
+      padding: EdgeInsetsDirectional.all(14.r),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: Colors.red.withOpacity(0.20),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: Colors.red,
+            size: 22.r,
+          ),
+          SizedBox(width: 9.w),
+          Expanded(
+            child: Text(
+              'سبب الرفض: $reason',
+              style: TextStyle(
+                color: cubit.isDark ? Colors.white : Colors.red.shade800,
+                fontSize: 12.sp,
+                height: 1.6,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVerificationForm(AppCubit cubit) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 25.h),
+        _buildSectionTitle(
+          context: context,
+          cubit: cubit,
+          title: 'نوع وثيقة التوثيق',
+          icon: 'assets/doc_type.svg',
+        ),
+        SizedBox(height: 15.h),
+        _buildDocumentTypeCard(cubit),
+        SizedBox(height: 25.h),
+        _buildSectionTitle(
+          context: context,
+          cubit: cubit,
+          title: 'المستندات المطلوبة',
+          icon: 'assets/upload.svg',
+        ),
+        SizedBox(height: 15.h),
+        Column(
+          children: List.generate(
+            verificationItems.length,
+            (index) {
+              return _buildUploadItem(
+                context: context,
+                cubit: cubit,
+                item: verificationItems[index],
+                index: index,
+              );
+            },
+          ),
+        ),
+        SizedBox(height: 10.h),
+        _buildNotesCard(context, cubit),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
@@ -582,102 +671,120 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                     ],
                   ),
                 ),
-                body: SingleChildScrollView(
-                  padding: EdgeInsetsDirectional.only(
-                    start: 10.w,
-                    end: 10.w,
-                    top: 10.h,
-                    bottom: 20.h,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(CacheHelper.getData(key: 'uid'))
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          Map<String, dynamic> verificationData = {};
+                body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(CacheHelper.getData(key: 'uid'))
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    Map<String, dynamic> verificationData = {};
 
-                          if (snapshot.hasData && snapshot.data!.exists) {
-                            final userData = snapshot.data!.data() ?? {};
-                            verificationData = Map<String, dynamic>.from(
-                              userData['verification'] ?? {},
-                            );
-                          }
+                    if (snapshot.hasData && snapshot.data!.exists) {
+                      final userData = snapshot.data!.data() ?? {};
+                      final dynamic rawVerification = userData['verification'];
 
-                          return Column(
-                            children: [
-                              _buildStatusCard(cubit, verificationData),
-                              SizedBox(height: 18.h),
-                              _buildReviewStatus(
-                                  context, cubit, verificationData),
-                            ],
-                          );
-                        },
+                      if (rawVerification is Map) {
+                        verificationData =
+                            Map<String, dynamic>.from(rawVerification);
+                      }
+                    }
+
+                    final String currentStatus =
+                        verificationData['status']?.toString() ??
+                            'not_submitted';
+
+                    return SingleChildScrollView(
+                      padding: EdgeInsetsDirectional.only(
+                        start: 10.w,
+                        end: 10.w,
+                        top: 10.h,
+                        bottom: 20.h,
                       ),
-                      SizedBox(height: 25.h),
-                      _buildSectionTitle(
-                        context: context,
-                        cubit: cubit,
-                        title: 'نوع وثيقة التوثيق',
-                        icon: 'assets/doc_type.svg',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStatusCard(cubit, verificationData),
+                          SizedBox(height: 18.h),
+                          _buildReviewStatus(
+                            context,
+                            cubit,
+                            verificationData,
+                          ),
+                          _buildRejectionReasonCard(
+                            cubit,
+                            verificationData,
+                          ),
+                          if (canSendVerificationRequest(currentStatus))
+                            _buildVerificationForm(cubit),
+                        ],
                       ),
-                      SizedBox(height: 15.h),
-                      _buildDocumentTypeCard(cubit),
-                      SizedBox(height: 25.h),
-                      _buildSectionTitle(
-                        context: context,
-                        cubit: cubit,
-                        title: 'المستندات المطلوبة',
-                        icon: 'assets/upload.svg',
-                      ),
-                      SizedBox(height: 15.h),
-                      Column(
-                        children: List.generate(
-                          verificationItems.length,
-                          (index) {
-                            return _buildUploadItem(
-                              context: context,
-                              cubit: cubit,
-                              item: verificationItems[index],
-                              index: index,
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      _buildNotesCard(context, cubit),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-                bottomNavigationBar: Container(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 20.w,
-                      end: 20.w,
-                      top: 10.h,
-                      bottom: 20.h,
-                    ),
-                    decoration: BoxDecoration(
+                bottomNavigationBar:
+                    StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(CacheHelper.getData(key: 'uid'))
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    Map<String, dynamic> verificationData = {};
+
+                    if (snapshot.hasData && snapshot.data!.exists) {
+                      final userData = snapshot.data!.data() ?? {};
+                      final dynamic rawVerification = userData['verification'];
+
+                      if (rawVerification is Map) {
+                        verificationData =
+                            Map<String, dynamic>.from(rawVerification);
+                      }
+                    }
+
+                    final String currentStatus =
+                        verificationData['status']?.toString() ??
+                            'not_submitted';
+
+                    if (!canSendVerificationRequest(currentStatus)) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Container(
+                      padding: EdgeInsetsDirectional.only(
+                        start: 20.w,
+                        end: 20.w,
+                        top: 10.h,
+                        bottom: 20.h,
+                      ),
+                      decoration: BoxDecoration(
                         color: cubit.isDark ? darkBgColor : Colors.white,
-                        boxShadow: blueShadow),
-                    child: defaultButton(
+                        boxShadow: blueShadow,
+                      ),
+                      child: defaultButton(
                         onPressed: () {
                           if (verificationItems[0]['image'] != null &&
                               verificationItems[1]['image'] != null &&
                               verificationItems[2]['image'] != null) {
                             workerCubit.sendVerificationRequest(
-                                documentType: selectedDocumentType,
-                                frontImage: verificationItems[0]['image'],
-                                backImage: verificationItems[1]['image'],
-                                personalImage: verificationItems[2]['image']);
+                              documentType: selectedDocumentType,
+                              frontImage: verificationItems[0]['image'],
+                              backImage: verificationItems[1]['image'],
+                              personalImage: verificationItems[2]['image'],
+                            );
                           } else {
-                            showSnackBar(Colors.red,
-                                'يرجى رفع كل الوثائق المطلوبة', context);
+                            showSnackBar(
+                              Colors.red,
+                              'يرجى رفع كل الوثائق المطلوبة',
+                              context,
+                            );
                           }
                         },
-                        text: 'إرسال طلب التوثيق')),
+                        text: currentStatus == 'rejected'
+                            ? 'إعادة إرسال طلب التوثيق'
+                            : 'إرسال طلب التوثيق',
+                      ),
+                    );
+                  },
+                ),
               ),
             );
           },

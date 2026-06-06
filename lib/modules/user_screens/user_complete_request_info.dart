@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:dotted_border/dotted_border.dart';
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,7 +39,8 @@ class UserCompleteRequestInfo extends StatefulWidget {
   });
 
   @override
-  State<UserCompleteRequestInfo> createState() =>_UserCompleteRequestInfoState();
+  State<UserCompleteRequestInfo> createState() =>
+      _UserCompleteRequestInfoState();
 }
 
 class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
@@ -50,13 +51,12 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
   String? selectedAddressId;
   String? selectedAddressText;
 
-  List<Map<String,dynamic>> addresses = [];
+  List<Map<String, dynamic>> addresses = [];
 
   Future<DateTime?> pickDateWithTheme({
     required BuildContext context,
     required AppCubit appCubit,
-  })
-  {
+  }) {
     return showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -69,19 +69,19 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
           data: Theme.of(context).copyWith(
             colorScheme: appCubit.isDark
                 ? ColorScheme.dark(
-              primary: mainColor,
-              onPrimary: Colors.white,
-              surface: lightDarkColor,
-              onSurface: Colors.white,
-            )
+                    primary: mainColor,
+                    onPrimary: Colors.white,
+                    surface: lightDarkColor,
+                    onSurface: Colors.white,
+                  )
                 : ColorScheme.light(
-              primary: mainColor,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
+                    primary: mainColor,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Colors.black,
+                  ),
             dialogBackgroundColor:
-            appCubit.isDark ? lightDarkColor : Colors.white,
+                appCubit.isDark ? lightDarkColor : Colors.white,
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: mainColor,
@@ -97,8 +97,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
   Future<TimeOfDay?> pickTimeWithTheme({
     required BuildContext context,
     required AppCubit appCubit,
-  })
-  {
+  }) {
     return showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -109,26 +108,27 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
           data: Theme.of(context).copyWith(
             colorScheme: appCubit.isDark
                 ? ColorScheme.dark(
-              primary: mainColor,
-              onPrimary: Colors.white,
-              surface: lightDarkColor,
-              onSurface: Colors.white,
-            )
+                    primary: mainColor,
+                    onPrimary: Colors.white,
+                    surface: lightDarkColor,
+                    onSurface: Colors.white,
+                  )
                 : ColorScheme.light(
-              primary: mainColor,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
+                    primary: mainColor,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Colors.black,
+                  ),
             dialogBackgroundColor:
-            appCubit.isDark ? lightDarkColor : Colors.white,
+                appCubit.isDark ? lightDarkColor : Colors.white,
             timePickerTheme: TimePickerThemeData(
               backgroundColor: appCubit.isDark ? lightDarkColor : Colors.white,
-              hourMinuteTextColor: appCubit.isDark ? Colors.white : Colors.black,
+              hourMinuteTextColor:
+                  appCubit.isDark ? Colors.white : Colors.black,
               dayPeriodTextColor: appCubit.isDark ? Colors.white : Colors.black,
               dialHandColor: mainColor,
               dialBackgroundColor:
-              appCubit.isDark ? darkBgColor : Colors.grey.shade100,
+                  appCubit.isDark ? darkBgColor : Colors.grey.shade100,
               entryModeIconColor: appCubit.isDark ? Colors.white : Colors.grey,
             ),
             textButtonTheme: TextButtonThemeData(
@@ -155,9 +155,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
         color: appCubit.isDark ? lightDarkColor : Colors.white,
         boxShadow: appCubit.isDark ? [] : blueShadow,
         borderRadius: BorderRadius.circular(20.r),
-        border: appCubit.isDark
-            ? Border.all(color: const Color(0xFF30363D))
-            : null,
+        border:
+            appCubit.isDark ? Border.all(color: const Color(0xFF30363D)) : null,
       ),
       child: child,
     );
@@ -200,8 +199,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
     required int servicePrice,
     required String servicePeriod,
     required String serviceImage,
-  })
-  {
+  }) {
     return buildCard(
       appCubit: appCubit,
       padding: EdgeInsets.all(18.r),
@@ -349,7 +347,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                           '$servicePeriod دقيقة',
                           style: TextStyle(
                             color:
-                            appCubit.isDark ? Colors.white : Colors.black87,
+                                appCubit.isDark ? Colors.white : Colors.black87,
                             fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -392,15 +390,16 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                 'اختر العنوان الذي تريد تنفيذ الخدمة فيه',
                 style: TextStyle(
                   fontSize: 11.sp,
-                  color: appCubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                  color:
+                      appCubit.isDark ? darkSubTextColor : Colors.grey.shade600,
                 ),
               ),
               SizedBox(height: 15.h),
-
               if (addresses.isEmpty)
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
                   decoration: BoxDecoration(
                     color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(14.r),
@@ -438,7 +437,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                       itemHeight: 72.h,
                       menuMaxHeight: 320.h,
                       borderRadius: BorderRadius.circular(25.r),
-                      dropdownColor: appCubit.isDark ? lightDarkColor : Colors.white,
+                      dropdownColor:
+                          appCubit.isDark ? lightDarkColor : Colors.white,
                       icon: Icon(
                         Icons.keyboard_arrow_down_rounded,
                         color: appCubit.isDark ? darkSubTextColor : Colors.grey,
@@ -454,13 +454,16 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                         'اختر الموقع',
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+                          color:
+                              appCubit.isDark ? darkSubTextColor : Colors.grey,
                         ),
                       ),
                       selectedItemBuilder: (context) {
                         return addresses.map((address) {
-                          final String label = address['label']?.toString() ?? 'بدون عنوان';
-                          final String details = address['addressName']?.toString() ?? '';
+                          final String label =
+                              address['label']?.toString() ?? 'بدون عنوان';
+                          final String details =
+                              address['addressName']?.toString() ?? '';
                           return Row(
                             children: [
                               SvgPicture.asset(
@@ -487,8 +490,10 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                       },
                       items: addresses.map((address) {
                         final String id = address['id']?.toString() ?? '';
-                        final String label = address['label']?.toString() ?? 'بدون عنوان';
-                        final String details = address['addressName']?.toString() ?? '';
+                        final String label =
+                            address['label']?.toString() ?? 'بدون عنوان';
+                        final String details =
+                            address['addressName']?.toString() ?? '';
                         return DropdownMenuItem<String>(
                           value: id,
                           child: Directionality(
@@ -504,7 +509,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         label,
@@ -543,15 +549,17 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                       onChanged: (value) {
                         if (value == null) return;
                         final selected = addresses.firstWhere(
-                              (address) => address['id']?.toString() == value,
+                          (address) => address['id']?.toString() == value,
                           orElse: () => {},
                         );
-                        final String label = selected['label']?.toString() ?? '';
-                        final String details = selected['addressName']?.toString() ?? '';
+                        final String label =
+                            selected['label']?.toString() ?? '';
+                        final String details =
+                            selected['addressName']?.toString() ?? '';
                         setState(() {
                           selectedAddressId = value;
                           selectedAddressText =
-                          details.isEmpty ? label : '$label - $details';
+                              details.isEmpty ? label : '$label - $details';
                         });
                       },
                     ),
@@ -707,7 +715,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                         },
                         icon: SvgPicture.asset(
                           'assets/pen.svg',
-                          color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+                          color:
+                              appCubit.isDark ? darkSubTextColor : Colors.grey,
                         ),
                       ),
                     ],
@@ -911,7 +920,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                             : Colors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                          BorderRadius.circular(20.r),
+                                              BorderRadius.circular(20.r),
                                         ),
                                         contentPadding: EdgeInsets.all(20.r),
                                         content: Column(
@@ -952,11 +961,9 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                               children: [
                                                 Expanded(
                                                   child: defaultButton(
-                                                    onPressed: () =>
-                                                        moveAndReplace(
-                                                          context,
-                                                          const UserMainScreen()
-                                                        ),
+                                                    onPressed: () => moveAndReplace(
+                                                        context,
+                                                        const UserMainScreen()),
                                                     text: 'العودة إلى الرئيسية',
                                                   ),
                                                 ),
@@ -972,12 +979,22 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                             },
                           );
                         }
+
+                        if (state is CreateRequestErrorState) {
+                          hideLoadingDialog(context);
+                          showSnackBar(
+                            Colors.red,
+                            state.error,
+                            context,
+                          );
+                        }
                       },
                       builder: (context, state) {
                         UserCubit userCubit = UserCubit.get(context);
                         return defaultButton(
                           onPressed: () async {
-                            if (selectedAddressId == null || selectedAddressText == null) {
+                            if (selectedAddressId == null ||
+                                selectedAddressText == null) {
                               showSnackBar(
                                 Colors.red,
                                 'يرجى اختيار موقع الخدمة',
@@ -986,7 +1003,11 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                               return;
                             }
                             if (selectedDate == null || selectedTime == null) {
-                              showSnackBar(Colors.red, 'يرجى اختيار التاريخ والوقت', context,);
+                              showSnackBar(
+                                Colors.red,
+                                'يرجى اختيار التاريخ والوقت',
+                                context,
+                              );
                               return;
                             }
 
@@ -998,7 +1019,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                               selectedTime!.minute,
                             );
 
-                            var currentUser = appCubit.allUsers[CacheHelper.getData(key: 'uid')];
+                            var currentUser = appCubit
+                                .allUsers[CacheHelper.getData(key: 'uid')];
 
                             await userCubit.createRequest(
                               category: serviceCategory,
@@ -1010,8 +1032,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                               image: serviceImage,
                               duration: servicePeriod,
                               price: servicePrice,
-                              scheduledAt:
-                              Timestamp.fromDate(bookingDateTime),
+                              scheduledAt: Timestamp.fromDate(bookingDateTime),
                             );
                           },
                           text: 'تأكيد الحجز',

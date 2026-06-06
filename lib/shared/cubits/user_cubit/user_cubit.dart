@@ -11,6 +11,78 @@ class UserCubit extends Cubit<UserStates> {
 
   static UserCubit get(context) => BlocProvider.of(context);
 
+  static const int freeCompletedRequestsLimit = 5;
+
+  Map<String, dynamic> _getSubscriptionData(Map<String, dynamic> userData) {
+    final dynamic rawSubscription = userData['subscription'];
+
+    if (rawSubscription is Map) {
+      return Map<String, dynamic>.from(rawSubscription);
+    }
+
+    return {};
+  }
+
+  DateTime? _getSubscriptionDate(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    if (value is String) {
+      return DateTime.tryParse(value);
+    }
+
+    return null;
+  }
+
+  bool _isSubscriptionExpired(Map<String, dynamic> userData) {
+    final subscription = _getSubscriptionData(userData);
+    final String status = subscription['status']?.toString() ?? 'not_submitted';
+
+    if (status == 'expired') {
+      return true;
+    }
+
+    final bool hasActiveFlag = userData['isSubscribed'] == true ||
+        subscription['isActive'] == true ||
+        status == 'active' ||
+        status == 'approved';
+
+    if (!hasActiveFlag) {
+      return false;
+    }
+
+    final DateTime? endDate = _getSubscriptionDate(
+      subscription['endDate'] ??
+          subscription['endAt'] ??
+          subscription['expiresAt'],
+    );
+
+    if (endDate == null) {
+      return false;
+    }
+
+    return !endDate.isAfter(DateTime.now());
+  }
+
+  bool _hasActiveSubscription(Map<String, dynamic> userData) {
+    if (_isSubscriptionExpired(userData)) {
+      return false;
+    }
+
+    final subscription = _getSubscriptionData(userData);
+    final String status = subscription['status']?.toString() ?? 'not_submitted';
+
+    return userData['isSubscribed'] == true ||
+        subscription['isActive'] == true ||
+        status == 'active' ||
+        status == 'approved';
+  }
+
   Map<String, dynamic> allUsers = {};
   bool isAllUsersLoaded = false;
 
@@ -174,6 +246,65 @@ class UserCubit extends Cubit<UserStates> {
     try {
       emit(CreateRequestLoadingState());
 
+      final providerRef =
+          FirebaseFirestore.instance.collection('users').doc(providerId);
+
+      final providerFuture = providerRef.get();
+      final completedRequestsCountFuture = FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId', isEqualTo: providerId)
+          .where('status', isEqualTo: 'مكتمل')
+          .count()
+          .get();
+
+      await Future.wait([
+        providerFuture,
+        completedRequestsCountFuture,
+      ]);
+
+      final providerDoc = await providerFuture;
+      final completedRequestsCountSnapshot = await completedRequestsCountFuture;
+
+      if (!providerDoc.exists || providerDoc.data() == null) {
+        emit(CreateRequestErrorState(
+          error: 'تعذر العثور على بيانات الفني',
+        ));
+        return;
+      }
+
+      final providerData = providerDoc.data()!;
+
+      if (_isSubscriptionExpired(providerData)) {
+        final subscription = _getSubscriptionData(providerData);
+
+        if (subscription['status']?.toString() != 'expired') {
+          await providerRef.update({
+            'isSubscribed': false,
+            'subscription.isActive': false,
+            'subscription.status': 'expired',
+            'subscription.expiredAt': FieldValue.serverTimestamp(),
+          });
+        }
+
+        emit(CreateRequestErrorState(
+          error:
+              'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',
+        ));
+        return;
+      }
+
+      final int completedRequestsCount =
+          completedRequestsCountSnapshot.count ?? 0;
+
+      if (!_hasActiveSubscription(providerData) &&
+          completedRequestsCount >= freeCompletedRequestsLimit) {
+        emit(CreateRequestErrorState(
+          error:
+              'أكمل هذا الفني 5 حجوزات مجانية، ولا يمكنه استقبال حجوزات جديدة حتى يقوم بالاشتراك.',
+        ));
+        return;
+      }
+
       final DateTime now = DateTime.now();
       final Timestamp nowTimestamp = Timestamp.fromDate(now);
 
@@ -207,12 +338,6 @@ class UserCubit extends Cubit<UserStates> {
 
       await requestRef.set(requestData);
 
-      final providerDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(providerId)
-          .get();
-
-      final providerData = providerDoc.data() ?? {};
       final receiverToken = providerData['token']?.toString() ?? '';
 
       if (receiverToken.isNotEmpty) {

@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/worker_screens/worker_add_service.dart';
 import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
+import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/notification_cubit/notification_cubit.dart';
@@ -40,6 +41,83 @@ class _WorkerHomeState extends State<WorkerHome> {
       'icon': 'assets/star.svg',
     },
   ];
+
+  Widget _buildSubscriptionWarning({
+    required AppCubit appCubit,
+    required WorkerCubit workerCubit,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+      padding: EdgeInsetsDirectional.all(16.r),
+      decoration: BoxDecoration(
+        color: appCubit.isDark ? lightDarkColor : Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: workerCubit.isSubscriptionExpired
+              ? Colors.redAccent.withOpacity(0.35)
+              : Colors.orangeAccent.withOpacity(0.35),
+        ),
+        boxShadow: blueShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsetsDirectional.all(9.r),
+                decoration: BoxDecoration(
+                  color: workerCubit.isSubscriptionExpired
+                      ? Colors.redAccent.withOpacity(0.12)
+                      : Colors.orangeAccent.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  workerCubit.isSubscriptionExpired
+                      ? Icons.history_rounded
+                      : Icons.workspace_premium_outlined,
+                  color: workerCubit.isSubscriptionExpired
+                      ? Colors.redAccent
+                      : Colors.orangeAccent,
+                  size: 24.sp,
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Text(
+                  workerCubit.subscriptionWarningTitle,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            workerCubit.subscriptionWarningBody,
+            style: TextStyle(
+              color: appCubit.isDark ? darkSubTextColor : Colors.grey.shade700,
+              fontSize: 12.sp,
+              height: 1.5,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          defaultButton(
+            onPressed: () => move(
+              context,
+              const WorkerSubscriptionsScreen(),
+            ),
+            text: workerCubit.subscriptionWarningButtonText,
+            height: 45.h,
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSectionTitle({
     required String title,
@@ -147,6 +225,13 @@ class _WorkerHomeState extends State<WorkerHome> {
                             SizedBox(
                               height: 10.h,
                             ),
+                            if (workerCubit.shouldShowSubscriptionWarning)
+                              _buildSubscriptionWarning(
+                                appCubit: appCubit,
+                                workerCubit: workerCubit,
+                              ),
+                            if (workerCubit.shouldShowSubscriptionWarning)
+                              SizedBox(height: 10.h),
                             GridView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               gridDelegate:
@@ -718,8 +803,24 @@ class _WorkerHomeState extends State<WorkerHome> {
                                                 ),
                                                 SizedBox(height: 20.h),
                                                 InkWell(
-                                                  onTap: () => move(context,
-                                                      const WorkerAddService()),
+                                                  onTap: () {
+                                                    final message = workerCubit
+                                                        .addServiceRestrictionMessage;
+
+                                                    if (message != null) {
+                                                      showSnackBar(
+                                                        Colors.orangeAccent,
+                                                        message,
+                                                        context,
+                                                      );
+                                                      return;
+                                                    }
+
+                                                    move(
+                                                      context,
+                                                      const WorkerAddService(),
+                                                    );
+                                                  },
                                                   child: Container(
                                                     padding:
                                                         EdgeInsets.symmetric(

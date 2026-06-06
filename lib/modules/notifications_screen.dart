@@ -25,6 +25,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     'الكل',
     'غير مقروء',
     'الحجوزات',
+    'الاشتراكات',
+    'التوثيق',
   ];
 
   String selectedStatus = 'الكل';
@@ -36,9 +38,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   List<Map<String, dynamic>> getFilteredNotifications(
-      List<Map<String, dynamic>> notifications,
-      )
-  {
+    List<Map<String, dynamic>> notifications,
+  ) {
     final visibleNotifications = notifications.where((notification) {
       final String type = notification['type']?.toString() ?? '';
       return type != 'new_message';
@@ -65,6 +66,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       return 'الحجوزات';
     }
 
+    if (type == 'subscription_status' || type == 'subscription_limit') {
+      return 'الاشتراكات';
+    }
+
+    if (type == 'verification_status') {
+      return 'التوثيق';
+    }
+
     return 'عام';
   }
 
@@ -75,6 +84,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     if (type == 'booking_status') {
       return 'assets/all.svg';
+    }
+
+    if (type == 'subscription_status' || type == 'subscription_limit') {
+      return 'assets/subs.svg';
+    }
+
+    if (type == 'verification_status') {
+      return 'assets/doc.svg';
     }
 
     return 'assets/not.svg';
@@ -137,24 +154,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           color: isSelected
               ? mainColor
               : cubit.isDark
-              ? lightDarkColor
-              : Colors.white,
+                  ? lightDarkColor
+                  : Colors.white,
           borderRadius: BorderRadius.circular(18.r),
           border: Border.all(
             color: isSelected
                 ? mainColor
                 : cubit.isDark
-                ? const Color(0xFF30363D)
-                : Colors.grey.shade200,
+                    ? const Color(0xFF30363D)
+                    : Colors.grey.shade200,
           ),
           boxShadow: isSelected && !cubit.isDark
               ? [
-            BoxShadow(
-              color: mainColor.withOpacity(0.18),
-              blurRadius: 12,
-              offset: const Offset(0, 5),
-            ),
-          ]
+                  BoxShadow(
+                    color: mainColor.withOpacity(0.18),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5),
+                  ),
+                ]
               : [],
         ),
         child: Text(
@@ -163,8 +180,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             color: isSelected
                 ? Colors.white
                 : cubit.isDark
-                ? Colors.white
-                : Colors.black87,
+                    ? Colors.white
+                    : Colors.black87,
             fontSize: 12.sp,
             fontWeight: FontWeight.bold,
           ),
@@ -186,9 +203,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final String typeText = getNotificationTypeText(type);
     final String icon = getNotificationIcon(type);
     final String time = formatNotificationTime(notification['createdAt']);
-    final String notificationId =
-        notification['notificationId']?.toString() ??
-            notification['id']?.toString() ?? '';
+    final String notificationId = notification['notificationId']?.toString() ??
+        notification['id']?.toString() ??
+        '';
 
     return InkWell(
       onTap: () async {
@@ -210,11 +227,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
-            color: !isRead
-                ? mainColor.withOpacity(0.35)
-                :Colors.transparent
-          ),
-          boxShadow:blueShadow,
+              color:
+                  !isRead ? mainColor.withOpacity(0.35) : Colors.transparent),
+          boxShadow: blueShadow,
         ),
         child: Row(
           children: [
@@ -296,9 +311,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   ),
                                 ),
                               ),
-
                               SizedBox(width: 8.w),
-
                               Container(
                                 padding: EdgeInsetsDirectional.symmetric(
                                   horizontal: 9.w,
@@ -317,21 +330,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                     fontWeight: FontWeight.bold,
                                     color: isRead
                                         ? appCubit.isDark
-                                        ? darkSubTextColor
-                                        : Colors.grey
+                                            ? darkSubTextColor
+                                            : Colors.grey
                                         : mainColor,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-
                           SizedBox(height: 8.h),
-
                           ReadMoreText(
-                            body.isEmpty
-                                ? 'لا يوجد محتوى لهذا الإشعار'
-                                : body,
+                            body.isEmpty ? 'لا يوجد محتوى لهذا الإشعار' : body,
                             style: TextStyle(
                               fontSize: 12.sp,
                               color: appCubit.isDark
@@ -355,9 +364,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
                           SizedBox(height: 12.h),
-
                           Row(
                             children: [
                               Container(
@@ -378,9 +385,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   ),
                                 ),
                               ),
-
                               const Spacer(),
-
                               Icon(
                                 CupertinoIcons.time,
                                 color: appCubit.isDark
@@ -388,9 +393,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                     : Colors.grey,
                                 size: 14.r,
                               ),
-
                               SizedBox(width: 4.w),
-
                               Text(
                                 time,
                                 style: TextStyle(
@@ -437,9 +440,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 color: mainColor,
               ),
             ),
-
             SizedBox(height: 18.h),
-
             Text(
               'لا توجد إشعارات',
               style: TextStyle(
@@ -448,9 +449,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
-
             SizedBox(height: 8.h),
-
             Text(
               selectedStatus == 'الكل'
                   ? 'لا توجد إشعارات حالياً، ستظهر هنا إشعارات الحجوزات والتحديثات المهمة.'
@@ -475,16 +474,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         final AppCubit appCubit = AppCubit.get(context);
         return BlocBuilder<NotificationCubit, NotificationStates>(
           builder: (context, state) {
-            NotificationCubit notificationCubit = NotificationCubit.get(context);
+            NotificationCubit notificationCubit =
+                NotificationCubit.get(context);
 
             final notifications = notificationCubit.userNotifications;
             final visibleNotifications = notifications.where((notification) {
               final String type = notification['type']?.toString() ?? '';
               return type != 'new_message';
             }).toList();
-            final filteredNotifications = getFilteredNotifications(visibleNotifications);
+            final filteredNotifications =
+                getFilteredNotifications(visibleNotifications);
             final int unreadVisibleCount = visibleNotifications
-                .where((notification) => notification['isRead'] != true).length;
+                .where((notification) => notification['isRead'] != true)
+                .length;
 
             return Directionality(
               textDirection: TextDirection.rtl,
@@ -540,58 +542,63 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                 ),
                 body: notificationCubit.isNotificationsLoading ||
-                    !notificationCubit.isNotificationsLoaded
-                     ? NotificationsScreenShimmer(isDark: appCubit.isDark)
+                        !notificationCubit.isNotificationsLoaded
+                    ? NotificationsScreenShimmer(isDark: appCubit.isDark)
                     : RefreshIndicator(
-                  color: mainColor,
-                  onRefresh: () => notificationCubit.getUserNotifications(),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 44.h,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          padding: EdgeInsetsDirectional.only(
-                            start: 10.w,
-                            end: 10.w,
-                          ),
-                          itemCount: statusFilters.length,
-                          separatorBuilder: (context, index) => SizedBox(width: 10.w),
-                          itemBuilder: (context, index) {
-                            return buildFilterChip(
-                              title: statusFilters[index],
-                              cubit: appCubit,
-                            );
-                          },
+                        color: mainColor,
+                        onRefresh: () =>
+                            notificationCubit.getUserNotifications(),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 44.h,
+                              child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                padding: EdgeInsetsDirectional.only(
+                                  start: 10.w,
+                                  end: 10.w,
+                                ),
+                                itemCount: statusFilters.length,
+                                separatorBuilder: (context, index) =>
+                                    SizedBox(width: 10.w),
+                                itemBuilder: (context, index) {
+                                  return buildFilterChip(
+                                    title: statusFilters[index],
+                                    cubit: appCubit,
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 15.h),
+                            filteredNotifications.isEmpty
+                                ? Expanded(
+                                    child: buildEmptyState(appCubit),
+                                  )
+                                : Expanded(
+                                    child: ListView.separated(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      padding: EdgeInsetsDirectional.only(
+                                        start: 10.w,
+                                        end: 10.w,
+                                        bottom: 20.h,
+                                      ),
+                                      itemCount: filteredNotifications.length,
+                                      separatorBuilder: (context, index) =>
+                                          SizedBox(height: 15.h),
+                                      itemBuilder: (context, index) {
+                                        return buildNotificationCard(
+                                          notification:
+                                              filteredNotifications[index],
+                                          appCubit: appCubit,
+                                          notificationCubit: notificationCubit,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 15.h),
-                      filteredNotifications.isEmpty
-                          ? Expanded(
-                        child: buildEmptyState(appCubit),
-                      )
-                          : Expanded(
-                        child: ListView.separated(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: EdgeInsetsDirectional.only(
-                            start: 10.w,
-                            end: 10.w,
-                            bottom: 20.h,
-                          ),
-                          itemCount: filteredNotifications.length,
-                          separatorBuilder: (context, index) => SizedBox(height: 15.h),
-                          itemBuilder: (context, index) {
-                            return buildNotificationCard(
-                              notification: filteredNotifications[index],
-                              appCubit: appCubit,
-                              notificationCubit: notificationCubit,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             );
           },

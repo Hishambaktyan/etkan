@@ -305,7 +305,17 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
           },
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => move(context, const WorkerAddService()),
+          onPressed: () {
+            final workerCubit = WorkerCubit.get(context);
+            final message = workerCubit.addServiceRestrictionMessage;
+
+            if (message != null) {
+              showSnackBar(Colors.orangeAccent, message, context);
+              return;
+            }
+
+            move(context, const WorkerAddService());
+          },
           backgroundColor: mainColor,
           label: const Text(
             'إضافة خدمة',

@@ -12,6 +12,195 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
   static WorkerCubit get(context) => BlocProvider.of(context);
 
+  static const int freeServicesLimit = 5;
+  static const int freeCompletedRequestsLimit = 5;
+
+  bool isSubscriptionActive = false;
+  String subscriptionStatus = 'not_submitted';
+  DateTime? subscriptionEndDate;
+
+  bool get isSubscriptionExpired => subscriptionStatus == 'expired';
+
+  bool get hasReachedFreeServicesLimit =>
+      !isSubscriptionActive &&
+      !isSubscriptionExpired &&
+      (workerServicesCount ?? 0) >= freeServicesLimit;
+
+  bool get hasReachedFreeCompletedRequestsLimit =>
+      !isSubscriptionActive &&
+      !isSubscriptionExpired &&
+      (workerCompletedRequestsCount ?? 0) >= freeCompletedRequestsLimit;
+
+  bool get shouldShowSubscriptionWarning =>
+      isSubscriptionExpired ||
+      hasReachedFreeServicesLimit ||
+      hasReachedFreeCompletedRequestsLimit;
+
+  String? get addServiceRestrictionMessage {
+    if (isSubscriptionExpired) {
+      return 'انتهت مدة اشتراكك. يرجى تجديد الاشتراك لإضافة خدمات جديدة.';
+    }
+
+    if (hasReachedFreeServicesLimit) {
+      return 'لقد وصلت إلى الحد المجاني المسموح وهو 5 خدمات. اشترك الآن لإضافة خدمات غير محدودة.';
+    }
+
+    return null;
+  }
+
+  String get subscriptionWarningTitle {
+    if (isSubscriptionExpired) {
+      return 'انتهت مدة اشتراكك';
+    }
+
+    if (hasReachedFreeServicesLimit && hasReachedFreeCompletedRequestsLimit) {
+      return 'لقد استهلكت الخطة المجانية';
+    }
+
+    if (hasReachedFreeCompletedRequestsLimit) {
+      return 'أكملت 5 حجوزات مجانية';
+    }
+
+    return 'أضفت 5 خدمات مجانية';
+  }
+
+  String get subscriptionWarningBody {
+    if (isSubscriptionExpired) {
+      return 'انتهت باقتك المدفوعة. جدّد اشتراكك لإضافة خدمات جديدة واستقبال حجوزات جديدة.';
+    }
+
+    if (subscriptionStatus == 'pending') {
+      return 'وصلت إلى الحد المجاني، وطلب اشتراكك قيد المراجعة حالياً. يمكنك إكمال الحجوزات القديمة فقط.';
+    }
+
+    if (hasReachedFreeServicesLimit && hasReachedFreeCompletedRequestsLimit) {
+      return 'أضفت 5 خدمات وأكملت 5 حجوزات مجانية. اشترك الآن لإضافة خدمات واستقبال حجوزات جديدة بلا حدود.';
+    }
+
+    if (hasReachedFreeCompletedRequestsLimit) {
+      return 'أكملت 5 حجوزات مجانية. اشترك الآن لاستقبال حجوزات جديدة بلا حدود، ويمكنك إكمال الحجوزات القديمة.';
+    }
+
+    return 'أضفت 5 خدمات مجانية. اشترك الآن لإضافة عدد غير محدود من الخدمات.';
+  }
+
+  String get subscriptionWarningButtonText {
+    if (subscriptionStatus == 'pending') {
+      return 'عرض حالة الاشتراك';
+    }
+
+    if (isSubscriptionExpired) {
+      return 'تجديد الاشتراك';
+    }
+
+    return 'الاشتراك الآن';
+  }
+
+  Map<String, dynamic> _getSubscriptionData(Map<String, dynamic> userData) {
+    final dynamic rawSubscription = userData['subscription'];
+
+    if (rawSubscription is Map) {
+      return Map<String, dynamic>.from(rawSubscription);
+    }
+
+    return {};
+  }
+
+  DateTime? _getSubscriptionDate(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    if (value is String) {
+      return DateTime.tryParse(value);
+    }
+
+    return null;
+  }
+
+  bool _isSubscriptionExpiredFromData(Map<String, dynamic> userData) {
+    final subscription = _getSubscriptionData(userData);
+    final status = subscription['status']?.toString() ?? 'not_submitted';
+
+    if (status == 'expired') {
+      return true;
+    }
+
+    final bool hasActiveFlag = userData['isSubscribed'] == true ||
+        subscription['isActive'] == true ||
+        status == 'active' ||
+        status == 'approved';
+
+    if (!hasActiveFlag) {
+      return false;
+    }
+
+    final endDate = _getSubscriptionDate(
+      subscription['endDate'] ??
+          subscription['endAt'] ??
+          subscription['expiresAt'],
+    );
+
+    if (endDate == null) {
+      return false;
+    }
+
+    return !endDate.isAfter(DateTime.now());
+  }
+
+  bool _hasActiveSubscription(Map<String, dynamic> userData) {
+    if (_isSubscriptionExpiredFromData(userData)) {
+      return false;
+    }
+
+    final subscription = _getSubscriptionData(userData);
+    final status = subscription['status']?.toString() ?? 'not_submitted';
+
+    return userData['isSubscribed'] == true ||
+        subscription['isActive'] == true ||
+        status == 'active' ||
+        status == 'approved';
+  }
+
+  void _setSubscriptionInfo(Map<String, dynamic> userData) {
+    final subscription = _getSubscriptionData(userData);
+
+    final String storedStatus =
+        subscription['status']?.toString() ?? 'not_submitted';
+    final String requestId = subscription['requestId']?.toString() ?? '';
+
+    subscriptionStatus = storedStatus == 'pending' && requestId.isEmpty
+        ? 'not_submitted'
+        : storedStatus;
+    subscriptionEndDate = _getSubscriptionDate(
+      subscription['endDate'] ??
+          subscription['endAt'] ??
+          subscription['expiresAt'],
+    );
+    isSubscriptionActive = _hasActiveSubscription(userData);
+
+    if (_isSubscriptionExpiredFromData(userData)) {
+      subscriptionStatus = 'expired';
+      isSubscriptionActive = false;
+    }
+  }
+
+  Future<void> _markSubscriptionAsExpired(String uid) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'isSubscribed': false,
+      'subscription.isActive': false,
+      'subscription.status': 'expired',
+      'subscription.expiredAt': FieldValue.serverTimestamp(),
+    });
+
+    isSubscriptionActive = false;
+    subscriptionStatus = 'expired';
+  }
+
   Map<String, dynamic> allUsers = {};
 
   Future<void> getAllUsers() async {
@@ -90,6 +279,12 @@ class WorkerCubit extends Cubit<WorkerStates> {
     }
 
     if (isWorkerDataLoaded && !forceRefresh) {
+      if (isSubscriptionActive &&
+          subscriptionEndDate != null &&
+          !subscriptionEndDate!.isAfter(DateTime.now())) {
+        await _markSubscriptionAsExpired(uid.toString());
+        emit(GetWorkerDataSuccessState());
+      }
       return;
     }
 
@@ -143,6 +338,19 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       final userData = userSnapshot.data()!;
 
+      if (_isSubscriptionExpiredFromData(userData)) {
+        final currentStatus =
+            _getSubscriptionData(userData)['status']?.toString() ?? '';
+
+        if (currentStatus != 'expired') {
+          await _markSubscriptionAsExpired(uid.toString());
+        } else {
+          _setSubscriptionInfo(userData);
+        }
+      } else {
+        _setSubscriptionInfo(userData);
+      }
+
       workerName = userData['name'] ?? '';
       workerDept = userData['specialization'] ?? '';
       workerRequestsCount = requestSnapshot.count ?? 0;
@@ -180,10 +388,38 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
     emit(GetWorkerServicesLoadingState());
     try {
-      final servicesSnapshot = await FirebaseFirestore.instance
+      final userFuture =
+          FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      final servicesFuture = FirebaseFirestore.instance
           .collection('services')
           .where('providerId', isEqualTo: uid)
           .get();
+
+      await Future.wait([
+        userFuture,
+        servicesFuture,
+      ]);
+
+      final userSnapshot = await userFuture;
+      final servicesSnapshot = await servicesFuture;
+
+      if (userSnapshot.exists && userSnapshot.data() != null) {
+        final userData = userSnapshot.data()!;
+
+        if (_isSubscriptionExpiredFromData(userData)) {
+          final currentStatus =
+              _getSubscriptionData(userData)['status']?.toString() ?? '';
+
+          if (currentStatus != 'expired') {
+            await _markSubscriptionAsExpired(uid.toString());
+          } else {
+            _setSubscriptionInfo(userData);
+          }
+        } else {
+          _setSubscriptionInfo(userData);
+        }
+      }
 
       for (var doc in servicesSnapshot.docs) {
         var data = doc.data();
@@ -191,6 +427,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
         workerServices.add(data);
       }
 
+      workerServicesCount = workerServices.length;
       isWorkerServicesLoaded = true;
 
       emit(GetWorkerServicesSuccessState());
@@ -331,8 +568,44 @@ class WorkerCubit extends Cubit<WorkerStates> {
       }
 
       final userData = userSnapshot.data()!;
-      final specialization = userData['specialization'] ?? '';
 
+      if (_isSubscriptionExpiredFromData(userData)) {
+        final currentStatus =
+            _getSubscriptionData(userData)['status']?.toString() ?? '';
+
+        if (currentStatus != 'expired') {
+          await _markSubscriptionAsExpired(uid.toString());
+        } else {
+          _setSubscriptionInfo(userData);
+        }
+
+        emit(UploadServiceErrorState(
+          error: 'انتهت مدة اشتراكك. يرجى تجديد الاشتراك لإضافة خدمات جديدة.',
+        ));
+        return;
+      }
+
+      final bool hasActiveSubscription = _hasActiveSubscription(userData);
+      _setSubscriptionInfo(userData);
+
+      final servicesCountSnapshot = await FirebaseFirestore.instance
+          .collection('services')
+          .where('providerId', isEqualTo: uid)
+          .count()
+          .get();
+
+      final int currentServicesCount = servicesCountSnapshot.count ?? 0;
+      workerServicesCount = currentServicesCount;
+
+      if (!hasActiveSubscription && currentServicesCount >= freeServicesLimit) {
+        emit(UploadServiceErrorState(
+          error:
+              'لقد وصلت إلى الحد المجاني المسموح وهو 5 خدمات. اشترك الآن لإضافة خدمات غير محدودة.',
+        ));
+        return;
+      }
+
+      final specialization = userData['specialization'] ?? '';
       final serviceCategory = getCategoryFromSpecialization(specialization);
 
       if (serviceImage.trim().isNotEmpty) {
@@ -366,7 +639,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       serviceData['id'] = docRef.id;
 
       workerServices.add(serviceData);
-      workerServicesCount = workerServices.length;
+      workerServicesCount = currentServicesCount + 1;
 
       isWorkerServicesLoaded = true;
 
@@ -552,6 +825,74 @@ class WorkerCubit extends Cubit<WorkerStates> {
     }
   }
 
+  Future<void> _handleCompletedRequestLimit({
+    required String providerId,
+    required String requestId,
+  }) async {
+    if (providerId.isEmpty) return;
+
+    try {
+      final completedCountSnapshot = await FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId', isEqualTo: providerId)
+          .where('status', isEqualTo: 'مكتمل')
+          .count()
+          .get();
+
+      final int completedCount = completedCountSnapshot.count ?? 0;
+      workerCompletedRequestsCount = completedCount;
+
+      final providerRef =
+          FirebaseFirestore.instance.collection('users').doc(providerId);
+      final providerDoc = await providerRef.get();
+
+      if (!providerDoc.exists || providerDoc.data() == null) return;
+
+      final providerData = providerDoc.data()!;
+
+      await providerRef.update({
+        'completedJobs': completedCount,
+      });
+
+      _setSubscriptionInfo(providerData);
+
+      if (_hasActiveSubscription(providerData) ||
+          _isSubscriptionExpiredFromData(providerData) ||
+          completedCount != freeCompletedRequestsLimit) {
+        return;
+      }
+
+      const String title = 'اكتملت حجوزاتك المجانية';
+      const String body =
+          'لقد أكملت 5 حجوزات مجانية. اشترك الآن لاستقبال حجوزات جديدة بلا حدود.';
+
+      final String receiverToken = providerData['token']?.toString() ?? '';
+
+      if (receiverToken.isNotEmpty) {
+        await NotificationService.sendNotification(
+          receiverToken: receiverToken,
+          title: title,
+          body: body,
+          type: 'subscription_limit',
+          relatedId: requestId,
+          senderId: 'system',
+        );
+      }
+
+      await NotificationService.createNotificationInFirestore(
+        receiverId: providerId,
+        receiverType: 'worker',
+        senderId: 'system',
+        title: title,
+        body: body,
+        type: 'subscription_limit',
+        relatedId: requestId,
+      );
+    } catch (error) {
+      print('خطأ أثناء فحص حد الحجوزات المجانية: $error');
+    }
+  }
+
   Future<void> updateRequestStatus({
     required String requestId,
     required String status,
@@ -584,6 +925,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       }
 
       final oldRequestData = requestSnapshot.data()!;
+      final oldStatus = oldRequestData['status']?.toString() ?? '';
 
       final customerId = oldRequestData['customerId']?.toString() ?? '';
       final providerId = oldRequestData['providerId']?.toString() ?? '';
@@ -626,6 +968,13 @@ class WorkerCubit extends Cubit<WorkerStates> {
       }
 
       await batch.commit();
+
+      if (status == 'مكتمل' && oldStatus != 'مكتمل') {
+        await _handleCompletedRequestLimit(
+          providerId: providerId,
+          requestId: requestId,
+        );
+      }
 
       emit(UpdateRequestStatusSuccessState());
 
@@ -748,20 +1097,47 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       if (uid == null || uid.toString().isEmpty) {
         emit(SendSubscriptionRequestErrorState(
-            error: 'لم يتم العثور على معرف الفني'));
+          error: 'لم يتم العثور على معرف الفني',
+        ));
         return;
       }
 
-      final userDoc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      final userDoc = await userRef.get();
 
       if (!userDoc.exists || userDoc.data() == null) {
         emit(SendSubscriptionRequestErrorState(
-            error: 'بيانات الفني غير موجودة'));
+          error: 'بيانات الفني غير موجودة',
+        ));
         return;
       }
 
       final userData = userDoc.data()!;
+      final subscription = _getSubscriptionData(userData);
+      final currentStatus =
+          subscription['status']?.toString() ?? 'not_submitted';
+
+      final String currentRequestId =
+          subscription['requestId']?.toString() ?? '';
+
+      if (currentStatus == 'pending' && currentRequestId.isNotEmpty) {
+        emit(SendSubscriptionRequestErrorState(
+          error: 'لديك طلب اشتراك قيد المراجعة بالفعل',
+        ));
+        return;
+      }
+
+      if (_hasActiveSubscription(userData)) {
+        emit(SendSubscriptionRequestErrorState(
+          error: 'لديك اشتراك نشط بالفعل',
+        ));
+        return;
+      }
+
+      if (_isSubscriptionExpiredFromData(userData) &&
+          currentStatus != 'expired') {
+        await _markSubscriptionAsExpired(uid.toString());
+      }
 
       final String transferImageUrl =
           await uploadImageToCloudinary(transferImage.path);
@@ -769,7 +1145,11 @@ class WorkerCubit extends Cubit<WorkerStates> {
       final requestRef =
           FirebaseFirestore.instance.collection('subscriptionRequests').doc();
 
-      await requestRef.set({
+      final int price = int.tryParse(plan['price'].toString()) ?? 0;
+      final int durationMonths =
+          int.tryParse(plan['durationMonths'].toString()) ?? 1;
+
+      final requestData = <String, dynamic>{
         'requestId': requestRef.id,
         'providerId': uid,
         'providerName': userData['name'] ?? '',
@@ -778,15 +1158,20 @@ class WorkerCubit extends Cubit<WorkerStates> {
         'planId': plan['id'] ?? '',
         'packageName': plan['title'] ?? '',
         'period': plan['period'] ?? '',
-        'price': int.tryParse(plan['price'].toString()) ?? 0,
+        'durationMonths': durationMonths,
+        'price': price,
         'paymentMethodId': paymentMethod['id'] ?? '',
         'paymentMethodTitle': paymentMethod['title'] ?? '',
         'transferImage': transferImageUrl,
         'status': 'pending',
         'createdAt': FieldValue.serverTimestamp(),
-      });
+      };
 
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.set(requestRef, requestData);
+
+      batch.update(userRef, {
         'isSubscribed': false,
         'subscription': {
           'isActive': false,
@@ -795,13 +1180,23 @@ class WorkerCubit extends Cubit<WorkerStates> {
           'planId': plan['id'] ?? '',
           'packageName': plan['title'] ?? '',
           'period': plan['period'] ?? '',
-          'price': int.tryParse(plan['price'].toString()) ?? 0,
+          'durationMonths': durationMonths,
+          'price': price,
           'paymentMethodId': paymentMethod['id'] ?? '',
           'paymentMethodTitle': paymentMethod['title'] ?? '',
           'transferImage': transferImageUrl,
           'createdAt': FieldValue.serverTimestamp(),
+          'startDate': null,
+          'endDate': null,
+          'rejectionReason': null,
         },
       });
+
+      await batch.commit();
+
+      isSubscriptionActive = false;
+      subscriptionStatus = 'pending';
+      subscriptionEndDate = null;
 
       emit(SendSubscriptionRequestSuccessState());
     } catch (error) {
@@ -839,6 +1234,31 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       final userData = userDoc.data()!;
 
+      final Map<String, dynamic> verificationData =
+          userData['verification'] is Map
+              ? Map<String, dynamic>.from(userData['verification'])
+              : {};
+
+      final String currentVerificationStatus =
+          verificationData['status']?.toString() ??
+              userData['verificationStatus']?.toString() ??
+              'not_submitted';
+
+      if (currentVerificationStatus == 'pending') {
+        emit(SendVerificationRequestErrorState(
+          error: 'لديك طلب توثيق قيد المراجعة بالفعل',
+        ));
+        return;
+      }
+
+      if (currentVerificationStatus == 'approved' ||
+          userData['isVerified'] == true) {
+        emit(SendVerificationRequestErrorState(
+          error: 'حسابك موثق بالفعل',
+        ));
+        return;
+      }
+
       final uploadedImages = await Future.wait([
         uploadImageToCloudinary(frontImage.path),
         uploadImageToCloudinary(backImage.path),
@@ -853,7 +1273,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
           .collection('profile_verification_requests')
           .doc();
 
-      await requestRef.set({
+      final requestData = <String, dynamic>{
         'requestId': requestRef.id,
         'providerId': uid,
         'providerName': userData['name'] ?? '',
@@ -864,22 +1284,32 @@ class WorkerCubit extends Cubit<WorkerStates> {
         'backDocumentImage': backImageUrl,
         'personalImage': personalImageUrl,
         'status': 'pending',
+        'rejectionReason': null,
         'createdAt': FieldValue.serverTimestamp(),
-      });
+      };
 
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'verificationStatus': 'pending',
-        'verificationRequestId': requestRef.id,
-        'verification': {
-          'status': 'pending',
-          'requestId': requestRef.id,
-          'documentType': documentType,
-          'frontDocumentImage': frontImageUrl,
-          'backDocumentImage': backImageUrl,
-          'personalImage': personalImageUrl,
-          'createdAt': FieldValue.serverTimestamp(),
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.set(requestRef, requestData);
+
+      batch.update(
+        FirebaseFirestore.instance.collection('users').doc(uid),
+        {
+          'isVerified': false,
+          'verificationStatus': 'pending',
+          'verificationRequestId': requestRef.id,
+          'verification': {
+            'status': 'pending',
+            'requestId': requestRef.id,
+            'documentType': documentType,
+            'createdAt': FieldValue.serverTimestamp(),
+            'approvedAt': null,
+            'rejectionReason': null,
+          },
         },
-      });
+      );
+
+      await batch.commit();
 
       emit(SendVerificationRequestSuccessState());
     } catch (error) {

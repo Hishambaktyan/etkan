@@ -316,6 +316,11 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
     );
     final workerImage = getText(worker['profileImage']);
     final isAvailable = worker['isAvailable'] == true;
+    final Map<String, dynamic> verification = worker['verification'] is Map
+        ? Map<String, dynamic>.from(worker['verification'])
+        : {};
+    final bool isVerified = worker['isVerified'] == true ||
+        verification['status']?.toString() == 'approved';
     final rating = getDouble(worker['avgRating']);
 
     return ClipRRect(
@@ -324,7 +329,7 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
       ),
       child: Container(
         width: double.infinity,
-        height: 325.h,
+        height: 350.h,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -390,10 +395,7 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
             ),
             Padding(
               padding: EdgeInsetsDirectional.only(
-                top: 35.h,
-                start: 10.w,
-                end: 18.w,
-              ),
+                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
               child: Column(
                 children: [
                   Row(
@@ -474,11 +476,17 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
                             ),
                             buildHeaderChip2(
                               icon: isAvailable
-                                  ? Icons.verified_rounded
+                                  ? Icons.check_circle_rounded
                                   : Icons.access_time_filled_rounded,
                               title: isAvailable ? 'متاح الآن' : 'غير متاح',
                               color: isAvailable ? Colors.green : Colors.orange,
                             ),
+                            if (isVerified)
+                              buildHeaderChip2(
+                                icon: Icons.verified_rounded,
+                                title: 'حساب موثق',
+                                color: Colors.lightBlueAccent,
+                              ),
                           ],
                         ),
                       ],
