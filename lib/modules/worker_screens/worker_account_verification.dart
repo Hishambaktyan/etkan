@@ -11,6 +11,7 @@ import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.d
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
@@ -635,7 +636,10 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
     }
 
     return defaultOutlinedButton(
-      onPressed: _goToSubscription,
+      onPressed: () {
+        AuthCubit.get(context).skipPendingWorkerVerification();
+        _goToSubscription();
+      },
       text: 'تخطي التوثيق الآن',
       textColor: mainColor,
       border: mainColor,
@@ -681,25 +685,21 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                   automaticallyImplyLeading: false,
                   title: Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(7),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () {
-                            if (widget.isFromOnboarding) {
-                              _goToSubscription();
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Icon(
-                            CupertinoIcons.back,
-                            color: Theme.of(context).iconTheme.color,
+                      if (!widget.isFromOnboarding) ...[
+                        Padding(
+                          padding: const EdgeInsets.all(7),
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () => Navigator.pop(context),
+                            child: Icon(
+                              CupertinoIcons.back,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 10.w),
+                        SizedBox(width: 10.w),
+                      ],
                       Text(
                         'توثيق الحساب',
                         style: TextStyle(
@@ -712,10 +712,12 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                   ),
                 ),
                 body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(CacheHelper.getData(key: 'uid'))
-                      .snapshots(),
+                  stream: widget.isFromOnboarding
+                      ? null
+                      : FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(CacheHelper.getData(key: 'uid'))
+                          .snapshots(),
                   builder: (context, snapshot) {
                     Map<String, dynamic> verificationData = {};
 
@@ -763,10 +765,12 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                 ),
                 bottomNavigationBar:
                     StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(CacheHelper.getData(key: 'uid'))
-                      .snapshots(),
+                  stream: widget.isFromOnboarding
+                      ? null
+                      : FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(CacheHelper.getData(key: 'uid'))
+                          .snapshots(),
                   builder: (context, snapshot) {
                     Map<String, dynamic> verificationData = {};
 
@@ -826,12 +830,22 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                               if (verificationItems[0]['image'] != null &&
                                   verificationItems[1]['image'] != null &&
                                   verificationItems[2]['image'] != null) {
-                                workerCubit.sendVerificationRequest(
-                                  documentType: selectedDocumentType,
-                                  frontImage: verificationItems[0]['image'],
-                                  backImage: verificationItems[1]['image'],
-                                  personalImage: verificationItems[2]['image'],
-                                );
+                                if (widget.isFromOnboarding) {
+                                  AuthCubit.get(context).setPendingWorkerVerification(
+                                    documentType: selectedDocumentType,
+                                    frontImage: verificationItems[0]['image'],
+                                    backImage: verificationItems[1]['image'],
+                                    personalImage: verificationItems[2]['image'],
+                                  );
+                                  _goToSubscription();
+                                } else {
+                                  workerCubit.sendVerificationRequest(
+                                    documentType: selectedDocumentType,
+                                    frontImage: verificationItems[0]['image'],
+                                    backImage: verificationItems[1]['image'],
+                                    personalImage: verificationItems[2]['image'],
+                                  );
+                                }
                               } else {
                                 showSnackBar(
                                   Colors.red,

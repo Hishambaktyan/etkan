@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -197,6 +198,122 @@ class AuthCubit extends Cubit<AuthStates> {
   var userPasswordController = TextEditingController();
   var userPhoneController = TextEditingController();
 
+  Map<String, dynamic>? pendingUserAddress;
+  String pendingUserProfileImagePath = '';
+
+  void setPendingUserAddress({
+    required String label,
+    required String addressDetails,
+    required double lat,
+    required double long,
+  }) {
+    pendingUserAddress = {
+      'label': label.trim(),
+      'addressDetails': addressDetails.trim(),
+      'lat': lat,
+      'long': long,
+    };
+  }
+
+  Future<void> finalizeUserSignUp({String profileImagePath = ''}) async {
+    try {
+      emit(UserSignUpLoadingState());
+
+      final formattedPhone = normalizeYemeniPhone(userPhoneController.text);
+      final formattedName = normalizeQuadName(userNameController.text);
+      final String password = userPasswordController.text.trim();
+      final Map<String, dynamic>? addressData = pendingUserAddress;
+
+      if (!isValidQuadName(formattedName)) {
+        emit(UserSignUpErrorState(
+          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
+        ));
+        return;
+      }
+
+      if (!isValidYemeniPhone(formattedPhone)) {
+        emit(UserSignUpErrorState(
+          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
+        ));
+        return;
+      }
+
+      if (password.isEmpty) {
+        emit(UserSignUpErrorState(error: 'كلمة المرور غير موجودة'));
+        return;
+      }
+
+      if (addressData == null) {
+        emit(UserSignUpErrorState(error: 'يرجى إضافة العنوان أولًا'));
+        return;
+      }
+
+      final existingUser = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: formattedPhone)
+          .limit(1)
+          .get();
+
+      if (existingUser.docs.isNotEmpty) {
+        emit(UserSignUpErrorState(error: 'رقم الهاتف مستخدم مسبقًا'));
+        return;
+      }
+
+      String profileImageUrl = '';
+
+      if (profileImagePath.trim().isNotEmpty) {
+        profileImageUrl = await uploadImageToCloudinary(profileImagePath);
+      }
+
+      final uid = FirebaseFirestore.instance.collection('users').doc().id;
+      final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      final addressRef = userRef.collection('addresses').doc();
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.set(userRef, {
+        'uid': uid,
+        'name': formattedName,
+        'phone': formattedPhone,
+        'password': password,
+        'role': 'user',
+        'profileImage': profileImageUrl,
+        'address': addressData['addressDetails'] ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      batch.set(addressRef, {
+        'id': addressRef.id,
+        'label': addressData['label'] ?? '',
+        'addressName': addressData['addressDetails'] ?? '',
+        'location': GeoPoint(
+          double.tryParse(addressData['lat'].toString()) ?? 0,
+          double.tryParse(addressData['long'].toString()) ?? 0,
+        ),
+        'createdAt': FieldValue.serverTimestamp(),
+        'isDefault': true,
+      });
+
+      await batch.commit();
+
+      await saveUserToken(uid);
+
+      await CacheHelper.saveData(key: 'uid', value: uid);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
+      await CacheHelper.saveData(key: 'role', value: 'user');
+
+      pendingUserAddress = null;
+      pendingUserProfileImagePath = '';
+      userNameController.clear();
+      userPhoneController.clear();
+      userPasswordController.clear();
+
+      emit(UserSignUpSuccessState());
+    } catch (e) {
+      emit(UserSignUpErrorState(error: e.toString()));
+    }
+  }
+
   Future<void> signUpUser(
       {required String name,
       required String phone,
@@ -261,6 +378,288 @@ class AuthCubit extends Cubit<AuthStates> {
   var workerPasswordController = TextEditingController();
   var workerAddController = TextEditingController();
   var workerPhoneController = TextEditingController();
+
+  Map<String, dynamic>? pendingWorkerProfile;
+  Map<String, dynamic>? pendingWorkerVerification;
+  Map<String, dynamic>? pendingWorkerSubscription;
+
+  void setPendingWorkerProfile({
+    required String specialization,
+    required String address,
+    required String about,
+    required List<String> experiences,
+    required List<String> previousWorks,
+    required String profileImage,
+  }) {
+    pendingWorkerProfile = {
+      'specialization': specialization.trim(),
+      'address': address.trim(),
+      'about': about.trim(),
+      'experiences': List<String>.from(experiences),
+      'previousWorks': List<String>.from(previousWorks),
+      'profileImage': profileImage.trim(),
+    };
+  }
+
+  void setPendingWorkerVerification({
+    required String documentType,
+    required File frontImage,
+    required File backImage,
+    required File personalImage,
+  }) {
+    pendingWorkerVerification = {
+      'documentType': documentType,
+      'frontImage': frontImage,
+      'backImage': backImage,
+      'personalImage': personalImage,
+    };
+  }
+
+  void skipPendingWorkerVerification() {
+    pendingWorkerVerification = null;
+  }
+
+  void setPendingWorkerSubscription({
+    required File transferImage,
+    required Map<String, dynamic> plan,
+    required Map<String, dynamic> paymentMethod,
+  }) {
+    pendingWorkerSubscription = {
+      'transferImage': transferImage,
+      'plan': Map<String, dynamic>.from(plan),
+      'paymentMethod': Map<String, dynamic>.from(paymentMethod),
+    };
+  }
+
+  void skipPendingWorkerSubscription() {
+    pendingWorkerSubscription = null;
+  }
+
+  Future<void> finalizeWorkerSignUp() async {
+    try {
+      emit(WorkerSignUpLoadingState());
+
+      final formattedPhone = normalizeYemeniPhone(workerPhoneController.text);
+      final formattedName = normalizeQuadName(workerNameController.text);
+      final String password = workerPasswordController.text.trim();
+      final Map<String, dynamic>? profileData = pendingWorkerProfile;
+
+      if (!isValidQuadName(formattedName)) {
+        emit(WorkerSignUpErrorState(
+          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
+        ));
+        return;
+      }
+
+      if (!isValidYemeniPhone(formattedPhone)) {
+        emit(WorkerSignUpErrorState(
+          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
+        ));
+        return;
+      }
+
+      if (password.isEmpty) {
+        emit(WorkerSignUpErrorState(error: 'كلمة المرور غير موجودة'));
+        return;
+      }
+
+      if (profileData == null) {
+        emit(WorkerSignUpErrorState(error: 'يرجى إكمال الملف المهني أولًا'));
+        return;
+      }
+
+      final existingUser = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: formattedPhone)
+          .limit(1)
+          .get();
+
+      if (existingUser.docs.isNotEmpty) {
+        emit(WorkerSignUpErrorState(error: 'رقم الهاتف مستخدم مسبقًا'));
+        return;
+      }
+
+      String profileImageUrl = '';
+      final List<String> previousWorksImageUrl = [];
+      final String profileImagePath = profileData['profileImage']?.toString() ?? '';
+
+      if (profileImagePath.trim().isNotEmpty) {
+        profileImageUrl = await uploadImageToCloudinary(profileImagePath);
+      }
+
+      final List<String> previousWorks =
+          List<String>.from(profileData['previousWorks'] ?? []);
+
+      for (String imagePath in previousWorks) {
+        if (imagePath.trim().isNotEmpty) {
+          final imageUrl = await uploadImageToCloudinary(imagePath);
+          previousWorksImageUrl.add(imageUrl);
+        }
+      }
+
+      final uid = FirebaseFirestore.instance.collection('users').doc().id;
+      final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      final batch = FirebaseFirestore.instance.batch();
+
+      final Map<String, dynamic> workerData = {
+        'uid': uid,
+        'phone': formattedPhone,
+        'name': formattedName,
+        'password': password,
+        'role': 'provider',
+        'specialization': profileData['specialization'] ?? '',
+        'address': profileData['address'] ?? '',
+        'avgRating': 0.0,
+        'isAvailable': true,
+        'isSubscribed': false,
+        'profileImage': profileImageUrl,
+        'about': profileData['about'] ?? '',
+        'experiences': List<String>.from(profileData['experiences'] ?? []),
+        'previousWorks': previousWorksImageUrl,
+        'subscription': {
+          'isActive': false,
+          'status': 'not_submitted',
+          'requestId': null,
+          'planId': null,
+          'packageName': null,
+          'price': null,
+          'startDate': null,
+          'endDate': null,
+          'rejectionReason': null,
+        },
+        'isVerified': false,
+        'verificationStatus': 'not_submitted',
+        'verification': {
+          'status': 'not_submitted',
+          'requestId': null,
+          'documentType': null,
+          'rejectionReason': null,
+          'approvedAt': null,
+        },
+        'createdAt': FieldValue.serverTimestamp(),
+        'token': '',
+      };
+
+      final Map<String, dynamic>? verificationData = pendingWorkerVerification;
+
+      if (verificationData != null) {
+        final uploadedImages = await Future.wait([
+          uploadImageToCloudinary((verificationData['frontImage'] as File).path),
+          uploadImageToCloudinary((verificationData['backImage'] as File).path),
+          uploadImageToCloudinary((verificationData['personalImage'] as File).path),
+        ]);
+
+        final requestRef = FirebaseFirestore.instance
+            .collection('profile_verification_requests')
+            .doc();
+
+        batch.set(requestRef, {
+          'requestId': requestRef.id,
+          'providerId': uid,
+          'providerName': formattedName,
+          'providerPhone': formattedPhone,
+          'providerImage': profileImageUrl,
+          'documentType': verificationData['documentType'] ?? '',
+          'frontDocumentImage': uploadedImages[0],
+          'backDocumentImage': uploadedImages[1],
+          'personalImage': uploadedImages[2],
+          'status': 'pending',
+          'rejectionReason': null,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        workerData['isVerified'] = false;
+        workerData['verificationStatus'] = 'pending';
+        workerData['verificationRequestId'] = requestRef.id;
+        workerData['verification'] = {
+          'status': 'pending',
+          'requestId': requestRef.id,
+          'documentType': verificationData['documentType'] ?? '',
+          'createdAt': FieldValue.serverTimestamp(),
+          'approvedAt': null,
+          'rejectionReason': null,
+        };
+      }
+
+      final Map<String, dynamic>? subscriptionData = pendingWorkerSubscription;
+
+      if (subscriptionData != null) {
+        final Map<String, dynamic> plan =
+            Map<String, dynamic>.from(subscriptionData['plan'] ?? {});
+        final Map<String, dynamic> paymentMethod =
+            Map<String, dynamic>.from(subscriptionData['paymentMethod'] ?? {});
+        final File transferImage = subscriptionData['transferImage'] as File;
+        final String transferImageUrl =
+            await uploadImageToCloudinary(transferImage.path);
+
+        final requestRef =
+            FirebaseFirestore.instance.collection('subscriptionRequests').doc();
+
+        final int price = int.tryParse(plan['price'].toString()) ?? 0;
+        final int durationMonths =
+            int.tryParse(plan['durationMonths'].toString()) ?? 1;
+
+        batch.set(requestRef, {
+          'requestId': requestRef.id,
+          'providerId': uid,
+          'providerName': formattedName,
+          'providerPhone': formattedPhone,
+          'providerImage': profileImageUrl,
+          'planId': plan['id'] ?? '',
+          'packageName': plan['title'] ?? '',
+          'period': plan['period'] ?? '',
+          'durationMonths': durationMonths,
+          'price': price,
+          'paymentMethodId': paymentMethod['id'] ?? '',
+          'paymentMethodTitle': paymentMethod['title'] ?? '',
+          'transferImage': transferImageUrl,
+          'status': 'pending',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        workerData['isSubscribed'] = false;
+        workerData['subscription'] = {
+          'isActive': false,
+          'status': 'pending',
+          'requestId': requestRef.id,
+          'planId': plan['id'] ?? '',
+          'packageName': plan['title'] ?? '',
+          'period': plan['period'] ?? '',
+          'durationMonths': durationMonths,
+          'price': price,
+          'paymentMethodId': paymentMethod['id'] ?? '',
+          'paymentMethodTitle': paymentMethod['title'] ?? '',
+          'transferImage': transferImageUrl,
+          'createdAt': FieldValue.serverTimestamp(),
+          'startDate': null,
+          'endDate': null,
+          'rejectionReason': null,
+        };
+      }
+
+      batch.set(userRef, workerData);
+
+      await batch.commit();
+
+      await saveUserToken(uid);
+
+      await CacheHelper.saveData(key: 'uid', value: uid);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
+      await CacheHelper.saveData(key: 'role', value: 'provider');
+
+      pendingWorkerProfile = null;
+      pendingWorkerVerification = null;
+      pendingWorkerSubscription = null;
+      selectedCategory = null;
+      workerNameController.clear();
+      workerPhoneController.clear();
+      workerPasswordController.clear();
+
+      emit(WorkerSignUpSuccessState());
+    } catch (e) {
+      emit(WorkerSignUpErrorState(error: e.toString()));
+    }
+  }
 
   Future<void> workerSignUpUser({
     required String name,

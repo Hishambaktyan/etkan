@@ -621,9 +621,9 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
             }
 
             if (state is CheckPhoneCodeSuccessState) {
-              if (isResetPassword) {
-                hideLoadingDialog(context);
+              hideLoadingDialog(context);
 
+              if (isResetPassword) {
                 moveAndReplace(
                   context,
                   ResetPasswordScreen(
@@ -636,16 +636,14 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
               }
 
               if (widget.userType == 'provider') {
-                await authCubit.workerSignUpUser(
-                  name: authCubit.workerNameController.text.trim(),
-                  phone: widget.phone.trim(),
-                  password: authCubit.workerPasswordController.text.trim(),
+                moveAndReplace(
+                  context,
+                  const WorkerCompleteProfile(),
                 );
               } else {
-                await authCubit.signUpUser(
-                  name: authCubit.userNameController.text.trim(),
-                  phone: widget.phone.trim(),
-                  password: authCubit.userPasswordController.text.trim(),
+                moveAndReplace(
+                  context,
+                  const UserAddAddress(isOnboarding: true),
                 );
               }
             }

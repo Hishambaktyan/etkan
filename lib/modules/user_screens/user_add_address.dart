@@ -8,6 +8,7 @@ import 'package:trying_homy/modules/user_screens/user_add_profile_image.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
 import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
@@ -337,6 +338,28 @@ class _UserAddAddressState extends State<UserAddAddress> {
                                             Colors.red,
                                             'يرجى إدخال اسم العنوان وتفاصيله',
                                             context);
+                                      } else if (!locationCubit.isInsideAden(
+                                          locationCubit.selectedLocation)) {
+                                        showSnackBar(
+                                          Colors.red,
+                                          'الخدمة متاحة داخل مدينة عدن فقط',
+                                          context,
+                                        );
+                                      } else if (widget.isOnboarding) {
+                                        AuthCubit.get(context).setPendingUserAddress(
+                                          label: titleController.text.trim(),
+                                          addressDetails:
+                                              detailsController.text.trim(),
+                                          lat: locationCubit
+                                              .selectedLocation.latitude,
+                                          long: locationCubit
+                                              .selectedLocation.longitude,
+                                        );
+
+                                        moveAndReplace(
+                                          context,
+                                          const UserAddProfileImage(),
+                                        );
                                       } else {
                                         await locationCubit.addAddress(
                                           uId: CacheHelper.getData(key: 'uid'),

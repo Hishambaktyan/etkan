@@ -10,6 +10,8 @@ import 'package:trying_homy/modules/worker_screens/worker_confirm_Subscription.d
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 import '../../shared/networks/local/cache_helper.dart';
@@ -901,7 +903,36 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
     );
   }
 
+  Future<void> _finishWorkerOnboarding() async {
+    final AuthCubit authCubit = AuthCubit.get(context);
+
+    showLoadingDialog(context);
+    await authCubit.finalizeWorkerSignUp();
+
+    if (!mounted) return;
+
+    hideLoadingDialog(context);
+
+    final AuthStates currentState = authCubit.state;
+
+    if (currentState is WorkerSignUpSuccessState) {
+      showSnackBar(Colors.green, 'تم إنشاء حسابك بنجاح', context);
+      moveAndReplace(
+        context,
+        const WorkerMainScreen(),
+      );
+    } else if (currentState is WorkerSignUpErrorState) {
+      showSnackBar(Colors.red, currentState.error, context);
+    }
+  }
+
   void _goToWorkerHome() {
+    if (widget.isFromOnboarding) {
+      AuthCubit.get(context).skipPendingWorkerSubscription();
+      _finishWorkerOnboarding();
+      return;
+    }
+
     moveAndReplace(
       context,
       const WorkerMainScreen(),
@@ -1051,25 +1082,21 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
               automaticallyImplyLeading: false,
               title: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(7),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
-                        if (widget.isFromOnboarding) {
-                          _goToWorkerHome();
-                        } else {
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Icon(
-                        CupertinoIcons.back,
-                        color: Theme.of(context).iconTheme.color,
+                  if (!widget.isFromOnboarding) ...[
+                    Padding(
+                      padding: const EdgeInsets.all(7),
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        onTap: () => Navigator.pop(context),
+                        child: Icon(
+                          CupertinoIcons.back,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 10.w),
+                    SizedBox(width: 10.w),
+                  ],
                   Text(
                     'الاشتراك',
                     style: TextStyle(
@@ -1085,6 +1112,30 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
               stream: _userSubscriptionStream,
               builder: (context, snapshot) {
                 if (_uid == null || _uid!.isEmpty) {
+                  if (widget.isFromOnboarding) {
+                    final Map<String, dynamic> subscription = {};
+                    const String currentStatus = 'not_submitted';
+
+                    return SingleChildScrollView(
+                      controller: _scrollController,
+                      padding: EdgeInsetsDirectional.only(
+                        start: 10.w,
+                        end: 10.w,
+                        top: 10.h,
+                        bottom: 20.h,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStatusCard(cubit, currentStatus, subscription),
+                          SizedBox(height: 18.h),
+                          _buildReviewStatus(cubit, currentStatus, subscription),
+                          _buildSubscriptionForm(cubit),
+                        ],
+                      ),
+                    );
+                  }
+
                   return Center(
                     child: Text(
                       'تعذر جلب بيانات الحساب',
@@ -1153,9 +1204,15 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
                 StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
               stream: _userSubscriptionStream,
               builder: (context, snapshot) {
-                if (_uid == null ||
-                    _uid!.isEmpty ||
-                    snapshot.connectionState == ConnectionState.waiting ||
+                if (_uid == null || _uid!.isEmpty) {
+                  if (widget.isFromOnboarding) {
+                    return _buildSubscribeButton(cubit, 'not_submitted');
+                  }
+
+                  return const SizedBox.shrink();
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting ||
                     snapshot.hasError) {
                   return const SizedBox.shrink();
                 }

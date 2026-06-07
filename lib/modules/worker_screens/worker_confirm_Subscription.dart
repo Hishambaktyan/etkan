@@ -11,6 +11,8 @@ import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
@@ -47,6 +49,26 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
       setState(() {
         transferImage = File(image.path);
       });
+    }
+  }
+
+  Future<void> _finishWorkerOnboarding() async {
+    final AuthCubit authCubit = AuthCubit.get(context);
+
+    showLoadingDialog(context);
+    await authCubit.finalizeWorkerSignUp();
+
+    if (!mounted) return;
+
+    hideLoadingDialog(context);
+
+    final AuthStates currentState = authCubit.state;
+
+    if (currentState is WorkerSignUpSuccessState) {
+      showSnackBar(Colors.green, 'تم إنشاء حسابك وإرسال طلب الاشتراك بنجاح', context);
+      moveAndReplace(context, const WorkerMainScreen());
+    } else if (currentState is WorkerSignUpErrorState) {
+      showSnackBar(Colors.red, currentState.error, context);
     }
   }
 
@@ -387,19 +409,21 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
                   automaticallyImplyLeading: false,
                   title: Row(
                     children: [
-                      Padding(
-                        padding: EdgeInsetsDirectional.all(10.w),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () => Navigator.pop(context),
-                          child: Icon(
-                            CupertinoIcons.back,
-                            color: Theme.of(context).iconTheme.color,
+                      if (!widget.isFromOnboarding) ...[
+                        Padding(
+                          padding: EdgeInsetsDirectional.all(10.w),
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () => Navigator.pop(context),
+                            child: Icon(
+                              CupertinoIcons.back,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 10.w),
+                        SizedBox(width: 10.w),
+                      ],
                       Text(
                         'تأكيد الاشتراك',
                         style: TextStyle(
@@ -494,10 +518,19 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
                             );
                             return;
                           }
-                          workerCubit.sendSubscriptionRequest(
+                          if (widget.isFromOnboarding) {
+                            AuthCubit.get(context).setPendingWorkerSubscription(
                               transferImage: File(transferImage!.path),
                               plan: widget.plan,
-                              paymentMethod: widget.paymentMethod);
+                              paymentMethod: widget.paymentMethod,
+                            );
+                            _finishWorkerOnboarding();
+                          } else {
+                            workerCubit.sendSubscriptionRequest(
+                                transferImage: File(transferImage!.path),
+                                plan: widget.plan,
+                                paymentMethod: widget.paymentMethod);
+                          }
                         },
                         text: 'إرسال طلب التفعيل')),
               ),

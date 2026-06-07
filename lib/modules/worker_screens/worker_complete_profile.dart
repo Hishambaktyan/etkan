@@ -712,13 +712,18 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
       return;
     }
 
-    authCubit.completeWorkerProfile(
+    authCubit.setPendingWorkerProfile(
       about: aboutController.text.trim(),
       address: addressController.text.trim(),
       experiences: experiences,
       profileImage: profileImageFile!.path,
       specialization: authCubit.selectedCategory!.trim(),
       previousWorks: previousWorks,
+    );
+
+    moveAndReplace(
+      context,
+      const WorkerAccountVerification(isFromOnboarding: true),
     );
   }
 
@@ -765,7 +770,6 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
                 backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
                 appBar: AppBar(
                   elevation: 0,
-                  centerTitle: true,
                   scrolledUnderElevation: 0,
                   title: Text(
                     'إكمال الملف الشخصي',

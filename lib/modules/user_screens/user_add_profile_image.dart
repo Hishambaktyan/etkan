@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,9 +10,8 @@ import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
 class UserAddProfileImage extends StatefulWidget {
@@ -115,10 +113,10 @@ class _UserAddProfileImageState extends State<UserAddProfileImage> {
               borderRadius: BorderRadius.circular(15.r),
               border: Border.all(color: Colors.white.withOpacity(0.25)),
             ),
-            child: const Icon(
-              Icons.add_a_photo_rounded,
+            child: SvgPicture.asset(
+              'assets/camera.svg',
               color: Colors.white,
-              size: 40,
+              width: 40.w,
             ),
           ),
           SizedBox(width: 14.w),
@@ -136,7 +134,7 @@ class _UserAddProfileImageState extends State<UserAddProfileImage> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'الصورة الشخصية اختيارية، لكنها تجعل حسابك أوضح عند التواصل مع الفنيين.',
+                  'الصورة الشخصية اختيارية، وسيتم إنشاء حسابك بعد حفظ الصورة أو تخطي هذه الخطوة.',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.88),
                     fontSize: 12.sp,
@@ -260,11 +258,8 @@ class _UserAddProfileImageState extends State<UserAddProfileImage> {
     );
   }
 
-  void _saveProfileImage({
-    required UserCubit userCubit,
-    required Map<String, dynamic> userData,
-  }) {
-    if (profileImage.trim().isEmpty) {
+  void _createAccount(AuthCubit authCubit, {bool withImage = true}) {
+    if (withImage && profileImage.trim().isEmpty) {
       showSnackBar(
         Colors.red,
         'يرجى اختيار صورة شخصية أو اضغط تخطي الآن',
@@ -273,21 +268,8 @@ class _UserAddProfileImageState extends State<UserAddProfileImage> {
       return;
     }
 
-    final String currentName = userData['name']?.toString() ?? '';
-
-    if (currentName.trim().isEmpty) {
-      showSnackBar(
-        Colors.red,
-        'جاري تحميل بيانات الحساب، حاول بعد لحظات',
-        context,
-      );
-      return;
-    }
-
-    userCubit.editUserData(
-      name: currentName,
-      profileImagePath: profileImage,
-      oldProfileImage: userData['profileImage']?.toString() ?? '',
+    authCubit.finalizeUserSignUp(
+      profileImagePath: withImage ? profileImage : '',
     );
   }
 
@@ -296,138 +278,114 @@ class _UserAddProfileImageState extends State<UserAddProfileImage> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, appState) {
         final AppCubit appCubit = AppCubit.get(context);
-        final UserCubit userCubit = UserCubit.get(context);
 
-        return BlocConsumer<UserCubit, UserStates>(
+        return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
-            if (state is EditUserDataLoadingState) {
+            if (state is UserSignUpLoadingState) {
               showLoadingDialog(context);
-            } else if (state is EditUserDataSuccessState) {
+            } else if (state is UserSignUpSuccessState) {
               hideLoadingDialog(context);
-              userCubit.getAllUsers(forceRefresh: true);
-              showSnackBar(
-                  Colors.green, 'تم حفظ الصورة الشخصية بنجاح', context);
+              showSnackBar(Colors.green, 'تم إنشاء الحساب بنجاح', context);
               moveAndReplace(context, const UserMainScreen());
-            } else if (state is EditUserDataErrorState) {
+            } else if (state is UserSignUpErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
           },
           builder: (context, userState) {
+            final AuthCubit authCubit = AuthCubit.get(context);
+
             return Directionality(
               textDirection: TextDirection.rtl,
-              child: Scaffold(
-                backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-                appBar: AppBar(
-                  titleSpacing: 10,
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      SizedBox(width: 10.w),
-                      Text(
-                        'الصورة الشخصية',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.sp,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
+              child: PopScope(
+                canPop: false,
+                child: Scaffold(
+                  backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
+                  appBar: AppBar(
+                    titleSpacing: 10,
+                    elevation: 0,
+                    scrolledUnderElevation: 0,
+                    automaticallyImplyLeading: false,
+                    title: Row(
+                      children: [
+                        SizedBox(width: 10.w),
+                        Text(
+                          'الصورة الشخصية',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.sp,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(CacheHelper.getData(key: 'uid'))
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    final Map<String, dynamic> userData =
-                        snapshot.data?.data() ?? {};
-
-                    return SingleChildScrollView(
-                      padding: EdgeInsetsDirectional.only(
-                        start: 10.w,
-                        end: 10.w,
-                        top: 10.h,
-                        bottom: 120.h,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildIntroCard(appCubit),
-                          SizedBox(height: 20.h),
-                          buildSectionHeader(
-                            title: 'اختيار الصورة',
-                            icon: SvgPicture.asset(
-                              'assets/camera.svg',
-                              color: mainColor,
-                              width: 22.w,
-                            ),
-                            cubit: appCubit,
+                  body: SingleChildScrollView(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 10.w,
+                      end: 10.w,
+                      top: 10.h,
+                      bottom: 120.h,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildIntroCard(appCubit),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'اختيار الصورة',
+                          icon: SvgPicture.asset(
+                            'assets/camera.svg',
+                            color: mainColor,
+                            width: 22.w,
                           ),
-                          SizedBox(height: 10.h),
-                          buildWhiteCard(
-                            cubit: appCubit,
-                            child: _buildProfileImagePicker(appCubit),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        buildWhiteCard(
+                          cubit: appCubit,
+                          child: _buildProfileImagePicker(appCubit),
+                        ),
+                        SizedBox(height: 18.h),
+                        _buildNoteCard(appCubit),
+                      ],
+                    ),
+                  ),
+                  bottomNavigationBar: Container(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 20.w,
+                      end: 20.w,
+                      top: 10.h,
+                      bottom: 20.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: appCubit.isDark ? darkBgColor : Colors.white,
+                      boxShadow: blueShadow,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        defaultButton(
+                          onPressed: () => _createAccount(authCubit),
+                          text: 'حفظ الصورة وإنشاء الحساب',
+                          height: 50.h,
+                        ),
+                        SizedBox(height: 10.h),
+                        defaultOutlinedButton(
+                          onPressed: () => _createAccount(
+                            authCubit,
+                            withImage: false,
                           ),
-                          SizedBox(height: 18.h),
-                          _buildNoteCard(appCubit),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                bottomNavigationBar:
-                    StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(CacheHelper.getData(key: 'uid'))
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    final Map<String, dynamic> userData =
-                        snapshot.data?.data() ?? {};
-
-                    return Container(
-                      padding: EdgeInsetsDirectional.only(
-                        start: 20.w,
-                        end: 20.w,
-                        top: 10.h,
-                        bottom: 20.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: appCubit.isDark ? darkBgColor : Colors.white,
-                        boxShadow: blueShadow,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          defaultButton(
-                            onPressed: () => _saveProfileImage(
-                              userCubit: userCubit,
-                              userData: userData,
-                            ),
-                            text: 'حفظ الصورة والمتابعة',
-                            height: 50.h,
-                          ),
-                          SizedBox(height: 10.h),
-                          defaultOutlinedButton(
-                            onPressed: () => moveAndReplace(
-                              context,
-                              const UserMainScreen(),
-                            ),
-                            text: 'تخطي الآن',
-                            textColor: mainColor,
-                            border: mainColor,
-                            bgColor:
-                                appCubit.isDark ? lightDarkColor : Colors.white,
-                            fontSize: 14,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                          text: 'تخطي الآن وإنشاء الحساب',
+                          textColor: mainColor,
+                          border: mainColor,
+                          bgColor:
+                              appCubit.isDark ? lightDarkColor : Colors.white,
+                          fontSize: 14,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
