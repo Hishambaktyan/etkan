@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/layout/user_layout/user_main_screen.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/reset_password_screen.dart';
+import 'package:trying_homy/modules/user_screens/user_add_address.dart';
 import 'package:trying_homy/modules/worker_screens/worker_complete_profile.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -669,13 +669,13 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
 
               showSnackBar(
                 Colors.green,
-                'تم إنشاء حسابك بنجاح',
+                'تم إنشاء الحساب بنجاح، أضف عنوانك لإكمال الإعداد',
                 context,
               );
 
               moveAndReplace(
                 context,
-                const UserMainScreen(),
+                const UserAddAddress(isOnboarding: true),
               );
             }
 

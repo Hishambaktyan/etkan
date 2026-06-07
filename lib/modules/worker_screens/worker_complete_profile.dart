@@ -197,11 +197,10 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
               borderRadius: BorderRadius.circular(15.r),
               border: Border.all(color: Colors.white.withOpacity(0.25)),
             ),
-            child: SvgPicture.asset(
-              'assets/providers.svg',
-              width: 30.w,
-              height: 30.h,
+            child: const Icon(
+              Icons.manage_accounts_rounded,
               color: Colors.white,
+              size: 40,
             ),
           ),
           SizedBox(width: 14.w),

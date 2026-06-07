@@ -738,7 +738,7 @@ class _WorkerHomeState extends State<WorkerHome> {
                               },
                             ),
                             SizedBox(
-                              height: 20.h,
+                              height: 10.h,
                             ),
                             Padding(
                                 padding: EdgeInsetsDirectional.only(

@@ -391,6 +391,18 @@ class _UserAccountState extends State<UserAccount> {
               appCubit.changeIndex(0);
             }
             if (state is LogOutErrorState) {
+              showSnackBar(Colors.red, state.error, context);
+            }
+            if (state is DeleteUserAccLoadingState) {
+              showLoadingDialog(context);
+            }
+            if (state is DeleteUserAccSuccessState) {
+              hideLoadingDialog(context);
+              showSnackBar(Colors.green, 'تم حذف حسابك بنجاح', context);
+              moveAndReplace(context, const OnBoardingScreen());
+              appCubit.changeIndex(0);
+            }
+            if (state is DeleteUserAccErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }

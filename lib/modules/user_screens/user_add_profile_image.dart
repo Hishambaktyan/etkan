@@ -1,83 +1,30 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:trying_homy/layout/user_layout/user_main_screen.dart';
+import 'package:trying_homy/main.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
 import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
+import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class UserEditProfile extends StatefulWidget {
-  final Map<String, dynamic> user;
-
-  const UserEditProfile({
-    super.key,
-    required this.user,
-  });
+class UserAddProfileImage extends StatefulWidget {
+  const UserAddProfileImage({super.key});
 
   @override
-  State<UserEditProfile> createState() => _UserEditProfileState();
+  State<UserAddProfileImage> createState() => _UserAddProfileImageState();
 }
 
-class _UserEditProfileState extends State<UserEditProfile> {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
+class _UserAddProfileImageState extends State<UserAddProfileImage> {
   String profileImage = '';
-
-  final TextEditingController nameController = TextEditingController();
-
-  List<String> getNameParts(String value) {
-    return value
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((part) => part.trim().isNotEmpty)
-        .toList();
-  }
-
-  void limitNameToFourWords(TextEditingController controller, String value) {
-    final List<String> nameParts = getNameParts(value);
-
-    if (nameParts.length > 4) {
-      final String newValue = nameParts.take(4).join(' ');
-
-      controller.value = TextEditingValue(
-        text: newValue,
-        selection: TextSelection.collapsed(offset: newValue.length),
-      );
-    }
-  }
-
-  String? validateQuadName(String? value) {
-    final List<String> nameParts = getNameParts(value ?? '');
-
-    if (nameParts.isEmpty) {
-      return 'الاسم الرباعي يجب أن لا يكون فارغًا';
-    }
-
-    if (nameParts.length != 4) {
-      return 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط';
-    }
-
-    return null;
-  }
-
-  @override
-  void initState() {
-    nameController.text = widget.user['name']?.toString() ?? '';
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    super.dispose();
-  }
 
   Future<void> pickUserProfileImage() async {
     final ImagePicker picker = ImagePicker();
@@ -169,7 +116,7 @@ class _UserEditProfileState extends State<UserEditProfile> {
               border: Border.all(color: Colors.white.withOpacity(0.25)),
             ),
             child: const Icon(
-              Icons.manage_accounts_rounded,
+              Icons.add_a_photo_rounded,
               color: Colors.white,
               size: 40,
             ),
@@ -180,7 +127,7 @@ class _UserEditProfileState extends State<UserEditProfile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'تعديل حسابك',
+                  'أضف صورة شخصية',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17.sp,
@@ -189,7 +136,7 @@ class _UserEditProfileState extends State<UserEditProfile> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  'حدّث اسمك وصورتك الشخصية حتى تظهر بياناتك بشكل أوضح داخل التطبيق.',
+                  'الصورة الشخصية اختيارية، لكنها تجعل حسابك أوضح عند التواصل مع الفنيين.',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.88),
                     fontSize: 12.sp,
@@ -205,18 +152,9 @@ class _UserEditProfileState extends State<UserEditProfile> {
   }
 
   Widget _buildProfileImagePicker(AppCubit cubit) {
-    final String oldProfileImage =
-        widget.user['profileImage']?.toString() ?? '';
-    final bool hasOldImage = oldProfileImage.trim().isNotEmpty;
     final bool hasNewImage = profileImage.trim().isNotEmpty;
-
-    ImageProvider? imageProvider;
-
-    if (hasNewImage) {
-      imageProvider = FileImage(File(profileImage));
-    } else if (hasOldImage) {
-      imageProvider = NetworkImage(oldProfileImage);
-    }
+    final ImageProvider? imageProvider =
+        hasNewImage ? FileImage(File(profileImage)) : null;
 
     return Column(
       children: [
@@ -225,8 +163,8 @@ class _UserEditProfileState extends State<UserEditProfile> {
             alignment: Alignment.bottomRight,
             children: [
               Container(
-                width: 112.r,
-                height: 112.r,
+                width: 122.r,
+                height: 122.r,
                 padding: EdgeInsetsDirectional.all(4.r),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -240,14 +178,14 @@ class _UserEditProfileState extends State<UserEditProfile> {
                   ),
                 ),
                 child: CircleAvatar(
-                  radius: 52.r,
+                  radius: 56.r,
                   backgroundColor:
                       cubit.isDark ? darkBgColor : Colors.grey.shade200,
                   backgroundImage: imageProvider,
                   child: imageProvider == null
                       ? Icon(
                           Icons.person_rounded,
-                          size: 42.sp,
+                          size: 48.sp,
                           color: Colors.grey,
                         )
                       : null,
@@ -259,7 +197,7 @@ class _UserEditProfileState extends State<UserEditProfile> {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 child: CircleAvatar(
-                  radius: 18.r,
+                  radius: 19.r,
                   backgroundColor: mainColor,
                   child: SvgPicture.asset(
                     'assets/camera.svg',
@@ -271,18 +209,17 @@ class _UserEditProfileState extends State<UserEditProfile> {
             ],
           ),
         ),
-        SizedBox(height: 10.h),
+        SizedBox(height: 12.h),
         Text(
-          imageProvider == null
-              ? 'اضغط على الكاميرا لإضافة صورة شخصية'
-              : hasNewImage
-                  ? 'تم اختيار صورة شخصية جديدة'
-                  : 'الصورة الشخصية الحالية',
+          hasNewImage
+              ? 'تم اختيار الصورة الشخصية'
+              : 'اضغط على الكاميرا لاختيار صورة من المعرض',
+          textAlign: TextAlign.center,
           style: TextStyle(
-            color: imageProvider == null
-                ? (cubit.isDark ? darkSubTextColor : Colors.grey)
-                : Colors.green,
-            fontSize: 11.sp,
+            color: hasNewImage
+                ? Colors.green
+                : (cubit.isDark ? darkSubTextColor : Colors.grey),
+            fontSize: 12.sp,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -310,7 +247,7 @@ class _UserEditProfileState extends State<UserEditProfile> {
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
-              'يمكنك تعديل اسمك وصورة حسابك. تأكد من كتابة الاسم الرباعي بشكل صحيح قبل الحفظ.',
+              'يمكنك تخطي هذه الخطوة الآن وإضافة الصورة لاحقًا من صفحة تعديل الحساب.',
               style: TextStyle(
                 color: cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
                 fontSize: 12.sp,
@@ -323,26 +260,43 @@ class _UserEditProfileState extends State<UserEditProfile> {
     );
   }
 
-  void _saveUserData(UserCubit userCubit) {
-    FocusScope.of(context).unfocus();
+  void _saveProfileImage({
+    required UserCubit userCubit,
+    required Map<String, dynamic> userData,
+  }) {
+    if (profileImage.trim().isEmpty) {
+      showSnackBar(
+        Colors.red,
+        'يرجى اختيار صورة شخصية أو اضغط تخطي الآن',
+        context,
+      );
+      return;
+    }
 
-    if (!formKey.currentState!.validate()) {
+    final String currentName = userData['name']?.toString() ?? '';
+
+    if (currentName.trim().isEmpty) {
+      showSnackBar(
+        Colors.red,
+        'جاري تحميل بيانات الحساب، حاول بعد لحظات',
+        context,
+      );
       return;
     }
 
     userCubit.editUserData(
-      name: nameController.text.trim(),
+      name: currentName,
       profileImagePath: profileImage,
-      oldProfileImage: widget.user['profileImage']?.toString() ?? '',
+      oldProfileImage: userData['profileImage']?.toString() ?? '',
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
-      builder: (context, state) {
-        AppCubit appCubit = AppCubit.get(context);
-        UserCubit userCubit = UserCubit.get(context);
+      builder: (context, appState) {
+        final AppCubit appCubit = AppCubit.get(context);
+        final UserCubit userCubit = UserCubit.get(context);
 
         return BlocConsumer<UserCubit, UserStates>(
           listener: (context, state) {
@@ -351,8 +305,9 @@ class _UserEditProfileState extends State<UserEditProfile> {
             } else if (state is EditUserDataSuccessState) {
               hideLoadingDialog(context);
               userCubit.getAllUsers(forceRefresh: true);
-              Navigator.pop(context, true);
-              showSnackBar(Colors.green, 'تم تعديل حسابك بنجاح', context);
+              showSnackBar(
+                  Colors.green, 'تم حفظ الصورة الشخصية بنجاح', context);
+              moveAndReplace(context, const UserMainScreen());
             } else if (state is EditUserDataErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
@@ -370,21 +325,9 @@ class _UserEditProfileState extends State<UserEditProfile> {
                   automaticallyImplyLeading: false,
                   title: Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(7),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () => Navigator.pop(context),
-                          child: Icon(
-                            CupertinoIcons.back,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                        ),
-                      ),
                       SizedBox(width: 10.w),
                       Text(
-                        'تعديل الملف الشخصي',
+                        'الصورة الشخصية',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.sp,
@@ -394,21 +337,31 @@ class _UserEditProfileState extends State<UserEditProfile> {
                     ],
                   ),
                 ),
-                body: SingleChildScrollView(
-                  padding: EdgeInsetsDirectional.only(bottom: 95.h),
-                  child: Form(
-                    key: formKey,
-                    child: Padding(
-                      padding: EdgeInsetsDirectional.all(10.r),
+                body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(CacheHelper.getData(key: 'uid'))
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    final Map<String, dynamic> userData =
+                        snapshot.data?.data() ?? {};
+
+                    return SingleChildScrollView(
+                      padding: EdgeInsetsDirectional.only(
+                        start: 10.w,
+                        end: 10.w,
+                        top: 10.h,
+                        bottom: 120.h,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildIntroCard(appCubit),
                           SizedBox(height: 20.h),
                           buildSectionHeader(
-                            title: 'المعلومات الشخصية',
+                            title: 'اختيار الصورة',
                             icon: SvgPicture.asset(
-                              'assets/contact.svg',
+                              'assets/camera.svg',
                               color: mainColor,
                               width: 22.w,
                             ),
@@ -417,60 +370,64 @@ class _UserEditProfileState extends State<UserEditProfile> {
                           SizedBox(height: 10.h),
                           buildWhiteCard(
                             cubit: appCubit,
-                            child: Column(
-                              children: [
-                                _buildProfileImagePicker(appCubit),
-                                SizedBox(height: 25.h),
-                                defaultTextFormField(
-                                  text: 'الاسم الرباعي',
-                                  prefixIcon: 'assets/acc.svg',
-                                  errorMes:
-                                      'الاسم الرباعي يجب أن لا يكون فارغًا',
-                                  controller: nameController,
-                                  type: TextInputType.name,
-                                  cubit: appCubit,
-                                  validator: validateQuadName,
-                                  onChanged: (value) => limitNameToFourWords(
-                                    nameController,
-                                    value,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            child: _buildProfileImagePicker(appCubit),
                           ),
-                          SizedBox(height: 20.h),
-                          buildSectionHeader(
-                            title: 'ملاحظة',
-                            icon: SvgPicture.asset(
-                              'assets/info.svg',
-                              color: mainColor,
-                              width: 22.w,
-                            ),
-                            cubit: appCubit,
-                          ),
-                          SizedBox(height: 10.h),
+                          SizedBox(height: 18.h),
                           _buildNoteCard(appCubit),
                         ],
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-                bottomNavigationBar: Container(
-                  padding: EdgeInsetsDirectional.only(
-                    start: 20.w,
-                    end: 20.w,
-                    top: 10.h,
-                    bottom: 20.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: appCubit.isDark ? darkBgColor : Colors.white,
-                    boxShadow: blueShadow,
-                  ),
-                  child: defaultButton(
-                    onPressed: () => _saveUserData(userCubit),
-                    text: 'حفظ التعديلات',
-                    height: 50.h,
-                  ),
+                bottomNavigationBar:
+                    StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(CacheHelper.getData(key: 'uid'))
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    final Map<String, dynamic> userData =
+                        snapshot.data?.data() ?? {};
+
+                    return Container(
+                      padding: EdgeInsetsDirectional.only(
+                        start: 20.w,
+                        end: 20.w,
+                        top: 10.h,
+                        bottom: 20.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: appCubit.isDark ? darkBgColor : Colors.white,
+                        boxShadow: blueShadow,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          defaultButton(
+                            onPressed: () => _saveProfileImage(
+                              userCubit: userCubit,
+                              userData: userData,
+                            ),
+                            text: 'حفظ الصورة والمتابعة',
+                            height: 50.h,
+                          ),
+                          SizedBox(height: 10.h),
+                          defaultOutlinedButton(
+                            onPressed: () => moveAndReplace(
+                              context,
+                              const UserMainScreen(),
+                            ),
+                            text: 'تخطي الآن',
+                            textColor: mainColor,
+                            border: mainColor,
+                            bgColor:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
+                            fontSize: 14,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             );
