@@ -1,11 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/select_user_type.dart';
-import 'package:trying_homy/modules/user_screens/user_forgot_password.dart';
+import 'package:trying_homy/modules/forgot_password_screen.dart';
 import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
@@ -41,6 +42,20 @@ Widget buildPhoneSuffix(AppCubit appCubit) {
 
 class _WorkerLoginState extends State<WorkerLogin> {
   var formKey = GlobalKey<FormState>();
+
+  String? validateYemeniPhone(String? value) {
+    final String phone = value?.trim() ?? '';
+
+    if (phone.isEmpty) {
+      return 'رقم الهاتف يجب أن لا يكون فارغ';
+    }
+
+    if (!RegExp(r'^7[0-9]{8}$').hasMatch(phone)) {
+      return 'أدخل رقم يمني مكون من 9 أرقام ويبدأ بـ 7';
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +238,7 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                     ),
                                   ),
                                   Text(
-                                    'سجل دخولك للإستمرار',
+                                    'سجل دخولك للاستمرار',
                                     style: TextStyle(
                                       color: Colors.white.withOpacity(0.8),
                                       fontSize: 15.sp,
@@ -267,10 +282,17 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
-                                  errorMes: 'رقم الهاتف يجب ان لا يكون فارغ',
+                                  errorMes: 'رقم الهاتف يجب أن لا يكون فارغ',
                                   controller:
                                       authCubit.workerLoginPhoneController,
                                   type: TextInputType.phone,
+                                  textDirection: TextDirection.ltr,
+                                  textAlign: TextAlign.right,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(9),
+                                  ],
+                                  validator: validateYemeniPhone,
                                   suffixWidget: buildPhoneSuffix(appCubit),
                                 ),
                                 SizedBox(height: 20.h),
@@ -278,7 +300,8 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                     cubit: appCubit,
                                     text: 'كلمة المرور',
                                     prefixIcon: 'assets/lock.svg',
-                                    errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
+                                    errorMes:
+                                        'كلمة المرور يجب أن لا تكون فارغة',
                                     controller:
                                         authCubit.workerLoginPasswordController,
                                     type: TextInputType.visiblePassword,
@@ -294,7 +317,7 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                     onPressed: () {
                                       move(
                                         context,
-                                        const UserForgotPassword(
+                                        const ForgotPasswordScreen(
                                           userType: 'provider',
                                         ),
                                       );
@@ -342,7 +365,7 @@ class _WorkerLoginState extends State<WorkerLogin> {
                                     defaultTextButton(
                                       onPressed: () => moveAndReplace(
                                           context, const WorkerSignup()),
-                                      text: 'انشئ حساب',
+                                      text: 'أنشئ حساب',
                                     )
                                   ],
                                 ),

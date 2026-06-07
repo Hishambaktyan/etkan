@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/admin_screens/admin_home_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_forgot_password.dart';
+import 'package:trying_homy/modules/forgot_password_screen.dart';
 import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';

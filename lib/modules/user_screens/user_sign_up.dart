@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +51,7 @@ class _UserSignUpState extends State<UserSignUp> {
     final List<String> nameParts = getNameParts(value ?? '');
 
     if (nameParts.isEmpty) {
-      return 'الاسم الرباعي يجب أن لا يكون فارغًا';
+      return 'الاسم الرباعي يجب أن لا يكون فارغ';
     }
 
     if (nameParts.length != 4) {
@@ -64,14 +65,71 @@ class _UserSignUpState extends State<UserSignUp> {
     final String phone = value?.trim() ?? '';
 
     if (phone.isEmpty) {
-      return 'رقم الهاتف يجب أن لا يكون فارغًا';
+      return 'رقم الهاتف يجب أن لا يكون فارغ';
     }
 
     if (!RegExp(r'^7[0-9]{8}$').hasMatch(phone)) {
-      return 'أدخل رقمًا يمنيًا صحيحًا مكونًا من 9 أرقام ويبدأ بـ 7';
+      return 'أدخل رقم يمني مكون من 9 أرقام ويبدأ بـ 7';
     }
 
     return null;
+  }
+
+  Future<bool> isPhoneAlreadyRegistered(String phone) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phone', isEqualTo: phone)
+        .limit(1)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<void> goToTermsAfterPhoneCheck(AuthCubit authCubit) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (!userSignupFormKey.currentState!.validate()) {
+      return;
+    }
+
+    final String phone = authCubit.userPhoneController.text.trim();
+
+    showLoadingDialog(context);
+
+    try {
+      final bool phoneExists = await isPhoneAlreadyRegistered(phone);
+
+      if (!mounted) return;
+
+      hideLoadingDialog(context);
+
+      if (phoneExists) {
+        showSnackBar(
+          Colors.red,
+          'رقم الهاتف مسجل بالفعل، يرجى تسجيل الدخول أو استخدام رقم آخر',
+          context,
+        );
+        return;
+      }
+
+      move(
+        context,
+        SignupTermsAgreementScreen(
+          phone: phone,
+          userType: 'user',
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+
+      hideLoadingDialog(context);
+
+      showSnackBar(
+        Colors.red,
+        'تعذر التحقق من رقم الهاتف، حاول مرة أخرى',
+        context,
+      );
+    }
   }
 
   Widget buildPhoneSuffix(AppCubit appCubit) {
@@ -289,7 +347,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
-                                  errorMes: 'رقم الهاتف يجب أن لا يكون فارغًا',
+                                  errorMes: 'رقم الهاتف يجب أن لا يكون فارغ',
                                   controller: authCubit.userPhoneController,
                                   type: TextInputType.phone,
                                   textDirection: TextDirection.ltr,
@@ -324,22 +382,7 @@ class _UserSignUpState extends State<UserSignUp> {
                                 SizedBox(height: 20.h),
                                 defaultButton(
                                   onPressed: () async {
-                                    // إغلاق الكيبورد قبل إرسال الطلب
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                    if (userSignupFormKey.currentState!
-                                        .validate()) {
-                                      FocusScope.of(context).unfocus();
-                                      move(
-                                        context,
-                                        SignupTermsAgreementScreen(
-                                          phone: authCubit
-                                              .userPhoneController.text
-                                              .trim(),
-                                          userType: 'user',
-                                        ),
-                                      );
-                                    }
+                                    await goToTermsAfterPhoneCheck(authCubit);
                                   },
                                   text: 'التالي',
                                   height: 50.h,

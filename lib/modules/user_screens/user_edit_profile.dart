@@ -55,7 +55,7 @@ class _UserEditProfileState extends State<UserEditProfile> {
     final List<String> nameParts = getNameParts(value ?? '');
 
     if (nameParts.isEmpty) {
-      return 'الاسم الرباعي يجب أن لا يكون فارغًا';
+      return 'الاسم الرباعي يجب أن لا يكون فارغ';
     }
 
     if (nameParts.length != 4) {

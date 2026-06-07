@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +49,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
     final List<String> nameParts = getNameParts(value ?? '');
 
     if (nameParts.isEmpty) {
-      return 'الاسم الرباعي يجب أن لا يكون فارغًا';
+      return 'الاسم الرباعي يجب أن لا يكون فارغ';
     }
 
     if (nameParts.length != 4) {
@@ -62,14 +63,71 @@ class _WorkerSignupState extends State<WorkerSignup> {
     final String phone = value?.trim() ?? '';
 
     if (phone.isEmpty) {
-      return 'رقم الهاتف يجب أن لا يكون فارغًا';
+      return 'رقم الهاتف يجب أن لا يكون فارغ';
     }
 
     if (!RegExp(r'^7[0-9]{8}$').hasMatch(phone)) {
-      return 'أدخل رقمًا يمنيًا صحيحًا مكونًا من 9 أرقام ويبدأ بـ 7';
+      return 'أدخل رقم يمني مكون من 9 أرقام ويبدأ بـ 7';
     }
 
     return null;
+  }
+
+  Future<bool> isPhoneAlreadyRegistered(String phone) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phone', isEqualTo: phone)
+        .limit(1)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<void> goToTermsAfterPhoneCheck(AuthCubit authCubit) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+
+    final String phone = authCubit.workerPhoneController.text.trim();
+
+    showLoadingDialog(context);
+
+    try {
+      final bool phoneExists = await isPhoneAlreadyRegistered(phone);
+
+      if (!mounted) return;
+
+      hideLoadingDialog(context);
+
+      if (phoneExists) {
+        showSnackBar(
+          Colors.red,
+          'رقم الهاتف مسجل بالفعل، يرجى تسجيل الدخول أو استخدام رقم آخر',
+          context,
+        );
+        return;
+      }
+
+      move(
+        context,
+        SignupTermsAgreementScreen(
+          phone: phone,
+          userType: 'provider',
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+
+      hideLoadingDialog(context);
+
+      showSnackBar(
+        Colors.red,
+        'تعذر التحقق من رقم الهاتف، حاول مرة أخرى',
+        context,
+      );
+    }
   }
 
   Widget buildPhoneSuffix(AppCubit appCubit) {
@@ -292,7 +350,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   cubit: appCubit,
                                   text: 'رقم الهاتف',
                                   prefixIcon: 'assets/phone.svg',
-                                  errorMes: 'رقم الهاتف يجب أن لا يكون فارغًا',
+                                  errorMes: 'رقم الهاتف يجب أن لا يكون فارغ',
                                   controller: authCubit.workerPhoneController,
                                   type: TextInputType.phone,
                                   textDirection: TextDirection.ltr,
@@ -311,7 +369,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                   cubit: appCubit,
                                   text: 'كلمة المرور',
                                   prefixIcon: 'assets/lock.svg',
-                                  errorMes: 'كلمة المرور يجب ان لا تكون فارغ',
+                                  errorMes: 'كلمة المرور يجب أن لا تكون فارغة',
                                   controller:
                                       authCubit.workerPasswordController,
                                   type: TextInputType.visiblePassword,
@@ -326,18 +384,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
                                 ),
                                 defaultButton(
                                     onPressed: () async {
-                                      if (formKey.currentState!.validate()) {
-                                        FocusScope.of(context).unfocus();
-                                        move(
-                                          context,
-                                          SignupTermsAgreementScreen(
-                                            phone: authCubit
-                                                .workerPhoneController.text
-                                                .trim(),
-                                            userType: 'provider',
-                                          ),
-                                        );
-                                      }
+                                      await goToTermsAfterPhoneCheck(authCubit);
                                     },
                                     text: 'التالي',
                                     height: 50.h),

@@ -1,11 +1,13 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/select_user_type.dart';
 import 'package:trying_homy/modules/user_screens/user_login.dart';
+import 'package:trying_homy/modules/verified_phone.dart';
 import 'package:trying_homy/modules/worker_screens/worker_login.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
@@ -14,111 +16,168 @@ import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
-  final String phone;
+class ForgotPasswordScreen extends StatefulWidget {
   final String userType;
 
-  const ResetPasswordScreen({
+  const ForgotPasswordScreen({
     super.key,
-    required this.phone,
-    required this.userType,
+    this.userType = 'user',
   });
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final TextEditingController phoneController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  final TextEditingController newPasswordController = TextEditingController();
-
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-
-  bool hideNewPassword = true;
-  bool hideConfirmPassword = true;
 
   @override
   void dispose() {
-    newPasswordController.dispose();
-    confirmPasswordController.dispose();
+    phoneController.dispose();
     super.dispose();
   }
 
-  void saveNewPassword(AuthCubit authCubit) {
+  String get accountTypeText {
+    return widget.userType == 'provider' ? 'الفني' : 'المستخدم';
+  }
+
+  String? validateYemeniPhone(String? value) {
+    final String phone = value?.trim() ?? '';
+
+    if (phone.isEmpty) {
+      return 'رقم الهاتف يجب أن لا يكون فارغ';
+    }
+
+    if (!RegExp(r'^7[0-9]{8}$').hasMatch(phone)) {
+      return 'أدخل رقم يمني مكون من 9 أرقام ويبدأ بـ 7';
+    }
+
+    return null;
+  }
+
+  Widget buildPhoneSuffix(AppCubit appCubit) {
+    return Container(
+      width: 62.w,
+      alignment: Alignment.center,
+      margin: EdgeInsetsDirectional.only(end: 5.w),
+      child: Text(
+        '+967',
+        textDirection: TextDirection.ltr,
+        style: TextStyle(
+          color: mainColor,
+          fontSize: 13.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Future<bool> isPhoneRegisteredForCurrentType(String phone) async {
+    final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .where('phone', isEqualTo: phone)
+            .limit(5)
+            .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      final QuerySnapshot<Map<String, dynamic>> fullPhoneQuery =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('phone', isEqualTo: '+967$phone')
+              .limit(5)
+              .get();
+
+      return fullPhoneQuery.docs.any(
+        (doc) => doc.data()['role']?.toString() == widget.userType,
+      );
+    }
+
+    return querySnapshot.docs.any(
+      (doc) => doc.data()['role']?.toString() == widget.userType,
+    );
+  }
+
+  Future<void> sendResetPasswordCode(AuthCubit authCubit) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     if (!(formKey.currentState?.validate() ?? false)) {
       return;
     }
 
-    final String newPassword = newPasswordController.text.trim();
+    final String phone = phoneController.text.trim();
 
-    final String confirmPassword = confirmPasswordController.text.trim();
+    showLoadingDialog(context);
 
-    if (newPassword.length < 6) {
+    try {
+      final bool isRegistered = await isPhoneRegisteredForCurrentType(phone);
+
+      if (!mounted) return;
+
+      hideLoadingDialog(context);
+
+      if (!isRegistered) {
+        showSnackBar(
+          Colors.red,
+          'لا يوجد حساب $accountTypeText مسجل بهذا الرقم',
+          context,
+        );
+        return;
+      }
+
+      await authCubit.requestCode(
+        phone: phone,
+        userType: widget.userType,
+        purpose: 'reset_password',
+      );
+    } catch (error) {
+      if (!mounted) return;
+
+      hideLoadingDialog(context);
+
       showSnackBar(
         Colors.red,
-        'كلمة المرور يجب أن تحتوي على 6 أحرف أو أرقام على الأقل',
+        'حدث خطأ أثناء التحقق من الرقم، حاول مرة أخرى',
         context,
       );
-      return;
     }
-
-    if (newPassword != confirmPassword) {
-      showSnackBar(
-        Colors.red,
-        'كلمتا المرور غير متطابقتين',
-        context,
-      );
-      return;
-    }
-
-    authCubit.resetPassword(
-      phone: widget.phone,
-      userType: widget.userType,
-      newPassword: newPassword,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    AppCubit appCubit = AppCubit.get(context);
+
     return BlocBuilder<AppCubit, AppStates>(
-      builder: (context, appState) {
-        final AppCubit appCubit = AppCubit.get(context);
+      builder: (context, state) {
         final AuthCubit authCubit = AuthCubit.get(context);
 
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) {
-            if (state is ResetPasswordLoadingState) {
+            if (state is SendPhoneCodeLoadingState) {
               showLoadingDialog(context);
             }
 
-            if (state is ResetPasswordSuccessState) {
+            if (state is SendPhoneCodeSuccessState) {
               hideLoadingDialog(context);
 
               showSnackBar(
                 Colors.green,
-                'تم تغيير كلمة المرور بنجاح',
+                'تم إرسال رمز التحقق إلى رقم الهاتف',
                 context,
               );
 
-              newPasswordController.clear();
-              confirmPasswordController.clear();
-
-              if (widget.userType == 'provider') {
-                moveAndReplace(
-                  context,
-                  const WorkerLogin(),
-                );
-              } else {
-                moveAndReplace(
-                  context,
-                  const UserLogin(),
-                );
-              }
+              move(
+                context,
+                VerifiedPhone(
+                  phone: state.phone,
+                  userType: state.userType,
+                  purpose: 'reset_password',
+                ),
+              );
             }
 
-            if (state is ResetPasswordErrorState) {
+            if (state is SendPhoneCodeErrorState) {
               hideLoadingDialog(context);
 
               showSnackBar(
@@ -145,10 +204,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             mainColor.withOpacity(0.9),
                             const Color(0xFF0F0F1E),
                           ],
-                          stops: const [
-                            0.0,
-                            0.8,
-                          ],
+                          stops: const [0.0, 0.8],
                         ),
                       ),
                       child: Stack(
@@ -201,17 +257,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 sigmaX: 50,
                                 sigmaY: 50,
                               ),
-                              child: Container(
-                                color: Colors.transparent,
-                              ),
+                              child: Container(color: Colors.transparent),
                             ),
                           ),
                           Align(
                             alignment: AlignmentDirectional.topCenter,
                             child: Padding(
-                              padding: EdgeInsetsDirectional.only(
-                                top: 30.h,
-                              ),
+                              padding: EdgeInsetsDirectional.only(top: 30.h),
                               child: Column(
                                 children: [
                                   Padding(
@@ -226,9 +278,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                           child: InkWell(
                                             splashColor: Colors.transparent,
                                             highlightColor: Colors.transparent,
-                                            borderRadius: BorderRadius.circular(
-                                              15.r,
-                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(15.r),
                                             onTap: () {
                                               if (widget.userType ==
                                                   'provider') {
@@ -255,14 +306,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                                 color: Colors.white
                                                     .withOpacity(0.16),
                                                 borderRadius:
-                                                    BorderRadius.circular(
-                                                  15.r,
-                                                ),
+                                                    BorderRadius.circular(15.r),
                                                 border: Border.all(
-                                                  color:
-                                                      Colors.white.withOpacity(
-                                                    0.12,
-                                                  ),
+                                                  color: Colors.white
+                                                      .withOpacity(0.12),
                                                 ),
                                               ),
                                               child: Icon(
@@ -277,24 +324,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       ],
                                     ),
                                   ),
-                                  Container(
-                                    padding: EdgeInsets.all(20.r),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white.withOpacity(0.1),
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.2),
+                                  Align(
+                                    alignment: AlignmentDirectional.topCenter,
+                                    child: Container(
+                                      padding: EdgeInsets.all(20.r),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white.withOpacity(0.1),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.2),
+                                        ),
                                       ),
-                                    ),
-                                    child: Icon(
-                                      Icons.lock_reset_rounded,
-                                      size: 50.sp,
-                                      color: Colors.white,
+                                      child: Icon(
+                                        Icons.lock_reset_rounded,
+                                        size: 50.sp,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 30.h),
                                   Text(
-                                    'كلمة مرور جديدة',
+                                    'نسيت كلمة المرور؟',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Colors.white,
@@ -315,7 +365,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       horizontal: 30.w,
                                     ),
                                     child: Text(
-                                      'أنشئ كلمة مرور قوية وجديدة لحماية حسابك',
+                                      'أدخل رقم الهاتف المسجل في حسابك لإرسال رمز التحقق',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: Colors.white.withOpacity(0.8),
@@ -326,7 +376,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 ],
                               ),
                             ),
-                          ),
+                          )
                         ],
                       ),
                     ),
@@ -359,118 +409,56 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             key: formKey,
                             child: Column(
                               children: [
-                                Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsetsDirectional.symmetric(
-                                    horizontal: 15.w,
-                                    vertical: 12.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(18.r),
-                                    border: Border.all(
-                                      color: mainColor.withOpacity(0.18),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(8.r),
-                                        decoration: BoxDecoration(
-                                          color: mainColor.withOpacity(0.15),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.verified_rounded,
-                                          color: mainColor,
-                                          size: 22.sp,
-                                        ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'تم التحقق من رقم الهاتف',
-                                              style: TextStyle(
-                                                color: Theme.of(
-                                                  context,
-                                                ).textTheme.bodyLarge?.color,
-                                                fontSize: 13.sp,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            SizedBox(height: 3.h),
-                                            Directionality(
-                                              textDirection: TextDirection.ltr,
-                                              child: Text(
-                                                widget.phone,
-                                                style: TextStyle(
-                                                  color: mainColor,
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                                 SizedBox(height: 20.h),
                                 defaultTextFormField(
                                   cubit: appCubit,
-                                  text: 'كلمة المرور الجديدة',
-                                  prefixIcon: 'assets/lock.svg',
-                                  errorMes:
-                                      'كلمة المرور الجديدة يجب أن لا تكون فارغة',
-                                  controller: newPasswordController,
-                                  type: TextInputType.visiblePassword,
-                                  isPassword: hideNewPassword,
-                                  isSuffixIcon: true,
-                                  suffixIcon: hideNewPassword
-                                      ? 'assets/eye.svg'
-                                      : 'assets/eye-slash.svg',
-                                  suffixPressed: () {
-                                    setState(() {
-                                      hideNewPassword = !hideNewPassword;
-                                    });
-                                  },
-                                ),
-                                SizedBox(height: 15.h),
-                                defaultTextFormField(
-                                  cubit: appCubit,
-                                  text: 'تأكيد كلمة المرور',
-                                  prefixIcon: 'assets/lock.svg',
-                                  errorMes:
-                                      'تأكيد كلمة المرور يجب أن لا يكون فارغًا',
-                                  controller: confirmPasswordController,
-                                  type: TextInputType.visiblePassword,
-                                  isPassword: hideConfirmPassword,
-                                  isSuffixIcon: true,
-                                  suffixIcon: hideConfirmPassword
-                                      ? 'assets/eye.svg'
-                                      : 'assets/eye-slash.svg',
-                                  suffixPressed: () {
-                                    setState(() {
-                                      hideConfirmPassword =
-                                          !hideConfirmPassword;
-                                    });
-                                  },
+                                  text: 'رقم الهاتف',
+                                  prefixIcon: 'assets/phone.svg',
+                                  errorMes: 'رقم الهاتف يجب أن لا يكون فارغًا',
+                                  controller: phoneController,
+                                  type: TextInputType.phone,
+                                  textDirection: TextDirection.ltr,
+                                  textAlign: TextAlign.right,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(9),
+                                  ],
+                                  validator: validateYemeniPhone,
+                                  suffixWidget: buildPhoneSuffix(appCubit),
                                 ),
                                 SizedBox(height: 25.h),
                                 defaultButton(
                                   onPressed: () {
-                                    // إغلاق الكيبورد قبل إرسال الطلب
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                    saveNewPassword(authCubit);
+                                    sendResetPasswordCode(authCubit);
                                   },
-                                  text: 'حفظ كلمة المرور',
+                                  text: 'إرسال رمز التحقق',
                                   height: 50.h,
+                                ),
+                                SizedBox(height: 20.h),
+                                TextButton(
+                                  onPressed: () {
+                                    if (widget.userType == 'provider') {
+                                      moveAndReplace(
+                                        context,
+                                        const WorkerLogin(),
+                                      );
+                                    } else {
+                                      moveAndReplace(
+                                        context,
+                                        const UserLogin(),
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    'العودة لتسجيل الدخول',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: mainColor,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: mainColor,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
