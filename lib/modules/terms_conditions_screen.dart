@@ -436,7 +436,6 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
               ),
             ),
             body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
               padding: EdgeInsetsDirectional.only(
                 start: 10.w,
                 end: 10.w,

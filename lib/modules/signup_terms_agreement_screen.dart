@@ -29,8 +29,7 @@ class SignupTermsAgreementScreen extends StatefulWidget {
       _SignupTermsAgreementScreenState();
 }
 
-class _SignupTermsAgreementScreenState
-    extends State<SignupTermsAgreementScreen> {
+class _SignupTermsAgreementScreenState extends State<SignupTermsAgreementScreen> {
   bool isAccepted = false;
 
   String get accountTypeText {
@@ -68,7 +67,7 @@ class _SignupTermsAgreementScreenState
                           ),
                         ),
                         child: Icon(
-                          CupertinoIcons.back,
+                          Icons.arrow_back_ios_new_rounded,
                           color: Colors.white,
                           size: 21.sp,
                         ),
@@ -79,7 +78,7 @@ class _SignupTermsAgreementScreenState
               ),
             ),
             Container(
-              padding: EdgeInsets.all(20.r),
+              padding: EdgeInsetsDirectional.all(20.r),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white.withOpacity(0.10),
@@ -93,34 +92,40 @@ class _SignupTermsAgreementScreenState
                 size: 52.sp,
               ),
             ),
-            SizedBox(height: 25.h),
-            Text(
-              'الشروط والخصوصية',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 29.sp,
-                fontWeight: FontWeight.bold,
-                shadows: [
-                  Shadow(
-                    color: Colors.white.withOpacity(0.4),
-                    blurRadius: 20,
-                    offset: const Offset(0, 0),
+            SizedBox(height: 15.h),
+            Padding(
+              padding: EdgeInsetsDirectional.symmetric(horizontal: 5.w),
+              child: Column(
+                children: [
+                  Text(
+                    'الشروط والخصوصية',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26.sp,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: Colors.white.withOpacity(0.4),
+                          blurRadius: 20,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.symmetric(horizontal: 30.w),
+                    child: Text(
+                      'اقرأ الشروط والأحكام وسياسة الخصوصية الخاصة بالتطبيق قبل المتابعة في إنشاء حساب $accountTypeText.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.82),
+                        fontSize: 12.sp,
+                        height: 1.5,
+                      ),
+                    ),
                   ),
                 ],
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Padding(
-              padding: EdgeInsetsDirectional.symmetric(horizontal: 30.w),
-              child: Text(
-                'اقرأ الشروط والأحكام وسياسة الخصوصية الخاصة بالتطبيق قبل المتابعة في إنشاء حساب $accountTypeText.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.82),
-                  fontSize: 13.sp,
-                  height: 1.5,
-                ),
               ),
             ),
           ],
@@ -135,7 +140,8 @@ class _SignupTermsAgreementScreenState
     required String title,
     required String subtitle,
     required Function onTap,
-  }) {
+  })
+  {
     return InkWell(
       onTap: () => onTap(),
       borderRadius: BorderRadius.circular(22.r),
@@ -199,7 +205,6 @@ class _SignupTermsAgreementScreenState
       ),
     );
   }
-
   Widget _buildAgreementCard(AppCubit cubit) {
     return Container(
       width: double.infinity,
@@ -266,7 +271,7 @@ class _SignupTermsAgreementScreenState
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        height: 485.h,
+        height: 450.h,
         width: double.infinity,
         padding: EdgeInsetsDirectional.only(
           start: 20.w,

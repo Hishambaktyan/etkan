@@ -69,7 +69,6 @@ dependencies:
   url_launcher: ^6.3.0
   dio: ^5.9.2
   connectivity_plus: ^4.0.1
-  share_plus: ^13.1.0
 
 
 dev_dependencies:

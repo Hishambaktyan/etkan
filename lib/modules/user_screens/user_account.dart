@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/aboutApp_screen.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
@@ -410,8 +409,7 @@ class _UserAccountState extends State<UserAccount> {
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
 
-            final String uid =
-                CacheHelper.getData(key: 'uid')?.toString() ?? '';
+            final String uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
 
             return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
               stream: FirebaseFirestore.instance
@@ -486,21 +484,6 @@ class _UserAccountState extends State<UserAccount> {
                           _buildMenuCard(
                             appCubit: appCubit,
                             children: [
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'مشاركة التطبيق',
-                                icon: 'assets/share.svg',
-                                onTap: () async {
-                                  const String appLink =
-                                      'https://play.google.com/store/apps/details?id=com.homy.app';
-
-                                  await Share.share(
-                                    'حمّل تطبيق هومي لطلب خدمات الصيانة المنزلية بسهولة 👇\n$appLink',
-                                    subject: 'تطبيق هومي',
-                                  );
-                                },
-                              ),
-                              _buildDivider(appCubit),
                               _buildMenuItem(
                                 appCubit: appCubit,
                                 title: 'تواصل معنا',
@@ -591,30 +574,6 @@ class _UserAccountState extends State<UserAccount> {
                                     onConfirm: () {
                                       Navigator.pop(context);
                                       authCubit.logoutUser();
-                                    },
-                                  );
-                                },
-                              ),
-                              _buildDivider(appCubit),
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'حذف الحساب',
-                                icon: 'assets/delete.svg',
-                                isDanger: true,
-                                onTap: () {
-                                  defaultConfirmDialog(
-                                    context: context,
-                                    isDark: appCubit.isDark,
-                                    icon: 'assets/delete.svg',
-                                    iconColor: Colors.red,
-                                    title: 'حذف الحساب',
-                                    body:
-                                        'هل أنت متأكد من رغبتك في حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه.',
-                                    cancelText: 'إلغاء',
-                                    confirmText: 'حذف',
-                                    onConfirm: () {
-                                      Navigator.pop(context);
-                                      authCubit.deleteUser();
                                     },
                                   );
                                 },

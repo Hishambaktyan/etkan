@@ -991,26 +991,6 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
-  Future<void> deleteUser() async {
-    try {
-      emit(DeleteUserAccLoadingState());
-
-      final String? uid = CacheHelper.getData(key: 'uid');
-
-      if (uid != null && uid.isNotEmpty) {
-        await FirebaseFirestore.instance.collection('users').doc(uid).delete();
-      }
-
-      await CacheHelper.removeData(key: 'uid');
-      await CacheHelper.removeData(key: 'isLoggedIn');
-      await CacheHelper.removeData(key: 'role');
-
-      emit(DeleteUserAccSuccessState());
-    } catch (e) {
-      emit(DeleteUserAccErrorState(error: e.toString()));
-    }
-  }
-
   Future<void> saveUserToken(String uid) async {
     try {
       String? token = await FirebaseMessaging.instance.getToken();

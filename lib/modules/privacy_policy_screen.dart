@@ -325,8 +325,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit cubit = AppCubit.get(context);
         return Directionality(
@@ -364,7 +363,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
               ),
             ),
             body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
               padding: EdgeInsetsDirectional.only(
                 start: 10.w,
                 end: 10.w,

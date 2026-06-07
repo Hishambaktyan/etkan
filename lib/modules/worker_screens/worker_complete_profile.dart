@@ -31,6 +31,74 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
   List<String> experiences = [];
   List<String> previousWorks = [];
   File? profileImageFile;
+  List<Map<String, dynamic>> categories = [];
+  String? categoriesError;
+  bool isCategoriesLoaded = false;
+  bool isLoadingDialogShown = false;
+
+  Future<void> getCategories() async {
+    try {
+      if (!mounted) return;
+
+      isLoadingDialogShown = true;
+      showLoadingDialog(context);
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('categories')
+          .get();
+
+      final List<Map<String, dynamic>> loadedCategories =
+      snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        return data;
+      }).where((category) {
+        final String title = '${category['title'] ?? ''}'.trim();
+        final bool isActive = category['isActive'] != false;
+        return title.isNotEmpty && isActive;
+      }).toList();
+
+      loadedCategories.sort((a, b) {
+        final String first = '${a['title'] ?? ''}'.trim();
+        final String second = '${b['title'] ?? ''}'.trim();
+        return first.compareTo(second);
+      });
+
+      if (!mounted) return;
+
+      setState(() {
+        categories = loadedCategories;
+        categoriesError = null;
+        isCategoriesLoaded = true;
+      });
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        categoriesError = error.toString();
+        isCategoriesLoaded = true;
+      });
+
+      showSnackBar(
+        Colors.red,
+        'تعذر تحميل الأقسام، حاول مرة أخرى',
+        context,
+      );
+    } finally {
+      if (mounted && isLoadingDialogShown) {
+        hideLoadingDialog(context);
+        isLoadingDialogShown = false;
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCategories();
+    });
+  }
 
   Future<void> pickProfileImage() async {
     final ImagePicker picker = ImagePicker();
@@ -321,7 +389,6 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
       image,
       width: 22.w,
       height: 22.h,
-      color: mainColor,
       placeholderBuilder: (context) => SizedBox(
         width: 18.w,
         height: 18.h,
@@ -339,221 +406,203 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
   }
 
   Widget _buildCategoryDropdown(AppCubit cubit, AuthCubit authCubit) {
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance.collection('categories').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildCategoryMessageCard(
-            cubit: cubit,
-            icon: Icons.hourglass_top_rounded,
-            title: 'جاري تحميل الأقسام...',
-            color: mainColor,
-          );
-        }
+    if (!isCategoriesLoaded) {
+      return const SizedBox.shrink();
+    }
 
-        if (snapshot.hasError) {
-          return _buildCategoryMessageCard(
-            cubit: cubit,
-            icon: Icons.error_outline_rounded,
-            title: 'تعذر تحميل الأقسام، حاول مرة أخرى',
-            color: Colors.red,
-          );
-        }
+    if (categoriesError != null) {
+      return _buildCategoryMessageCard(
+        cubit: cubit,
+        icon: Icons.error_outline_rounded,
+        title: 'تعذر تحميل الأقسام، حاول مرة أخرى',
+        color: Colors.red,
+      );
+    }
 
-        final List<Map<String, dynamic>> categories =
-            snapshot.data!.docs.map((doc) {
-          final data = doc.data();
-          data['id'] = doc.id;
-          return data;
-        }).where((category) {
-          final String title = '${category['title'] ?? ''}'.trim();
-          final bool isActive = category['isActive'] != false;
-          return title.isNotEmpty && isActive;
-        }).toList();
+    if (categories.isEmpty) {
+      return _buildCategoryMessageCard(
+        cubit: cubit,
+        icon: Icons.info_outline_rounded,
+        title: 'لا توجد أقسام مفعلة حاليًا',
+        color: Colors.orange,
+      );
+    }
 
-        categories.sort((a, b) {
-          final String first = '${a['title'] ?? ''}'.trim();
-          final String second = '${b['title'] ?? ''}'.trim();
-          return first.compareTo(second);
-        });
+    final String? currentValue = categories.any((category) =>
+      '${category['title'] ?? ''}'.trim() == authCubit.selectedCategory,)
+        ? authCubit.selectedCategory
+        : null;
 
-        if (categories.isEmpty) {
-          return _buildCategoryMessageCard(
-            cubit: cubit,
-            icon: Icons.info_outline_rounded,
-            title: 'لا توجد أقسام مفعلة حاليًا',
-            color: Colors.orange,
-          );
-        }
-
-        final String? currentValue = categories.any(
-          (category) =>
-              '${category['title'] ?? ''}'.trim() == authCubit.selectedCategory,
-        )
-            ? authCubit.selectedCategory
-            : null;
-
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: DropdownButtonFormField<String>(
-            dropdownColor: cubit.isDark ? lightDarkColor : Colors.white,
-            isExpanded: true,
-            value: currentValue,
-            alignment: AlignmentDirectional.centerStart,
-            icon: Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
-              size: 22.sp,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: DropdownButtonFormField<String>(
+        dropdownColor: cubit.isDark ? lightDarkColor : Colors.white,
+        isExpanded: true,
+        value: currentValue,
+        style: TextStyle(
+          fontSize: 13.sp,
+          color: cubit.isDark ? Colors.white : Colors.black,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'tajawal'
+        ),
+        hint: Text(
+          'اختر القسم من الأقسام المتاحة',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: cubit.isDark ? darkSubTextColor : Colors.grey,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+        borderRadius: BorderRadius.circular(20.r),
+        alignment: AlignmentDirectional.centerStart,
+        icon: Icon(
+          Icons.keyboard_arrow_down_rounded,
+          color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+          size: 22.sp,
+        ),
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.1),
+          prefixIcon: Padding(
+            padding: EdgeInsetsDirectional.all(12.r),
+            child: SvgPicture.asset(
+              'assets/grid.svg',
+              width: 15.w,
+              height: 15.h,
+              color: cubit.isDark ? darkSubTextColor : mainColor,
             ),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor:
-                  cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.1),
-              prefixIcon: Padding(
-                padding: EdgeInsetsDirectional.all(12.r),
-                child: SvgPicture.asset(
-                  'assets/grid.svg',
-                  width: 15.w,
-                  height: 15.h,
-                  color: cubit.isDark ? darkSubTextColor : mainColor,
-                ),
-              ),
-              hintText: 'اختر القسم من الأقسام المتاحة',
-              hintStyle: TextStyle(
-                fontSize: 12.sp,
-                color: cubit.isDark ? darkSubTextColor : Colors.grey,
-              ),
-              contentPadding: EdgeInsetsDirectional.symmetric(
-                vertical: 14.h,
-                horizontal: 10.w,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: BorderSide(
-                  color: cubit.isDark
-                      ? const Color(0xFF30363D)
-                      : Colors.grey.shade100,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: BorderSide(
-                  color: cubit.isDark
-                      ? const Color(0xFF30363D)
-                      : Colors.grey.shade100,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: const BorderSide(color: mainColor),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: const BorderSide(color: Colors.red),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: const BorderSide(color: Colors.red),
-              ),
-              errorStyle: TextStyle(fontSize: 10.sp),
+          ),
+          contentPadding: EdgeInsetsDirectional.symmetric(
+            vertical: 14.h,
+            horizontal: 10.w,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.r),
+            borderSide: BorderSide(
+              color: cubit.isDark
+                  ? const Color(0xFF30363D)
+                  : Colors.grey.shade100,
             ),
-            selectedItemBuilder: (context) {
-              return categories.map((category) {
-                final String title = '${category['title'] ?? ''}'.trim();
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.r),
+            borderSide: BorderSide(
+              color: cubit.isDark
+                  ? const Color(0xFF30363D)
+                  : Colors.grey.shade100,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.r),
+            borderSide: const BorderSide(color: mainColor),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.r),
+            borderSide: const BorderSide(color: Colors.red),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.r),
+            borderSide: const BorderSide(color: Colors.red),
+          ),
+          errorStyle: TextStyle(fontSize: 10.sp),
+        ),
+        selectedItemBuilder: (context) {
+          return categories.map((category) {
+            final String title = '${category['title'] ?? ''}'.trim();
 
-                return Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    textDirection: TextDirection.rtl,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 30.r,
-                        height: 30.r,
-                        padding: EdgeInsetsDirectional.all(6.r),
-                        decoration: BoxDecoration(
-                          color: mainColor.withOpacity(0.10),
-                          borderRadius: BorderRadius.circular(9.r),
-                        ),
-                        child: _buildCategoryImage(category),
-                      ),
-                      SizedBox(width: 8.w),
-                      Flexible(
-                        child: Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: cubit.isDark ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+            return Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Row(
+                textDirection: TextDirection.rtl,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 30.r,
+                    height: 30.r,
+                    padding: EdgeInsetsDirectional.all(6.r),
+                    decoration: BoxDecoration(
+                      color: mainColor.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(9.r),
+                    ),
+                    child: _buildCategoryImage(category),
                   ),
-                );
-              }).toList();
-            },
-            items: categories.map((category) {
-              final String title = '${category['title'] ?? ''}'.trim();
-
-              return DropdownMenuItem<String>(
-                value: title,
-                alignment: AlignmentDirectional.centerStart,
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Row(
-                      textDirection: TextDirection.rtl,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 34.r,
-                          height: 34.r,
-                          padding: EdgeInsetsDirectional.all(7.r),
-                          decoration: BoxDecoration(
-                            color: mainColor.withOpacity(0.10),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: _buildCategoryImage(category),
-                        ),
-                        SizedBox(width: 10.w),
-                        Expanded(
-                          child: Text(
-                            title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: cubit.isDark ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
+                  SizedBox(width: 8.w),
+                  Flexible(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: cubit.isDark ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
+                ],
+              ),
+            );
+          }).toList();
+        },
+        items: categories.map((category) {
+          final String title = '${category['title'] ?? ''}'.trim();
+
+          return DropdownMenuItem<String>(
+            value: title,
+            alignment: AlignmentDirectional.centerStart,
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Row(
+                  textDirection: TextDirection.rtl,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 34.r,
+                      height: 34.r,
+                      padding: EdgeInsetsDirectional.all(7.r),
+                      decoration: BoxDecoration(
+                        color: mainColor.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: _buildCategoryImage(category),
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: cubit.isDark ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                authCubit.selectedCategory = value;
-              });
-            },
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'يرجى اختيار القسم';
-              }
-              return null;
-            },
-          ),
-        );
-      },
+              ),
+            ),
+          );
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            authCubit.selectedCategory = value;
+          });
+        },
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'يرجى اختيار القسم';
+          }
+          return null;
+        },
+      ),
     );
   }
 

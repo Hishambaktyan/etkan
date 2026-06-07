@@ -1,10 +1,8 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/contact_us_screen.dart';
 import 'package:trying_homy/modules/faq_Screen.dart';
@@ -210,8 +208,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            Map<String, dynamic> user =
-                appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
+            Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
@@ -269,21 +266,6 @@ class _WorkerAccountState extends State<WorkerAccount> {
                               move(
                                 context,
                                 const WorkerAccountVerification(),
-                              );
-                            },
-                          ),
-                          _buildDivider(appCubit),
-                          _buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'مشاركة التطبيق',
-                            icon: 'assets/share.svg',
-                            onTap: () async {
-                              const String appLink =
-                                  'https://play.google.com/store/apps/details?id=com.homy.app';
-
-                              await Share.share(
-                                'حمّل تطبيق هومي لطلب خدمات الصيانة المنزلية بسهولة 👇\n$appLink',
-                                subject: 'تطبيق هومي',
                               );
                             },
                           ),
@@ -386,30 +368,6 @@ class _WorkerAccountState extends State<WorkerAccount> {
                                 onConfirm: () {
                                   Navigator.pop(context);
                                   authCubit.logoutUser();
-                                },
-                              );
-                            },
-                          ),
-                          _buildDivider(appCubit),
-                          _buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'حذف الحساب',
-                            icon: 'assets/delete.svg',
-                            isDanger: true,
-                            onTap: () {
-                              defaultConfirmDialog(
-                                context: context,
-                                isDark: appCubit.isDark,
-                                icon: 'assets/delete.svg',
-                                iconColor: Colors.red,
-                                title: 'حذف الحساب',
-                                body:
-                                    'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
-                                cancelText: 'إلغاء',
-                                confirmText: 'حذف',
-                                onConfirm: () {
-                                  Navigator.pop(context);
-                                  authCubit.deleteUser();
                                 },
                               );
                             },

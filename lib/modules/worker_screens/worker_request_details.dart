@@ -1009,8 +1009,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                     ],
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.symmetric(
-                                        vertical: 15.h),
+                                    padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
                                     child: Divider(
                                         color: appCubit.isDark
                                             ? darkSubTextColor
@@ -1026,22 +1025,15 @@ class WorkerRequestDetails extends StatelessWidget {
                                             opacity: canContact ? 1.0 : 0.45,
                                             child: defaultButtonWithIcon(
                                               onPressed: () async {
-                                                await workerCubit
-                                                    .createOrGetChat(
-                                                        customerId: request[
-                                                            'customerId'],
-                                                        providerId: request[
-                                                            'providerId'],
-                                                        requestId:
-                                                            request['id'],
-                                                        requestTitle:
-                                                            request['title'],
+                                                await workerCubit.createOrGetChat(
+                                                        customerId: request['customerId'],
+                                                        providerId: request['providerId'],
+                                                        requestId: request['id'],
+                                                        requestTitle: request['title'],
                                                         customerData: userData,
-                                                        providerData:
-                                                            providerData,
-                                                        requestStatus:
-                                                            request['status'] ??
-                                                                '');
+                                                        providerData: providerData,
+                                                        requestStatus: request['status'] ?? ''
+                                                );
                                               },
                                               text: 'دردشة',
                                               height: 45.h,

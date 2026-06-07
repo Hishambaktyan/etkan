@@ -176,9 +176,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsetsDirectional.symmetric(
-                horizontal: 10.w,
-              ),
+              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,),
               child: Row(
                 children: [
                   buildBackButton(),
@@ -200,7 +198,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 30.h),
+            SizedBox(height: 10.h),
             Text(
               'تأكيد رقم الهاتف',
               textAlign: TextAlign.center,
@@ -217,7 +215,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                 ],
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 5.h),
             Padding(
               padding: EdgeInsetsDirectional.symmetric(
                 horizontal: 30.w,
@@ -448,7 +446,8 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
     required AppCubit appCubit,
     required AuthCubit authCubit,
     required AuthStates state,
-  }) {
+  })
+  {
     final bool isLoading = state is CheckPhoneCodeLoadingState ||
         state is SendPhoneCodeLoadingState ||
         state is UserSignUpLoadingState ||
@@ -457,7 +456,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        height: 480.h,
+        height: 460.h,
         width: double.infinity,
         padding: EdgeInsetsDirectional.symmetric(
           horizontal: 20.w,
@@ -478,18 +477,8 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
           ],
         ),
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              Text(
-                'أدخل رمز التحقق',
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 7.h),
               Text(
                 'أدخل الرمز المكون من ستة أرقام في الحقول التالية',
                 textAlign: TextAlign.center,
@@ -499,11 +488,11 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                   fontSize: 12.sp,
                 ),
               ),
-              SizedBox(height: 18.h),
+              SizedBox(height: 10.h),
               buildPhoneContainer(
                 appCubit: appCubit,
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 20.h),
               Directionality(
                 textDirection: TextDirection.ltr,
                 child: Row(
@@ -592,7 +581,6 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
       builder: (context, appState) {
         final AppCubit appCubit = AppCubit.get(context);
         final AuthCubit authCubit = AuthCubit.get(context);
-
         return BlocConsumer<AuthCubit, AuthStates>(
           listener: (context, state) async {
             if (state is CheckPhoneCodeLoadingState ||
