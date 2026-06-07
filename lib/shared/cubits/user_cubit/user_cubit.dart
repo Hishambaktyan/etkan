@@ -517,63 +517,6 @@ class UserCubit extends Cubit<UserStates> {
     await batch.commit();
   }
 
-  Future<bool> deleteUserRequest({
-    required String requestId,
-  }) async {
-    try {
-      if (requestId.trim().isEmpty) {
-        throw 'رقم الحجز غير صحيح';
-      }
-
-      emit(DeleteUserRequestLoadingState());
-
-      final String currentUserId =
-          CacheHelper.getData(key: 'uid')?.toString() ?? '';
-
-      final requestRef =
-          FirebaseFirestore.instance.collection('requests').doc(requestId);
-
-      final requestDoc = await requestRef.get();
-
-      if (!requestDoc.exists) {
-        throw 'الحجز غير موجود';
-      }
-
-      final requestData = requestDoc.data() ?? {};
-
-      if ((requestData['customerId'] ?? '').toString() != currentUserId) {
-        throw 'لا يمكنك حذف حجز لا يخصك';
-      }
-
-      final String status = (requestData['status'] ?? '').toString();
-
-      final List<String> blockedDeleteStatuses = [
-        'مقبول',
-        'في الطريق',
-        'مكتمل',
-      ];
-
-      if (blockedDeleteStatuses.contains(status)) {
-        throw 'لا يمكن حذف الحجز بعد قبوله أو أثناء التنفيذ أو بعد اكتماله';
-      }
-
-      await deleteStatusHistorySubCollection(requestId);
-
-      await requestRef.delete();
-
-      userRequests.removeWhere((request) {
-        final id = (request['id'] ?? request['requestId'] ?? '').toString();
-        return id == requestId;
-      });
-
-      emit(DeleteUserRequestSuccessState());
-      return true;
-    } catch (e) {
-      emit(DeleteUserRequestErrorState(error: e.toString()));
-      return false;
-    }
-  }
-
   Future<String> uploadImageToCloudinary(String imagePath) async {
     final dio = Dio();
 

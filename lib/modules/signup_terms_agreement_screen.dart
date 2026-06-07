@@ -114,7 +114,7 @@ class _SignupTermsAgreementScreenState
             Padding(
               padding: EdgeInsetsDirectional.symmetric(horizontal: 30.w),
               child: Text(
-                'اقرأ الشروط والأحكام وسياسة الخصوصية ثم وافق عليها لإكمال إنشاء حساب $accountTypeText.',
+                'اقرأ الشروط والأحكام وسياسة الخصوصية الخاصة بالتطبيق قبل المتابعة في إنشاء حساب $accountTypeText.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.82),
@@ -244,7 +244,7 @@ class _SignupTermsAgreementScreenState
               child: Padding(
                 padding: EdgeInsetsDirectional.only(top: 9.h),
                 child: Text(
-                  'أوافق على الشروط والأحكام وسياسة الخصوصية الخاصة بالتطبيق، وأتعهد بإدخال بيانات صحيحة عند إنشاء الحساب.',
+                  'أقر بأنني قرأت الشروط والأحكام وسياسة الخصوصية، وأوافق على استخدامها داخل التطبيق، وأتعهد بإدخال بيانات صحيحة وعدم إساءة استخدام خدمات الصيانة أو الحجوزات.',
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                     fontSize: 12.sp,
@@ -302,7 +302,7 @@ class _SignupTermsAgreementScreenState
               ),
               SizedBox(height: 6.h),
               Text(
-                'يمكنك فتح الصفحات التالية وقراءتها قبل الموافقة.',
+                'راجع الصفحات التالية لمعرفة قواعد استخدام التطبيق وكيفية التعامل مع بياناتك.',
                 style: TextStyle(
                   color: cubit.isDark ? darkSubTextColor : Colors.grey,
                   fontSize: 12.sp,
@@ -313,14 +313,14 @@ class _SignupTermsAgreementScreenState
                 cubit: cubit,
                 icon: Icons.description_rounded,
                 title: 'الشروط والأحكام',
-                subtitle: 'تعرف على قواعد استخدام التطبيق وحقوق كل طرف.',
+                subtitle: 'تعرف على قواعد الحجز، الاشتراك، التوثيق، وحقوق العميل والفني.',
                 onTap: () => move(context, const TermsConditionsScreen()),
               ),
               _buildInfoCard(
                 cubit: cubit,
                 icon: Icons.lock_rounded,
                 title: 'سياسة الخصوصية',
-                subtitle: 'تعرف على طريقة حفظ واستخدام بياناتك داخل التطبيق.',
+                subtitle: 'تعرف على البيانات التي يحتاجها التطبيق لتشغيل الحجوزات وحماية الحسابات.',
                 onTap: () => move(context, PrivacyPolicyScreen()),
               ),
               SizedBox(height: 4.h),
@@ -331,7 +331,7 @@ class _SignupTermsAgreementScreenState
                   if (!isAccepted) {
                     showSnackBar(
                       Colors.red,
-                      'يجب الموافقة على الشروط والأحكام وسياسة الخصوصية أولًا',
+                      'يجب الموافقة على الشروط والأحكام وسياسة الخصوصية قبل المتابعة',
                       context,
                     );
                     return;
@@ -342,7 +342,7 @@ class _SignupTermsAgreementScreenState
                     userType: widget.userType,
                   );
                 },
-                text: 'موافق ومتابعة',
+                text: 'أوافق وأتابع',
                 height: 50.h,
               ),
             ],

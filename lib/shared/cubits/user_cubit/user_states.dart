@@ -64,18 +64,6 @@ class CreateRequestErrorState extends UserStates {
 
 //////////////////////////////////////
 
-class DeleteUserRequestLoadingState extends UserStates {}
-
-class DeleteUserRequestSuccessState extends UserStates {}
-
-class DeleteUserRequestErrorState extends UserStates {
-  final String error;
-
-  DeleteUserRequestErrorState({required this.error});
-}
-
-//////////////////////////////////////
-
 class EditUserDataLoadingState extends UserStates {}
 
 class EditUserDataSuccessState extends UserStates {}
