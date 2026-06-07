@@ -148,21 +148,21 @@ class _WorkerMainScreenState extends State<WorkerMainScreen> {
                             ),
                             NavigationDestination(
                               icon: SvgPicture.asset(
-                                'assets/acc.svg',
+                                'assets/setting.svg',
                                 width: 25.w,
                                 height: 25.h,
                                 color: Colors.grey,
                               ),
                               selectedIcon: SvgPicture.asset(
-                                'assets/acc_bold.svg',
+                                'assets/setting_bold.svg',
                                 width: 25.w,
                                 height: 25.h,
                                 color: cubit.currentIndex == 4
                                     ? mainColor
                                     : Colors.grey,
                               ),
-                              tooltip: 'الحساب',
-                              label: 'الحساب',
+                              tooltip: 'الإعدادات',
+                              label: 'الإعدادات',
                             ),
                           ]),
                     ),

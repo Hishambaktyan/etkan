@@ -146,20 +146,21 @@ class _UserMainScreenState extends State<UserMainScreen> {
                         ),
                         NavigationDestination(
                           icon: SvgPicture.asset(
-                            'assets/acc.svg',
+                            'assets/setting.svg',
                             width: 25.w,
                             height: 25.h,
                             color: Colors.grey,
                           ),
                           selectedIcon: SvgPicture.asset(
-                            'assets/acc_bold.svg',
+                            'assets/setting_bold.svg',
                             width: 25.w,
                             height: 25.h,
                             color: appCubit.currentIndex == 4
                                 ? mainColor
                                 : Colors.grey,
                           ),
-                          label: 'الحساب',
+                          tooltip: 'الإعدادات',
+                          label: 'الإعدادات',
                         ),
                       ],
                     ),

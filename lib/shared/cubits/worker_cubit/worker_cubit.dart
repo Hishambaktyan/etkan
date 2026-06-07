@@ -374,8 +374,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       workerCompletedRequestsCount = 0;
       workerRating = 0.0;
 
-      final userFuture =
-          FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final userFuture = FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       final completedRequestsCountFuture = FirebaseFirestore.instance
           .collection('requests')

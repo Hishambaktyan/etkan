@@ -74,8 +74,7 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
                 return ConditionalBuilder(
                   condition: checkingInternet ||
                       state is GetWorkerServicesLoadingState,
-                  builder: (context) =>
-                      WorkerServicesShimmer(isDark: appCubit.isDark),
+                  builder: (context) => WorkerServicesShimmer(isDark: appCubit.isDark),
                   fallback: (context) => ConditionalBuilder(
                     condition: !hasInternet,
                     builder: (context) => NoInternet(
@@ -90,10 +89,57 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
                         child: Column(
                           children: [
                             header(title: 'الخدمات', context: context),
+                            SizedBox(height: 10.h,),
+                            workerCubit.workerServices.isEmpty?
                             SizedBox(
-                              height: 10.h,
-                            ),
-                            GridView.builder(
+                              height: MediaQuery.of(context).size.height * 0.60,
+                              width: double.infinity,
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 100.w,
+                                      height: 100.w,
+                                      padding: EdgeInsets.all(18.r),
+                                      decoration: BoxDecoration(
+                                        color: mainColor.withOpacity(0.08),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.home_repair_service_rounded,
+                                        color: mainColor,
+                                        size: 48.sp,
+                                      ),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    Text(
+                                      'لا توجد خدمات منشورة',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.sp,
+                                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      'عند إضافة خدمة جديدة ستظهر هنا ليتمكن العملاء من حجزها.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        height: 1.6,
+                                        color: appCubit.isDark
+                                            ? darkSubTextColor
+                                            : Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                                : GridView.builder(
                               itemCount: workerCubit.workerServices.length,
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
