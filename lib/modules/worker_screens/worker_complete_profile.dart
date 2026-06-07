@@ -197,10 +197,11 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
               borderRadius: BorderRadius.circular(15.r),
               border: Border.all(color: Colors.white.withOpacity(0.25)),
             ),
-            child: const Icon(
-              Icons.verified_rounded,
+            child: SvgPicture.asset(
+              'assets/providers.svg',
+              width: 30.w,
+              height: 30.h,
               color: Colors.white,
-              size: 40,
             ),
           ),
           SizedBox(width: 14.w),
@@ -994,7 +995,11 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
                     boxShadow: blueShadow,
                   ),
                   child: defaultButton(
-                    onPressed: () => _completeProfile(authCubit),
+                    onPressed: () {
+                      // إغلاق الكيبورد قبل إرسال الطلب
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      _completeProfile(authCubit);
+                    },
                     text: 'إكمال الملف والمتابعة',
                     height: 50.h,
                   ),
