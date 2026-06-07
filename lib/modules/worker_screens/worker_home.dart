@@ -45,83 +45,6 @@ class _WorkerHomeState extends State<WorkerHome> {
     },
   ];
 
-  Widget _buildSubscriptionWarning({
-    required AppCubit appCubit,
-    required WorkerCubit workerCubit,
-  }) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-      padding: EdgeInsetsDirectional.all(16.r),
-      decoration: BoxDecoration(
-        color: appCubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: workerCubit.isSubscriptionExpired
-              ? Colors.redAccent.withOpacity(0.35)
-              : Colors.orangeAccent.withOpacity(0.35),
-        ),
-        boxShadow: blueShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsetsDirectional.all(9.r),
-                decoration: BoxDecoration(
-                  color: workerCubit.isSubscriptionExpired
-                      ? Colors.redAccent.withOpacity(0.12)
-                      : Colors.orangeAccent.withOpacity(0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  workerCubit.isSubscriptionExpired
-                      ? Icons.history_rounded
-                      : Icons.workspace_premium_outlined,
-                  color: workerCubit.isSubscriptionExpired
-                      ? Colors.redAccent
-                      : Colors.orangeAccent,
-                  size: 24.sp,
-                ),
-              ),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: Text(
-                  workerCubit.subscriptionWarningTitle,
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            workerCubit.subscriptionWarningBody,
-            style: TextStyle(
-              color: appCubit.isDark ? darkSubTextColor : Colors.grey.shade700,
-              fontSize: 12.sp,
-              height: 1.5,
-            ),
-          ),
-          SizedBox(height: 12.h),
-          defaultButton(
-            onPressed: () => move(
-              context,
-              const WorkerSubscriptionsScreen(),
-            ),
-            text: workerCubit.subscriptionWarningButtonText,
-            height: 45.h,
-          ),
-        ],
-      ),
-    );
-  }
-
   Map<String, dynamic> _getMapData(dynamic data) {
     if (data is Map) {
       return Map<String, dynamic>.from(data);
@@ -153,6 +76,18 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     return !date.isAfter(DateTime.now());
+  }
+
+  int _safeInt(dynamic value) {
+    if (value is int) {
+      return value;
+    }
+
+    if (value is num) {
+      return value.toInt();
+    }
+
+    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 
   String _formatDate(dynamic value) {
@@ -382,6 +317,7 @@ class _WorkerHomeState extends State<WorkerHome> {
   Widget _buildSubscriptionStatusCard({
     required AppCubit appCubit,
     required Map<String, dynamic> userData,
+    required WorkerCubit workerCubit,
   }) {
     final Map<String, dynamic> subscription =
         _getMapData(userData['subscription']);
@@ -407,6 +343,16 @@ class _WorkerHomeState extends State<WorkerHome> {
     final String endDateText = _formatDate(endDate);
     final bool isExpired = status == 'expired' || _isDateExpired(endDate);
     final bool isActive = _hasActiveSubscriptionFromUserData(userData);
+
+    const int freeServicesLimit = 5;
+    const int freeCompletedBookingsLimit = 5;
+
+    final int servicesCount = _safeInt(workerCubit.workerServicesCount);
+    final int completedBookingsCount =
+        _safeInt(workerCubit.workerCompletedRequestsCount);
+
+    final bool hasReachedFreeLimits = servicesCount >= freeServicesLimit &&
+        completedBookingsCount >= freeCompletedBookingsLimit;
 
     if (isActive) {
       return _buildAccountStatusCard(
@@ -474,6 +420,22 @@ class _WorkerHomeState extends State<WorkerHome> {
       );
     }
 
+    if (hasReachedFreeLimits) {
+      return _buildAccountStatusCard(
+        appCubit: appCubit,
+        icon: Icons.warning_amber_rounded,
+        color: Colors.redAccent,
+        title: 'لقد تجاوزت حدود الخطة المجانية',
+        body:
+            'لقد وصلت إلى الحد المجاني المسموح وهو 5 خدمات و5 حجوزات مكتملة. اشترك الآن لإضافة خدمات واستقبال حجوزات بلا حدود.',
+        buttonText: 'اشترك الآن',
+        onTap: () => move(
+          context,
+          const WorkerSubscriptionsScreen(),
+        ),
+      );
+    }
+
     return _buildAccountStatusCard(
       appCubit: appCubit,
       icon: Icons.card_membership_rounded,
@@ -489,7 +451,8 @@ class _WorkerHomeState extends State<WorkerHome> {
     );
   }
 
-  Widget _buildWorkerAccountStatusSection(AppCubit appCubit) {
+  Widget _buildWorkerAccountStatusSection(
+      AppCubit appCubit, WorkerCubit workerCubit) {
     final uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
 
     if (uid.isEmpty) {
@@ -500,36 +463,6 @@ class _WorkerHomeState extends State<WorkerHome> {
       stream:
           FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-            width: double.infinity,
-            margin: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-            padding: EdgeInsetsDirectional.all(16.r),
-            decoration: BoxDecoration(
-              color: appCubit.isDark ? lightDarkColor : Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: blueShadow,
-            ),
-            child: Row(
-              children: [
-                const CircularProgressIndicator(
-                  color: mainColor,
-                  strokeWidth: 2,
-                ),
-                SizedBox(width: 12.w),
-                Text(
-                  'جاري فحص حالة الحساب...',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
         if (!snapshot.hasData || !snapshot.data!.exists) {
           return const SizedBox.shrink();
         }
@@ -547,6 +480,7 @@ class _WorkerHomeState extends State<WorkerHome> {
               _buildSubscriptionStatusCard(
                 appCubit: appCubit,
                 userData: userData,
+                workerCubit: workerCubit,
               ),
             ],
           ),
@@ -661,15 +595,11 @@ class _WorkerHomeState extends State<WorkerHome> {
                             SizedBox(
                               height: 10.h,
                             ),
-                            _buildWorkerAccountStatusSection(appCubit),
+                            _buildWorkerAccountStatusSection(
+                                appCubit, workerCubit),
                             SizedBox(
                               height: 10.h,
                             ),
-                            if (workerCubit.shouldShowSubscriptionWarning)
-                              _buildSubscriptionWarning(
-                                appCubit: appCubit,
-                                workerCubit: workerCubit,
-                              ),
                             if (workerCubit.shouldShowSubscriptionWarning)
                               SizedBox(height: 10.h),
                             GridView.builder(

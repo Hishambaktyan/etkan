@@ -251,7 +251,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
                         children: [
                           _buildMenuItem(
                             appCubit: appCubit,
-                            title: 'إدارة الاشتراك',
+                            title: 'الاشتراك',
                             icon: 'assets/subs.svg',
                             onTap: () {
                               move(

@@ -83,26 +83,59 @@ class UserCubit extends Cubit<UserStates> {
         status == 'approved';
   }
 
-  bool _hasVisibleActiveSubscription(Map<String, dynamic> userData) {
-    if (_isSubscriptionExpired(userData)) {
+  bool _canProviderUseFreePlan({
+    required Map<String, dynamic> providerData,
+    required int completedRequestsCount,
+  }) {
+    if (_isSubscriptionExpired(providerData)) {
       return false;
     }
 
-    final subscription = _getSubscriptionData(userData);
-    final String status = subscription['status']?.toString() ?? 'not_submitted';
+    if (_hasActiveSubscription(providerData)) {
+      return true;
+    }
 
-    return userData['isSubscribed'] == true &&
-        subscription['isActive'] == true &&
-        (status == 'active' || status == 'approved');
+    return completedRequestsCount < freeCompletedRequestsLimit;
   }
 
-  Future<Set<String>> _getActiveProviderIds() async {
-    final providersSnapshot = await FirebaseFirestore.instance
+  Future<Map<String, int>> _getCompletedRequestsCountByProvider() async {
+    final completedRequestsSnapshot = await FirebaseFirestore.instance
+        .collection('requests')
+        .where('status', isEqualTo: 'مكتمل')
+        .get();
+
+    final Map<String, int> completedRequestsCountByProvider = {};
+
+    for (final requestDoc in completedRequestsSnapshot.docs) {
+      final requestData = requestDoc.data();
+      final String providerId = requestData['providerId']?.toString() ?? '';
+
+      if (providerId.isEmpty) continue;
+
+      completedRequestsCountByProvider[providerId] =
+          (completedRequestsCountByProvider[providerId] ?? 0) + 1;
+    }
+
+    return completedRequestsCountByProvider;
+  }
+
+  Future<Set<String>> _getVisibleProviderIds() async {
+    final providersFuture = FirebaseFirestore.instance
         .collection('users')
         .where('role', isEqualTo: 'provider')
         .get();
 
-    final Set<String> activeProviderIds = {};
+    final completedRequestsCountFuture = _getCompletedRequestsCountByProvider();
+
+    await Future.wait([
+      providersFuture,
+      completedRequestsCountFuture,
+    ]);
+
+    final providersSnapshot = await providersFuture;
+    final completedRequestsCountByProvider = await completedRequestsCountFuture;
+
+    final Set<String> visibleProviderIds = {};
     final batch = FirebaseFirestore.instance.batch();
     bool hasExpiredSubscriptions = false;
 
@@ -132,8 +165,14 @@ class UserCubit extends Cubit<UserStates> {
         continue;
       }
 
-      if (_hasVisibleActiveSubscription(providerData)) {
-        activeProviderIds.add(providerDoc.id);
+      final int completedRequestsCount =
+          completedRequestsCountByProvider[providerDoc.id] ?? 0;
+
+      if (_canProviderUseFreePlan(
+        providerData: providerData,
+        completedRequestsCount: completedRequestsCount,
+      )) {
+        visibleProviderIds.add(providerDoc.id);
       }
     }
 
@@ -145,19 +184,19 @@ class UserCubit extends Cubit<UserStates> {
       }
     }
 
-    return activeProviderIds;
+    return visibleProviderIds;
   }
 
   bool _isServiceVisibleToCustomers(
     Map<String, dynamic> service,
-    Set<String> activeProviderIds,
+    Set<String> visibleProviderIds,
   ) {
     final String providerId = service['providerId']?.toString() ?? '';
     final bool isServiceActive = service['isActive'] != false;
 
     return isServiceActive &&
         providerId.isNotEmpty &&
-        activeProviderIds.contains(providerId);
+        visibleProviderIds.contains(providerId);
   }
 
   Map<String, dynamic> allUsers = {};
@@ -190,7 +229,7 @@ class UserCubit extends Cubit<UserStates> {
 
       emit(GetUserSpecServicesLoadingState());
 
-      final activeProviderIdsFuture = _getActiveProviderIds();
+      final visibleProviderIdsFuture = _getVisibleProviderIds();
 
       final servicesFuture = FirebaseFirestore.instance
           .collection('services')
@@ -198,11 +237,11 @@ class UserCubit extends Cubit<UserStates> {
           .get();
 
       await Future.wait([
-        activeProviderIdsFuture,
+        visibleProviderIdsFuture,
         servicesFuture,
       ]);
 
-      final activeProviderIds = await activeProviderIdsFuture;
+      final visibleProviderIds = await visibleProviderIdsFuture;
       final getServicesSnapshot = await servicesFuture;
 
       final List<Map<String, dynamic>> services = [];
@@ -211,7 +250,7 @@ class UserCubit extends Cubit<UserStates> {
         final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
 
-        if (_isServiceVisibleToCustomers(data, activeProviderIds)) {
+        if (_isServiceVisibleToCustomers(data, visibleProviderIds)) {
           services.add(data);
         }
       }
@@ -236,23 +275,23 @@ class UserCubit extends Cubit<UserStates> {
 
       userServices.clear();
 
-      final activeProviderIdsFuture = _getActiveProviderIds();
+      final visibleProviderIdsFuture = _getVisibleProviderIds();
       final servicesFuture =
           FirebaseFirestore.instance.collection('services').get();
 
       await Future.wait([
-        activeProviderIdsFuture,
+        visibleProviderIdsFuture,
         servicesFuture,
       ]);
 
-      final activeProviderIds = await activeProviderIdsFuture;
+      final visibleProviderIds = await visibleProviderIdsFuture;
       final servicesSnapshot = await servicesFuture;
 
       for (var doc in servicesSnapshot.docs) {
         final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
 
-        if (_isServiceVisibleToCustomers(data, activeProviderIds)) {
+        if (_isServiceVisibleToCustomers(data, visibleProviderIds)) {
           userServices.add(data);
         }
       }
@@ -385,19 +424,13 @@ class UserCubit extends Cubit<UserStates> {
         return;
       }
 
-      if (!_hasVisibleActiveSubscription(providerData)) {
-        emit(CreateRequestErrorState(
-          error:
-              'اشتراك هذا الفني غير نشط، ولا يمكنه استقبال حجوزات جديدة حالياً.',
-        ));
-        return;
-      }
-
       final int completedRequestsCount =
           completedRequestsCountSnapshot.count ?? 0;
 
-      if (!_hasActiveSubscription(providerData) &&
-          completedRequestsCount >= freeCompletedRequestsLimit) {
+      if (!_canProviderUseFreePlan(
+        providerData: providerData,
+        completedRequestsCount: completedRequestsCount,
+      )) {
         emit(CreateRequestErrorState(
           error:
               'أكمل هذا الفني 5 حجوزات مجانية، ولا يمكنه استقبال حجوزات جديدة حتى يقوم بالاشتراك.',
