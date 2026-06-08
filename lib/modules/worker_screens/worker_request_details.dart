@@ -1,23 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/worker_screens/worker_request_location.dart';
 import 'package:trying_homy/shared/compenents/components.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../the_chat.dart';
 
-class WorkerRequestDetails extends StatelessWidget {
+class WorkerRequestDetails extends StatefulWidget {
   final Map<String, dynamic> request;
   WorkerRequestDetails({super.key, required this.request});
 
+  @override
+  State<WorkerRequestDetails> createState() => _WorkerRequestDetailsState();
+}
+
+class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
   final List<String> stepperSteps = [
     "قيد الانتظار",
     "مقبول",
@@ -298,7 +304,7 @@ class WorkerRequestDetails extends StatelessWidget {
     required AppCubit appCubit,
     required WorkerCubit workerCubit,
   }) {
-    final String status = request['status'] ?? '';
+    final String status = widget.request['status'] ?? '';
     if (status == 'قيد الانتظار') {
       return Container(
         width: double.infinity,
@@ -325,7 +331,7 @@ class WorkerRequestDetails extends StatelessWidget {
                     onCancel: () async {
                       Navigator.pop(context);
                       await workerCubit.updateRequestStatus(
-                        requestId: request['id'],
+                        requestId: widget.request['id'],
                         status: 'مقبول',
                       );
                     },
@@ -351,7 +357,7 @@ class WorkerRequestDetails extends StatelessWidget {
                     onConfirm: () async {
                       Navigator.pop(context);
                       await workerCubit.updateRequestStatus(
-                        requestId: request['id'],
+                        requestId: widget.request['id'],
                         status: 'مرفوض',
                       );
                     },
@@ -389,7 +395,7 @@ class WorkerRequestDetails extends StatelessWidget {
               onCancel: () async {
                 Navigator.pop(context);
                 await workerCubit.updateRequestStatus(
-                  requestId: request['id'],
+                  requestId: widget.request['id'],
                   status: 'في الطريق',
                 );
               },
@@ -424,7 +430,7 @@ class WorkerRequestDetails extends StatelessWidget {
               onCancel: () async {
                 Navigator.pop(context);
                 await workerCubit.updateRequestStatus(
-                  requestId: request['id'],
+                  requestId: widget.request['id'],
                   status: 'مكتمل',
                 );
               },
@@ -438,13 +444,36 @@ class WorkerRequestDetails extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
+  Future<void> openLocationInGoogleMaps(GeoPoint? location) async {
+    if (location == null) {
+      showSnackBar(Colors.red, 'لا يوجد موقع لهذا الحجز', context);
+      return;
+    }
+
+    final double lat = location.latitude;
+    final double lng = location.longitude;
+
+    final Uri googleMapsUrl = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
+
+    final bool launched = await launchUrl(
+      googleMapsUrl,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!launched && mounted) {
+      showSnackBar(Colors.red, 'تعذر فتح خرائط Google', context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-        var userData = appCubit.allUsers[request['customerId']] ?? {};
-        var providerData = appCubit.allUsers[request['providerId']] ?? {};
+        var userData = appCubit.allUsers[widget.request['customerId']] ?? {};
+        var providerData = appCubit.allUsers[widget.request['providerId']] ?? {};
         WorkerCubit workerCubit = WorkerCubit.get(context);
         return BlocConsumer<WorkerCubit, WorkerStates>(
           listener: (context, state) async {
@@ -471,11 +500,11 @@ class WorkerRequestDetails extends StatelessWidget {
                 TheChat(
                   otherUsername: userData['name'] ?? 'مستخدم',
                   otherUserImage: userData['profileImage'] ?? '',
-                  otherUserId: request['customerId'],
-                  myId: request['providerId'],
+                  otherUserId: widget.request['customerId'],
+                  myId: widget.request['providerId'],
                   chatId: state.chatId,
-                  requestId: request['id'],
-                  requestStatus: request['status'] ?? '',
+                  requestId: widget.request['id'],
+                  requestStatus: widget.request['status'] ?? '',
                 ),
               );
             }
@@ -490,7 +519,7 @@ class WorkerRequestDetails extends StatelessWidget {
           },
           builder: (context, state) {
             Color statusColor;
-            switch (request['status']) {
+            switch (widget.request['status']) {
               case 'مكتمل':
                 statusColor = Colors.green;
                 break;
@@ -509,7 +538,7 @@ class WorkerRequestDetails extends StatelessWidget {
               default:
                 statusColor = Colors.orangeAccent;
             }
-            final String status = request['status'] ?? '';
+            final String status = widget.request['status'] ?? '';
 
             final bool canContact =
                 status == 'مقبول' || status == 'في الطريق' || status == 'مكتمل';
@@ -528,7 +557,7 @@ class WorkerRequestDetails extends StatelessWidget {
                               borderRadius: BorderRadiusDirectional.vertical(
                                   bottom: Radius.circular(15.r)),
                               child: Image.network(
-                                request['image'],
+                                widget.request['image'],
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: 300.h,
@@ -616,7 +645,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                           7.r),
                                                 ),
                                                 child: Text(
-                                                  request['status'] ?? '',
+                                                  widget.request['status'] ?? '',
                                                   style: TextStyle(
                                                     color: statusColor,
                                                     fontWeight: FontWeight.bold,
@@ -628,7 +657,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                           ),
                                           SizedBox(height: 15.h),
                                           Text(
-                                            request['title'] ?? '',
+                                            widget.request['title'] ?? '',
                                             style: TextStyle(
                                               fontSize: 15.sp,
                                               fontWeight: FontWeight.bold,
@@ -669,7 +698,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                         ),
                                                         Text(
                                                           dateFormatStatusTime(
-                                                              request['scheduledAt'] ??
+                                                              widget.request['scheduledAt'] ??
                                                                   ''),
                                                           style: TextStyle(
                                                             color: appCubit
@@ -724,7 +753,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                         ),
                                                         Text(
                                                           timeFormatStatusTime(
-                                                              request['scheduledAt'] ??
+                                                              widget.request['scheduledAt'] ??
                                                                   ''),
                                                           style: TextStyle(
                                                             color: appCubit
@@ -781,7 +810,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                           ),
                                                         ),
                                                         Text(
-                                                          '${request['price']} $reyalSymbol',
+                                                          '${widget.request['price']} $reyalSymbol',
                                                           style: TextStyle(
                                                             color: mainColor,
                                                             fontSize: 14.sp,
@@ -827,7 +856,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                                           ),
                                                         ),
                                                         Text(
-                                                          '${request['duration']} دقيقة',
+                                                          '${widget.request['duration']} دقيقة',
                                                           style: TextStyle(
                                                             color: appCubit
                                                                     .isDark
@@ -869,7 +898,7 @@ class WorkerRequestDetails extends StatelessWidget {
                         height: 10.h,
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(
+                        padding: EdgeInsetsDirectional.symmetric(
                             horizontal: 10.w, vertical: 10.h),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -877,7 +906,8 @@ class WorkerRequestDetails extends StatelessWidget {
                             buildSectionTitle(
                                 title: 'مراحل التنفيذ',
                                 icon: Icons.route_outlined,
-                                cubit: appCubit),
+                                cubit: appCubit
+                            ),
                             SizedBox(
                               height: 10.h,
                             ),
@@ -895,14 +925,14 @@ class WorkerRequestDetails extends StatelessWidget {
                                 children: [
                                   buildHorizontalStepper(
                                       currentStep:
-                                          getStepFromStatus(request['status']),
+                                          getStepFromStatus(widget.request['status']),
                                       cubit: appCubit),
                                   SizedBox(height: 10.h),
                                   Center(
                                     child: TextButton.icon(
                                       onPressed: () {
                                         showFullTrackingSheet(
-                                            context, appCubit, request);
+                                            context, appCubit, widget.request);
                                       },
                                       icon: SvgPicture.asset(
                                         'assets/eye.svg',
@@ -929,7 +959,8 @@ class WorkerRequestDetails extends StatelessWidget {
                             buildSectionTitle(
                                 title: 'ملاحظات الحجز',
                                 icon: Icons.notes_rounded,
-                                cubit: appCubit),
+                                cubit: appCubit
+                            ),
                             SizedBox(
                               height: 10.h,
                             ),
@@ -945,7 +976,7 @@ class WorkerRequestDetails extends StatelessWidget {
                               ),
                               child: ReadMoreText(
                                 textAlign: TextAlign.center,
-                                request['description'],
+                                widget.request['description'],
                                 style: TextStyle(
                                     fontSize: 12.sp,
                                     color: appCubit.isDark
@@ -967,7 +998,8 @@ class WorkerRequestDetails extends StatelessWidget {
                             buildSectionTitle(
                                 title: 'معلومات العميل',
                                 icon: Icons.person_pin_outlined,
-                                cubit: appCubit),
+                                cubit: appCubit
+                            ),
                             SizedBox(
                               height: 10.h,
                             ),
@@ -1031,13 +1063,13 @@ class WorkerRequestDetails extends StatelessWidget {
                                             child: defaultButtonWithIcon(
                                               onPressed: () async {
                                                 await workerCubit.createOrGetChat(
-                                                        customerId: request['customerId'],
-                                                        providerId: request['providerId'],
-                                                        requestId: request['id'],
-                                                        requestTitle: request['title'],
+                                                        customerId: widget.request['customerId'],
+                                                        providerId: widget.request['providerId'],
+                                                        requestId: widget.request['id'],
+                                                        requestTitle: widget.request['title'],
                                                         customerData: userData,
                                                         providerData: providerData,
-                                                        requestStatus: request['status'] ?? ''
+                                                        requestStatus: widget.request['status'] ?? ''
                                                 );
                                               },
                                               text: 'دردشة',
@@ -1064,10 +1096,7 @@ class WorkerRequestDetails extends StatelessWidget {
                                             opacity: canContact ? 1.0 : 0.45,
                                             child:
                                                 defaultOutlinedButtonWithIcon(
-                                              onPressed: () => move(
-                                                  context,
-                                                  WorkerRequestLocation(
-                                                      request: request)),
+                                              onPressed: () => openLocationInGoogleMaps(widget.request['addressLocation']),
                                               text: 'الموقع',
                                               fontSize: 13.sp,
                                               height: 45.h,

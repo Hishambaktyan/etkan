@@ -458,6 +458,8 @@ class UserCubit extends Cubit<UserStates> {
     required String customerId,
     required String providerId,
     required String address,
+    required String addressId,
+    required GeoPoint addressLocation,
     required String title,
     required String description,
     required String image,
@@ -516,13 +518,9 @@ class UserCubit extends Cubit<UserStates> {
         return;
       }
 
-      final int completedRequestsCount =
-          completedRequestsCountSnapshot.count ?? 0;
+      final int completedRequestsCount = completedRequestsCountSnapshot.count ?? 0;
 
-      if (!canProviderUseFreePlan(
-        providerData: providerData,
-        completedRequestsCount: completedRequestsCount,
-      )) {
+      if (!canProviderUseFreePlan(providerData: providerData, completedRequestsCount: completedRequestsCount,)) {
         emit(CreateRequestErrorState(
           error:
           'أكمل هذا الفني 5 حجوزات مجانية، ولا يمكنه استقبال حجوزات جديدة حتى يقوم بالاشتراك.',
@@ -539,11 +537,10 @@ class UserCubit extends Cubit<UserStates> {
       final Map<String, dynamic> requestData = {
         'requestId': requestRef.id,
         'id': requestRef.id,
-
-        // هذا مهم عشان نعرف الحجز تابع لأي خدمة عند التقييم
         'serviceId': serviceId,
-
         'address': address,
+        'addressId': addressId,
+        'addressLocation': addressLocation,
         'category': category,
         'customerId': customerId,
         'providerId': providerId,

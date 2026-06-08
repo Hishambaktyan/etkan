@@ -51,6 +51,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
 
   String? selectedAddressId;
   String? selectedAddressText;
+  GeoPoint? selectedAddressLocation;
 
   List<Map<String, dynamic>> addresses = [];
 
@@ -435,7 +436,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                       menuMaxHeight: 320.h,
                       borderRadius: BorderRadius.circular(25.r),
                       dropdownColor:
-                          appCubit.isDark ? lightDarkColor : Colors.white,
+                      appCubit.isDark ? lightDarkColor : Colors.white,
                       icon: Icon(
                         Icons.keyboard_arrow_down_rounded,
                         color: appCubit.isDark ? darkSubTextColor : Colors.grey,
@@ -553,10 +554,11 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                             selected['label']?.toString() ?? '';
                         final String details =
                             selected['addressName']?.toString() ?? '';
+                        final dynamic location = selected['location'];
                         setState(() {
                           selectedAddressId = value;
-                          selectedAddressText =
-                              details.isEmpty ? label : '$label - $details';
+                          selectedAddressText = details.isEmpty ? label : '$label - $details';
+                          selectedAddressLocation = location is GeoPoint ? location : null;
                         });
                       },
                     ),
@@ -1023,8 +1025,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                           UserCubit userCubit = UserCubit.get(context);
                           return defaultButton(
                             onPressed: () async {
-                              if (selectedAddressId == null ||
-                                  selectedAddressText == null) {
+                              if (selectedAddressId == null || selectedAddressText == null) {
                                 showSnackBar(
                                   Colors.red,
                                   'يرجى اختيار موقع الخدمة',
@@ -1040,6 +1041,14 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                 );
                                 return;
                               }
+                              if (selectedAddressLocation == null) {
+                                showSnackBar(
+                                  Colors.red,
+                                  'تعذر قراءة إحداثيات الموقع، يرجى اختيار الموقع مرة أخرى',
+                                  context,
+                                );
+                                return;
+                              }
 
                               DateTime bookingDateTime = DateTime(
                                 selectedDate!.year,
@@ -1051,17 +1060,19 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
 
                               var currentUser = appCubit.allUsers[CacheHelper.getData(key: 'uid')];
                               await userCubit.createRequest(
-                                  category: serviceCategory,
-                                  customerId: currentUser['uid'],
-                                  providerId: providerId,
-                                  address: selectedAddressText!,
-                                  title: serviceName,
-                                  description: noteController.text.trim(),
-                                  image: serviceImage,
-                                  duration: servicePeriod,
-                                  price: servicePrice,
-                                  scheduledAt: Timestamp.fromDate(bookingDateTime),
-                                  serviceId: serviceId
+                                category: serviceCategory,
+                                customerId: currentUser['uid'],
+                                providerId: providerId,
+                                address: selectedAddressText!,
+                                addressId: selectedAddressId!,
+                                addressLocation: selectedAddressLocation!,
+                                title: serviceName,
+                                description: noteController.text.trim(),
+                                image: serviceImage,
+                                duration: servicePeriod,
+                                price: servicePrice,
+                                scheduledAt: Timestamp.fromDate(bookingDateTime),
+                                serviceId: serviceId,
                               );
                             },
                             text: 'تأكيد الحجز',

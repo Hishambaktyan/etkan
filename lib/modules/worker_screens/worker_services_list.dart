@@ -82,8 +82,7 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
                           checkConnectionAndGetData(forceRefresh: true),
                     ),
                     fallback: (context) => RefreshIndicator(
-                      onRefresh: () =>
-                          checkConnectionAndGetData(forceRefresh: true),
+                      onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         child: Column(
