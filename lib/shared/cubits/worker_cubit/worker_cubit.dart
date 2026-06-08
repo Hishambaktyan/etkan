@@ -20,8 +20,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
   String subscriptionStatus = 'not_submitted';
   DateTime? subscriptionEndDate;
   Timer? _subscriptionExpiryTimer;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-      _workerSubscriptionListener;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?_workerSubscriptionListener;
   String? _listenedWorkerId;
 
   bool get isSubscriptionExpired => subscriptionStatus == 'expired';
@@ -101,7 +100,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
     return 'الاشتراك الآن';
   }
 
-  Map<String, dynamic> _getSubscriptionData(Map<String, dynamic> userData) {
+  Map<String, dynamic> getSubscriptionData(Map<String, dynamic> userData) {
     final dynamic rawSubscription = userData['subscription'];
 
     if (rawSubscription is Map) {
@@ -111,7 +110,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
     return {};
   }
 
-  DateTime? _getSubscriptionDate(dynamic value) {
+  DateTime? getSubscriptionDate(dynamic value) {
     if (value is Timestamp) {
       return value.toDate();
     }
@@ -127,8 +126,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
     return null;
   }
 
-  bool _isSubscriptionExpiredFromData(Map<String, dynamic> userData) {
-    final subscription = _getSubscriptionData(userData);
+  bool isSubscriptionExpiredFromData(Map<String, dynamic> userData) {
+    final subscription = getSubscriptionData(userData);
     final status = subscription['status']?.toString() ?? 'not_submitted';
 
     if (status == 'expired') {
@@ -144,7 +143,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       return false;
     }
 
-    final endDate = _getSubscriptionDate(
+    final endDate = getSubscriptionDate(
       subscription['endDate'] ??
           subscription['endAt'] ??
           subscription['expiresAt'],
@@ -158,11 +157,11 @@ class WorkerCubit extends Cubit<WorkerStates> {
   }
 
   bool _hasActiveSubscription(Map<String, dynamic> userData) {
-    if (_isSubscriptionExpiredFromData(userData)) {
+    if (isSubscriptionExpiredFromData(userData)) {
       return false;
     }
 
-    final subscription = _getSubscriptionData(userData);
+    final subscription = getSubscriptionData(userData);
     final status = subscription['status']?.toString() ?? 'not_submitted';
 
     return userData['isSubscribed'] == true ||
@@ -171,8 +170,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
         status == 'approved';
   }
 
-  void _setSubscriptionInfo(Map<String, dynamic> userData) {
-    final subscription = _getSubscriptionData(userData);
+  void setSubscriptionInfo(Map<String, dynamic> userData) {
+    final subscription = getSubscriptionData(userData);
 
     final String storedStatus =
         subscription['status']?.toString() ?? 'not_submitted';
@@ -181,14 +180,14 @@ class WorkerCubit extends Cubit<WorkerStates> {
     subscriptionStatus = storedStatus == 'pending' && requestId.isEmpty
         ? 'not_submitted'
         : storedStatus;
-    subscriptionEndDate = _getSubscriptionDate(
+    subscriptionEndDate = getSubscriptionDate(
       subscription['endDate'] ??
           subscription['endAt'] ??
           subscription['expiresAt'],
     );
     isSubscriptionActive = _hasActiveSubscription(userData);
 
-    if (_isSubscriptionExpiredFromData(userData)) {
+    if (isSubscriptionExpiredFromData(userData)) {
       subscriptionStatus = 'expired';
       isSubscriptionActive = false;
     }
@@ -197,10 +196,10 @@ class WorkerCubit extends Cubit<WorkerStates> {
         CacheHelper.getData(key: 'uid')?.toString() ??
         '';
 
-    _scheduleSubscriptionExpiry(uid);
+    scheduleSubscriptionExpiry(uid);
   }
 
-  void _listenToSubscriptionChanges(String uid) {
+  void listenToSubscriptionChanges(String uid) {
     if (uid.isEmpty || _listenedWorkerId == uid) {
       return;
     }
@@ -218,7 +217,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
           return;
         }
 
-        _setSubscriptionInfo(snapshot.data()!);
+        setSubscriptionInfo(snapshot.data()!);
 
         if (!isClosed && isWorkerDataLoaded) {
           emit(GetWorkerDataSuccessState());
@@ -230,7 +229,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
     );
   }
 
-  void _scheduleSubscriptionExpiry(String uid) {
+  void scheduleSubscriptionExpiry(String uid) {
     _subscriptionExpiryTimer?.cancel();
 
     if (uid.isEmpty || !isSubscriptionActive || subscriptionEndDate == null) {
@@ -242,7 +241,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
     if (remaining <= Duration.zero) {
       Future.microtask(() async {
         try {
-          await _markSubscriptionAsExpired(uid);
+          await markSubscriptionAsExpired(uid);
           emit(GetWorkerDataSuccessState());
         } catch (error) {
           print('خطأ أثناء إيقاف الاشتراك المنتهي: $error');
@@ -253,7 +252,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
     _subscriptionExpiryTimer = Timer(remaining, () async {
       try {
-        await _markSubscriptionAsExpired(uid);
+        await markSubscriptionAsExpired(uid);
         emit(GetWorkerDataSuccessState());
       } catch (error) {
         print('خطأ أثناء إيقاف الاشتراك المنتهي: $error');
@@ -261,7 +260,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
     });
   }
 
-  Future<void> _markSubscriptionAsExpired(String uid) async {
+  Future<void> markSubscriptionAsExpired(String uid) async {
     _subscriptionExpiryTimer?.cancel();
 
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -352,13 +351,13 @@ class WorkerCubit extends Cubit<WorkerStates> {
       return;
     }
 
-    _listenToSubscriptionChanges(uid.toString());
+    listenToSubscriptionChanges(uid.toString());
 
     if (isWorkerDataLoaded && !forceRefresh) {
       if (isSubscriptionActive &&
           subscriptionEndDate != null &&
           !subscriptionEndDate!.isAfter(DateTime.now())) {
-        await _markSubscriptionAsExpired(uid.toString());
+        await markSubscriptionAsExpired(uid.toString());
         emit(GetWorkerDataSuccessState());
       }
       return;
@@ -413,17 +412,17 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       final userData = userSnapshot.data()!;
 
-      if (_isSubscriptionExpiredFromData(userData)) {
+      if (isSubscriptionExpiredFromData(userData)) {
         final currentStatus =
-            _getSubscriptionData(userData)['status']?.toString() ?? '';
+            getSubscriptionData(userData)['status']?.toString() ?? '';
 
         if (currentStatus != 'expired') {
-          await _markSubscriptionAsExpired(uid.toString());
+          await markSubscriptionAsExpired(uid.toString());
         } else {
-          _setSubscriptionInfo(userData);
+          setSubscriptionInfo(userData);
         }
       } else {
-        _setSubscriptionInfo(userData);
+        setSubscriptionInfo(userData);
       }
 
       workerName = userData['name'] ?? '';
@@ -446,6 +445,94 @@ class WorkerCubit extends Cubit<WorkerStates> {
       emit(GetWorkerDataSuccessState());
     } catch (e) {
       emit(GetWorkerDataErrorState(error: e.toString()));
+    }
+  }
+
+  List<Map<String, dynamic>> workerServiceReviews = [];
+  double workerServiceRate = 0.0;
+  int workerServiceReviewsCount = 0;
+  bool isWorkerServiceReviewsLoaded = false;
+
+  Future<void> getWorkerServiceReviews({
+    required String serviceId,
+  })
+  async {
+    try {
+      emit(GetWorkerServiceReviewsLoadingState());
+
+      workerServiceReviews.clear();
+      workerServiceRate = 0.0;
+      workerServiceReviewsCount = 0;
+      isWorkerServiceReviewsLoaded = false;
+
+      if (serviceId.trim().isEmpty) {
+        emit(GetWorkerServiceReviewsErrorState(
+          error: 'معرف الخدمة غير موجود',
+        ));
+        return;
+      }
+
+      final serviceRef = FirebaseFirestore.instance
+          .collection('services')
+          .doc(serviceId);
+
+      final serviceDoc = await serviceRef.get();
+
+      if (!serviceDoc.exists) {
+        emit(GetWorkerServiceReviewsErrorState(
+          error: 'الخدمة غير موجودة',
+        ));
+        return;
+      }
+
+      final serviceData = serviceDoc.data() ?? {};
+
+      workerServiceRate =
+          double.tryParse('${serviceData['rate'] ?? 0}') ?? 0.0;
+
+      workerServiceReviewsCount =
+          int.tryParse('${serviceData['reviewsCount'] ?? 0}') ?? 0;
+
+      final reviewsSnapshot = await serviceRef
+          .collection('reviews')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      for (var doc in reviewsSnapshot.docs) {
+        final Map<String, dynamic> reviewData =
+        Map<String, dynamic>.from(doc.data());
+
+        reviewData['id'] = doc.id;
+
+        final String customerId = '${reviewData['customerId'] ?? ''}';
+
+        if (customerId.isNotEmpty) {
+          final customerDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(customerId)
+              .get();
+
+          final customerData = customerDoc.data() ?? {};
+
+          reviewData['customerName'] = customerData['name'] ?? 'مستخدم';
+          reviewData['customerImage'] = customerData['profileImage'] ?? '';
+        } else {
+          reviewData['customerName'] = 'مستخدم';
+          reviewData['customerImage'] = '';
+        }
+
+        workerServiceReviews.add(reviewData);
+      }
+
+      if (workerServiceReviewsCount == 0) {
+        workerServiceReviewsCount = workerServiceReviews.length;
+      }
+
+      isWorkerServiceReviewsLoaded = true;
+
+      emit(GetWorkerServiceReviewsSuccessState());
+    } catch (e) {
+      emit(GetWorkerServiceReviewsErrorState(error: e.toString()));
     }
   }
 
@@ -482,17 +569,17 @@ class WorkerCubit extends Cubit<WorkerStates> {
       if (userSnapshot.exists && userSnapshot.data() != null) {
         final userData = userSnapshot.data()!;
 
-        if (_isSubscriptionExpiredFromData(userData)) {
+        if (isSubscriptionExpiredFromData(userData)) {
           final currentStatus =
-              _getSubscriptionData(userData)['status']?.toString() ?? '';
+              getSubscriptionData(userData)['status']?.toString() ?? '';
 
           if (currentStatus != 'expired') {
-            await _markSubscriptionAsExpired(uid.toString());
+            await markSubscriptionAsExpired(uid.toString());
           } else {
-            _setSubscriptionInfo(userData);
+            setSubscriptionInfo(userData);
           }
         } else {
-          _setSubscriptionInfo(userData);
+          setSubscriptionInfo(userData);
         }
       }
 
@@ -586,31 +673,31 @@ class WorkerCubit extends Cubit<WorkerStates> {
   String getCategoryFromSpecialization(String specialization) {
     switch (specialization.trim()) {
       case 'كهربائي':
-        return 'الكهرباء';
+        return 'كهرباء';
 
       case 'سباك':
-        return 'السباكة';
+        return 'سباكة';
 
       case 'فني تكييف':
       case 'تكييف':
-        return 'التكييف';
+        return 'تكييف';
 
       case 'بناء':
       case 'بنّاء':
-        return 'البناء';
+        return 'بناء';
 
       case 'حداد':
-        return 'الحدادة';
+        return 'حدادة';
 
       case 'نجار':
-        return 'النجارة';
+        return 'نجارة';
 
       case 'دهان':
-        return 'الدهان';
+        return 'دهان';
 
       case 'فني مياه':
       case 'مياه':
-        return 'الماء';
+        return 'ماء';
 
       default:
         return specialization;
@@ -623,7 +710,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
     required String servicePrice,
     required String servicePeriod,
     required String serviceImage,
-  }) async {
+  }) async
+  {
     try {
       String serviceImageLink = '';
       emit(UploadServiceLoadingState());
@@ -635,7 +723,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       }
 
       final userSnapshot =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      await FirebaseFirestore.instance.collection('users').doc(uid.toString()).get();
 
       if (!userSnapshot.exists || userSnapshot.data() == null) {
         emit(UploadServiceErrorState(error: 'بيانات الفني غير موجودة'));
@@ -644,14 +732,14 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       final userData = userSnapshot.data()!;
 
-      if (_isSubscriptionExpiredFromData(userData)) {
+      if (isSubscriptionExpiredFromData(userData)) {
         final currentStatus =
-            _getSubscriptionData(userData)['status']?.toString() ?? '';
+            getSubscriptionData(userData)['status']?.toString() ?? '';
 
         if (currentStatus != 'expired') {
-          await _markSubscriptionAsExpired(uid.toString());
+          await markSubscriptionAsExpired(uid.toString());
         } else {
-          _setSubscriptionInfo(userData);
+          setSubscriptionInfo(userData);
         }
 
         emit(UploadServiceErrorState(
@@ -661,7 +749,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       }
 
       final bool hasActiveSubscription = _hasActiveSubscription(userData);
-      _setSubscriptionInfo(userData);
+      setSubscriptionInfo(userData);
 
       final servicesCountSnapshot = await FirebaseFirestore.instance
           .collection('services')
@@ -701,11 +789,13 @@ class WorkerCubit extends Cubit<WorkerStates> {
         'price': price,
         'period': servicePeriod.trim(),
         'serviceImage': serviceImageLink,
-        'providerId': uid,
+        'providerId': uid.toString(),
         'isActive': true,
         'rate': 0.0,
+        'ratingSum': 0.0,
+        'reviewsCount': 0,
         'createdAt': FieldValue.serverTimestamp(),
-        'reviews': [],
+        'updatedAt': FieldValue.serverTimestamp(),
       };
 
       final docRef = await FirebaseFirestore.instance
@@ -802,12 +892,57 @@ class WorkerCubit extends Cubit<WorkerStates> {
     }
   }
 
+  Map<String, dynamic> singleWorkerData = {};
+  bool isSingleWorkerDataLoaded = false;
+
+  Future<void> getSingleWorkerData({
+    String? userId,
+    bool forceRefresh = false,
+  })
+  async {
+    try {
+
+      if (isSingleWorkerDataLoaded && !forceRefresh) {
+        return;
+      }
+
+      emit(GetSingleWorkerDataLoadingState());
+
+      final String uid = userId ?? CacheHelper.getData(key: 'uid')?.toString() ?? '';
+
+      if (uid.isEmpty) {
+        emit(GetSingleWorkerDataErrorState(error: 'تعذر العثور على معرف المستخدم',));
+        return;
+      }
+
+      singleWorkerData.clear();
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (!userDoc.exists) {
+        emit(GetSingleWorkerDataErrorState(error: 'تعذر العثور على بيانات المستخدم',));
+        return;
+      }
+
+      singleWorkerData = userDoc.data() ?? {};
+      singleWorkerData['id'] = userDoc.id;
+
+      isSingleWorkerDataLoaded = true;
+
+      emit(GetSingleWorkerDataSuccessState());
+    } catch (e) {
+      emit(GetSingleWorkerDataErrorState(error: e.toString()));
+    }
+  }
+
   Future<void> editWorkerData({
     required String name,
     required String about,
     required List<String> experiences,
     String? address,
-    String? specialization,
     String? profileImagePath,
     String? oldProfileImage,
     required List<String> previousWorks,
@@ -858,10 +993,6 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       if (address != null) {
         updatedData['address'] = address.trim();
-      }
-
-      if (specialization != null) {
-        updatedData['specialization'] = specialization.trim();
       }
 
       await FirebaseFirestore.instance
@@ -942,10 +1073,10 @@ class WorkerCubit extends Cubit<WorkerStates> {
         'completedJobs': completedCount,
       });
 
-      _setSubscriptionInfo(providerData);
+      setSubscriptionInfo(providerData);
 
       if (_hasActiveSubscription(providerData) ||
-          _isSubscriptionExpiredFromData(providerData) ||
+          isSubscriptionExpiredFromData(providerData) ||
           completedCount != freeCompletedRequestsLimit) {
         return;
       }
@@ -1201,7 +1332,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       }
 
       final userData = userDoc.data()!;
-      final subscription = _getSubscriptionData(userData);
+      final subscription = getSubscriptionData(userData);
       final currentStatus =
           subscription['status']?.toString() ?? 'not_submitted';
 
@@ -1222,9 +1353,9 @@ class WorkerCubit extends Cubit<WorkerStates> {
         return;
       }
 
-      if (_isSubscriptionExpiredFromData(userData) &&
+      if (isSubscriptionExpiredFromData(userData) &&
           currentStatus != 'expired') {
-        await _markSubscriptionAsExpired(uid.toString());
+        await markSubscriptionAsExpired(uid.toString());
       }
 
       final String transferImageUrl =

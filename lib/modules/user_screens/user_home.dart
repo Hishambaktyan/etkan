@@ -663,7 +663,6 @@ class _UserHomeState extends State<UserHome> {
                                                           desc: service['description'] ?? '',
                                                           price: service['price'] ??0,
                                                           period: service['period'] ?? '',
-                                                          rate: service['rate'] ??0,
                                                           providerName: providerData['name'] ??'فني غير معروف',
                                                           providerSpec: providerData['specialization'] ?? '',
                                                           reviews: service['reviews'] ?? [],

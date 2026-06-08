@@ -13,7 +13,7 @@ class UserCubit extends Cubit<UserStates> {
 
   static const int freeCompletedRequestsLimit = 5;
 
-  Map<String, dynamic> _getSubscriptionData(Map<String, dynamic> userData) {
+  Map<String, dynamic> getSubscriptionData(Map<String, dynamic> userData) {
     final dynamic rawSubscription = userData['subscription'];
 
     if (rawSubscription is Map) {
@@ -23,7 +23,7 @@ class UserCubit extends Cubit<UserStates> {
     return {};
   }
 
-  DateTime? _getSubscriptionDate(dynamic value) {
+  DateTime? getSubscriptionDate(dynamic value) {
     if (value is Timestamp) {
       return value.toDate();
     }
@@ -39,8 +39,8 @@ class UserCubit extends Cubit<UserStates> {
     return null;
   }
 
-  bool _isSubscriptionExpired(Map<String, dynamic> userData) {
-    final subscription = _getSubscriptionData(userData);
+  bool isSubscriptionExpired(Map<String, dynamic> userData) {
+    final subscription = getSubscriptionData(userData);
     final String status = subscription['status']?.toString() ?? 'not_submitted';
 
     if (status == 'expired') {
@@ -56,7 +56,7 @@ class UserCubit extends Cubit<UserStates> {
       return false;
     }
 
-    final DateTime? endDate = _getSubscriptionDate(
+    final DateTime? endDate = getSubscriptionDate(
       subscription['endDate'] ??
           subscription['endAt'] ??
           subscription['expiresAt'],
@@ -69,12 +69,12 @@ class UserCubit extends Cubit<UserStates> {
     return !endDate.isAfter(DateTime.now());
   }
 
-  bool _hasActiveSubscription(Map<String, dynamic> userData) {
-    if (_isSubscriptionExpired(userData)) {
+  bool hasActiveSubscription(Map<String, dynamic> userData) {
+    if (isSubscriptionExpired(userData)) {
       return false;
     }
 
-    final subscription = _getSubscriptionData(userData);
+    final subscription = getSubscriptionData(userData);
     final String status = subscription['status']?.toString() ?? 'not_submitted';
 
     return userData['isSubscribed'] == true ||
@@ -83,23 +83,23 @@ class UserCubit extends Cubit<UserStates> {
         status == 'approved';
   }
 
-  bool _canProviderUseFreePlan({
+  bool canProviderUseFreePlan({
     required Map<String, dynamic> providerData,
     required int completedRequestsCount,
   })
   {
-    if (_isSubscriptionExpired(providerData)) {
+    if (isSubscriptionExpired(providerData)) {
       return false;
     }
 
-    if (_hasActiveSubscription(providerData)) {
+    if (hasActiveSubscription(providerData)) {
       return true;
     }
 
     return completedRequestsCount < freeCompletedRequestsLimit;
   }
 
-  Future<Map<String, int>> _getCompletedRequestsCountByProvider()
+  Future<Map<String, int>> getCompletedRequestsCountByProvider()
   async {
     final completedRequestsSnapshot = await FirebaseFirestore.instance
         .collection('requests')
@@ -121,13 +121,13 @@ class UserCubit extends Cubit<UserStates> {
     return completedRequestsCountByProvider;
   }
 
-  Future<Set<String>> _getVisibleProviderIds() async {
+  Future<Set<String>> getVisibleProviderIds() async {
     final providersFuture = FirebaseFirestore.instance
         .collection('users')
         .where('role', isEqualTo: 'provider')
         .get();
 
-    final completedRequestsCountFuture = _getCompletedRequestsCountByProvider();
+    final completedRequestsCountFuture = getCompletedRequestsCountByProvider();
 
     await Future.wait([
       providersFuture,
@@ -143,11 +143,11 @@ class UserCubit extends Cubit<UserStates> {
 
     for (final providerDoc in providersSnapshot.docs) {
       final providerData = providerDoc.data();
-      final subscription = _getSubscriptionData(providerData);
+      final subscription = getSubscriptionData(providerData);
       final String status =
           subscription['status']?.toString() ?? 'not_submitted';
 
-      if (_isSubscriptionExpired(providerData)) {
+      if (isSubscriptionExpired(providerData)) {
         final bool needsExpirationUpdate =
             providerData['isSubscribed'] == true ||
                 subscription['isActive'] == true ||
@@ -170,7 +170,7 @@ class UserCubit extends Cubit<UserStates> {
       final int completedRequestsCount =
           completedRequestsCountByProvider[providerDoc.id] ?? 0;
 
-      if (_canProviderUseFreePlan(
+      if (canProviderUseFreePlan(
         providerData: providerData,
         completedRequestsCount: completedRequestsCount,
       )) {
@@ -189,7 +189,7 @@ class UserCubit extends Cubit<UserStates> {
     return visibleProviderIds;
   }
 
-  bool _isServiceVisibleToCustomers(
+  bool isServiceVisibleToCustomers(
     Map<String, dynamic> service,
     Set<String> visibleProviderIds,
   )
@@ -232,11 +232,12 @@ class UserCubit extends Cubit<UserStates> {
 
       emit(GetUserSpecServicesLoadingState());
 
-      final visibleProviderIdsFuture = _getVisibleProviderIds();
+      final visibleProviderIdsFuture = getVisibleProviderIds();
 
       final servicesFuture = FirebaseFirestore.instance
           .collection('services')
           .where('category', isEqualTo: categoryType)
+          .where('isActive', isEqualTo: true)
           .get();
 
       await Future.wait([
@@ -253,7 +254,7 @@ class UserCubit extends Cubit<UserStates> {
         final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
 
-        if (_isServiceVisibleToCustomers(data, visibleProviderIds)) {
+        if (isServiceVisibleToCustomers(data, visibleProviderIds)) {
           services.add(data);
         }
       }
@@ -278,8 +279,8 @@ class UserCubit extends Cubit<UserStates> {
 
       userServices.clear();
 
-      final visibleProviderIdsFuture = _getVisibleProviderIds();
-      final servicesFuture =FirebaseFirestore.instance.collection('services').get();
+      final visibleProviderIdsFuture = getVisibleProviderIds();
+      final servicesFuture =FirebaseFirestore.instance.collection('services').where('isActive', isEqualTo: true).get();
 
       await Future.wait([
         visibleProviderIdsFuture,
@@ -293,7 +294,7 @@ class UserCubit extends Cubit<UserStates> {
         final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
 
-        if (_isServiceVisibleToCustomers(data, visibleProviderIds)) {
+        if (isServiceVisibleToCustomers(data, visibleProviderIds)) {
           userServices.add(data);
         }
       }
@@ -309,6 +310,91 @@ class UserCubit extends Cubit<UserStates> {
 
   List<Map<String, dynamic>> categories = [];
   bool isUserGetCategoriesLoaded = false;
+
+  List<Map<String, dynamic>> serviceReviews = [];
+  double serviceRate = 0.0;
+  int serviceReviewsCount = 0;
+  bool isServiceReviewsLoaded = false;
+
+  Future<void> getServiceReviews({
+    required String serviceId,
+  })
+  async {
+    try {
+      emit(GetServiceReviewsLoadingState());
+
+      serviceReviews.clear();
+      serviceRate = 0.0;
+      serviceReviewsCount = 0;
+      isServiceReviewsLoaded = false;
+
+      if (serviceId.trim().isEmpty) {
+        emit(GetServiceReviewsErrorState(
+          error: 'معرف الخدمة غير موجود',
+        ));
+        return;
+      }
+
+      final serviceRef = FirebaseFirestore.instance
+          .collection('services')
+          .doc(serviceId);
+
+      final serviceDoc = await serviceRef.get();
+
+      if (!serviceDoc.exists) {
+        emit(GetServiceReviewsErrorState(
+          error: 'الخدمة غير موجودة',
+        ));
+        return;
+      }
+
+      final serviceData = serviceDoc.data() ?? {};
+
+      serviceRate = double.tryParse('${serviceData['rate'] ?? 0}') ?? 0.0;
+      serviceReviewsCount =
+          int.tryParse('${serviceData['reviewsCount'] ?? 0}') ?? 0;
+
+      final reviewsSnapshot = await serviceRef
+          .collection('reviews')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      for (var doc in reviewsSnapshot.docs) {
+        final Map<String, dynamic> reviewData = Map<String, dynamic>.from(doc.data());
+
+        reviewData['id'] = doc.id;
+
+        final String customerId = '${reviewData['customerId'] ?? ''}';
+
+        if (customerId.isNotEmpty) {
+          final customerDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(customerId)
+              .get();
+
+          final customerData = customerDoc.data() ?? {};
+
+          reviewData['customerName'] = customerData['name'] ?? 'مستخدم';
+          reviewData['customerImage'] = customerData['profileImage'] ?? '';
+        } else {
+          reviewData['customerName'] = 'مستخدم';
+          reviewData['customerImage'] = '';
+        }
+
+        serviceReviews.add(reviewData);
+      }
+
+      if (serviceReviewsCount == 0) {
+        serviceReviewsCount = serviceReviews.length;
+      }
+
+      isServiceReviewsLoaded = true;
+
+      emit(GetServiceReviewsSuccessState());
+    } catch (e) {
+      emit(GetServiceReviewsErrorState(error: e.toString()));
+    }
+  }
 
   Future<void> getCategories({bool forceRefresh = false}) async {
     try {
@@ -378,7 +464,8 @@ class UserCubit extends Cubit<UserStates> {
     required String duration,
     required int price,
     required Timestamp scheduledAt,
-  }) async {
+  })
+  async {
     try {
       emit(CreateRequestLoadingState());
 
@@ -410,8 +497,8 @@ class UserCubit extends Cubit<UserStates> {
 
       final providerData = providerDoc.data()!;
 
-      if (_isSubscriptionExpired(providerData)) {
-        final subscription = _getSubscriptionData(providerData);
+      if (isSubscriptionExpired(providerData)) {
+        final subscription = getSubscriptionData(providerData);
 
         if (subscription['status']?.toString() != 'expired') {
           await providerRef.update({
@@ -432,7 +519,7 @@ class UserCubit extends Cubit<UserStates> {
       final int completedRequestsCount =
           completedRequestsCountSnapshot.count ?? 0;
 
-      if (!_canProviderUseFreePlan(
+      if (!canProviderUseFreePlan(
         providerData: providerData,
         completedRequestsCount: completedRequestsCount,
       )) {
@@ -513,6 +600,133 @@ class UserCubit extends Cubit<UserStates> {
       emit(CreateRequestSuccessState());
     } catch (e) {
       emit(CreateRequestErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> confirmBookingAndReview({
+    required String requestId,
+    required String serviceId,
+    required String providerId,
+    required String customerId,
+    required double rating,
+    required String review,
+  })
+  async {
+    try {
+      emit(ConfirmBookingReviewLoadingState());
+
+      if (rating < 1 || rating > 5) {
+        emit(ConfirmBookingReviewErrorState(
+          error: 'يرجى اختيار تقييم من 1 إلى 5',
+        ));
+        return;
+      }
+
+      if (review.trim().isEmpty) {
+        emit(ConfirmBookingReviewErrorState(
+          error: 'يرجى كتابة مراجعة للخدمة',
+        ));
+        return;
+      }
+
+      final requestRef = FirebaseFirestore.instance
+          .collection('requests')
+          .doc(requestId);
+
+      final serviceRef = FirebaseFirestore.instance
+          .collection('services')
+          .doc(serviceId);
+
+      final providerRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(providerId);
+
+      final reviewRef = serviceRef
+          .collection('reviews')
+          .doc(requestId);
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final requestDoc = await transaction.get(requestRef);
+        final serviceDoc = await transaction.get(serviceRef);
+        final providerDoc = await transaction.get(providerRef);
+        final reviewDoc = await transaction.get(reviewRef);
+
+        if (!requestDoc.exists) {
+          throw 'الحجز غير موجود';
+        }
+
+        if (!serviceDoc.exists) {
+          throw 'الخدمة غير موجودة';
+        }
+
+        if (!providerDoc.exists) {
+          throw 'الفني غير موجود';
+        }
+
+        final requestData = requestDoc.data() ?? {};
+        final serviceData = serviceDoc.data() ?? {};
+        final providerData = providerDoc.data() ?? {};
+
+        if (requestData['status'] != 'مكتمل') {
+          throw 'لا يمكن تقييم الخدمة قبل اكتمالها';
+        }
+
+        if (requestData['isReviewed'] == true || reviewDoc.exists) {
+          throw 'تم تقييم هذا الحجز مسبقًا';
+        }
+
+        final int oldServiceReviewsCount = int.tryParse('${serviceData['reviewsCount'] ?? 0}') ?? 0;
+
+        final double oldServiceRatingSum = double.tryParse('${serviceData['ratingSum'] ?? 0}') ?? 0.0;
+
+        final int newServiceReviewsCount = oldServiceReviewsCount + 1;
+        final double newServiceRatingSum = oldServiceRatingSum + rating;
+        final double newServiceRate = newServiceRatingSum / newServiceReviewsCount;
+
+        final int oldProviderRatingsCount = int.tryParse('${providerData['ratingsCount'] ?? 0}') ?? 0;
+
+        final double oldProviderRatingSum = double.tryParse('${providerData['ratingSum'] ?? 0}') ?? 0.0;
+
+        final int newProviderRatingsCount = oldProviderRatingsCount + 1;
+        final double newProviderRatingSum = oldProviderRatingSum + rating;
+        final double newProviderAvgRating = newProviderRatingSum / newProviderRatingsCount;
+
+        transaction.set(reviewRef, {
+          'requestId': requestId,
+          'serviceId': serviceId,
+          'providerId': providerId,
+          'customerId': customerId,
+          'rating': rating,
+          'review': review.trim(),
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        transaction.update(serviceRef, {
+          'ratingSum': newServiceRatingSum,
+          'reviewsCount': newServiceReviewsCount,
+          'rate': double.parse(newServiceRate.toStringAsFixed(1)),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        transaction.update(providerRef, {
+          'ratingSum': newProviderRatingSum,
+          'ratingsCount': newProviderRatingsCount,
+          'avgRating': double.parse(newProviderAvgRating.toStringAsFixed(1)),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        transaction.update(requestRef, {
+          'isReviewed': true,
+          'customerConfirmed': true,
+          'customerConfirmedAt': FieldValue.serverTimestamp(),
+          'reviewId': requestId,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+
+      emit(ConfirmBookingReviewSuccessState());
+    } catch (e) {
+      emit(ConfirmBookingReviewErrorState(error: e.toString()));
     }
   }
 

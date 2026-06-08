@@ -161,7 +161,6 @@ class _UserServicesListState extends State<UserServicesList> {
                                                 desc: service['description'],
                                                 price: service['price'],
                                                 period: service['period'],
-                                                rate: service['rate'],
                                                 providerName: providerData['name'],
                                                 providerSpec: providerData['specialization'],
                                                 reviews: service['reviews'] ?? '',

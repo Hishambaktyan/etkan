@@ -216,7 +216,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      header(title: 'الحساب', context: context),
+                      header(title: 'الإعدادات', context: context),
                       SizedBox(
                         height: 20.h,
                       ),

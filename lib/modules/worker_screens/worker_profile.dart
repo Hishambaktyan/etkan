@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,6 +24,57 @@ class WorkerProfile extends StatefulWidget {
 }
 
 class _WorkerProfileState extends State<WorkerProfile> {
+
+  bool hasInternet = true;
+  bool checkingInternet = true;
+
+  Future<void> checkConnectionAndGetData({bool forceRefresh=false}) async {
+    if (!mounted) return;
+
+    setState(() {
+      checkingInternet = true;
+    });
+
+    final result = await checkInternet();
+
+    if (!mounted) return;
+
+    if (!result) {
+      setState(() {
+        hasInternet = false;
+        checkingInternet = false;
+      });
+      return;
+    }
+
+    try {
+      final workerCubit = WorkerCubit.get(context);
+      await workerCubit.getSingleWorkerData(forceRefresh: forceRefresh);
+      if (!mounted) return;
+
+      setState(() {
+        hasInternet = true;
+        checkingInternet = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        hasInternet = true;
+        checkingInternet = false;
+      });
+
+      debugPrint('Error loading home data: $e');
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnectionAndGetData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
@@ -31,84 +83,26 @@ class _WorkerProfileState extends State<WorkerProfile> {
         return BlocBuilder<WorkerCubit, WorkerStates>(
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
-            final String uid =
-                CacheHelper.getData(key: 'uid')?.toString() ?? '';
-
+            final Map<String, dynamic> user = Map<String, dynamic>.from(workerCubit.singleWorkerData);
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
-                body: uid.isEmpty
-                    ? Center(
-                        child: Text(
-                          'تعذر جلب معرف الحساب',
-                          style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      )
-                    : StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(uid)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: mainColor,
-                              ),
-                            );
-                          }
-
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                'حدث خطأ أثناء جلب بيانات الحساب',
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (!snapshot.hasData || !snapshot.data!.exists) {
-                            return Center(
-                              child: Text(
-                                'تعذر العثور على بيانات الحساب',
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          }
-
-                          final Map<String, dynamic> user =
-                              snapshot.data!.data() ?? {};
-
-                          return SingleChildScrollView(
+                body: ConditionalBuilder(
+                    condition: checkingInternet || state is GetSingleWorkerDataLoadingState,
+                    builder: (context) => WorkerProfileShimmer(isDark: appCubit.isDark),
+                    fallback: (context) => ConditionalBuilder(
+                        condition: !hasInternet,
+                        builder: (context) => NoInternet(onRetry: () => checkConnectionAndGetData(forceRefresh: true),),
+                        fallback: (context) => RefreshIndicator(
+                          backgroundColor: appCubit.isDark ? darkBgColor : Colors.white,
+                          onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             child: Column(
                               children: [
                                 buildHeader(appCubit: appCubit, user: user),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                    start: 10.w,
-                                    end: 10.w,
-                                    top: 20.h,
-                                    bottom: 20.h,
-                                  ),
+                                  padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
                                   child: Column(
                                     children: [
                                       buildQuickStats(
@@ -177,16 +171,17 @@ class _WorkerProfileState extends State<WorkerProfile> {
                                         user: user,
                                         cubit: appCubit,
                                         previousWorks:
-                                            user['previousWorks'] ?? [],
+                                        user['previousWorks'] ?? [],
                                       ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                    ),
+                ),
               ),
             );
           },

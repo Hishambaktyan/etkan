@@ -117,6 +117,19 @@ class CreateOrGetChatErrorState extends WorkerStates {
 
 //////////////////////////////////////
 
+
+class GetSingleWorkerDataLoadingState extends WorkerStates {}
+
+class GetSingleWorkerDataSuccessState extends WorkerStates {}
+
+class GetSingleWorkerDataErrorState extends WorkerStates {
+  final String error;
+
+  GetSingleWorkerDataErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
 class EditWorkerDataLoadingState extends WorkerStates {}
 
 class EditWorkerDataSuccessState extends WorkerStates {}
@@ -152,3 +165,13 @@ class SendVerificationRequestErrorState extends WorkerStates {
 }
 
 //////////////////////////////////////
+
+class GetWorkerServiceReviewsLoadingState extends WorkerStates {}
+
+class GetWorkerServiceReviewsSuccessState extends WorkerStates {}
+
+class GetWorkerServiceReviewsErrorState extends WorkerStates {
+  final String error;
+
+  GetWorkerServiceReviewsErrorState({required this.error});
+}

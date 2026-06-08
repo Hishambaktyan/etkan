@@ -102,3 +102,27 @@ class GetSingleUserDataErrorState extends UserStates {
 
   GetSingleUserDataErrorState({required this.error});
 }
+
+//////////////////////////////////////
+
+class ConfirmBookingReviewLoadingState extends UserStates {}
+
+class ConfirmBookingReviewSuccessState extends UserStates {}
+
+class ConfirmBookingReviewErrorState extends UserStates {
+  final String error;
+
+  ConfirmBookingReviewErrorState({required this.error});
+}
+
+//////////////////////////////////////
+
+class GetServiceReviewsLoadingState extends UserStates {}
+
+class GetServiceReviewsSuccessState extends UserStates {}
+
+class GetServiceReviewsErrorState extends UserStates {
+  final String error;
+
+  GetServiceReviewsErrorState({required this.error});
+}

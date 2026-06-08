@@ -58,6 +58,243 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
     );
   }
 
+  Widget buildWorkerReviewsCard({
+    required AppCubit appCubit,
+    required WorkerCubit workerCubit,
+    required WorkerStates state,
+  })
+  {
+    if (state is GetWorkerServiceReviewsLoadingState) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsetsDirectional.all(25.r),
+        decoration: BoxDecoration(
+          color: appCubit.isDark ? lightDarkColor : Colors.white,
+          borderRadius: BorderRadius.circular(25.r),
+          boxShadow: blueShadow,
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: mainColor,
+          ),
+        ),
+      );
+    }
+
+    if (state is GetWorkerServiceReviewsErrorState) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsetsDirectional.all(18.r),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(25.r),
+          border: Border.all(
+            color: Colors.red.withOpacity(0.2),
+          ),
+        ),
+        child: Text(
+          state.error,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 12.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+
+    final List<Map<String, dynamic>> reviews =
+        workerCubit.workerServiceReviews;
+
+    final double rate = workerCubit.workerServiceRate;
+    final int reviewsCount = workerCubit.workerServiceReviewsCount;
+
+    return Container(
+      padding: EdgeInsetsDirectional.all(10.r),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: appCubit.isDark ? lightDarkColor : Colors.white,
+        borderRadius: BorderRadius.circular(25.r),
+        boxShadow: blueShadow,
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.orange.withOpacity(0.15),
+            radius: 35.r,
+            child: Text(
+              rate.toStringAsFixed(1),
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: 22.sp,
+              ),
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(5, (index) {
+              return Icon(
+                Icons.star_rounded,
+                size: 18.r,
+                color: index < rate.round()
+                    ? Colors.orange
+                    : Colors.grey.shade300,
+              );
+            }),
+          ),
+          SizedBox(height: 6.h),
+          Text(
+            '$reviewsCount مراجعة',
+            style: TextStyle(
+              fontSize: 11.sp,
+              color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          if (reviews.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsetsDirectional.all(14.r),
+              decoration: BoxDecoration(
+                color: appCubit.isDark
+                    ? darkBgColor
+                    : Colors.grey.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(18.r),
+              ),
+              child: Text(
+                'لا توجد مراجعات حتى الآن',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: appCubit.isDark ? darkSubTextColor : Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsetsDirectional.zero,
+              itemCount: reviews.length,
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                final Map<String, dynamic> review = reviews[index];
+
+                final Timestamp? createdAt = review['createdAt'] is Timestamp
+                    ? review['createdAt']
+                    : null;
+
+                final String reviewDate = createdAt != null
+                    ? DateFormat('yyyy/MM/dd').format(createdAt.toDate())
+                    : '';
+
+                final double rating =
+                    double.tryParse('${review['rating'] ?? 0}') ?? 0.0;
+
+                final String reviewText = '${review['review'] ?? ''}';
+
+                final String customerName =
+                    '${review['customerName'] ?? 'مستخدم'}';
+
+                final String customerImage =
+                    '${review['customerImage'] ?? ''}';
+
+                return Container(
+                  padding: EdgeInsetsDirectional.all(10.r),
+                  decoration: BoxDecoration(
+                    color: appCubit.isDark
+                        ? darkBgColor
+                        : Colors.grey.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20.r,
+                            backgroundColor: mainColor.withOpacity(0.1),
+                            backgroundImage: customerImage.isNotEmpty
+                                ? NetworkImage(customerImage)
+                                : null,
+                            child: customerImage.isEmpty
+                                ? Icon(
+                              Icons.person_outline_rounded,
+                              color: mainColor,
+                              size: 20.r,
+                            )
+                                : null,
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: Column (
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  customerName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.sp,
+                                    color: appCubit.isDark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                if (reviewDate.isNotEmpty)
+                                  Text(
+                                    reviewDate,
+                                    style: TextStyle(
+                                      fontSize: 10.sp,
+                                      color: appCubit.isDark
+                                          ? darkSubTextColor
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: List.generate(5, (i) {
+                              return Icon(
+                                Icons.star_rounded,
+                                size: 15.r,
+                                color: i < rating
+                                    ? Colors.orange
+                                    : Colors.grey.shade300,
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                      if (reviewText.isNotEmpty) ...[
+                        SizedBox(height: 10.h),
+                        Text(
+                          reviewText,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            height: 1.5,
+                            color: appCubit.isDark
+                                ? Colors.white70
+                                : Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
   Widget buildServiceActionItem({
     required BuildContext context,
     required AppCubit appCubit,
@@ -271,6 +508,21 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final String serviceId = '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
+
+      if (serviceId.isNotEmpty) {
+        WorkerCubit.get(context).getWorkerServiceReviews(
+          serviceId: serviceId,
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
@@ -290,13 +542,19 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
+            if (state is GetWorkerServiceReviewsErrorState) {
+              showSnackBar(Colors.red, state.error, context,);
+            }
           },
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
 
-            final int serviceIndex = workerCubit.workerServices.indexWhere(
-              (service) => service['id'] == widget.service['id'],
-            );
+            final String currentServiceId = '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
+
+            final int serviceIndex = workerCubit.workerServices.indexWhere((service) {
+                final String id = '${service['id'] ?? service['serviceId'] ?? ''}';
+                return id == currentServiceId;
+              },);
 
             if (serviceIndex == -1) {
               return Directionality(
@@ -322,10 +580,6 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
 
             Map<String, dynamic> service = Map<String, dynamic>.from(
                 workerCubit.workerServices[serviceIndex]);
-
-            List<dynamic> reviews = service['reviews'] is List
-                ? List<dynamic>.from(service['reviews'])
-                : [];
 
             return Directionality(
               textDirection: TextDirection.rtl,
@@ -602,138 +856,16 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                               ),
                             ),
                             SizedBox(height: 20.h),
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: buildSectionTitle(
-                                        title: 'التقييم والمراجعة',
-                                        icon: Icons.star_border_rounded,
-                                        cubit: appCubit)),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10.w, vertical: 4.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(25.r),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text('${service['rate']}',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.orange,
-                                              fontSize: 12.sp,
-                                              height: 1)),
-                                      SizedBox(width: 4.w),
-                                      const Icon(
-                                        Icons.star_rounded,
-                                        color: Colors.orange,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            buildSectionTitle(
+                              title: 'التقييم والمراجعة',
+                              icon: Icons.star_border_rounded,
+                              cubit: appCubit,
                             ),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: reviews.length,
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(height: 12.h),
-                              itemBuilder: (context, index) {
-                                Timestamp? createdAt =
-                                    reviews[index]['createdAt'];
-                                DateTime? date = createdAt?.toDate();
-                                String reviewDate = date != null
-                                    ? DateFormat('yyyy/MM/dd').format(date)
-                                    : '';
-
-                                return Container(
-                                  padding: EdgeInsets.all(14.r),
-                                  decoration: BoxDecoration(
-                                    color: appCubit.isDark
-                                        ? lightDarkColor
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow: blueShadow,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 20.r,
-                                            backgroundColor: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.blueGrey.shade50,
-                                            child: Icon(Icons.person_outline,
-                                                size: 20.r,
-                                                color: appCubit.isDark
-                                                    ? Colors.white
-                                                    : Colors.blueGrey),
-                                          ),
-                                          SizedBox(width: 12.w),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  reviews[index]['userName'],
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 13.sp,
-                                                      color: appCubit.isDark
-                                                          ? Colors.white
-                                                          : Colors.black),
-                                                ),
-                                                Text(
-                                                  reviewDate,
-                                                  style: TextStyle(
-                                                      color: appCubit.isDark
-                                                          ? darkSubTextColor
-                                                          : Colors.grey,
-                                                      fontSize: 11.sp),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Row(
-                                            children: List.generate(5, (i) {
-                                              double rating = (reviews[index]
-                                                          ['rating'] ??
-                                                      0)
-                                                  .toDouble();
-                                              return Icon(
-                                                Icons.star_rounded,
-                                                size: 16.r,
-                                                color: i < rating
-                                                    ? Colors.orange
-                                                    : Colors.grey.shade300,
-                                              );
-                                            }),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Text(
-                                        reviews[index]['comment'],
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          color: appCubit.isDark
-                                              ? Colors.white70
-                                              : Colors.black54,
-                                          height: 1.5,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                            SizedBox(height: 10.h),
+                            buildWorkerReviewsCard(
+                              appCubit: appCubit,
+                              workerCubit: workerCubit,
+                              state: state,
                             ),
                           ],
                         ),

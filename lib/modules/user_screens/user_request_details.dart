@@ -108,7 +108,8 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
   }
 
   void showFullTrackingSheet(
-      BuildContext context, AppCubit cubit, dynamic requestData) {
+      BuildContext context, AppCubit cubit, dynamic requestData)
+  {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -152,15 +153,15 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                     stepperSteps.length,
                     (index) {
                       String currentStatusFromDb = requestData['status'];
-                      Map<int, String> statusTimesKeys = {
-                        0: 'createdAt',
-                        1: 'acceptedAt',
-                        2: 'onWayAt',
-                        3: 'completedAt',
+                      final Map<String, dynamic> statusHistory =
+                      Map<String, dynamic>.from(requestData['statusHistory'] ?? {});
+                      Map<int, dynamic> statusTimes = {
+                        0: statusHistory['pendingAt'] ?? requestData['createdAt'],
+                        1: statusHistory['acceptedAt'],
+                        2: statusHistory['onWayAt'],
+                        3: statusHistory['completedAt'],
                       };
-                      String timeKey = statusTimesKeys[index]!;
-                      String displayTime =
-                          formatStatusTime(requestData[timeKey]);
+                      String displayTime = formatStatusTime(statusTimes[index]);
                       bool isDone;
                       bool isActive;
                       Color circleColor;
@@ -298,6 +299,187 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
     );
   }
 
+  Future<void> showReviewDialog({
+    required BuildContext context,
+    required AppCubit appCubit,
+    required UserCubit userCubit,
+    required Map<String, dynamic> request,
+  })
+  async {
+    final TextEditingController reviewController = TextEditingController();
+    double selectedRating = 0;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: AlertDialog(
+                backgroundColor: appCubit.isDark ? lightDarkColor : Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22.r),
+                ),
+                title: Text(
+                  'تقييم الخدمة',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.bold,
+                    color: appCubit.isDark ? Colors.white : Colors.black,
+                  ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'قبل تأكيد اكتمال الحجز، يرجى تقييم الخدمة وكتابة مراجعتك.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        height: 1.5,
+                        color: appCubit.isDark
+                            ? darkSubTextColor
+                            : Colors.grey.shade600,
+                      ),
+                    ),
+                    SizedBox(height: 18.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        final int starNumber = index + 1;
+
+                        return InkWell(
+                          onTap: () {
+                            setDialogState(() {
+                              selectedRating = starNumber.toDouble();
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(50.r),
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.symmetric(horizontal: 2.w,),
+                            child: Icon(
+                              Icons.star_rounded,
+                              size: 36.r,
+                              color: starNumber <= selectedRating
+                                  ? Colors.orange
+                                  : Colors.grey.shade300,
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                    SizedBox(height: 18.h),
+                    TextField(
+                      controller: reviewController,
+                      maxLines: 4,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: appCubit.isDark ? Colors.white : Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'اكتب رأيك في الخدمة',
+                        hintStyle: TextStyle(
+                          fontSize: 12.sp,
+                          color: appCubit.isDark
+                              ? darkSubTextColor
+                              : Colors.grey,
+                        ),
+                        filled: true,
+                        fillColor: appCubit.isDark
+                            ? darkBgColor
+                            : Colors.grey.withOpacity(0.08),
+                        contentPadding: EdgeInsetsDirectional.all(12.r),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                          borderSide: BorderSide(
+                            color: appCubit.isDark
+                                ? const Color(0xFF30363D)
+                                : Colors.grey.shade200,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                          borderSide: BorderSide(
+                            color: appCubit.isDark
+                                ? const Color(0xFF30363D)
+                                : Colors.grey.shade200,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                          borderSide: const BorderSide(color: mainColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                actionsAlignment: MainAxisAlignment.spaceBetween,
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                    },
+                    child: Text(
+                      'إلغاء',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      if (selectedRating == 0) {
+                        showSnackBar(Colors.red, 'يرجى اختيار عدد النجوم', context,);
+                        return;
+                      }
+                      if (reviewController.text.trim().isEmpty) {
+                        showSnackBar(Colors.red, 'يرجى كتابة مراجعة للخدمة', context,);
+                        return;
+                      }
+
+                      final String requestId = '${request['id'] ?? request['requestId'] ?? ''}';
+                      final String serviceId = '${request['serviceId'] ?? ''}';
+                      final String providerId = '${request['providerId'] ?? ''}';
+                      final String customerId = '${request['customerId'] ?? ''}';
+
+                      if (requestId.isEmpty || serviceId.isEmpty || providerId.isEmpty || customerId.isEmpty) {
+                        showSnackBar(Colors.red, 'بيانات الحجز غير مكتملة للتقييم', context,);
+                        return;
+                      }
+
+                      Navigator.pop(dialogContext);
+                      await userCubit.confirmBookingAndReview(
+                        requestId: requestId,
+                        serviceId: serviceId,
+                        providerId: providerId,
+                        customerId: customerId,
+                        rating: selectedRating,
+                        review: reviewController.text.trim(),
+                      );
+                    },
+                    child: Text(
+                      'تأكيد',
+                      style: TextStyle(
+                        color: mainColor,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> request = widget.request;
@@ -357,6 +539,22 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                 state.error,
                 context,
               );
+            }
+            if (state is ConfirmBookingReviewLoadingState) {
+              showLoadingDialog(context);
+            }
+            if (state is ConfirmBookingReviewSuccessState) {
+              hideLoadingDialog(context);
+              showSnackBar(Colors.green, 'تم تأكيد اكتمال الحجز وإضافة تقييمك بنجاح', context,);
+              if (!mounted) return;
+              setState(() {
+                widget.request['isReviewed'] = true;
+                widget.request['customerConfirmed'] = true;
+              });
+            }
+            if (state is ConfirmBookingReviewErrorState) {
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red, state.error, context,);
             }
           },
           builder: (context, state) {
@@ -975,16 +1173,37 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                       ],
                     ),
                   ),
-                  bottomNavigationBar: request['status'] == 'قيد الانتظار'
-                      ? Padding(
-                          padding: EdgeInsetsDirectional.symmetric(
-                              horizontal: 15.w, vertical: 10.h),
-                          child: defaultButton(
-                              onPressed: () {},
-                              background: Colors.red,
-                              text: 'إلغاء الطلب'),
-                        )
-                      : null
+                bottomNavigationBar: request['status'] == 'قيد الانتظار'
+                    ? Padding(
+                  padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: 15.w,
+                    vertical: 10.h,
+                  ),
+                  child: defaultButton(
+                    onPressed: () {},
+                    background: Colors.red,
+                    text: 'إلغاء الطلب',
+                  ),
+                )
+                    : request['status'] == 'مكتمل' && request['isReviewed'] != true
+                    ? Padding(
+                  padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: 15.w,
+                    vertical: 10.h,
+                  ),
+                  child: defaultButton(
+                    onPressed: () {
+                      showReviewDialog(
+                        context: context,
+                        appCubit: appCubit,
+                        userCubit: userCubit,
+                        request: request,
+                      );
+                    },
+                    text: 'تأكيد الإكمال وتقييم الخدمة',
+                  ),
+                )
+                    : null,
               ),
             );
           },

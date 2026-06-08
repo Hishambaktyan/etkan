@@ -27,7 +27,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   String profileImage = '';
-  String? selectedCategory;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
@@ -76,7 +75,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     nameController.text = widget.worker['name']?.toString() ?? '';
     addressController.text = widget.worker['address']?.toString() ?? '';
     aboutController.text = widget.worker['about']?.toString() ?? '';
-    selectedCategory = widget.worker['specialization']?.toString();
     experiences = List<String>.from(widget.worker['experiences'] ?? []);
     previousWorks = List<String>.from(widget.worker['previousWorks'] ?? []);
     super.initState();
@@ -197,7 +195,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     );
   }
 
-  Widget _buildIntroCard(AppCubit cubit) {
+  Widget buildIntroCard(AppCubit cubit) {
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(20.r),
@@ -258,7 +256,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     );
   }
 
-  Widget _buildProfileImagePicker(AppCubit cubit) {
+  Widget buildProfileImagePicker(AppCubit cubit) {
     final String oldProfileImage =
         widget.worker['profileImage']?.toString() ?? '';
     final bool hasOldImage = oldProfileImage.trim().isNotEmpty;
@@ -344,290 +342,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     );
   }
 
-  Widget _buildCategoryImage(Map<String, dynamic> category) {
-    final String image = '${category['image'] ?? ''}'.trim();
-
-    if (image.isEmpty) {
-      return Icon(
-        Icons.category_rounded,
-        color: mainColor,
-        size: 22.r,
-      );
-    }
-
-    return SvgPicture.network(
-      image,
-      width: 22.w,
-      height: 22.h,
-      color: mainColor,
-      placeholderBuilder: (context) => SizedBox(
-        width: 18.w,
-        height: 18.h,
-        child: const CircularProgressIndicator(
-          color: mainColor,
-          strokeWidth: 2,
-        ),
-      ),
-      errorBuilder: (context, error, stackTrace) => Icon(
-        Icons.category_rounded,
-        color: mainColor,
-        size: 22.r,
-      ),
-    );
-  }
-
-  Widget _buildCategoryDropdown(AppCubit cubit) {
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance.collection('categories').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildCategoryMessageCard(
-            cubit: cubit,
-            icon: Icons.hourglass_top_rounded,
-            title: 'جاري تحميل الأقسام...',
-            color: mainColor,
-          );
-        }
-
-        if (snapshot.hasError) {
-          return _buildCategoryMessageCard(
-            cubit: cubit,
-            icon: Icons.error_outline_rounded,
-            title: 'تعذر تحميل الأقسام، حاول مرة أخرى',
-            color: Colors.red,
-          );
-        }
-
-        final List<Map<String, dynamic>> categories =
-            snapshot.data!.docs.map((doc) {
-          final data = doc.data();
-          data['id'] = doc.id;
-          return data;
-        }).where((category) {
-          final String title = '${category['title'] ?? ''}'.trim();
-          final bool isActive = category['isActive'] != false;
-          return title.isNotEmpty && isActive;
-        }).toList();
-
-        categories.sort((a, b) {
-          final String first = '${a['title'] ?? ''}'.trim();
-          final String second = '${b['title'] ?? ''}'.trim();
-          return first.compareTo(second);
-        });
-
-        if (categories.isEmpty) {
-          return _buildCategoryMessageCard(
-            cubit: cubit,
-            icon: Icons.info_outline_rounded,
-            title: 'لا توجد أقسام مفعلة حاليًا',
-            color: Colors.orange,
-          );
-        }
-
-        final String? currentValue = categories.any(
-          (category) => '${category['title'] ?? ''}'.trim() == selectedCategory,
-        )
-            ? selectedCategory
-            : null;
-
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: DropdownButtonFormField<String>(
-            dropdownColor: cubit.isDark ? lightDarkColor : Colors.white,
-            isExpanded: true,
-            value: currentValue,
-            alignment: AlignmentDirectional.centerStart,
-            icon: Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
-              size: 22.sp,
-            ),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor:
-                  cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.1),
-              prefixIcon: Padding(
-                padding: EdgeInsetsDirectional.all(12.r),
-                child: SvgPicture.asset(
-                  'assets/grid.svg',
-                  width: 15.w,
-                  height: 15.h,
-                  color: mainColor,
-                ),
-              ),
-              hintText: 'اختر القسم من الأقسام المتاحة',
-              hintStyle: TextStyle(
-                fontSize: 12.sp,
-                color: cubit.isDark ? darkSubTextColor : Colors.grey,
-              ),
-              contentPadding: EdgeInsetsDirectional.symmetric(
-                vertical: 14.h,
-                horizontal: 10.w,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: BorderSide(
-                  color: cubit.isDark
-                      ? const Color(0xFF30363D)
-                      : Colors.grey.shade100,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: BorderSide(
-                  color: cubit.isDark
-                      ? const Color(0xFF30363D)
-                      : Colors.grey.shade100,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: const BorderSide(color: mainColor),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: const BorderSide(color: Colors.red),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: const BorderSide(color: Colors.red),
-              ),
-              errorStyle: TextStyle(fontSize: 10.sp),
-            ),
-            selectedItemBuilder: (context) {
-              return categories.map((category) {
-                final String title = '${category['title'] ?? ''}'.trim();
-
-                return Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    textDirection: TextDirection.rtl,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 30.r,
-                        height: 30.r,
-                        padding: EdgeInsetsDirectional.all(6.r),
-                        decoration: BoxDecoration(
-                          color: mainColor.withOpacity(0.10),
-                          borderRadius: BorderRadius.circular(9.r),
-                        ),
-                        child: _buildCategoryImage(category),
-                      ),
-                      SizedBox(width: 8.w),
-                      Flexible(
-                        child: Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: cubit.isDark ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList();
-            },
-            items: categories.map((category) {
-              final String title = '${category['title'] ?? ''}'.trim();
-
-              return DropdownMenuItem<String>(
-                value: title,
-                alignment: AlignmentDirectional.centerStart,
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Row(
-                      textDirection: TextDirection.rtl,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 34.r,
-                          height: 34.r,
-                          padding: EdgeInsetsDirectional.all(7.r),
-                          decoration: BoxDecoration(
-                            color: mainColor.withOpacity(0.10),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: _buildCategoryImage(category),
-                        ),
-                        SizedBox(width: 10.w),
-                        Expanded(
-                          child: Text(
-                            title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: cubit.isDark ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                selectedCategory = value;
-              });
-            },
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'يرجى اختيار القسم';
-              }
-              return null;
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCategoryMessageCard({
-    required AppCubit cubit,
-    required IconData icon,
-    required String title,
-    required Color color,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsetsDirectional.all(15.r),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: color.withOpacity(0.20)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 22.r),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: cubit.isDark ? Colors.white : color,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExperienceItem(AppCubit cubit, int index) {
+  Widget buildExperienceItem(AppCubit cubit, int index) {
     final String experience = experiences[index];
 
     return Padding(
@@ -670,7 +385,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     );
   }
 
-  ImageProvider _getWorkImageProvider(String image) {
+  ImageProvider getWorkImageProvider(String image) {
     if (image.startsWith('http')) {
       return NetworkImage(image);
     }
@@ -678,7 +393,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     return FileImage(File(image));
   }
 
-  Widget _buildPreviousWorks(AppCubit cubit) {
+  Widget buildPreviousWorks(AppCubit cubit) {
     return SizedBox(
       height: 125.h,
       child: previousWorks.isEmpty
@@ -713,7 +428,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       borderRadius: BorderRadius.circular(15.r),
                       color: mainColor.withOpacity(0.1),
                       image: DecorationImage(
-                        image: _getWorkImageProvider(previousWorks[index]),
+                        image: getWorkImageProvider(previousWorks[index]),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -741,15 +456,14 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     );
   }
 
-  void _saveWorkerData(WorkerCubit workerCubit) {
+  void saveWorkerData(WorkerCubit workerCubit) {
     FocusScope.of(context).unfocus();
 
     if (!formKey.currentState!.validate()) {
       return;
     }
 
-    final String oldProfileImage =
-        widget.worker['profileImage']?.toString() ?? '';
+    final String oldProfileImage = widget.worker['profileImage']?.toString() ?? '';
 
     if (oldProfileImage.trim().isEmpty && profileImage.trim().isEmpty) {
       showSnackBar(
@@ -760,20 +474,10 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       return;
     }
 
-    if (selectedCategory == null || selectedCategory!.trim().isEmpty) {
-      showSnackBar(
-        Colors.red,
-        'يرجى اختيار القسم',
-        context,
-      );
-      return;
-    }
-
     workerCubit.editWorkerData(
       name: nameController.text.trim(),
       about: aboutController.text.trim(),
       address: addressController.text.trim(),
-      specialization: selectedCategory!.trim(),
       profileImagePath: profileImage,
       oldProfileImage: oldProfileImage,
       experiences: experiences,
@@ -809,7 +513,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
-                backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
                 appBar: AppBar(
                   titleSpacing: 10,
                   elevation: 0,
@@ -854,7 +557,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildIntroCard(appCubit),
+                              buildIntroCard(appCubit),
                               SizedBox(height: 20.h),
                               buildSectionHeader(
                                 title: 'المعلومات الأساسية',
@@ -870,7 +573,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                 cubit: appCubit,
                                 child: Column(
                                   children: [
-                                    _buildProfileImagePicker(appCubit),
+                                    buildProfileImagePicker(appCubit),
                                     SizedBox(height: 25.h),
                                     defaultTextFormField(
                                       text: 'الاسم',
@@ -887,8 +590,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                         return null;
                                       },
                                     ),
-                                    SizedBox(height: 15.h),
-                                    _buildCategoryDropdown(appCubit),
                                     SizedBox(height: 15.h),
                                     defaultTextFormField(
                                       text: 'العنوان',
@@ -925,8 +626,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                   controller: aboutController,
                                   cubit: appCubit,
                                   maxLines: 6,
-                                  hint:
-                                      'اكتب نبذة مختصرة عن خبرتك ومهاراتك وطريقة عملك',
+                                  hint: 'اكتب نبذة مختصرة عن خبرتك ومهاراتك وطريقة عملك',
                                   validator: (value) {
                                     if (value == null || value.trim().isEmpty) {
                                       return 'يرجى كتابة نبذة مختصرة عنك';
@@ -1021,7 +721,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                         physics:
                                             const NeverScrollableScrollPhysics(),
                                         itemBuilder: (context, index) {
-                                          return _buildExperienceItem(
+                                          return buildExperienceItem(
                                             appCubit,
                                             index,
                                           );
@@ -1054,7 +754,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                       ),
                                     ),
                                     SizedBox(height: 15.h),
-                                    _buildPreviousWorks(appCubit),
+                                    buildPreviousWorks(appCubit),
                                   ],
                                 ),
                               ),
@@ -1077,7 +777,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                     boxShadow: blueShadow,
                   ),
                   child: defaultButton(
-                    onPressed: () => _saveWorkerData(workerCubit),
+                    onPressed: () => saveWorkerData(workerCubit),
                     text: 'حفظ التعديلات',
                     height: 50.h,
                   ),

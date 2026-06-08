@@ -102,7 +102,8 @@ class WorkerRequestDetails extends StatelessWidget {
   }
 
   void showFullTrackingSheet(
-      BuildContext context, AppCubit cubit, dynamic requestData) {
+      BuildContext context, AppCubit cubit, dynamic requestData)
+  {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -114,7 +115,8 @@ class WorkerRequestDetails extends StatelessWidget {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            padding: EdgeInsetsDirectional.all(20.r),
+            padding: EdgeInsetsDirectional.only(
+                start: 20.w, end: 20.w, bottom: 20.h, top: 10.h),
             height: MediaQuery.of(context).size.height * 0.51,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,39 +144,42 @@ class WorkerRequestDetails extends StatelessWidget {
                 Expanded(
                   child: ListView(
                       children: List.generate(
-                    stepperSteps.length,
-                    (index) {
-                      String currentStatusFromDb = requestData['status'];
-                      Map<int, String> statusTimesKeys = {
-                        0: 'createdAt',
-                        1: 'acceptedAt',
-                        2: 'onWayAt',
-                        3: 'completedAt',
-                      };
-                      String timeKey = statusTimesKeys[index]!;
-                      String displayTime =
-                          formatStatusTime(requestData[timeKey]);
-                      bool isDone;
-                      bool isActive;
-                      int currentStepIndex =
+                        stepperSteps.length,
+                            (index) {
+                          String currentStatusFromDb = requestData['status'];
+                          final Map<String, dynamic> statusHistory =
+                          Map<String, dynamic>.from(requestData['statusHistory'] ?? {});
+                          Map<int, dynamic> statusTimes = {
+                            0: statusHistory['pendingAt'] ?? requestData['createdAt'],
+                            1: statusHistory['acceptedAt'],
+                            2: statusHistory['onWayAt'],
+                            3: statusHistory['completedAt'],
+                          };
+                          String displayTime = formatStatusTime(statusTimes[index]);
+                          bool isDone;
+                          bool isActive;
+                          Color circleColor;
+                          int currentStepIndex =
                           stepperSteps.indexOf(currentStatusFromDb);
-                      if (terminalStates.contains(currentStatusFromDb)) {
-                        isDone = index < stepperSteps.indexOf("مقبول");
-                        isActive = false;
-                      } else {
-                        isDone = index < currentStepIndex;
-                        isActive = index == currentStepIndex;
-                      }
-                      return buildVerticalStep(
-                        stepperSteps[index],
-                        displayTime,
-                        isDone,
-                        index != stepperSteps.length - 1,
-                        cubit,
-                        isActive: isActive,
-                      );
-                    },
-                  )),
+                          if (terminalStates.contains(currentStatusFromDb)) {
+                            isDone = index < stepperSteps.indexOf("مقبول");
+                            isActive = false;
+                            circleColor = Colors.red;
+                          } else {
+                            isDone = index < currentStepIndex;
+                            isActive = index == currentStepIndex;
+                            circleColor = mainColor;
+                          }
+                          return buildVerticalStep(
+                            stepperSteps[index],
+                            displayTime,
+                            isDone,
+                            index != stepperSteps.length - 1,
+                            cubit,
+                            isActive: isActive,
+                          );
+                        },
+                      )),
                 ),
               ],
             ),
@@ -413,8 +418,8 @@ class WorkerRequestDetails extends StatelessWidget {
               body: 'هل أنت متأكد أن الخدمة اكتملت؟',
               confirmText: 'إلغاء',
               cancelText: 'مكتمل',
-              cancelColor: mainColor,
-              confirmColor: Colors.green,
+              cancelColor: Colors.green,
+              confirmColor: mainColor,
               onConfirm: () => Navigator.pop(context),
               onCancel: () async {
                 Navigator.pop(context);

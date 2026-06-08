@@ -2534,7 +2534,6 @@ class _SearchScreenState extends State<SearchScreen> {
         desc: '${service['description'] ?? ''}',
         price: service['price'] ?? 0,
         period: '${service['period'] ?? ''}',
-        rate: service['rate'] ?? 0,
         providerName: '${providerData['name'] ?? 'فني غير معروف'}',
         providerSpec: '${providerData['specialization'] ?? service['category'] ?? ''}',
         reviews: service['reviews'] ?? [],

@@ -317,7 +317,8 @@ class AuthCubit extends Cubit<AuthStates> {
   Future<void> signUpUser(
       {required String name,
       required String phone,
-      required String password}) async {
+      required String password})
+  async {
     try {
       emit(UserSignUpLoadingState());
 
@@ -665,7 +666,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required String name,
     required String phone,
     required String password,
-  }) async {
+  })
+  async {
     try {
       emit(WorkerSignUpLoadingState());
 
@@ -708,6 +710,8 @@ class AuthCubit extends Cubit<AuthStates> {
         'specialization': '',
         'address': '',
         'avgRating': 0.0,
+        'ratingSum': 0.0,
+        'ratingsCount': 0,
         'isAvailable': true,
         'isSubscribed': false,
         'profileImage': '',
