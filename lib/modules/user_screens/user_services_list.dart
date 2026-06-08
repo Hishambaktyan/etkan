@@ -150,8 +150,7 @@ class _UserServicesListState extends State<UserServicesList> {
                                           start: 15.w, end: 15.w, bottom: 20.h),
                                       itemBuilder: (context, index) {
                                         var service = filteredServices[index];
-                                        var providerData = appCubit
-                                            .allUsers[service['providerId']];
+                                        var providerData = appCubit.allUsers[service['providerId']];
                                         return InkWell(
                                           onTap: () => move(
                                               context,
@@ -163,14 +162,13 @@ class _UserServicesListState extends State<UserServicesList> {
                                                 price: service['price'],
                                                 period: service['period'],
                                                 rate: service['rate'],
-                                                providerName:
-                                                    providerData['name'],
-                                                providerSpec: providerData[
-                                                    'specialization'],
-                                                reviews:
-                                                    service['reviews'] ?? '',
+                                                providerName: providerData['name'],
+                                                providerSpec: providerData['specialization'],
+                                                reviews: service['reviews'] ?? '',
                                                 providerId: providerData['uid'],
-                                              )),
+                                                serviceId: service['id'],
+                                              )
+                                          ),
                                           borderRadius:
                                               BorderRadius.circular(25.r),
                                           child: Container(

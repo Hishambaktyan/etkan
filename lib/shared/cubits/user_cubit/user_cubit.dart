@@ -86,7 +86,8 @@ class UserCubit extends Cubit<UserStates> {
   bool _canProviderUseFreePlan({
     required Map<String, dynamic> providerData,
     required int completedRequestsCount,
-  }) {
+  })
+  {
     if (_isSubscriptionExpired(providerData)) {
       return false;
     }
@@ -98,7 +99,8 @@ class UserCubit extends Cubit<UserStates> {
     return completedRequestsCount < freeCompletedRequestsLimit;
   }
 
-  Future<Map<String, int>> _getCompletedRequestsCountByProvider() async {
+  Future<Map<String, int>> _getCompletedRequestsCountByProvider()
+  async {
     final completedRequestsSnapshot = await FirebaseFirestore.instance
         .collection('requests')
         .where('status', isEqualTo: 'مكتمل')
@@ -190,7 +192,8 @@ class UserCubit extends Cubit<UserStates> {
   bool _isServiceVisibleToCustomers(
     Map<String, dynamic> service,
     Set<String> visibleProviderIds,
-  ) {
+  )
+  {
     final String providerId = service['providerId']?.toString() ?? '';
     final bool isServiceActive = service['isActive'] != false;
 
@@ -221,8 +224,8 @@ class UserCubit extends Cubit<UserStates> {
 
   String? currentUserSpecServicesType;
 
-  Future<void> getUserSpecServices(String type,
-      {bool forceRefresh = false}) async {
+  Future<void> getUserSpecServices(String type, {bool forceRefresh = false})
+  async {
     try {
       final String categoryType = type.trim();
       currentUserSpecServicesType = categoryType;
@@ -276,8 +279,7 @@ class UserCubit extends Cubit<UserStates> {
       userServices.clear();
 
       final visibleProviderIdsFuture = _getVisibleProviderIds();
-      final servicesFuture =
-          FirebaseFirestore.instance.collection('services').get();
+      final servicesFuture =FirebaseFirestore.instance.collection('services').get();
 
       await Future.wait([
         visibleProviderIdsFuture,
@@ -339,10 +341,12 @@ class UserCubit extends Cubit<UserStates> {
 
   Future<void> getUserRequests({bool forceRefresh = false}) async {
     try {
+
       if (isUserRequestsLoaded && !forceRefresh) {
         return;
       }
       emit(GetUserRequestLoadingState());
+
       userRequests.clear();
       final requestSnapshot = await FirebaseFirestore.instance
           .collection('requests')
@@ -363,6 +367,7 @@ class UserCubit extends Cubit<UserStates> {
   }
 
   Future<void> createRequest({
+    required String serviceId,
     required String category,
     required String customerId,
     required String providerId,
@@ -378,7 +383,7 @@ class UserCubit extends Cubit<UserStates> {
       emit(CreateRequestLoadingState());
 
       final providerRef =
-          FirebaseFirestore.instance.collection('users').doc(providerId);
+      FirebaseFirestore.instance.collection('users').doc(providerId);
 
       final providerFuture = providerRef.get();
       final completedRequestsCountFuture = FirebaseFirestore.instance
@@ -419,7 +424,7 @@ class UserCubit extends Cubit<UserStates> {
 
         emit(CreateRequestErrorState(
           error:
-              'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',
+          'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',
         ));
         return;
       }
@@ -433,7 +438,7 @@ class UserCubit extends Cubit<UserStates> {
       )) {
         emit(CreateRequestErrorState(
           error:
-              'أكمل هذا الفني 5 حجوزات مجانية، ولا يمكنه استقبال حجوزات جديدة حتى يقوم بالاشتراك.',
+          'أكمل هذا الفني 5 حجوزات مجانية، ولا يمكنه استقبال حجوزات جديدة حتى يقوم بالاشتراك.',
         ));
         return;
       }
@@ -442,11 +447,15 @@ class UserCubit extends Cubit<UserStates> {
       final Timestamp nowTimestamp = Timestamp.fromDate(now);
 
       final requestRef =
-          FirebaseFirestore.instance.collection('requests').doc();
+      FirebaseFirestore.instance.collection('requests').doc();
 
       final Map<String, dynamic> requestData = {
         'requestId': requestRef.id,
         'id': requestRef.id,
+
+        // هذا مهم عشان نعرف الحجز تابع لأي خدمة عند التقييم
+        'serviceId': serviceId,
+
         'address': address,
         'category': category,
         'customerId': customerId,
@@ -460,6 +469,13 @@ class UserCubit extends Cubit<UserStates> {
         'status': 'قيد الانتظار',
         'createdAt': nowTimestamp,
         'updatedAt': nowTimestamp,
+
+        // هذه الحقول نحتاجها لاحقًا للتقييم وتأكيد اكتمال الخدمة من المستخدم
+        'isReviewed': false,
+        'customerConfirmed': false,
+        'customerConfirmedAt': null,
+        'reviewId': null,
+
         'statusHistory': {
           'pendingAt': nowTimestamp,
           'acceptedAt': null,
@@ -483,6 +499,7 @@ class UserCubit extends Cubit<UserStates> {
           senderId: customerId,
         );
       }
+
       await NotificationService.createNotificationInFirestore(
         receiverId: providerId,
         receiverType: 'worker',
@@ -536,11 +553,62 @@ class UserCubit extends Cubit<UserStates> {
     return response.data['secure_url'];
   }
 
+  Map<String, dynamic> singleUserData = {};
+  bool isSingleUserDataLoaded = false;
+
+  Future<void> getSingleUserData({
+    String? userId,
+    bool forceRefresh = false,
+  })
+  async {
+    try {
+
+      if (isSingleUserDataLoaded && !forceRefresh) {
+        return;
+      }
+
+      emit(GetSingleUserDataLoadingState());
+
+      final String uid = userId ?? CacheHelper.getData(key: 'uid')?.toString() ?? '';
+
+      if (uid.isEmpty) {
+        emit(GetSingleUserDataErrorState(
+          error: 'تعذر العثور على معرف المستخدم',
+        ));
+        return;
+      }
+
+      singleUserData.clear();
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (!userDoc.exists) {
+        emit(GetSingleUserDataErrorState(
+          error: 'تعذر العثور على بيانات المستخدم',
+        ));
+        return;
+      }
+
+      singleUserData = userDoc.data() ?? {};
+      singleUserData['id'] = userDoc.id;
+
+      isSingleUserDataLoaded = true;
+
+      emit(GetSingleUserDataSuccessState());
+    } catch (e) {
+      emit(GetSingleUserDataErrorState(error: e.toString()));
+    }
+  }
+
   Future<void> editUserData({
     required String name,
     String? profileImagePath,
     String? oldProfileImage,
-  }) async {
+  })
+  async {
     emit(EditUserDataLoadingState());
 
     try {

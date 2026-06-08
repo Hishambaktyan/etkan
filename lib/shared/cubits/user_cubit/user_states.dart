@@ -89,3 +89,16 @@ class CreateOrGetChatErrorState extends UserStates {
 
   CreateOrGetChatErrorState({required this.error});
 }
+
+//////////////////////////////////////
+
+
+class GetSingleUserDataLoadingState extends UserStates {}
+
+class GetSingleUserDataSuccessState extends UserStates {}
+
+class GetSingleUserDataErrorState extends UserStates {
+  final String error;
+
+  GetSingleUserDataErrorState({required this.error});
+}

@@ -27,6 +27,7 @@ class UserCompleteRequestInfo extends StatefulWidget {
   final int servicePrice;
   final String servicePeriod;
   final String providerId;
+  final String serviceId;
 
   const UserCompleteRequestInfo({
     super.key,
@@ -35,7 +36,7 @@ class UserCompleteRequestInfo extends StatefulWidget {
     required this.servicePrice,
     required this.servicePeriod,
     required this.serciveImage,
-    required this.providerId,
+    required this.providerId, required this.serviceId,
   });
 
   @override
@@ -838,6 +839,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
     String servicePeriod = widget.servicePeriod;
     String serviceImage = widget.serciveImage;
     String providerId = widget.providerId;
+    String serviceId = widget.serviceId;
 
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
@@ -1019,9 +1021,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                               selectedTime!.minute,
                             );
 
-                            var currentUser = appCubit
-                                .allUsers[CacheHelper.getData(key: 'uid')];
-
+                            var currentUser = appCubit.allUsers[CacheHelper.getData(key: 'uid')];
                             await userCubit.createRequest(
                               category: serviceCategory,
                               customerId: currentUser['uid'],
@@ -1033,6 +1033,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                               duration: servicePeriod,
                               price: servicePrice,
                               scheduledAt: Timestamp.fromDate(bookingDateTime),
+                              serviceId: serviceId
                             );
                           },
                           text: 'تأكيد الحجز',

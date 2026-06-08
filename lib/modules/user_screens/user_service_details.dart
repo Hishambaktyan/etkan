@@ -22,6 +22,7 @@ class UserServiceDetails extends StatefulWidget {
   final String providerSpec;
   final dynamic reviews;
   final String providerId;
+  final String serviceId;
 
   const UserServiceDetails({
     super.key,
@@ -36,6 +37,7 @@ class UserServiceDetails extends StatefulWidget {
     required this.reviews,
     required this.providerId,
     required this.image,
+    required this.serviceId,
   });
 
   @override
@@ -88,9 +90,9 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
     final period = widget.period;
     final desc = widget.desc;
     final rate = widget.rate;
-    final reviews = widget.reviews;
     final image = widget.image;
     final providerId = widget.providerId;
+    final serviceId = widget.serviceId;
     AppCubit cubit = AppCubit.get(context);
     final providerData =
         Map<String, dynamic>.from(cubit.allUsers[providerId] ?? {});
@@ -291,9 +293,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 10.h,
-              ),
+              SizedBox(height: 10.h,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 child: Column(
@@ -477,6 +477,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                     servicePeriod: period,
                     serciveImage: image,
                     providerId: providerId,
+                    serviceId: serviceId,
                   )),
               text: 'حجز'),
         ),

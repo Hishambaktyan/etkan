@@ -643,24 +643,13 @@ class _UserHomeState extends State<UserHome> {
                                                   : userCubit
                                                       .userServices.length,
                                               itemBuilder: (context, index) {
-                                                var service = userCubit
-                                                    .userServices[index];
-                                                Map<String, dynamic>
-                                                    providerData =
-                                                    Map<String, dynamic>.from(
-                                                  userCubit.allUsers[service[
-                                                          'providerId']] ??
-                                                      {},
-                                                );
-                                                String serviceImage =
-                                                    '${service['serviceImage'] ?? ''}';
-                                                String providerImage =
-                                                    '${providerData['profileImage'] ?? ''}';
+                                                var service = userCubit.userServices[index];
+                                                Map<String, dynamic>providerData = Map<String, dynamic>.from(userCubit.allUsers[service['providerId']] ?? {},);
+                                                String serviceImage = '${service['serviceImage'] ?? ''}';
+                                                String providerImage = '${providerData['profileImage'] ?? ''}';
                                                 return Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .only(
-                                                    start:
-                                                        index == 0 ? 0 : 15.w,
+                                                  padding: EdgeInsetsDirectional.only(
+                                                    start: index == 0 ? 0 : 15.w,
                                                     end: index == 3 ? 15.w : 0,
                                                   ),
                                                   child: InkWell(
@@ -668,43 +657,18 @@ class _UserHomeState extends State<UserHome> {
                                                       move(
                                                         context,
                                                         UserServiceDetails(
-                                                          name:
-                                                              service['name'] ??
-                                                                  '',
-                                                          image: service[
-                                                                  'serviceImage'] ??
-                                                              '',
-                                                          category: service[
-                                                                  'category'] ??
-                                                              '',
-                                                          desc: service[
-                                                                  'description'] ??
-                                                              '',
-                                                          price: service[
-                                                                  'price'] ??
-                                                              0,
-                                                          period: service[
-                                                                  'period'] ??
-                                                              '',
-                                                          rate:
-                                                              service['rate'] ??
-                                                                  0,
-                                                          providerName:
-                                                              providerData[
-                                                                      'name'] ??
-                                                                  'فني غير معروف',
-                                                          providerSpec:
-                                                              providerData[
-                                                                      'specialization'] ??
-                                                                  '',
-                                                          reviews: service[
-                                                                  'reviews'] ??
-                                                              [],
-                                                          providerId: providerData[
-                                                                  'uid'] ??
-                                                              service[
-                                                                  'providerId'] ??
-                                                              '',
+                                                          name: service['name'] ?? '',
+                                                          image: service['serviceImage'] ?? '',
+                                                          category: service['category'] ?? '',
+                                                          desc: service['description'] ?? '',
+                                                          price: service['price'] ??0,
+                                                          period: service['period'] ?? '',
+                                                          rate: service['rate'] ??0,
+                                                          providerName: providerData['name'] ??'فني غير معروف',
+                                                          providerSpec: providerData['specialization'] ?? '',
+                                                          reviews: service['reviews'] ?? [],
+                                                          providerId: providerData['uid'] ?? service['providerId'] ?? '',
+                                                          serviceId: service['id'] ,
                                                         ),
                                                       );
                                                     },

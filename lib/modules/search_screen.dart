@@ -2536,10 +2536,10 @@ class _SearchScreenState extends State<SearchScreen> {
         period: '${service['period'] ?? ''}',
         rate: service['rate'] ?? 0,
         providerName: '${providerData['name'] ?? 'فني غير معروف'}',
-        providerSpec:
-            '${providerData['specialization'] ?? service['category'] ?? ''}',
+        providerSpec: '${providerData['specialization'] ?? service['category'] ?? ''}',
         reviews: service['reviews'] ?? [],
         providerId: '${providerData['uid'] ?? service['providerId'] ?? ''}',
+        serviceId: service['id'],
       ),
     );
   }

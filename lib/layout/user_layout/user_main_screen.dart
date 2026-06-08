@@ -155,9 +155,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
                             'assets/setting_bold.svg',
                             width: 25.w,
                             height: 25.h,
-                            color: appCubit.currentIndex == 4
-                                ? mainColor
-                                : Colors.grey,
+                            color: appCubit.currentIndex == 4 ? mainColor : Colors.grey,
                           ),
                           tooltip: 'الإعدادات',
                           label: 'الإعدادات',

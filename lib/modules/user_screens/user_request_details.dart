@@ -984,7 +984,8 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                               background: Colors.red,
                               text: 'إلغاء الطلب'),
                         )
-                      : null),
+                      : null
+              ),
             );
           },
         );

@@ -30,204 +30,6 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
-  Widget _buildHeader({
-    required AppCubit appCubit,
-    required Map<String, dynamic> user,
-  }) {
-    String name = user['name']?.toString().trim() ?? '';
-    String phone = user['phone']?.toString().trim() ?? '';
-    String image = user['profileImage']?.toString().trim() ?? '';
-
-    if (name.isEmpty) {
-      name = 'مستخدم';
-    }
-    return ClipRRect(
-      borderRadius: BorderRadiusDirectional.vertical(
-        bottom: Radius.circular(35.r),
-      ),
-      child: Container(
-        width: double.infinity,
-        height: 300.h,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              mainColor.withOpacity(0.9),
-              const Color(0xFF0F0F1E),
-            ],
-            stops: const [0.0, 0.8],
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -50.h,
-              left: -50.w,
-              child: CircleAvatar(
-                radius: 100.r,
-                backgroundColor: Colors.white.withOpacity(0.15),
-              ),
-            ),
-            Positioned(
-              top: 80.h,
-              right: -60.w,
-              child: Container(
-                width: 250.r,
-                height: 250.r,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      const Color(0xFF00F2FF).withOpacity(0.5),
-                      const Color(0xFF00F2FF).withOpacity(0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 200.h,
-              left: -40.w,
-              child: Container(
-                width: 200.r,
-                height: 200.r,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      mainColor.withOpacity(0.4),
-                      mainColor.withOpacity(0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: ClipRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-                  child: Container(color: Colors.transparent),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsetsDirectional.only(
-                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'الحساب',
-                        style: TextStyle(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const Spacer(),
-                      InkWell(
-                        highlightColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          move(context, const NotificationsScreen());
-                        },
-                        child: Container(
-                          width: 42.w,
-                          height: 42.h,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.16),
-                            borderRadius: BorderRadius.circular(15.r),
-                            border: Border.all(
-                                color: Colors.white.withOpacity(0.12)),
-                          ),
-                          child: Center(
-                              child: SvgPicture.asset(
-                            'assets/not.svg',
-                            color: Colors.white,
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 5.h),
-                  Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 98.r,
-                          height: 98.r,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.15),
-                                blurRadius: 15,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 48.r,
-                            backgroundColor: Colors.white.withOpacity(0.12),
-                            backgroundImage:
-                                image.isNotEmpty ? NetworkImage(image) : null,
-                            child: image.isEmpty
-                                ? Icon(
-                                    Icons.person_rounded,
-                                    color: Colors.white,
-                                    size: 48.r,
-                                  )
-                                : null,
-                          ),
-                        ),
-                        SizedBox(height: 10.h),
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 7.h),
-                        Container(
-                          padding: EdgeInsetsDirectional.only(
-                            start: 12.w,
-                            end: 15.w,
-                            top: 5.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.14),
-                            borderRadius: BorderRadius.circular(30.r),
-                          ),
-                          child: Text(
-                            phone.isEmpty ? 'رقم الهاتف غير متوفر' : phone,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13.sp,
-                              letterSpacing: phone.isEmpty ? 0 : 5,
-                              height: 1.7,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildSectionTitle({
     required String title,
@@ -408,185 +210,158 @@ class _UserAccountState extends State<UserAccount> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-
             final String uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
-
-            return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(uid)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                Map<String, dynamic> user = {};
-
-                if (snapshot.hasData && snapshot.data!.exists) {
-                  user = snapshot.data!.data() ?? {};
-                } else {
-                  final dynamic currentUserData = appCubit.allUsers[uid];
-
-                  if (currentUserData is Map) {
-                    user = Map<String, dynamic>.from(currentUserData);
-                  }
-                }
-
-                return Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Scaffold(
-                    body: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      header(
+                        context: context,
+                        title: 'الإعدادات',
+                      ),
+                      SizedBox(height: 20.h,),
+                      _buildSectionTitle(
+                        title: 'الحساب الشخصي',
+                        icon: 'assets/acc.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
                         children: [
-                          _buildHeader(
+                          _buildMenuItem(
                             appCubit: appCubit,
-                            user: user,
+                            title: 'عرض الحساب',
+                            icon: 'assets/eye.svg',
+                            onTap: () {
+                              move(context, const UserProfile(),);
+                            },
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
-                          _buildSectionTitle(
-                            title: 'الحساب الشخصي',
-                            icon: 'assets/acc.svg',
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
                             appCubit: appCubit,
+                            title: 'إدارة العناوين',
+                            icon: 'assets/loc.svg',
+                            onTap: () {
+                              move(
+                                context,
+                                const UserAddressesList(),
+                              );
+                            },
                           ),
-                          _buildMenuCard(
-                            appCubit: appCubit,
-                            children: [
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'عرض الحساب',
-                                icon: 'assets/eye.svg',
-                                onTap: () {
-                                  move(
-                                    context,
-                                    UserProfile(user: user),
-                                  );
-                                },
-                              ),
-                              _buildDivider(appCubit),
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'إدارة العناوين',
-                                icon: 'assets/loc.svg',
-                                onTap: () {
-                                  move(
-                                    context,
-                                    const UserAddressesList(),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          _buildSectionTitle(
-                            title: 'الدعم والمعلومات',
-                            icon: 'assets/support.svg',
-                            appCubit: appCubit,
-                          ),
-                          _buildMenuCard(
-                            appCubit: appCubit,
-                            children: [
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'تواصل معنا',
-                                icon: 'assets/chat.svg',
-                                onTap: () {
-                                  move(context, const ContactUsScreen());
-                                },
-                              ),
-                              _buildDivider(appCubit),
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'الأسئلة الشائعة',
-                                icon: 'assets/ques.svg',
-                                onTap: () {
-                                  move(context, const FaqScreen());
-                                },
-                              ),
-                              _buildDivider(appCubit),
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'حول التطبيق',
-                                icon: 'assets/info.svg',
-                                onTap: () {
-                                  move(context, const AboutAppScreen());
-                                },
-                              ),
-                              _buildDivider(appCubit),
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'سياسة الخصوصية',
-                                icon: 'assets/reports.svg',
-                                onTap: () {
-                                  move(context, PrivacyPolicyScreen());
-                                },
-                              ),
-                              _buildDivider(appCubit),
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'الشروط والأحكام',
-                                icon: 'assets/hammer.svg',
-                                onTap: () {
-                                  move(context, const TermsConditionsScreen());
-                                },
-                              ),
-                            ],
-                          ),
-                          _buildSectionTitle(
-                            title: 'الإعدادات',
-                            icon: 'assets/setting.svg',
-                            appCubit: appCubit,
-                          ),
-                          _buildMenuCard(
-                            appCubit: appCubit,
-                            children: [
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'الوضع المظلم',
-                                icon: 'assets/moon.svg',
-                                isSwitch: true,
-                                onTap: () {},
-                              ),
-                            ],
-                          ),
-                          _buildSectionTitle(
-                            title: 'إدارة الحساب',
-                            icon: 'assets/acc_setting.svg',
-                            appCubit: appCubit,
-                          ),
-                          _buildMenuCard(
-                            appCubit: appCubit,
-                            children: [
-                              _buildMenuItem(
-                                appCubit: appCubit,
-                                title: 'تسجيل خروج',
-                                icon: 'assets/login.svg',
-                                isDanger: true,
-                                onTap: () {
-                                  defaultConfirmDialog(
-                                    context: context,
-                                    isDark: appCubit.isDark,
-                                    icon: 'assets/out.svg',
-                                    iconColor: Colors.red,
-                                    title: 'تأكيد تسجيل الخروج',
-                                    body:
-                                        'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
-                                    cancelText: 'إلغاء',
-                                    confirmText: 'خروج',
-                                    onConfirm: () {
-                                      Navigator.pop(context);
-                                      authCubit.logoutUser();
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20.h),
                         ],
                       ),
-                    ),
+                      _buildSectionTitle(
+                        title: 'الدعم والمعلومات',
+                        icon: 'assets/support.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
+                        children: [
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'تواصل معنا',
+                            icon: 'assets/chat.svg',
+                            onTap: () {
+                              move(context, const ContactUsScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'الأسئلة الشائعة',
+                            icon: 'assets/ques.svg',
+                            onTap: () {
+                              move(context, const FaqScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'حول التطبيق',
+                            icon: 'assets/info.svg',
+                            onTap: () {
+                              move(context, const AboutAppScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'سياسة الخصوصية',
+                            icon: 'assets/reports.svg',
+                            onTap: () {
+                              move(context, PrivacyPolicyScreen());
+                            },
+                          ),
+                          _buildDivider(appCubit),
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'الشروط والأحكام',
+                            icon: 'assets/hammer.svg',
+                            onTap: () {
+                              move(context, const TermsConditionsScreen());
+                            },
+                          ),
+                        ],
+                      ),
+                      _buildSectionTitle(
+                        title: 'الإعدادات',
+                        icon: 'assets/setting.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
+                        children: [
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'الوضع المظلم',
+                            icon: 'assets/moon.svg',
+                            isSwitch: true,
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                      _buildSectionTitle(
+                        title: 'إدارة الحساب',
+                        icon: 'assets/acc_setting.svg',
+                        appCubit: appCubit,
+                      ),
+                      _buildMenuCard(
+                        appCubit: appCubit,
+                        children: [
+                          _buildMenuItem(
+                            appCubit: appCubit,
+                            title: 'تسجيل خروج',
+                            icon: 'assets/login.svg',
+                            isDanger: true,
+                            onTap: () {
+                              defaultConfirmDialog(
+                                context: context,
+                                isDark: appCubit.isDark,
+                                icon: 'assets/out.svg',
+                                iconColor: Colors.red,
+                                title: 'تأكيد تسجيل الخروج',
+                                body:
+                                'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                                cancelText: 'إلغاء',
+                                confirmText: 'خروج',
+                                onConfirm: () {
+                                  Navigator.pop(context);
+                                  authCubit.logoutUser();
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20.h),
+                    ],
                   ),
-                );
-              },
+                ),
+              ),
             );
           },
         );
