@@ -529,13 +529,14 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   bool hasInternet = true;
-  bool checkingInternet = true;
+  bool isPageLoading = true;
 
-  Future<void> checkConnectionAndGetData({bool forceRefresh=false}) async {
+  Future<void> checkConnectionAndGetData({bool forceRefresh = false}) async {
     if (!mounted) return;
 
     setState(() {
-      checkingInternet = true;
+      isPageLoading = true;
+      hasInternet = true;
     });
 
     final result = await checkInternet();
@@ -545,35 +546,46 @@ class _UserProfileState extends State<UserProfile> {
     if (!result) {
       setState(() {
         hasInternet = false;
-        checkingInternet = false;
+        isPageLoading = false;
       });
       return;
     }
 
     try {
       final userCubit = UserCubit.get(context);
+      final locationCubit = LocationCubit.get(context);
+
+      final String uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
+
+      if (uid.isEmpty) {
+        setState(() {
+          hasInternet = true;
+          isPageLoading = false;
+        });
+        return;
+      }
+
       await userCubit.getSingleUserData(forceRefresh: forceRefresh);
-      userCubit.getUserRequests(forceRefresh: forceRefresh);
-      LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
+      await userCubit.getUserRequests(forceRefresh: forceRefresh);
+      await locationCubit.getAddresses(uid);
+
       if (!mounted) return;
 
       setState(() {
         hasInternet = true;
-        checkingInternet = false;
+        isPageLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
 
       setState(() {
         hasInternet = true;
-        checkingInternet = false;
+        isPageLoading = false;
       });
 
-      debugPrint('Error loading home data: $e');
+      debugPrint('Error loading user profile data: $e');
     }
   }
-
-
   @override
   void initState() {
     super.initState();
@@ -593,74 +605,73 @@ class _UserProfileState extends State<UserProfile> {
             return BlocBuilder<LocationCubit, LocationStates>(
               builder: (context, locationState) {
                 LocationCubit locationCubit = LocationCubit.get(context);
-                return state is GetSingleUserDataLoadingState?UserProfileShimmer(isDark: appCubit.isDark)
-                    : Directionality(
+                return Directionality(
                   textDirection: TextDirection.rtl,
                   child: Scaffold(
                     body: RefreshIndicator(
                       onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
                       child: ConditionalBuilder(
-                          condition: checkingInternet || state is GetSingleUserDataLoadingState,
-                          builder: (context) => UserProfileShimmer(isDark: appCubit.isDark),
-                          fallback: (context) => ConditionalBuilder(
-                              condition: !hasInternet,
-                              builder: (context) => NoInternet(onRetry: () => checkConnectionAndGetData(forceRefresh: true),),
-                              fallback: (context) => SingleChildScrollView(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                child: Column(
-                                  children: [
-                                    buildHeader(
-                                      appCubit: appCubit,
-                                      user: user,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsetsDirectional.only(
-                                        start: 10.w,
-                                        end: 10.w,
-                                        top: 20.h,
-                                        bottom: 20.h,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          buildQuickStats(
-                                            cubit: appCubit,
-                                            bookingCubit: userCubit,
-                                            locationCubit: locationCubit,
-                                          ),
-                                          SizedBox(height: 25.h),
-                                          buildSectionHeader(
-                                            title: 'معلومات الحساب',
-                                            icon: SvgPicture.asset(
-                                              'assets/acc.svg',
-                                              color: mainColor,
-                                              width: 25.w,
-                                            ),
-                                            cubit: appCubit,
-                                          ),
-                                          SizedBox(height: 10.h),
-                                          buildAccountInfoCard(
-                                            user: user,
-                                            cubit: appCubit,
-                                          ),
-                                          SizedBox(height: 20.h),
-                                          buildSectionHeader(
-                                            title: 'العناوين',
-                                            icon: SvgPicture.asset(
-                                              'assets/loc.svg',
-                                              color: mainColor,
-                                              width: 25.w,
-                                            ),
-                                            cubit: appCubit,
-                                          ),
-                                          SizedBox(height: 10.h),
-                                          buildAddressShortcutCard(cubit: appCubit),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                        condition: isPageLoading || state is GetSingleUserDataLoadingState,
+                        builder: (context) => UserProfileShimmer(isDark: appCubit.isDark),
+                        fallback: (context) => ConditionalBuilder(
+                          condition: !hasInternet,
+                          builder: (context) => NoInternet(onRetry: () => checkConnectionAndGetData(forceRefresh: true),),
+                          fallback: (context) => SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              children: [
+                                buildHeader(
+                                  appCubit: appCubit,
+                                  user: user,
                                 ),
-                              ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.only(
+                                    start: 10.w,
+                                    end: 10.w,
+                                    top: 20.h,
+                                    bottom: 20.h,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      buildQuickStats(
+                                        cubit: appCubit,
+                                        bookingCubit: userCubit,
+                                        locationCubit: locationCubit,
+                                      ),
+                                      SizedBox(height: 25.h),
+                                      buildSectionHeader(
+                                        title: 'معلومات الحساب',
+                                        icon: SvgPicture.asset(
+                                          'assets/acc.svg',
+                                          color: mainColor,
+                                          width: 25.w,
+                                        ),
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      buildAccountInfoCard(
+                                        user: user,
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      buildSectionHeader(
+                                        title: 'العناوين',
+                                        icon: SvgPicture.asset(
+                                          'assets/loc.svg',
+                                          color: mainColor,
+                                          width: 25.w,
+                                        ),
+                                        cubit: appCubit,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      buildAddressShortcutCard(cubit: appCubit),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                        ),
                       ),
                     ),
                   ),

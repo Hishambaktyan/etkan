@@ -191,26 +191,31 @@ class LocationCubit extends Cubit<LocationStates>{
 
   List<Map<String,dynamic>> allAddresses = [];
 
-  Future<void> getAddresses(String uId)async{
+  Future<void> getAddresses(String uId) async {
+    try {
+      emit(GetAddressesLoadingState());
 
-    emit(GetAddressesLoadingState());
+      allAddresses = [];
 
-    allAddresses=[];
+      if (uId.trim().isEmpty) {
+        emit(GetAddressesErrorState(error: 'معرف المستخدم غير موجود'));
+        return;
+      }
 
-    final addresses = await  FirebaseFirestore.instance
-        .collection('users')
-        .doc(uId)
-        .collection('addresses').get();
+      final addressesSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uId)
+          .collection('addresses')
+          .get();
 
-    try{
-      for (var doc in addresses.docs) {
-        var data = doc.data();
+      for (var doc in addressesSnapshot.docs) {
+        final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
         allAddresses.add(data);
       }
-      emit(GetAddressesSuccessState());
 
-    }catch(e){
+      emit(GetAddressesSuccessState());
+    } catch (e) {
       emit(GetAddressesErrorState(error: e.toString()));
     }
   }

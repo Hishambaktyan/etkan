@@ -73,7 +73,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             color: mainColor.withOpacity(0.10),
                             borderRadius: BorderRadius.circular(14.r),
                             image: const DecorationImage(
-                              image: AssetImage('assets/logo.png'),
+                              image: AssetImage('assets/splash.png'),
                             ),
                             boxShadow: blueShadow,
                           ),
