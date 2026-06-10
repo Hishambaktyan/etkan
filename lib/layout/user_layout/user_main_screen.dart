@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trying_homy/shared/networks/local/cache_helper.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
+import '../../shared/cubits/auth_cubit/auth_cubit.dart';
 import '../../shared/styles/colors.dart';
 
 class UserMainScreen extends StatefulWidget {
@@ -18,6 +20,15 @@ class UserMainScreen extends StatefulWidget {
 
 class _UserMainScreenState extends State<UserMainScreen> {
   DateTime? lastBackPressedTime;
+
+  @override
+  void initState() {
+    super.initState();
+    String? uid = CacheHelper.getData(key: 'uid');
+    if(uid!=null){
+      AuthCubit.get(context).saveUserToken(uid);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -96,6 +96,8 @@ class _AdminUsersListState extends State<AdminUsersList> {
           body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
+              final activeUsers = adminCubit.users.where((user) => user['isActive'] == true).length;
+              final inactiveUsers = adminCubit.users.where((user) => user['isActive'] == false).length;
               return state is GetUsersLoadingState
                   ? const AdminUsersShimmer()
                   : SingleChildScrollView(
@@ -105,51 +107,42 @@ class _AdminUsersListState extends State<AdminUsersList> {
                               title: 'إدارة المستخدمين',
                               context: context,
                               isLeading: true,
-                              isNotif: false),
-                          SizedBox(
-                            height: 10.h,
+                              isNotif: false
                           ),
+                          SizedBox(height: 10.h,),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 10.w),
+                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                             child: Row(
                               children: [
                                 buildStatCard(
                                     title: 'الحسابات المفعلة',
-                                    value: '2',
+                                    value: activeUsers.toString(),
                                     icon: 'assets/all.svg',
                                     appCubit: appCubit),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
+                                SizedBox(width: 10.w,),
                                 buildStatCard(
                                     title: 'الحسابات المعطلة',
-                                    value: '2',
+                                    value: inactiveUsers.toString(),
                                     icon: 'assets/dis.svg',
                                     appCubit: appCubit),
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h,),
                           GridView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 15.h,
                                     crossAxisSpacing: 10.w,
                                     childAspectRatio: 0.78),
-                            padding: EdgeInsetsDirectional.only(
-                                start: 10.w, end: 10.w, bottom: 20.h),
+                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h),
                             itemCount: adminCubit.users.length,
                             itemBuilder: (context, index) {
                               final user = adminCubit.users[index];
                               return InkWell(
-                                onTap: () =>
-                                    move(context, AdminUserInfo(user: user)),
+                                onTap: () => move(context, AdminUserInfo(user: user)),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 borderRadius: BorderRadius.circular(25.r),

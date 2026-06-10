@@ -44,33 +44,16 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
 
   final List<String> terminalStates = ["مرفوض", "ملغي"];
 
-  Color cardColor(AppCubit cubit) =>
-      cubit.isDark ? lightDarkColor : Colors.white;
+  Color cardColor(AppCubit cubit) => cubit.isDark ? lightDarkColor : Colors.white;
 
-  Color primaryTextColor(AppCubit cubit) =>
-      cubit.isDark ? Colors.white : Colors.black;
+  Color primaryTextColor(AppCubit cubit) => cubit.isDark ? Colors.white : Colors.black;
 
-  Color secondaryTextColor(AppCubit cubit) =>
-      cubit.isDark ? darkSubTextColor : Colors.grey;
+  Color secondaryTextColor(AppCubit cubit) => cubit.isDark ? darkSubTextColor : Colors.grey;
 
-  Color dividerColor(AppCubit cubit) =>
-      cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade300;
+  Color dividerColor(AppCubit cubit) => cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade300;
 
-  Color inactiveStepColor(AppCubit cubit) =>
-      cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200;
+  Color inactiveStepColor(AppCubit cubit) => cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200;
 
-  List<BoxShadow> cardShadow(AppCubit cubit) => cubit.isDark ? [] : blueShadow;
-
-  BoxDecoration cardDecoration(
-    AppCubit cubit, {
-    double radius = 25,
-  }) {
-    return BoxDecoration(
-      color: cardColor(cubit),
-      borderRadius: BorderRadius.circular(radius.r),
-      boxShadow: cardShadow(cubit),
-    );
-  }
 
   Widget buildHorizontalStepper(
       {required int currentStep, required dynamic cubit}) {
@@ -146,11 +129,12 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
   }
 
   void showFullTrackingSheet(
-      BuildContext context, AppCubit cubit, dynamic requestData) {
+      BuildContext context, AppCubit cubit, dynamic requestData)
+  {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: cardColor(cubit),
+      backgroundColor: cubit.isDark ? darkBgColor : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
       ),
@@ -169,7 +153,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                     width: 40.w,
                     height: 5.h,
                     decoration: BoxDecoration(
-                      color: dividerColor(cubit),
+                      color: cubit.isDark ? Colors.white : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -180,49 +164,49 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
-                    color: primaryTextColor(cubit),
+                    color: cubit.isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 SizedBox(height: 25.h),
                 Expanded(
                   child: ListView(
                       children: List.generate(
-                    stepperSteps.length,
-                    (index) {
-                      String currentStatusFromDb = requestData['status'];
-                      Map<int, String> statusTimesKeys = {
-                        0: 'createdAt',
-                        1: 'acceptedAt',
-                        2: 'processingAt',
-                        3: 'completedAt',
-                      };
-                      String timeKey = statusTimesKeys[index]!;
-                      String displayTime =
-                          formatStatusTime(requestData[timeKey]);
-                      bool isDone;
-                      bool isActive;
-                      Color circleColor;
-                      int currentStepIndex =
+                        stepperSteps.length,
+                            (index) {
+                          String currentStatusFromDb = requestData['status'];
+                          final Map<String, dynamic> statusHistory =
+                          Map<String, dynamic>.from(requestData['statusHistory'] ?? {});
+                          Map<int, dynamic> statusTimes = {
+                            0: statusHistory['pendingAt'] ?? requestData['createdAt'],
+                            1: statusHistory['acceptedAt'],
+                            2: statusHistory['onWayAt'],
+                            3: statusHistory['completedAt'],
+                          };
+                          String displayTime = formatStatusTime(statusTimes[index]);
+                          bool isDone;
+                          bool isActive;
+                          Color circleColor;
+                          int currentStepIndex =
                           stepperSteps.indexOf(currentStatusFromDb);
-                      if (terminalStates.contains(currentStatusFromDb)) {
-                        isDone = index < stepperSteps.indexOf("مقبول");
-                        isActive = false;
-                        circleColor = Colors.red;
-                      } else {
-                        isDone = index < currentStepIndex;
-                        isActive = index == currentStepIndex;
-                        circleColor = mainColor;
-                      }
-                      return buildVerticalStep(
-                        stepperSteps[index],
-                        displayTime,
-                        isDone,
-                        index != stepperSteps.length - 1,
-                        cubit,
-                        isActive: isActive,
-                      );
-                    },
-                  )),
+                          if (terminalStates.contains(currentStatusFromDb)) {
+                            isDone = index < stepperSteps.indexOf("مقبول");
+                            isActive = false;
+                            circleColor = Colors.red;
+                          } else {
+                            isDone = index < currentStepIndex;
+                            isActive = index == currentStepIndex;
+                            circleColor = mainColor;
+                          }
+                          return buildVerticalStep(
+                            stepperSteps[index],
+                            displayTime,
+                            isDone,
+                            index != stepperSteps.length - 1,
+                            cubit,
+                            isActive: isActive,
+                          );
+                        },
+                      )),
                 ),
               ],
             ),
@@ -231,7 +215,6 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
       },
     );
   }
-
   Widget buildVerticalStep(
       String title, String time, bool isDone, bool showLine, dynamic cubit,
       {bool isActive = false}) {
@@ -343,13 +326,11 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
     final Map<String, dynamic> userData = widget.userData;
     return BlocBuilder<AdminCubit, AdminStates>(
       builder: (context, state) {
-        AdminCubit adminCubit = AdminCubit.get(context);
         final AppCubit appCubit = context.watch<AppCubit>();
 
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
             body: SingleChildScrollView(
               child: Column(
                 children: [
@@ -409,18 +390,8 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                           ? lightDarkColor
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(25.r),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: mainColor.withOpacity(0.2),
-                                          spreadRadius: 1.0,
-                                          blurRadius: 7.0,
-                                          offset: const Offset(2, 5),
-                                        ),
-                                      ],
-                                      border: appCubit.isDark
-                                          ? Border.all(
-                                              color: const Color(0xFF30363D))
-                                          : null),
+                                      boxShadow: blueShadow
+                                  ),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -696,16 +667,12 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                     height: 15.h,
                   ),
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                    padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 10.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        buildSectionTitle(
-                            title: 'مراحل التنفيذ', icon: Icons.route_outlined),
-                        SizedBox(
-                          height: 10.h,
-                        ),
+                        buildSectionTitle(title: 'مراحل التنفيذ', icon: Icons.route_outlined),
+                        SizedBox(height: 10.h,),
                         Container(
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
@@ -713,17 +680,8 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                   ? lightDarkColor
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: mainColor.withOpacity(0.2),
-                                  spreadRadius: 1.0,
-                                  blurRadius: 7.0,
-                                  offset: const Offset(2, 5),
-                                ),
-                              ],
-                              border: appCubit.isDark
-                                  ? Border.all(color: const Color(0xFF30363D))
-                                  : null),
+                              boxShadow: blueShadow,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -772,18 +730,9 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                               color: appCubit.isDark
                                   ? lightDarkColor
                                   : Colors.white,
-                              borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: mainColor.withOpacity(0.2),
-                                  spreadRadius: 1.0,
-                                  blurRadius: 7.0,
-                                  offset: const Offset(2, 5),
-                                ),
-                              ],
-                              border: appCubit.isDark
-                                  ? Border.all(color: const Color(0xFF30363D))
-                                  : null),
+                              borderRadius: BorderRadius.circular(20.r),
+                              boxShadow: blueShadow
+                          ),
                           child: Column(
                             children: [
                               ReadMoreText(
@@ -820,17 +769,8 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                   ? lightDarkColor
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: mainColor.withOpacity(0.2),
-                                  spreadRadius: 1.0,
-                                  blurRadius: 7.0,
-                                  offset: const Offset(2, 5),
-                                ),
-                              ],
-                              border: appCubit.isDark
-                                  ? Border.all(color: const Color(0xFF30363D))
-                                  : null),
+                              boxShadow: blueShadow
+                          ),
                           child: Column(
                             children: [
                               Row(
@@ -878,8 +818,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                               SizedBox(height: 20.h),
                               defaultOutlinedButtonWithIcon(
                                 onPressed: () => move(
-                                  context,
-                                  AdminProviderInfo(provider: providerData),
+                                  context, AdminProviderInfo(provider: providerData),
                                 ),
                                 text: 'المزيد',
                                 fontSize: 13.sp,
@@ -913,17 +852,8 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                   ? lightDarkColor
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: mainColor.withOpacity(0.2),
-                                  spreadRadius: 1.0,
-                                  blurRadius: 7.0,
-                                  offset: const Offset(2, 5),
-                                ),
-                              ],
-                              border: appCubit.isDark
-                                  ? Border.all(color: const Color(0xFF30363D))
-                                  : null),
+                              boxShadow: blueShadow
+                          ),
                           child: Column(
                             children: [
                               Row(
@@ -971,8 +901,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                               SizedBox(height: 20.h),
                               defaultOutlinedButtonWithIcon(
                                 onPressed: () => move(
-                                  context,
-                                  AdminUserInfo(user: userData),
+                                  context, AdminUserInfo(user: userData),
                                 ),
                                 text: 'المزيد',
                                 fontSize: 13.sp,

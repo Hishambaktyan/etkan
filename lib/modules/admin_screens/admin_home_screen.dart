@@ -36,7 +36,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final List<Map<String, dynamic>> adminCards = [
     {
       'icon': 'assets/acc.svg',
-      'title': 'المستخدمون',
+      'title': 'المستخدمين',
       'color': mainColor,
     },
     {
@@ -46,12 +46,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     },
     {
       'icon': 'assets/bookings.svg',
-      'title': 'الطلبات',
+      'title': 'الحجوزات',
       'color': Colors.orange,
     },
     {
       'icon': 'assets/providers.svg',
-      'title': 'الفنيّون',
+      'title': 'الفنيين',
       'color': Colors.red,
     },
   ];
@@ -97,7 +97,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       ],
     );
   }
-
   DateTime? lastBackPressedTime;
 
   @override
@@ -152,11 +151,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     }
                                   },
                                   builder: (context, state) {
-                                    AuthCubit authCubit =
-                                        AuthCubit.get(context);
+                                    AuthCubit authCubit = AuthCubit.get(context);
                                     return header(
                                       title: 'مرحبا، هشام',
                                       context: context,
+                                      isNotif: false,
                                       isAction: true,
                                       isTheme: true,
                                       actionIcon: 'assets/out.svg',
@@ -184,14 +183,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: adminCards.length,
-                                  padding: EdgeInsetsDirectional.only(
-                                    start: 10.w,
-                                    end: 10.w,
-                                    top: 20.h,
-                                    bottom: 15.h,
-                                  ),
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                  padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 15.h,),
+                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 15.h,
                                     crossAxisSpacing: 12.w,
@@ -204,8 +197,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         color: appCubit.isDark
                                             ? lightDarkColor
                                             : Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(25.r),
+                                        borderRadius: BorderRadius.circular(25.r),
                                         boxShadow: blueShadow,
                                       ),
                                       child: Stack(
@@ -237,19 +229,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             ),
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.all(15.r),
+                                            padding: EdgeInsetsDirectional.all(15.r),
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Container(
-                                                      padding:
-                                                          EdgeInsets.all(10.r),
+                                                      padding: EdgeInsetsDirectional.all(10.r),
                                                       decoration: BoxDecoration(
                                                         color: card['color']
                                                             .withOpacity(0.08),
@@ -323,12 +311,103 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     );
                                   },
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 10.h,),
+                                if (adminCubit.verificationRequests.isNotEmpty)
+                                  Container(
+                                    margin: EdgeInsetsDirectional.only(start: 10.w, end: 10.w),
+                                    padding: EdgeInsetsDirectional.all(15.r),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.withOpacity(appCubit.isDark ? 0.1 : 0.08),
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsetsDirectional.all(10.r),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.withOpacity(0.2),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: SvgPicture.asset('assets/verf.svg',color: Colors.orangeAccent,)
+                                        ),
+                                        SizedBox(width: 15.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'طلبات توثيق',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.sp,
+                                                  color: appCubit.isDark ? Colors.white : Colors.black,
+                                                ),
+                                              ),
+                                              SizedBox(height: 4.h),
+                                              Text(
+                                                'يوجد ${adminCubit.verificationRequests.length} طلبات توثيق جديدة بانتظار المراجعة',
+                                                style: TextStyle(
+                                                  fontSize: 11.sp,
+                                                  color: appCubit.isDark ? darkSubTextColor : Colors.grey[700],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                SizedBox(height: 15.h,),
+                                if (adminCubit.subscriptionRequests.isNotEmpty)
+                                  Container(
+                                    margin: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h),
+                                    padding: EdgeInsetsDirectional.all(15.r),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(appCubit.isDark ? 0.1 : 0.08),
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      border: Border.all(color: Colors.blue.withOpacity(0.5), width: 1),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsetsDirectional.all(10.r),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.withOpacity(0.2),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: SvgPicture.asset('assets/subs.svg',color: Colors.blueAccent,)
+                                        ),
+                                        SizedBox(width: 15.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'طلبات اشتراك',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.sp,
+                                                  color: appCubit.isDark ? Colors.white : Colors.black,
+                                                ),
+                                              ),
+                                              SizedBox(height: 4.h),
+                                              Text(
+                                                'يوجد ${adminCubit.subscriptionRequests.length} طلبات اشتراك جديدة بانتظار المراجعة',
+                                                style: TextStyle(
+                                                  fontSize: 11.sp,
+                                                  color: appCubit.isDark ? darkSubTextColor : Colors.grey[700],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 Padding(
                                   padding:
-                                      EdgeInsetsDirectional.only(start: 15.w),
+                                  EdgeInsetsDirectional.only(start: 15.w),
                                   child: Row(
                                     children: [
                                       Container(
@@ -337,8 +416,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         padding: EdgeInsetsDirectional.all(8.w),
                                         decoration: BoxDecoration(
                                             color: mainColor.withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(10.r)),
+                                            borderRadius: BorderRadius.circular(10.r)),
                                         child: SvgPicture.asset(
                                           'assets/grid.svg',
                                           color: mainColor,
@@ -366,32 +444,75 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                GridView.builder(
+                                SizedBox(height: 10.h,),
+                                adminCubit.categories.isEmpty? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 70.w,
+                                        height: 70.w,
+                                        padding: EdgeInsetsDirectional.all(15.r),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          mainColor.withOpacity(0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/grid.svg',
+                                          color: mainColor,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'لا توجد أقسام',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.sp,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Padding(
+                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
+                                        child: Text(
+                                          'لم يتم العثور على أي فنيين حالياً. سيتم عرض الفنيين المسجلين في النظام هنا.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            height: 1.6,
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    :GridView.builder(
                                   shrinkWrap: true,
-                                  padding: EdgeInsetsDirectional.symmetric(
-                                      horizontal: 10.w),
+                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                   physics: const NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 10.h,
                                     crossAxisSpacing: 10.w,
                                     childAspectRatio: 2.1,
                                   ),
-                                  itemCount: adminCubit.categories.length > 4
-                                      ? 4
-                                      : adminCubit.categories.length,
+                                  itemCount: adminCubit.categories.length > 4 ? 4 : adminCubit.categories.length,
                                   itemBuilder: (context, index) {
-                                    final caterory =
-                                        adminCubit.categories[index];
+                                    final category = adminCubit.categories[index];
                                     return InkWell(
                                       splashColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () => move(context,
-                                          ManageDept(category: caterory)),
+                                          ManageDept(category: category)),
                                       child: Container(
                                         padding:
                                             EdgeInsetsDirectional.all(10.w),
@@ -419,13 +540,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                           18.r),
                                                 ),
                                                 child: SvgPicture.network(
-                                                  caterory['image'],
+                                                  category['image'],
                                                   fit: BoxFit.cover,
                                                 )),
                                             SizedBox(width: 10.w),
                                             Expanded(
                                               child: Text(
-                                                caterory['title']!,
+                                                category['title']!,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 12.sp,
@@ -447,12 +568,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     );
                                   },
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                                 Padding(
-                                  padding:
-                                      EdgeInsetsDirectional.only(start: 15.w),
+                                  padding: EdgeInsetsDirectional.only(start: 15.w),
                                   child: Row(
                                     children: [
                                       Container(
@@ -461,8 +579,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         padding: EdgeInsetsDirectional.all(8.w),
                                         decoration: BoxDecoration(
                                             color: mainColor.withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(10.r)),
+                                            borderRadius: BorderRadius.circular(10.r)),
                                         child: SvgPicture.asset(
                                           'assets/providers.svg',
                                           color: mainColor,
@@ -489,10 +606,58 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                SizedBox(
+                                SizedBox(height: 10.h,),
+                                adminCubit.providers.isEmpty? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 70.w,
+                                        height: 70.w,
+                                        padding: EdgeInsetsDirectional.all(15.r),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          mainColor.withOpacity(0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/providers.svg',
+                                          color: mainColor,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'لا يوجد فنيون',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.sp,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Padding(
+                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
+                                        child: Text(
+                                          'لم يتم العثور على أي فنيين حالياً. سيتم عرض الفنيين المسجلين في النظام هنا.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            height: 1.6,
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    :SizedBox(
                                   height: 270.h,
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
@@ -730,9 +895,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     },
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                                 Padding(
                                   padding:
                                       EdgeInsetsDirectional.only(start: 15.w),
@@ -774,10 +937,58 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                SizedBox(
+                                SizedBox(height: 10.h,),
+                                adminCubit.services.isEmpty? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 70.w,
+                                        height: 70.w,
+                                        padding: EdgeInsetsDirectional.all(15.r),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          mainColor.withOpacity(0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/services.svg',
+                                          color: mainColor,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'لا توجد خدمات',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.sp,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Padding(
+                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
+                                        child: Text(
+                                          'لم يتم العثور على أي خدمات حالياً. ستظهر الخدمات هنا بمجرد إضافتها إلى النظام.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            height: 1.6,
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    :SizedBox(
                                   height: 310.h,
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
@@ -797,11 +1008,21 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         orElse: () => {},
                                       );
                                       return InkWell(
-                                        onTap: () => move(
-                                            context,
+                                        onTap: () => move(context,
                                             AdminServiceDetails(
-                                                reviews: service['reviews'],
-                                                service: service)),
+                                              name: service['name'],
+                                              image: service['serviceImage'],
+                                              category: service['category'],
+                                              desc: service['description'],
+                                              price: service['price'],
+                                              period: service['period'],
+                                              providerName: providerData['name'],
+                                              providerSpec: providerData['specialization'],
+                                              reviews: service['reviews'] ?? '',
+                                              providerId: providerData['uid'],
+                                              serviceId: service['id'],
+                                            )
+                                        ),
                                         splashColor: Colors.transparent,
                                         highlightColor: Colors.transparent,
                                         borderRadius:
@@ -1088,9 +1309,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                                 Padding(
                                   padding:
                                       EdgeInsetsDirectional.only(start: 15.w),
@@ -1133,8 +1352,58 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 10.h),
-                                SizedBox(
-                                  height: 400.h,
+                                adminCubit.requests.isEmpty? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 70.w,
+                                        height: 70.w,
+                                        padding: EdgeInsetsDirectional.all(15.r),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          mainColor.withOpacity(0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/ticket.svg',
+                                          color: mainColor,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'لا توجد حجوزات لك',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.sp,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Padding(
+                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
+                                        child: Text(
+                                          'عند حجز أي خدمة ستظهر تفاصيل الحجز هنا.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            height: 1.6,
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    :SizedBox(
+                                  height: 410.h,
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
                                     padding: EdgeInsetsDirectional.only(
@@ -1432,9 +1701,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                                 Padding(
                                   padding:
                                       EdgeInsetsDirectional.only(start: 15.w),
@@ -1475,10 +1742,58 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                SizedBox(
+                                SizedBox(height: 10.h,),
+                                adminCubit.users.isEmpty? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 70.w,
+                                        height: 70.w,
+                                        padding: EdgeInsetsDirectional.all(15.r),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          mainColor.withOpacity(0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/acc.svg',
+                                          color: mainColor,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'لا يوجد مستخدمون',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.sp,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w),
+                                        child: Text(
+                                          'سيظهر المستخدمون هنا بعد إنشاء حسابات جديدة في التطبيق.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            height: 1.6,
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    :SizedBox(
                                   height: 250.h,
                                   child: ListView.separated(
                                     padding: EdgeInsetsDirectional.only(
@@ -1617,16 +1932,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20.h,
-                                ),
+                                SizedBox(height: 20.h,),
                               ],
                             ),
                           );
                   },
                 ),
               ),
-            ));
+            )
+        );
       },
     );
   }

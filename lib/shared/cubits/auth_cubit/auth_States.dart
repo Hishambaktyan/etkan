@@ -68,18 +68,6 @@ class LogOutErrorState extends AuthStates {
 
 //////////////////////////////////////
 
-class DeleteUserAccSuccessState extends AuthStates {}
-
-class DeleteUserAccLoadingState extends AuthStates {}
-
-class DeleteUserAccErrorState extends AuthStates {
-  final String error;
-
-  DeleteUserAccErrorState({required this.error});
-}
-
-//////////////////////////////////////
-
 class SendPhoneCodeSuccessState extends AuthStates {
   final String phone;
   final String userType;

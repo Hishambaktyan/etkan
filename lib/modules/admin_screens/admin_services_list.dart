@@ -96,6 +96,8 @@ class _AdminServicesListState extends State<AdminServicesList> {
           body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
+              final activeServices = adminCubit.services.where((service) => service['isActive'] == true).length;
+              final inactiveServices = adminCubit.services.where((service) => service['isActive'] == false).length;
               return SingleChildScrollView(
                 child: state is GetServicesLoadingState
                     ? const AdminServicesShimmer()
@@ -105,26 +107,22 @@ class _AdminServicesListState extends State<AdminServicesList> {
                               title: 'قائمة الخدمات',
                               context: context,
                               isNotif: false,
-                              isLeading: true),
-                          SizedBox(
-                            height: 10.h,
+                              isLeading: true
                           ),
+                          SizedBox(height: 10.h,),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 10.w),
+                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                             child: Row(
                               children: [
                                 buildStatCard(
                                     title: 'الخدمات المفعلة',
-                                    value: '2',
+                                    value: activeServices.toString(),
                                     icon: 'assets/all.svg',
                                     appCubit: appCubit),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
+                                SizedBox(width: 10.w,),
                                 buildStatCard(
                                     title: 'الخدمات المعطلة',
-                                    value: '2',
+                                    value: inactiveServices.toString(),
                                     icon: 'assets/dis.svg',
                                     appCubit: appCubit),
                               ],
@@ -138,17 +136,23 @@ class _AdminServicesListState extends State<AdminServicesList> {
                             itemCount: adminCubit.services.length,
                             itemBuilder: (context, index) {
                               final service = adminCubit.services[index];
-                              final providerData =
-                                  adminCubit.providers.firstWhere(
-                                (element) =>
-                                    element['id'] == service['providerId'],
-                              );
+                              final providerData = adminCubit.providers.firstWhere((element) => element['id'] == service['providerId'],);
                               return InkWell(
-                                onTap: () => move(
-                                    context,
+                                onTap: () => move(context,
                                     AdminServiceDetails(
-                                        reviews: service['reviews'],
-                                        service: service)),
+                                  name: service['name'],
+                                  image: service['serviceImage'],
+                                  category: service['category'],
+                                  desc: service['description'],
+                                  price: service['price'],
+                                  period: service['period'],
+                                  providerName: providerData['name'],
+                                  providerSpec: providerData['specialization'],
+                                  reviews: service['reviews'] ?? '',
+                                  providerId: providerData['uid'],
+                                  serviceId: service['id'],
+                                )
+                                ),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 borderRadius: BorderRadius.circular(25.r),

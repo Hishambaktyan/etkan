@@ -62,11 +62,11 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                       isLeading: true,
                     ),
                     Padding(
-                      padding: EdgeInsets.all(15.r),
+                      padding: EdgeInsetsDirectional.all(15.r),
                       child: Column(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(20.r),
+                            padding: EdgeInsetsDirectional.all(20.r),
                             decoration: BoxDecoration(
                               color: appCubit.isDark
                                   ? lightDarkColor

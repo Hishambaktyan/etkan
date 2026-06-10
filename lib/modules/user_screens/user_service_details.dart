@@ -51,7 +51,6 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
   final TextEditingController commentController = TextEditingController();
   double userRating = 0;
 
-
   Widget buildSectionTitle({
     required String title,
     required IconData icon,
@@ -551,14 +550,15 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                 ),
                 SizedBox(height: 10.h,),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                  padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 10.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       buildSectionTitle(
                           title: 'وصف الخدمة',
                           icon: Icons.notes_rounded,
-                          cubit: appCubit),
+                          cubit: appCubit
+                      ),
                       SizedBox(height: 10.h),
                       Container(
                         width: double.infinity,
@@ -591,7 +591,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                       buildSectionTitle(
                           title: 'معلومات الفني',
                           icon: Icons.person_pin_outlined,
-                          cubit: appCubit),
+                          cubit: appCubit
+                      ),
                       SizedBox(height: 10.h),
                       Container(
                         padding: EdgeInsetsDirectional.all(18.r),
@@ -615,14 +616,18 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      providerData['name'] ?? '',
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: appCubit.isDark
-                                            ? Colors.white
-                                            : Colors.black,
+                                    SizedBox(
+                                      width: 230.w,
+                                      child: Text(
+                                        providerData['name'] ?? '',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: appCubit.isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
                                       ),
                                     ),
                                     Text(

@@ -310,9 +310,7 @@ class NotificationCubit extends Cubit<NotificationStates> {
   List<Map<String, dynamic>> userNotifications = [];
 
   int get unreadNotificationsCount {
-    return userNotifications
-        .where((notification) => notification['isRead'] != true)
-        .length;
+    return userNotifications.where((notification) => notification['isRead'] != true).length;
   }
 
   bool isNotificationsLoaded = false;

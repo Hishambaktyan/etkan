@@ -344,7 +344,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
   Widget buildExperienceItem(AppCubit cubit, int index) {
     final String experience = experiences[index];
-
     return Padding(
       padding: EdgeInsetsDirectional.only(bottom: 10.h),
       child: Container(
@@ -395,27 +394,47 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
   Widget buildPreviousWorks(AppCubit cubit) {
     return SizedBox(
-      height: 125.h,
+      height: 135.h,
       child: previousWorks.isEmpty
           ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.inbox_rounded,
-                  color: Colors.grey.shade400,
-                  size: 50.w,
-                ),
-                SizedBox(height: 5.h),
-                Text(
-                  'لا توجد أعمال مضافة حتى الآن',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-              ],
-            )
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+              width: 60.w,
+              height: 60.w,
+              padding: EdgeInsetsDirectional.all(15.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset('assets/image.svg',color: mainColor,)
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            'لا توجد أعمال سابقة',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14.sp,
+              color: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .color,
+            ),
+          ),
+          Text(
+            'أضف صورًا لأعمالك السابقة لعرض مهاراتك وزيادة ثقة العملاء بخدماتك.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 8.sp,
+              height: 1.6,
+              color: cubit.isDark
+                  ? darkSubTextColor
+                  : Colors.grey.shade600,
+            ),
+          ),
+        ],
+      )
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: previousWorks.length,

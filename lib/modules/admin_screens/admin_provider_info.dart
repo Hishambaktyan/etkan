@@ -216,7 +216,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
             body: SingleChildScrollView(
               child: Column(
                 children: [
@@ -231,6 +230,61 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                     child: Column(
                       children: [
                         buildQuickStats(),
+                        SizedBox(height: 15.h),
+                        Container(
+                          padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 12.w, vertical: 5.h),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark
+                                ? lightDarkColor
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(20.r),
+                            boxShadow: blueShadow,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                  padding: EdgeInsets.all(8.r),
+                                  decoration: BoxDecoration(
+                                    color: mainColor.withOpacity(0.1),
+                                    borderRadius:
+                                    BorderRadius.circular(10.r),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/power.svg',
+                                    color: mainColor,
+                                  )),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Text(
+                                  'حالة الحساب (نشط / معطل)',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: appCubit.isDark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ),
+                              Switch.adaptive(
+                                value: isActive,
+                                activeColor: mainColor,
+                                activeTrackColor:
+                                mainColor.withOpacity(0.3),
+                                onChanged: (value) {
+                                  setState(() {
+                                    isActive = value;
+                                    adminCubit.updateAccountStatus(
+                                        userId: providerId,
+                                        isActive: isActive
+                                    );
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(height: 25.h),
                         buildSectionHeader(
                           title: 'معلومات التواصل',
@@ -367,7 +421,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       ),
       child: Container(
         width: double.infinity,
-        height: 340.h,
+        height: 350.h,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -498,11 +552,11 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                                 : null,
                           ),
                         ),
-                        SizedBox(height: 5.h),
+                        SizedBox(height: 10.h),
                         Text(
                           providerData['name'] ?? 'عامل',
                           style: TextStyle(
-                            fontSize: 20.sp,
+                            fontSize: 18.sp,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),

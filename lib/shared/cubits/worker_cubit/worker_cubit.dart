@@ -286,24 +286,6 @@ class WorkerCubit extends Cubit<WorkerStates> {
     }
   }
 
-  bool amAvailable = true;
-
-  Future<void> changeAvailability(bool value) async {
-    try {
-      amAvailable = value;
-      emit(ChangeAvailabilityState());
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(CacheHelper.getData(key: 'uid'))
-          .update({
-        'isAvailable': value,
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
   Future<void> changeServiceActivity({
     required bool value,
     required String serviceId,

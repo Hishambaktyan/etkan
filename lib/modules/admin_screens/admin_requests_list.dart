@@ -145,38 +145,33 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
       builder: (context, state) {
         AdminCubit adminCubit = AdminCubit.get(context);
         final AppCubit appCubit = context.watch<AppCubit>();
-
         List<Map<String, dynamic>> requests = selectedStatus == 'الكل'
             ? adminCubit.requests
             : adminCubit.requests
                 .where((booking) => booking['status'] == selectedStatus)
                 .toList();
 
-        int pendingCount = adminCubit.requests
-            .where((r) => r['status'] == 'قيد الانتظار')
-            .length;
+        int pendingCount = adminCubit.requests.where((r) => r['status'] == 'قيد الانتظار').length;
 
-        int acceptedCount =
-            adminCubit.requests.where((r) => r['status'] == 'مقبول').length;
+        int acceptedCount = adminCubit.requests.where((r) => r['status'] == 'مقبول').length;
 
-        int onWayCount =
-            adminCubit.requests.where((r) => r['status'] == 'في الطريق').length;
+        int onWayCount = adminCubit.requests.where((r) => r['status'] == 'في الطريق').length;
 
-        int completedCount =
-            adminCubit.requests.where((r) => r['status'] == 'مكتمل').length;
+        int completedCount = adminCubit.requests.where((r) => r['status'] == 'مكتمل').length;
 
-        int rejectedCount =
-            adminCubit.requests.where((r) => r['status'] == 'مرفوض').length;
+        int rejectedCount = adminCubit.requests.where((r) => r['status'] == 'مرفوض').length;
 
-        int cancelledCount =
-            adminCubit.requests.where((r) => r['status'] == 'ملغي').length;
+        int cancelledCount = adminCubit.requests.where((r) => r['status'] == 'ملغي').length;
+
+        bool isLoading = state is GetRequestsLoadingState
+        || state is GetUsersLoadingState
+        || state is GetProvidersLoadingState;
 
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
             body: SingleChildScrollView(
-              child: state is GetRequestsLoadingState
+              child: isLoading
                   ? const AdminRequestsShimmer()
                   : Column(
                       children: [
@@ -192,8 +187,7 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
                               child: GridView(
                                 physics: const NeverScrollableScrollPhysics(),
                                 padding: const EdgeInsetsGeometry.all(15),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 2,
                                         childAspectRatio: 2,
                                         crossAxisSpacing: 10.w,
@@ -208,7 +202,7 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
                                   buildStatCard(
                                     title: 'مقبولة',
                                     value: acceptedCount.toString(),
-                                    icon: 'assets/grid.svg',
+                                    icon: 'assets/all.svg',
                                     appCubit: appCubit,
                                   ),
                                   buildStatCard(
@@ -220,13 +214,13 @@ class _AdminRequestsListState extends State<AdminRequestsList> {
                                   buildStatCard(
                                     title: 'مكتملة',
                                     value: completedCount.toString(),
-                                    icon: 'assets/grid.svg',
+                                    icon: 'assets/all.svg',
                                     appCubit: appCubit,
                                   ),
                                   buildStatCard(
                                     title: 'مرفوضة',
                                     value: rejectedCount.toString(),
-                                    icon: 'assets/delete.svg',
+                                    icon: 'assets/x.svg',
                                     appCubit: appCubit,
                                   ),
                                   buildStatCard(

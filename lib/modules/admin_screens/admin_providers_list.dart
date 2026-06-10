@@ -91,20 +91,11 @@ class _AdminProvidersListState extends State<AdminProvidersList> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
           body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
-              final activeProviders = adminCubit.providers
-                  .where(
-                    (element) => element['isActive'] == true,
-                  )
-                  .toList();
-              final inactiveProviders = adminCubit.providers
-                  .where(
-                    (element) => element['isActive'] == false,
-                  )
-                  .toList();
+              final activeProviders = adminCubit.providers.where((element) => element['isActive'] == true,).length;
+              final inactiveProviders = adminCubit.providers.where((element) => element['isActive'] == false,).length;
               return SingleChildScrollView(
                 child: state is GetProvidersLoadingState
                     ? const AdminProvidersShimmer()
@@ -119,13 +110,12 @@ class _AdminProvidersListState extends State<AdminProvidersList> {
                             height: 10.h,
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 10.w),
+                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                             child: Row(
                               children: [
                                 buildStatCard(
                                     title: 'الحسابات المفعلة',
-                                    value: '${activeProviders.length}',
+                                    value: activeProviders.toString(),
                                     icon: 'assets/all.svg',
                                     appCubit: appCubit),
                                 SizedBox(
@@ -133,7 +123,7 @@ class _AdminProvidersListState extends State<AdminProvidersList> {
                                 ),
                                 buildStatCard(
                                     title: 'الحسابات المعطلة',
-                                    value: '${inactiveProviders.length}',
+                                    value: inactiveProviders.toString(),
                                     icon: 'assets/dis.svg',
                                     appCubit: appCubit),
                               ],

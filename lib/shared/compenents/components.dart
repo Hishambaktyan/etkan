@@ -4927,7 +4927,6 @@ class UserWorkerProfileShimmer extends StatelessWidget {
         decoration: BoxDecoration(
           color: containerColor,
           borderRadius: BorderRadius.circular(25.r),
-          boxShadow: isDark ? [] : blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -4986,7 +4985,6 @@ class UserWorkerProfileShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(25.r),
-        boxShadow: isDark ? [] : blueShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -5026,7 +5024,6 @@ class UserWorkerProfileShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(25.r),
-        boxShadow: isDark ? [] : blueShadow,
       ),
       child: Column(
         children: [
@@ -5072,7 +5069,6 @@ class UserWorkerProfileShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(25.r),
-        boxShadow: isDark ? [] : blueShadow,
       ),
       child: SizedBox(
         height: 160.h,

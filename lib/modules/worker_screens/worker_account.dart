@@ -29,7 +29,7 @@ class WorkerAccount extends StatefulWidget {
 }
 
 class _WorkerAccountState extends State<WorkerAccount> {
-  Widget _buildSectionTitle({
+  Widget buildSectionTitle({
     required String title,
     required String icon,
     required AppCubit appCubit,
@@ -67,7 +67,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
     );
   }
 
-  Widget _buildMenuCard({
+  Widget buildMenuCard({
     required AppCubit appCubit,
     required List<Widget> children,
   }) {
@@ -93,7 +93,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
     );
   }
 
-  Widget _buildDivider(AppCubit appCubit) {
+  Widget buildDivider(AppCubit appCubit) {
     return Divider(
       height: 1,
       color: appCubit.isDark
@@ -102,7 +102,7 @@ class _WorkerAccountState extends State<WorkerAccount> {
     );
   }
 
-  Widget _buildMenuItem({
+  Widget buildMenuItem({
     required AppCubit appCubit,
     required String title,
     required String icon,
@@ -192,23 +192,9 @@ class _WorkerAccountState extends State<WorkerAccount> {
             if (state is LogOutErrorState) {
               showSnackBar(Colors.red, state.error, context);
             }
-            if (state is DeleteUserAccLoadingState) {
-              showLoadingDialog(context);
-            }
-            if (state is DeleteUserAccSuccessState) {
-              hideLoadingDialog(context);
-              showSnackBar(Colors.green, 'تم حذف حسابك بنجاح', context);
-              moveAndReplace(context, const OnBoardingScreen());
-              appCubit.changeIndex(0);
-            }
-            if (state is DeleteUserAccErrorState) {
-              hideLoadingDialog(context);
-              showSnackBar(Colors.red, state.error, context);
-            }
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            Map<String, dynamic> user = appCubit.allUsers[CacheHelper.getData(key: 'uid')] ?? {};
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
@@ -220,15 +206,15 @@ class _WorkerAccountState extends State<WorkerAccount> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      _buildSectionTitle(
+                      buildSectionTitle(
                         title: 'الحساب الشخصي',
                         icon: 'assets/acc.svg',
                         appCubit: appCubit,
                       ),
-                      _buildMenuCard(
+                      buildMenuCard(
                         appCubit: appCubit,
                         children: [
-                          _buildMenuItem(
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'عرض الحساب',
                             icon: 'assets/eye.svg',
@@ -238,15 +224,15 @@ class _WorkerAccountState extends State<WorkerAccount> {
                           ),
                         ],
                       ),
-                      _buildSectionTitle(
+                      buildSectionTitle(
                         title: 'خدمات التطبيق',
                         icon: 'assets/grid.svg',
                         appCubit: appCubit,
                       ),
-                      _buildMenuCard(
+                      buildMenuCard(
                         appCubit: appCubit,
                         children: [
-                          _buildMenuItem(
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'الاشتراك',
                             icon: 'assets/subs.svg',
@@ -257,8 +243,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                               );
                             },
                           ),
-                          _buildDivider(appCubit),
-                          _buildMenuItem(
+                          buildDivider(appCubit),
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'توثيق الحساب',
                             icon: 'assets/verf.svg',
@@ -271,15 +257,15 @@ class _WorkerAccountState extends State<WorkerAccount> {
                           ),
                         ],
                       ),
-                      _buildSectionTitle(
+                      buildSectionTitle(
                         title: 'الدعم والمعلومات',
                         icon: 'assets/support.svg',
                         appCubit: appCubit,
                       ),
-                      _buildMenuCard(
+                      buildMenuCard(
                         appCubit: appCubit,
                         children: [
-                          _buildMenuItem(
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'تواصل معنا',
                             icon: 'assets/chat.svg',
@@ -287,8 +273,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                               move(context, const ContactUsScreen());
                             },
                           ),
-                          _buildDivider(appCubit),
-                          _buildMenuItem(
+                          buildDivider(appCubit),
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'الأسئلة الشائعة',
                             icon: 'assets/ques.svg',
@@ -296,8 +282,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                               move(context, const FaqScreen());
                             },
                           ),
-                          _buildDivider(appCubit),
-                          _buildMenuItem(
+                          buildDivider(appCubit),
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'حول التطبيق',
                             icon: 'assets/info.svg',
@@ -305,8 +291,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                               move(context, const AboutAppScreen());
                             },
                           ),
-                          _buildDivider(appCubit),
-                          _buildMenuItem(
+                          buildDivider(appCubit),
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'سياسة الخصوصية',
                             icon: 'assets/reports.svg',
@@ -314,8 +300,8 @@ class _WorkerAccountState extends State<WorkerAccount> {
                               move(context, PrivacyPolicyScreen());
                             },
                           ),
-                          _buildDivider(appCubit),
-                          _buildMenuItem(
+                          buildDivider(appCubit),
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'الشروط والأحكام',
                             icon: 'assets/hammer.svg',
@@ -325,15 +311,15 @@ class _WorkerAccountState extends State<WorkerAccount> {
                           ),
                         ],
                       ),
-                      _buildSectionTitle(
+                      buildSectionTitle(
                         title: 'الإعدادات',
                         icon: 'assets/setting.svg',
                         appCubit: appCubit,
                       ),
-                      _buildMenuCard(
+                      buildMenuCard(
                         appCubit: appCubit,
                         children: [
-                          _buildMenuItem(
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'الوضع المظلم',
                             icon: 'assets/moon.svg',
@@ -342,15 +328,15 @@ class _WorkerAccountState extends State<WorkerAccount> {
                           ),
                         ],
                       ),
-                      _buildSectionTitle(
+                      buildSectionTitle(
                         title: 'إدارة الحساب',
                         icon: 'assets/acc_setting.svg',
                         appCubit: appCubit,
                       ),
-                      _buildMenuCard(
+                      buildMenuCard(
                         appCubit: appCubit,
                         children: [
-                          _buildMenuItem(
+                          buildMenuItem(
                             appCubit: appCubit,
                             title: 'تسجيل خروج',
                             icon: 'assets/out.svg',

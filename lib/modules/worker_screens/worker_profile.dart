@@ -68,7 +68,6 @@ class _WorkerProfileState extends State<WorkerProfile> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -613,24 +612,45 @@ class _WorkerProfileState extends State<WorkerProfile> {
         cubit: cubit,
         child: experiences.isEmpty
             ? Column(
-                children: [
-                  Icon(
-                    Icons.inbox_rounded,
-                    color: Colors.grey.shade400,
-                    size: 60.w,
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Text(
-                    'لا توجد خبرات سابقة لك',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.sp,
-                        color: Colors.grey.shade400),
-                  ),
-                ],
-              )
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80.w,
+              height: 80.w,
+              padding: EdgeInsets.all(15.r),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset('assets/subs.svg',color: mainColor,)
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              'لا توجد خبرات سابقة لك',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .color,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              'قم بإضافة خبراتك السابقة ليتمكن العملاء من الاطلاع عليها وزيادة فرص الحصول على الحجوزات.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10.sp,
+                height: 1.6,
+                color: cubit.isDark
+                    ? darkSubTextColor
+                    : Colors.grey.shade600,
+              ),
+            ),
+          ],
+        )
             : ListView.builder(
                 padding: EdgeInsetsDirectional.zero,
                 physics: const NeverScrollableScrollPhysics(),
@@ -639,7 +659,7 @@ class _WorkerProfileState extends State<WorkerProfile> {
                 itemBuilder: (context, index) {
                   final experience = experiences[index];
                   return Padding(
-                    padding: EdgeInsetsDirectional.only(bottom: 10.h),
+                    padding: EdgeInsetsDirectional.only(bottom: index==experiences.length-1?0: 10.h),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -673,7 +693,8 @@ class _WorkerProfileState extends State<WorkerProfile> {
                     ),
                   );
                 },
-              ));
+              )
+    );
   }
 
   Widget buildPreviousWorksCard(
@@ -683,27 +704,46 @@ class _WorkerProfileState extends State<WorkerProfile> {
     return buildWhiteCard(
       cubit: cubit,
       child: previousWorks.isEmpty
-          ? Center(
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.inbox_rounded,
-                    color: Colors.grey.shade400,
-                    size: 60.w,
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Text(
-                    'لا توجد أعمال سابقة لك',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.sp,
-                        color: Colors.grey.shade400),
-                  ),
-                ],
-              ),
-            )
+          ? Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80.w,
+            height: 80.w,
+            padding: EdgeInsetsDirectional.all(20.r),
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(0.08),
+              shape: BoxShape.circle,
+            ),
+            child: SvgPicture.asset('assets/image.svg',color: mainColor,)
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'لا توجد أعمال سابقة',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16.sp,
+              color: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .color,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            'أضف صورًا لأعمالك السابقة لعرض مهاراتك وزيادة ثقة العملاء بخدماتك.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.6,
+              color: cubit.isDark
+                  ? darkSubTextColor
+                  : Colors.grey.shade600,
+            ),
+          ),
+        ],
+      )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -712,6 +712,7 @@ class AuthCubit extends Cubit<AuthStates> {
         'avgRating': 0.0,
         'ratingSum': 0.0,
         'ratingsCount': 0,
+        'isActive' : true,
         'isAvailable': true,
         'isSubscribed': false,
         'profileImage': '',
@@ -758,7 +759,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String userType,
     required String newPassword,
-  }) async {
+  })
+  async {
     try {
       emit(ResetPasswordLoadingState());
 
@@ -1000,15 +1002,14 @@ class AuthCubit extends Cubit<AuthStates> {
       String? token = await FirebaseMessaging.instance.getToken();
 
       if (token != null) {
-        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
           'token': token,
           'tokenUpdatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-
-        print("تم حفظ الـ Token بنجاح: $token");
+        });
+        print("تم تحديث الـ Token في الخلفية بنجاح");
       }
     } catch (e) {
-      print("خطأ أثناء حفظ الـ Token: ${e.toString()}");
+      print("فشل تحديث الـ Token: ${e.toString()}");
     }
   }
 }

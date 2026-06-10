@@ -138,7 +138,8 @@ class _UserRequestsListState extends State<UserRequestsList> {
                 .toList();
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: Scaffold(body: BlocBuilder<UserCubit, UserStates>(
+          child: Scaffold(
+              body: BlocBuilder<UserCubit, UserStates>(
             builder: (context, state) {
               UserCubit userCubit = UserCubit.get(context);
               return ConditionalBuilder(

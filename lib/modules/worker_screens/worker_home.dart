@@ -45,14 +45,14 @@ class _WorkerHomeState extends State<WorkerHome> {
     },
   ];
 
-  Map<String, dynamic> _getMapData(dynamic data) {
+  Map<String, dynamic> getMapData(dynamic data) {
     if (data is Map) {
       return Map<String, dynamic>.from(data);
     }
     return {};
   }
 
-  DateTime? _getDateFromFirebase(dynamic value) {
+  DateTime? getDateFromFirebase(dynamic value) {
     if (value is Timestamp) {
       return value.toDate();
     }
@@ -68,8 +68,8 @@ class _WorkerHomeState extends State<WorkerHome> {
     return null;
   }
 
-  bool _isDateExpired(dynamic value) {
-    final DateTime? date = _getDateFromFirebase(value);
+  bool isDateExpired(dynamic value) {
+    final DateTime? date = getDateFromFirebase(value);
 
     if (date == null) {
       return false;
@@ -78,7 +78,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     return !date.isAfter(DateTime.now());
   }
 
-  int _safeInt(dynamic value) {
+  int safeInt(dynamic value) {
     if (value is int) {
       return value;
     }
@@ -90,8 +90,8 @@ class _WorkerHomeState extends State<WorkerHome> {
     return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 
-  String _formatDate(dynamic value) {
-    final DateTime? date = _getDateFromFirebase(value);
+  String formatDate(dynamic value) {
+    final DateTime? date = getDateFromFirebase(value);
 
     if (date == null) {
       return '';
@@ -115,9 +115,9 @@ class _WorkerHomeState extends State<WorkerHome> {
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
-  bool _hasActiveSubscriptionFromUserData(Map<String, dynamic> userData) {
+  bool hasActiveSubscriptionFromUserData(Map<String, dynamic> userData) {
     final Map<String, dynamic> subscription =
-        _getMapData(userData['subscription']);
+        getMapData(userData['subscription']);
 
     final String status = subscription['status']?.toString() ?? '';
 
@@ -125,7 +125,7 @@ class _WorkerHomeState extends State<WorkerHome> {
         subscription['endAt'] ??
         subscription['expiresAt'];
 
-    final bool isExpired = status == 'expired' || _isDateExpired(endDate);
+    final bool isExpired = status == 'expired' || isDateExpired(endDate);
 
     if (isExpired) {
       return false;
@@ -137,7 +137,7 @@ class _WorkerHomeState extends State<WorkerHome> {
         status == 'approved';
   }
 
-  Widget _buildSmallStatusButton({
+  Widget buildSmallStatusButton({
     required String text,
     required Color color,
     required VoidCallback onTap,
@@ -165,7 +165,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     );
   }
 
-  Widget _buildAccountStatusCard({
+  Widget buildAccountStatusCard({
     required AppCubit appCubit,
     required IconData icon,
     required Color color,
@@ -229,7 +229,7 @@ class _WorkerHomeState extends State<WorkerHome> {
           ),
           if (buttonText != null && onTap != null) ...[
             SizedBox(width: 8.w),
-            _buildSmallStatusButton(
+            buildSmallStatusButton(
               text: buttonText,
               color: color,
               onTap: onTap,
@@ -240,12 +240,12 @@ class _WorkerHomeState extends State<WorkerHome> {
     );
   }
 
-  Widget _buildVerificationStatusCard({
+  Widget buildVerificationStatusCard({
     required AppCubit appCubit,
     required Map<String, dynamic> userData,
   }) {
     final Map<String, dynamic> verification =
-        _getMapData(userData['verification']);
+        getMapData(userData['verification']);
 
     final String status = verification['status']?.toString() ??
         userData['verificationStatus']?.toString() ??
@@ -259,7 +259,7 @@ class _WorkerHomeState extends State<WorkerHome> {
         status == 'active';
 
     if (isVerified) {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.verified_rounded,
         color: Colors.green,
@@ -269,7 +269,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     if (status == 'pending') {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.access_time_rounded,
         color: Colors.orangeAccent,
@@ -284,7 +284,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     if (status == 'rejected') {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.cancel_rounded,
         color: Colors.redAccent,
@@ -300,7 +300,7 @@ class _WorkerHomeState extends State<WorkerHome> {
       );
     }
 
-    return _buildAccountStatusCard(
+    return buildAccountStatusCard(
       appCubit: appCubit,
       icon: Icons.verified_user_outlined,
       color: mainColor,
@@ -314,13 +314,13 @@ class _WorkerHomeState extends State<WorkerHome> {
     );
   }
 
-  Widget _buildSubscriptionStatusCard({
+  Widget buildSubscriptionStatusCard({
     required AppCubit appCubit,
     required Map<String, dynamic> userData,
     required WorkerCubit workerCubit,
   })
   {
-    final Map<String, dynamic> subscription = _getMapData(userData['subscription']);
+    final Map<String, dynamic> subscription = getMapData(userData['subscription']);
 
     String status = subscription['status']?.toString() ?? 'not_submitted';
     final String requestId = subscription['requestId']?.toString() ?? '';
@@ -337,22 +337,22 @@ class _WorkerHomeState extends State<WorkerHome> {
 
     final String rejectionReason = subscription['rejectionReason']?.toString() ?? '';
 
-    final String endDateText = _formatDate(endDate);
-    final bool isExpired = status == 'expired' || _isDateExpired(endDate);
-    final bool isActive = _hasActiveSubscriptionFromUserData(userData);
+    final String endDateText = formatDate(endDate);
+    final bool isExpired = status == 'expired' || isDateExpired(endDate);
+    final bool isActive = hasActiveSubscriptionFromUserData(userData);
 
     const int freeServicesLimit = 5;
     const int freeCompletedBookingsLimit = 5;
 
-    final int servicesCount = _safeInt(workerCubit.workerServicesCount);
+    final int servicesCount = safeInt(workerCubit.workerServicesCount);
     final int completedBookingsCount =
-        _safeInt(workerCubit.workerCompletedRequestsCount);
+        safeInt(workerCubit.workerCompletedRequestsCount);
 
     final bool hasReachedFreeLimits = servicesCount >= freeServicesLimit &&
         completedBookingsCount >= freeCompletedBookingsLimit;
 
     if (isActive) {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.workspace_premium_rounded,
         color: Colors.green,
@@ -369,7 +369,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     if (status == 'pending') {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.access_time_rounded,
         color: Colors.orangeAccent,
@@ -385,7 +385,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     if (isExpired) {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.history_rounded,
         color: Colors.redAccent,
@@ -401,7 +401,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     if (status == 'rejected') {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.cancel_rounded,
         color: Colors.redAccent,
@@ -418,7 +418,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     if (hasReachedFreeLimits) {
-      return _buildAccountStatusCard(
+      return buildAccountStatusCard(
         appCubit: appCubit,
         icon: Icons.warning_amber_rounded,
         color: Colors.redAccent,
@@ -433,7 +433,7 @@ class _WorkerHomeState extends State<WorkerHome> {
       );
     }
 
-    return _buildAccountStatusCard(
+    return buildAccountStatusCard(
       appCubit: appCubit,
       icon: Icons.card_membership_rounded,
       color: mainColor,
@@ -447,7 +447,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     );
   }
 
-  Widget _buildWorkerAccountStatusSection(
+  Widget buildWorkerAccountStatusSection(
       AppCubit appCubit, WorkerCubit workerCubit)
   {
     final uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
@@ -468,11 +468,11 @@ class _WorkerHomeState extends State<WorkerHome> {
           padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
           child: Column(
             children: [
-              _buildVerificationStatusCard(
+              buildVerificationStatusCard(
                 appCubit: appCubit,
                 userData: userData,
               ),
-              _buildSubscriptionStatusCard(
+              buildSubscriptionStatusCard(
                 appCubit: appCubit,
                 userData: userData,
                 workerCubit: workerCubit,
@@ -484,8 +484,7 @@ class _WorkerHomeState extends State<WorkerHome> {
     );
   }
 
-
-  Widget _buildSectionTitle({
+  Widget buildSectionTitle({
     required String title,
     required String icon,
     required AppCubit appCubit,
@@ -536,8 +535,6 @@ class _WorkerHomeState extends State<WorkerHome> {
       await WorkerCubit.get(context).getWorkerData(forceRefresh: forceRefresh);
     }
   }
-
-  late NotificationCubit notificationCubit;
 
   @override
   void initState() {
@@ -591,7 +588,7 @@ class _WorkerHomeState extends State<WorkerHome> {
                             SizedBox(
                               height: 10.h,
                             ),
-                            _buildWorkerAccountStatusSection(
+                            buildWorkerAccountStatusSection(
                                 appCubit, workerCubit
                             ),
                             SizedBox(
@@ -734,132 +731,13 @@ class _WorkerHomeState extends State<WorkerHome> {
                                 );
                               },
                             ),
-                            SizedBox(height: 10.h,),
-                            Padding(
-                                padding: EdgeInsetsDirectional.only(
-                                    start: 10.w, end: 2.w),
-                                child: _buildSectionTitle(
-                                    title: 'حالة الاتصال',
-                                    icon: 'assets/power.svg',
-                                    appCubit: appCubit)),
-                            SizedBox(height: 10.h,),
-                            Container(
-                              width: double.infinity,
-                              margin: EdgeInsetsDirectional.symmetric(
-                                  horizontal: 10.w),
-                              padding: EdgeInsets.all(16.r),
-                              decoration: BoxDecoration(
-                                color: appCubit.isDark
-                                    ? lightDarkColor
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(25.r),
-                                boxShadow: blueShadow,
-                                border: Border.all(
-                                  color: workerCubit.amAvailable
-                                      ? mainColor.withOpacity(0.1)
-                                      : Colors.transparent,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      AnimatedContainer(
-                                        duration:
-                                            const Duration(milliseconds: 400),
-                                        width: 58.w,
-                                        height: 58.w,
-                                        decoration: BoxDecoration(
-                                          color: workerCubit.amAvailable
-                                              ? mainColor.withOpacity(0.08)
-                                              : Colors.grey.withOpacity(0.08),
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                      SvgPicture.asset(
-                                        'assets/power.svg',
-                                        width: 26.w,
-                                        height: 26.h,
-                                        color: workerCubit.amAvailable
-                                            ? mainColor
-                                            : Colors.grey,
-                                      ),
-                                      if (workerCubit.amAvailable)
-                                        Positioned(
-                                          top: 2,
-                                          right: 2,
-                                          child: Container(
-                                            width: 12.w,
-                                            height: 12.w,
-                                            decoration: BoxDecoration(
-                                              color: Colors.green,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 2),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  SizedBox(width: 15.w),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          workerCubit.amAvailable
-                                              ? 'متاح لاستقبال الطلبات'
-                                              : 'غير متاح حالياً',
-                                          style: TextStyle(
-                                            fontSize: 15.sp,
-                                            fontWeight: FontWeight.w900,
-                                            color: appCubit.isDark
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        Text(
-                                          workerCubit.amAvailable
-                                              ? 'يمكن للعملاء إرسال طلبات جديدة إليك'
-                                              : 'لن تظهر للعملاء كعامل متاح حالياً',
-                                          style: TextStyle(
-                                            fontSize: 11.sp,
-                                            color: Colors.grey,
-                                            height: 1.2,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Switch(
-                                    value: workerCubit.amAvailable,
-                                    activeColor: mainColor,
-                                    activeTrackColor:
-                                        mainColor.withOpacity(0.4),
-                                    inactiveThumbColor: Colors.white,
-                                    inactiveTrackColor: appCubit.isDark
-                                        ? Colors.grey.withOpacity(0.3)
-                                        : Colors.grey.shade300,
-                                    onChanged: (value) {
-                                      workerCubit.changeAvailability(value);
-                                    },
-                                  )
-                                ],
-                              ),
-                            ),
                             SizedBox(height: 20.h,),
                             Padding(
                               padding: EdgeInsetsDirectional.only(
                                 start: 10.w,
                                 end: 2.w,
                               ),
-                              child: _buildSectionTitle(
+                              child: buildSectionTitle(
                                 title: 'الخدمات المنشورة',
                                 icon: 'assets/services.svg',
                                 appCubit: appCubit,

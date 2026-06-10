@@ -16,8 +16,7 @@ class ContactUsScreen extends StatefulWidget {
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
-  TextEditingController problem = TextEditingController();
-  TextEditingController problemdescription = TextEditingController();
+
 
   Future<void> openWhatsApp() async {
     final Uri uri = Uri.parse("https://wa.me/967770770858");
@@ -54,17 +53,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   }
 
   @override
-  void dispose() {
-    problem.dispose();
-    problemdescription.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
-    return BlocConsumer<AppCubit, AppStates>(
-        listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
         builder: (context, state) {
           return Directionality(
             textDirection: TextDirection.rtl,
@@ -235,114 +226,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                      SizedBox(height: 20.h,),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsetsDirectional.all(20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25.r),
-                          color: cubit.isDark
-                              ? const Color(0xFF161B22)
-                              : Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: mainColor.withOpacity(0.2),
-                              spreadRadius: 1.0,
-                              blurRadius: 7.0,
-                              offset: const Offset(2, 5),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'الموضوع',
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .color,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10.h,
-                            ),
-                            defaultTextFormField(
-                              text: ' ماهي مشكلتك؟',
-                              prefixIcon: 'assets/ques.svg',
-                              errorMes: 'يجب ان لا يكون فارغ',
-                              controller: problem,
-                              type: TextInputType.text,
-                              cubit: AppCubit.get(context),
-                            ),
-                            SizedBox(
-                              height: 20.h,
-                            ),
-                            Text(
-                              'التفاصيل',
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .color,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10.h,
-                            ),
-                            TextFormField(
-                              maxLines: 5,
-                              minLines: 5,
-                              controller: problemdescription,
-                              keyboardType: TextInputType.multiline,
-                              decoration: InputDecoration(
-                                hintText: 'يرجى شرح المشكلة بالتفصيل...',
-                                hintStyle: const TextStyle(color: Colors.grey),
-                                filled: true,
-                                fillColor: Colors.grey.withOpacity(0.1),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide:
-                                      const BorderSide(color: Colors.blue),
-                                ),
-                              ),
-                              style: TextStyle(fontSize: 12.sp),
-                            ),
-                            SizedBox(height: 30.h),
-                            defaultButton(
-                                onPressed: () {
-                                  if (problem.text.isNotEmpty &&
-                                      problemdescription.text.isNotEmpty) {
-                                    showSnackBar(Colors.green,
-                                        'تم إرسال التذكرة', context);
-                                  } else {
-                                    showSnackBar(Colors.red,
-                                        'يرجى تعبة كل الحقول', context);
-                                  }
-                                },
-                                text: 'إرسال المشكلة',
-                                textSize: 15.sp,
-                                height: 50.h),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 30.h),
-                      Align(
-                        alignment: AlignmentDirectional.center,
-                        child: Text(
-                          ' © 2026 حقوق النشر لفريق هومي',
-                          style: TextStyle(fontSize: 12.sp, color: Colors.grey),
                         ),
                       ),
                     ],

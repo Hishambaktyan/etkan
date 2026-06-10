@@ -62,6 +62,12 @@ class AdminCubit extends Cubit<AdminStates> {
   bool isGetAdminDataLoading = false;
   bool isGetCategoriesLoading = false;
 
+  StreamSubscription? verificationSubscription;
+  List<Map<String, dynamic>> verificationRequests = [];
+
+  StreamSubscription? subscriptionStream;
+  List<Map<String, dynamic>> subscriptionRequests = [];
+
   Future<void> getUsers() async {
     try {
       users = [];
@@ -170,16 +176,45 @@ class AdminCubit extends Cubit<AdminStates> {
           .collection('users')
           .where('role', isEqualTo: 'user')
           .get();
-      final servicesSnapshot =
-          await FirebaseFirestore.instance.collection('services').get();
-      final requestsSnapshot =
-          await FirebaseFirestore.instance.collection('requests').get();
+      final servicesSnapshot = await FirebaseFirestore.instance.collection('services').get();
+      final requestsSnapshot = await FirebaseFirestore.instance.collection('requests').get();
       final providersSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('role', isEqualTo: 'provider')
           .get();
-      final categoriesSnapshot =
-          await FirebaseFirestore.instance.collection('categories').get();
+      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
+
+      await verificationSubscription?.cancel();
+       FirebaseFirestore.instance
+          .collection('profile_verification_requests')
+          .where('status', isEqualTo: 'pending')
+          .snapshots()
+          .listen((event) {
+
+        verificationRequests = [];
+        for (var element in event.docs) {
+          Map<String, dynamic> data = element.data();
+          data['id'] = element.id;
+          verificationRequests.add(data);
+        }
+        emit(GetAdminDataSuccessState());
+      });
+
+      await subscriptionStream?.cancel();
+
+      subscriptionStream = FirebaseFirestore.instance
+          .collection('subscriptionRequests')
+          .where('status', isEqualTo: 'pending')
+          .snapshots()
+          .listen((event) {
+        subscriptionRequests = [];
+        for (var element in event.docs) {
+          Map<String, dynamic> data = element.data();
+          data['id'] = element.id;
+          subscriptionRequests.add(data);
+        }
+        emit(GetAdminDataSuccessState());
+      });
 
       for (var doc in usersSnapshot.docs) {
         var data = doc.data();
@@ -207,10 +242,47 @@ class AdminCubit extends Cubit<AdminStates> {
         categories.add(data);
       }
       isGetAdminDataLoading = false;
+
       emit(GetAdminDataSuccessState());
     } catch (e) {
       isGetAdminDataLoading = false;
       emit(GetAdminDataErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> updateAccountStatus({
+    required String userId,
+    required bool isActive,
+  })
+  async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({
+        'isActive': isActive,
+      });
+      emit(ChangeProviderActivity());
+    } catch (e) {
+      print('Error updating account status: $e');
+    }
+  }
+
+  Future<void> updateServiceStatus({
+    required String serviceId,
+    required bool isActive,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('services')
+          .doc(serviceId)
+          .update({
+        'isActive': isActive,
+      });
+
+      emit(ChangeServiceActivity());
+    } catch (e) {
+      print('Error updating service status: $e');
     }
   }
 
@@ -1019,4 +1091,5 @@ class AdminCubit extends Cubit<AdminStates> {
       emit(RejectVerificationRequestErrorState(error: error.toString()));
     }
   }
+
 }

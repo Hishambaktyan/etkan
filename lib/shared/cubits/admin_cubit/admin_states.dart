@@ -140,6 +140,8 @@ class ApproveSubscriptionRequestErrorState extends AdminStates {
   ApproveSubscriptionRequestErrorState({required this.error});
 }
 
+//////////////////////////////////////
+
 class RejectSubscriptionRequestLoadingState extends AdminStates {}
 
 class RejectSubscriptionRequestSuccessState extends AdminStates {}
@@ -149,6 +151,8 @@ class RejectSubscriptionRequestErrorState extends AdminStates {
 
   RejectSubscriptionRequestErrorState({required this.error});
 }
+
+//////////////////////////////////////
 
 class StopProviderSubscriptionLoadingState extends AdminStates {}
 
@@ -172,6 +176,8 @@ class ApproveVerificationRequestErrorState extends AdminStates {
   ApproveVerificationRequestErrorState({required this.error});
 }
 
+//////////////////////////////////////
+
 class RejectVerificationRequestLoadingState extends AdminStates {}
 
 class RejectVerificationRequestSuccessState extends AdminStates {}
@@ -181,3 +187,11 @@ class RejectVerificationRequestErrorState extends AdminStates {
 
   RejectVerificationRequestErrorState({required this.error});
 }
+
+//////////////////////////////////////
+
+class ChangeProviderActivity extends AdminStates{}
+
+//////////////////////////////////////
+
+class ChangeServiceActivity extends AdminStates{}

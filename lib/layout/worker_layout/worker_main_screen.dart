@@ -7,6 +7,8 @@ import 'package:flutter_svg/svg.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
+import '../../shared/cubits/auth_cubit/auth_cubit.dart';
+import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
 class WorkerMainScreen extends StatefulWidget {
@@ -18,6 +20,15 @@ class WorkerMainScreen extends StatefulWidget {
 
 class _WorkerMainScreenState extends State<WorkerMainScreen> {
   DateTime? lastBackPressedTime;
+
+  @override
+  void initState() {
+    super.initState();
+     String? uid = CacheHelper.getData(key: 'uid');
+    if(uid!=null){
+      AuthCubit.get(context).saveUserToken(uid);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

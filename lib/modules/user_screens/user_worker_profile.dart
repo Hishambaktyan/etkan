@@ -329,7 +329,7 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
       ),
       child: Container(
         width: double.infinity,
-        height: 350.h,
+        height: 360.h,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -455,15 +455,15 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 20.sp,
+                            fontSize: 18.sp,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: 10.h),
                         Wrap(
                           spacing: 8.w,
-                          runSpacing: 8.h,
+                          runSpacing: 15.h,
                           alignment: WrapAlignment.center,
                           children: [
                             buildHeaderChip(
@@ -766,47 +766,52 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
               title: 'لا توجد خبرات مضافة',
               cubit: cubit,
             )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: experiences.map((exp) {
-                return Padding(
-                  padding: EdgeInsetsDirectional.only(bottom: 12.h),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsetsDirectional.all(4.r),
-                        decoration: BoxDecoration(
-                          color: cubit.isDark
-                              ? mainColor.withOpacity(0.20)
-                              : mainColor.withOpacity(0.10),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.check_rounded,
-                          color: mainColor,
-                          size: 14.r,
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Text(
-                          exp,
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: cubit.isDark
-                                ? darkSubTextColor
-                                : Colors.black87,
-                            height: 1.6,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
+          : ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsetsDirectional.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: experiences.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsetsDirectional.only(
+              bottom: index == experiences.length - 1 ? 0 : 12.h,
             ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(4.r),
+                  decoration: BoxDecoration(
+                    color: cubit.isDark
+                        ? mainColor.withOpacity(0.20)
+                        : mainColor.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_rounded,
+                    color: mainColor,
+                    size: 14.r,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: Text(
+                    experiences[index],
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: cubit.isDark
+                          ? darkSubTextColor
+                          : Colors.black87,
+                      height: 1.6,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
