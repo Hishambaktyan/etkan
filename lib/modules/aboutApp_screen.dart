@@ -161,7 +161,7 @@ class AboutAppScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-              padding: EdgeInsets.all(10.r),
+              padding: EdgeInsetsDirectional.all(10.r),
               decoration: BoxDecoration(
                 color: mainColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(12.r),
@@ -198,8 +198,7 @@ class AboutAppScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     AppCubit cubit = AppCubit.get(context);
 
-    return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+    return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -236,7 +235,6 @@ class AboutAppScreen extends StatelessWidget {
               ),
             ),
             body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
               padding: EdgeInsetsDirectional.only(
                 start: 10.w,
                 end: 10.w,
@@ -258,7 +256,7 @@ class AboutAppScreen extends StatelessWidget {
                     cubit: cubit,
                     title: 'ما هو التطبيق؟',
                     description:
-                        'تطبيق Homy يساعد العملاء على طلب خدمات الصيانة المنزلية بسهولة، مثل الكهرباء والسباكة والتكييف، مع إمكانية متابعة حالة الطلب والتواصل مع العامل داخل التطبيق.',
+                        'تطبيق إتقان يساعد العملاء على طلب خدمات الصيانة المنزلية بسهولة، مثل الكهرباء والسباكة والتكييف، مع إمكانية متابعة حالة الطلب والتواصل مع العامل داخل التطبيق.',
                     icon: 'assets/mobile.svg',
                   ),
                   _buildInfoCard(
@@ -266,7 +264,7 @@ class AboutAppScreen extends StatelessWidget {
                     cubit: cubit,
                     title: 'هدف التطبيق',
                     description:
-                        'يهدف التطبيق إلى تسهيل الوصول إلى العمال ومقدمي الخدمات، وتنظيم عملية الحجز، ورفع مستوى الثقة بين العميل والعامل من خلال التقييمات والبيانات الواضحة.',
+                        'يهدف التطبيق إلى تسهيل الوصول إلى الفنيين، وتنظيم عملية الحجز، ورفع مستوى الثقة بين المستخدم والفني من خلال التقييمات والبيانات الواضحة.',
                     icon: 'assets/flag.svg',
                   ),
                   SizedBox(height: 10.h),
@@ -306,7 +304,7 @@ class AboutAppScreen extends StatelessWidget {
                       _buildFeatureItem(
                         context: context,
                         cubit: cubit,
-                        title: 'تقييم العمال',
+                        title: 'تقييم الفنيين',
                         icon: 'assets/review.svg',
                       ),
                     ],

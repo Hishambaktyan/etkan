@@ -1115,8 +1115,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
         timeField = 'cancelledAt';
       }
 
-      final requestRef =
-          FirebaseFirestore.instance.collection('requests').doc(requestId);
+      final requestRef = FirebaseFirestore.instance.collection('requests').doc(requestId);
 
       final requestSnapshot = await requestRef.get();
 
@@ -1152,9 +1151,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       batch.update(requestRef, requestData);
 
-      batch.set(
-        requestRef.collection('statusHistory').doc(),
-        {
+      batch.set(requestRef.collection('statusHistory').doc()
+        ,{
           'status': status,
           'createdAt': FieldValue.serverTimestamp(),
         },
@@ -1218,6 +1216,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
           }),
         ]).catchError((error) {
           print('خطأ أثناء إرسال أو حفظ إشعار تحديث الحجز: $error');
+          return [];
         });
       }
     } catch (error) {

@@ -75,12 +75,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             image: const DecorationImage(
                               image: AssetImage('assets/splash.png'),
                             ),
-                            boxShadow: blueShadow,
                           ),
                         ),
                         SizedBox(width: 10.w),
                         Text(
-                          'هومي',
+                          'إتقان',
                           style: TextStyle(
                             color: mainColor,
                             fontSize: 20.sp,
@@ -89,10 +88,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         ),
                         const Spacer(),
                         defaultTextButton(
-                          onPressed: () => moveAndReplace(
-                            context,
-                            const SelectUserType(),
-                          ),
+                          onPressed: () => moveAndReplace(context, const SelectUserType(),),
                           text: 'تخطي',
                           isLined: false,
                           isBold: true,

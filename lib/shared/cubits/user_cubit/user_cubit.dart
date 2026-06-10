@@ -924,4 +924,126 @@ class UserCubit extends Cubit<UserStates> {
       emit(CreateOrGetChatErrorState(error: error.toString()));
     }
   }
+
+  Future<void> cancelRequest({
+    required String requestId,
+  })
+  async {
+    try {
+      emit(CancelRequestLoadingState());
+
+      final requestRef = FirebaseFirestore.instance
+          .collection('requests')
+          .doc(requestId);
+
+      final requestSnapshot = await requestRef.get();
+
+      if (!requestSnapshot.exists || requestSnapshot.data() == null) {
+        emit(
+          CancelRequestErrorState(
+            error: 'الحجز غير موجود',
+          ),
+        );
+        return;
+      }
+
+      final requestData = requestSnapshot.data()!;
+
+      final customerId =
+          requestData['customerId']?.toString() ?? '';
+
+      final providerId =
+          requestData['providerId']?.toString() ?? '';
+
+      final requestTitle =
+          requestData['title']?.toString() ?? 'حجز خدمة';
+
+      final chatsSnapshot = await FirebaseFirestore.instance
+          .collection('chats')
+          .where('requestId', isEqualTo: requestId)
+          .get();
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.update(
+        requestRef,
+        {
+          'status': 'ملغي',
+          'updatedAt': FieldValue.serverTimestamp(),
+          'statusHistory.cancelledAt':
+          FieldValue.serverTimestamp(),
+        },
+      );
+
+      batch.set(
+        requestRef.collection('statusHistory').doc(),
+        {
+          'status': 'ملغي',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+      );
+
+      for (final chatDoc in chatsSnapshot.docs) {
+        batch.update(
+          chatDoc.reference,
+          {
+            'requestStatus': 'ملغي',
+            'isChatClosed': true,
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+        );
+      }
+
+      await batch.commit();
+
+      emit(CancelRequestSuccessState());
+
+      if (providerId.isNotEmpty) {
+        const notificationTitle = 'تم إلغاء الحجز';
+
+        final notificationBody = 'تم إلغاء الحجز الخاص بخدمة $requestTitle';
+
+        Future.wait([
+          NotificationService.createNotificationInFirestore(
+            receiverId: providerId,
+            receiverType: 'provider',
+            senderId: customerId,
+            title: notificationTitle,
+            body: notificationBody,
+            type: 'booking_cancelled',
+            relatedId: requestId,
+          ),
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(providerId)
+              .get()
+              .then((providerDoc) async {
+            final providerData = providerDoc.data() ?? {};
+
+            final receiverToken = providerData['token']?.toString() ?? '';
+
+            if (receiverToken.isEmpty) return;
+
+            await NotificationService.sendNotification(
+              receiverToken: receiverToken,
+              title: notificationTitle,
+              body: notificationBody,
+              type: 'booking_cancelled',
+              relatedId: requestId,
+              senderId: customerId,
+            );
+          }),
+        ]).catchError((error) {
+          print('خطأ أثناء إرسال إشعار إلغاء الحجز: $error',);
+          return[];
+        });
+      }
+    } catch (error) {
+      emit(
+        CancelRequestErrorState(
+          error: error.toString(),
+        ),
+      );
+    }
+  }
 }

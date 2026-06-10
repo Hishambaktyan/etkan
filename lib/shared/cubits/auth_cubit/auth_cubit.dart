@@ -955,6 +955,13 @@ class AuthCubit extends Cubit<AuthStates> {
       final doc = userDoc.docs.first;
       final userData = doc.data();
 
+      final bool isActive = userData['isActive'] ?? true;
+
+      if (!isActive) {
+        emit(LoginErrorState(error: 'تم تعطيل هذا الحساب، يرجى التواصل مع الإدارة',));
+        return;
+      }
+
       final String role = userData['role']?.toString().trim() ?? '';
       final String uid = doc.id;
 

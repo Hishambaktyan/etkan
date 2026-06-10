@@ -273,7 +273,7 @@ class _UserHomeState extends State<UserHome> {
                                                                 10.r),
                                                           ),
                                                           child: Text(
-                                                            'مرحباً بك في هومي',
+                                                            'مرحباً بك في إتقان',
                                                             style: TextStyle(
                                                               color: Colors
                                                                   .white

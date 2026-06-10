@@ -31,7 +31,7 @@ class AdminCubit extends Cubit<AdminStates> {
 
           final sent = await SmsBridge.sendSms(
             phone: phone,
-            message: 'رمز التحقق الخاص بك في تطبيق هومي هو: $code',
+            message: 'رمز التحقق الخاص بك في تطبيق إتقان هو: $code',
           );
 
           if (sent) {

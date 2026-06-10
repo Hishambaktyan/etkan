@@ -331,90 +331,92 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                     color: appCubit.isDark ? Colors.white : Colors.black,
                   ),
                 ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'قبل تأكيد اكتمال الحجز، يرجى تقييم الخدمة وكتابة مراجعتك.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        height: 1.5,
-                        color: appCubit.isDark
-                            ? darkSubTextColor
-                            : Colors.grey.shade600,
-                      ),
-                    ),
-                    SizedBox(height: 18.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        final int starNumber = index + 1;
-
-                        return InkWell(
-                          onTap: () {
-                            setDialogState(() {
-                              selectedRating = starNumber.toDouble();
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(50.r),
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 2.w,),
-                            child: Icon(
-                              Icons.star_rounded,
-                              size: 36.r,
-                              color: starNumber <= selectedRating
-                                  ? Colors.orange
-                                  : Colors.grey.shade300,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                    SizedBox(height: 18.h),
-                    TextField(
-                      controller: reviewController,
-                      maxLines: 4,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        color: appCubit.isDark ? Colors.white : Colors.black,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'اكتب رأيك في الخدمة',
-                        hintStyle: TextStyle(
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'قبل تأكيد اكتمال الحجز، يرجى تقييم الخدمة وكتابة مراجعتك.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
                           fontSize: 12.sp,
+                          height: 1.5,
                           color: appCubit.isDark
                               ? darkSubTextColor
-                              : Colors.grey,
-                        ),
-                        filled: true,
-                        fillColor: appCubit.isDark
-                            ? darkBgColor
-                            : Colors.grey.withOpacity(0.08),
-                        contentPadding: EdgeInsetsDirectional.all(12.r),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                          borderSide: BorderSide(
-                            color: appCubit.isDark
-                                ? const Color(0xFF30363D)
-                                : Colors.grey.shade200,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                          borderSide: BorderSide(
-                            color: appCubit.isDark
-                                ? const Color(0xFF30363D)
-                                : Colors.grey.shade200,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                          borderSide: const BorderSide(color: mainColor),
+                              : Colors.grey.shade600,
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 15.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(5, (index) {
+                          final int starNumber = index + 1;
+                  
+                          return InkWell(
+                            onTap: () {
+                              setDialogState(() {
+                                selectedRating = starNumber.toDouble();
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(50.r),
+                            child: Padding(
+                              padding: EdgeInsetsDirectional.symmetric(horizontal: 2.w,),
+                              child: Icon(
+                                Icons.star_rounded,
+                                size: 36.r,
+                                color: starNumber <= selectedRating
+                                    ? Colors.orange
+                                    : Colors.grey.shade300,
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                      SizedBox(height: 15.h),
+                      TextField(
+                        controller: reviewController,
+                        maxLines: 4,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: appCubit.isDark ? Colors.white : Colors.black,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'اكتب رأيك في الخدمة',
+                          hintStyle: TextStyle(
+                            fontSize: 12.sp,
+                            color: appCubit.isDark
+                                ? darkSubTextColor
+                                : Colors.grey,
+                          ),
+                          filled: true,
+                          fillColor: appCubit.isDark
+                              ? darkBgColor
+                              : Colors.grey.withOpacity(0.08),
+                          contentPadding: EdgeInsetsDirectional.all(12.r),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                            borderSide: BorderSide(
+                              color: appCubit.isDark
+                                  ? const Color(0xFF30363D)
+                                  : Colors.grey.shade200,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                            borderSide: BorderSide(
+                              color: appCubit.isDark
+                                  ? const Color(0xFF30363D)
+                                  : Colors.grey.shade200,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                            borderSide: const BorderSide(color: mainColor),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 actionsAlignment: MainAxisAlignment.spaceBetween,
                 actions: [
@@ -555,6 +557,18 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
             if (state is ConfirmBookingReviewErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context,);
+            }
+            if (state is CancelRequestLoadingState) {
+              showLoadingDialog(context);
+            }
+            if (state is CancelRequestSuccessState) {
+              hideLoadingDialog(context);
+              Navigator.pop(context);
+              showSnackBar(Colors.green, 'تم إلغاء حجزك', context);
+            }
+            if (state is CancelRequestErrorState) {
+              hideLoadingDialog(context);
+              showSnackBar(Colors.red, state.error.toString(), context);
             }
           },
           builder: (context, state) {
@@ -924,7 +938,7 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                           height: 15.h,
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(
+                          padding: EdgeInsetsDirectional.symmetric(
                               horizontal: 16.w, vertical: 10.h),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1180,7 +1194,9 @@ class _UserRequestDetailsState extends State<UserRequestDetails> {
                     vertical: 10.h,
                   ),
                   child: defaultButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await userCubit.cancelRequest(requestId: request['id']);
+                    },
                     background: Colors.red,
                     text: 'إلغاء الطلب',
                   ),

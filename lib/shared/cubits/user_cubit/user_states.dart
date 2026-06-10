@@ -126,3 +126,15 @@ class GetServiceReviewsErrorState extends UserStates {
 
   GetServiceReviewsErrorState({required this.error});
 }
+
+//////////////////////////////////////
+
+class CancelRequestLoadingState extends UserStates {}
+
+class CancelRequestSuccessState extends UserStates {}
+
+class CancelRequestErrorState extends UserStates {
+  final String error;
+
+  CancelRequestErrorState({required this.error});
+}
