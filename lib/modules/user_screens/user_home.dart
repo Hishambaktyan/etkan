@@ -122,7 +122,6 @@ class _UserHomeState extends State<UserHome> {
               child: BlocBuilder<UserCubit, UserStates>(
                 builder: (context, state) {
                   UserCubit userCubit = UserCubit.get(context);
-
                   String getCurrentUserName() {
                     final String uid =
                         CacheHelper.getData(key: 'uid')?.toString() ?? '';
@@ -346,9 +345,7 @@ class _UserHomeState extends State<UserHome> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 20.h,
-                                    ),
+                                    SizedBox(height: 20.h,),
                                     /*الأقسام*/
                                     Padding(
                                       padding: EdgeInsetsDirectional.symmetric(
@@ -567,9 +564,7 @@ class _UserHomeState extends State<UserHome> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 20.h,
-                                    ),
+                                    SizedBox(height: 20.h,),
                                     /*الخدمات الرائجة*/
                                     Column(
                                       children: [
@@ -644,7 +639,7 @@ class _UserHomeState extends State<UserHome> {
                                                   .userServices.length,
                                               itemBuilder: (context, index) {
                                                 var service = userCubit.userServices[index];
-                                                Map<String, dynamic>providerData = Map<String, dynamic>.from(userCubit.allUsers[service['providerId']] ?? {},);
+                                                Map<String, dynamic> providerData = Map<String, dynamic>.from(userCubit.allUsers[service['providerId']] ?? {},);
                                                 String serviceImage = '${service['serviceImage'] ?? ''}';
                                                 String providerImage = '${providerData['profileImage'] ?? ''}';
                                                 return Padding(
@@ -671,8 +666,7 @@ class _UserHomeState extends State<UserHome> {
                                                         ),
                                                       );
                                                     },
-                                                    borderRadius:
-                                                    BorderRadius.circular(
+                                                    borderRadius: BorderRadius.circular(
                                                         25.r),
                                                     child: Container(
                                                       width: 280.w,
@@ -686,9 +680,7 @@ class _UserHomeState extends State<UserHome> {
                                                         boxShadow: blueShadow,
                                                       ),
                                                       child: Column(
-                                                        crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           Stack(
                                                             children: [
@@ -825,13 +817,9 @@ class _UserHomeState extends State<UserHome> {
                                                             ],
                                                           ),
                                                           Padding(
-                                                            padding:
-                                                            EdgeInsetsDirectional
-                                                                .all(15.r),
+                                                            padding: EdgeInsetsDirectional.all(15.r),
                                                             child: Column(
-                                                              crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
                                                                 Text(
                                                                   service['name'] ??
@@ -898,12 +886,9 @@ class _UserHomeState extends State<UserHome> {
                                                                     height:
                                                                     12.h),
                                                                 Container(
-                                                                  padding:
-                                                                  EdgeInsets
-                                                                      .all(8
+                                                                  padding: EdgeInsets.all(8
                                                                       .r),
-                                                                  decoration:
-                                                                  BoxDecoration(
+                                                                  decoration: BoxDecoration(
                                                                     color: mainColor
                                                                         .withOpacity(
                                                                         0.05),
@@ -933,18 +918,25 @@ class _UserHomeState extends State<UserHome> {
                                                                       Expanded(
                                                                         child:
                                                                         Column(
-                                                                          crossAxisAlignment:
-                                                                          CrossAxisAlignment.start,
+                                                                          crossAxisAlignment: CrossAxisAlignment.start,
                                                                           children: [
-                                                                            Text(
-                                                                              '${providerData['name'] ?? 'فني غير معروف'}',
-                                                                              maxLines: 1,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              style: TextStyle(
-                                                                                fontSize: 11.sp,
-                                                                                fontWeight: FontWeight.bold,
-                                                                                color: Theme.of(context).textTheme.bodyLarge!.color,
-                                                                              ),
+                                                                            Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  child: Text(
+                                                                                    '${providerData['name'] ?? 'فني غير معروف'}',
+                                                                                    maxLines: 1,
+                                                                                    overflow: TextOverflow.ellipsis,
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 11.sp,
+                                                                                      fontWeight: FontWeight.bold,
+                                                                                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                SizedBox(width: 5.w,),
+                                                                                SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,),
+                                                                              ],
                                                                             ),
                                                                             Text(
                                                                               '${providerData['specialization'] ?? ''}',
@@ -974,9 +966,7 @@ class _UserHomeState extends State<UserHome> {
                                           ),
                                       ],
                                     ),
-                                    SizedBox(
-                                      height: 20.h,
-                                    ),
+                                    SizedBox(height: 20.h,),
                                   ],
                                 ),
                               ],

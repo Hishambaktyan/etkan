@@ -11,38 +11,81 @@ import 'package:trying_homy/shared/styles/colors.dart';
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({super.key});
 
-  Widget _buildInfoCard({
+  Widget _sectionHeader({
     required BuildContext context,
     required AppCubit cubit,
     required String title,
-    required String description,
     required String icon,
   }) {
     return Container(
-      width: double.infinity,
-      margin: EdgeInsetsDirectional.only(bottom: 14.h),
-      padding: EdgeInsetsDirectional.all(15.r),
+      padding: EdgeInsetsDirectional.all(14.r),
       decoration: BoxDecoration(
-        color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(25.r),
-        boxShadow: blueShadow,
+        color: mainColor.withOpacity(.10),
+        borderRadius: BorderRadius.circular(18.r),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsetsDirectional.all(10.r),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [mainColor, mainColor.withOpacity(.7)],
+              ),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: Colors.white,
+              width: 22.w,
+            ),
+          ),
+          SizedBox(width: 10.w),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 15.sp,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _card({
+    required BuildContext context,
+    required AppCubit cubit,
+    required String title,
+    required String desc,
+    required String icon,
+  }) {
+    return Container(
+      margin: EdgeInsetsDirectional.only(bottom: 14.h),
+      padding: EdgeInsetsDirectional.all(16.r),
+      decoration: BoxDecoration(
+        color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
+        borderRadius: BorderRadius.circular(22.r),
+        boxShadow:blueShadow
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-              padding: EdgeInsets.all(10.r),
-              decoration: BoxDecoration(
-                color: cubit.isDark
-                    ? mainColor.withOpacity(0.20)
-                    : mainColor.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(12.r),
+            width: 52.w,
+            height: 52.w,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [mainColor, mainColor.withOpacity(.7)],
               ),
-              child: SvgPicture.asset(
-                icon,
-                color: mainColor,
-                width: 25.w,
-              )),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: Colors.white,
+              fit: BoxFit.scaleDown,
+            ),
+          ),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -51,19 +94,20 @@ class AboutAppScreen extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontSize: 15.sp,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
                 ),
-                SizedBox(height: 7.h),
+                SizedBox(height: 6.h),
                 Text(
-                  description,
+                  desc,
                   style: TextStyle(
-                    color:
-                        cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
                     fontSize: 12.sp,
-                    height: 1.7,
+                    height: 1.6,
+                    color: cubit.isDark
+                        ? Colors.white70
+                        : Colors.grey.shade700,
                   ),
                 ),
               ],
@@ -74,7 +118,7 @@ class AboutAppScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem({
+  Widget _feature({
     required BuildContext context,
     required AppCubit cubit,
     required String title,
@@ -83,33 +127,34 @@ class AboutAppScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsetsDirectional.all(14.r),
       decoration: BoxDecoration(
-        color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(25.r),
-        boxShadow: blueShadow,
+        color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
+        borderRadius: BorderRadius.circular(22.r),
+        boxShadow: blueShadow
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-              padding: EdgeInsets.all(10.r),
-              decoration: BoxDecoration(
-                color: mainColor.withOpacity(0.10),
-                shape: BoxShape.circle,
-              ),
-              child: SvgPicture.asset(
-                icon,
-                color: mainColor,
-                width: 25.w,
-              )),
-          SizedBox(height: 20.h),
+            width: 52.w,
+            height: 52.w,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: mainColor.withOpacity(.12),
+            ),
+            child: SvgPicture.asset(
+              icon,
+              color: mainColor,
+              fit: BoxFit.scaleDown,
+            ),
+          ),
+          SizedBox(height: 12.h),
           Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).textTheme.bodyLarge!.color,
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
-              height: 1.4,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
             ),
           ),
         ],
@@ -117,76 +162,42 @@ class AboutAppScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle({
-    required BuildContext context,
-    required AppCubit cubit,
-    required String title,
-    required String icon,
-  }) {
-    return Row(
-      children: [
-        Container(
-            padding: EdgeInsetsDirectional.all(10.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: SvgPicture.asset(
-              icon,
-              color: mainColor,
-              width: 25.w,
-            )),
-        SizedBox(width: 8.w),
-        Text(
-          title,
-          style: TextStyle(
-            color: Theme.of(context).textTheme.bodyLarge!.color,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVersionCard(BuildContext context, AppCubit cubit) {
+  Widget _version(BuildContext context, AppCubit cubit) {
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.r),
+      padding: EdgeInsetsDirectional.all(16.r),
       decoration: BoxDecoration(
-        color: cubit.isDark ? lightDarkColor : Colors.white,
-        borderRadius: BorderRadius.circular(25.r),
-        boxShadow: blueShadow,
+        color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
+        borderRadius: BorderRadius.circular(22.r),
+        boxShadow: blueShadow
       ),
       child: Row(
         children: [
           Container(
-              padding: EdgeInsetsDirectional.all(10.r),
-              decoration: BoxDecoration(
-                color: mainColor.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: SvgPicture.asset(
-                'assets/info.svg',
-                color: mainColor,
-              )),
-          SizedBox(width: 12.w),
+            width: 45.w,
+            height: 45.w,
+            decoration: BoxDecoration(
+              color: mainColor.withOpacity(.12),
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            child: const Icon(Icons.info, color: mainColor),
+          ),
+          SizedBox(width: 10.w),
           Expanded(
             child: Text(
               'إصدار التطبيق',
               style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge!.color,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
           ),
           Text(
             '1.0.0',
             style: TextStyle(
-              color: cubit.isDark ? darkSubTextColor : Colors.grey.shade700,
               fontSize: 13.sp,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
+              color: cubit.isDark ? Colors.white70 : Colors.grey,
             ),
           ),
         ],
@@ -196,38 +207,27 @@ class AboutAppScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppCubit cubit = AppCubit.get(context);
-
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
+        final cubit = AppCubit.get(context);
+
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
             appBar: AppBar(
-              titleSpacing: 10,
-              elevation: 0,
               scrolledUnderElevation: 0,
               automaticallyImplyLeading: false,
               title: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(7),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(
-                        CupertinoIcons.back,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                    ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(CupertinoIcons.back),
                   ),
-                  SizedBox(width: 10.w),
                   Text(
                     'حول التطبيق',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
                       fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
@@ -235,82 +235,76 @@ class AboutAppScreen extends StatelessWidget {
               ),
             ),
             body: SingleChildScrollView(
-              padding: EdgeInsetsDirectional.only(
-                start: 10.w,
-                end: 10.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
+              padding: EdgeInsetsDirectional.all(15.r),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle(
+                  _sectionHeader(
                     context: context,
                     cubit: cubit,
                     title: 'نبذة عن التطبيق',
                     icon: 'assets/bookings.svg',
                   ),
-                  SizedBox(height: 20.h),
-                  _buildInfoCard(
+                  SizedBox(height: 15.h),
+                  _card(
                     context: context,
                     cubit: cubit,
                     title: 'ما هو التطبيق؟',
-                    description:
-                        'تطبيق إتقان يساعد المستخدمين على حجز خدمات الصيانة المنزلية بسهولة، مثل الكهرباء والسباكة والتكييف، مع إمكانية متابعة حالة الحجز والتواصل مع الفني داخل التطبيق.',
+                    desc:
+                    'تطبيق إتقان يوفر خدمات الصيانة المنزلية بسهولة وسرعة مع متابعة الطلب والتواصل مع الفني.',
                     icon: 'assets/mobile.svg',
                   ),
-                  _buildInfoCard(
+                  _card(
                     context: context,
                     cubit: cubit,
                     title: 'هدف التطبيق',
-                    description:
-                        'يهدف التطبيق إلى تسهيل الوصول إلى الفنيين، وتنظيم عملية الحجز، ورفع مستوى الثقة بين المستخدم والفني من خلال التقييمات والبيانات الواضحة.',
+                    desc:
+                    'تسهيل الوصول إلى الفنيين وتحسين جودة الخدمات عبر نظام تقييم موثوق.',
                     icon: 'assets/flag.svg',
                   ),
                   SizedBox(height: 10.h),
-                  _buildSectionTitle(
+                  _sectionHeader(
                     context: context,
                     cubit: cubit,
-                    title: 'مميزات التطبيق',
+                    title: 'المميزات',
                     icon: 'assets/star.svg',
                   ),
                   SizedBox(height: 15.h),
                   GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
                     crossAxisSpacing: 12.w,
                     mainAxisSpacing: 12.h,
-                    childAspectRatio: 1.25,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                    childAspectRatio: 1.1,
                     children: [
-                      _buildFeatureItem(
+                      _feature(
                         context: context,
                         cubit: cubit,
-                        title: 'طلب خدمة بسهولة',
+                        title: 'طلب خدمة',
                         icon: 'assets/services.svg',
                       ),
-                      _buildFeatureItem(
+                      _feature(
                         context: context,
                         cubit: cubit,
-                        title: 'تتبع حالة الحجز',
+                        title: 'متابعة الطلب',
                         icon: 'assets/timeline.svg',
                       ),
-                      _buildFeatureItem(
+                      _feature(
                         context: context,
                         cubit: cubit,
-                        title: 'محادثة مباشرة',
+                        title: 'محادثة',
                         icon: 'assets/chat.svg',
                       ),
-                      _buildFeatureItem(
+                      _feature(
                         context: context,
                         cubit: cubit,
-                        title: 'تقييم الفنيين',
+                        title: 'تقييم',
                         icon: 'assets/review.svg',
                       ),
                     ],
                   ),
-                  SizedBox(height: 22.h),
-                  _buildVersionCard(context, cubit),
+                  SizedBox(height: 20.h),
+                  _version(context, cubit),
                 ],
               ),
             ),

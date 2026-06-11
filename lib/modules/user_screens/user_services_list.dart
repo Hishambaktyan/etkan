@@ -169,7 +169,7 @@ class _UserServicesListState extends State<UserServicesList> {
                                               )
                                           ),
                                           borderRadius:
-                                              BorderRadius.circular(25.r),
+                                          BorderRadius.circular(25.r),
                                           child: Container(
                                             width: 280.w,
                                             decoration: BoxDecoration(
@@ -276,13 +276,9 @@ class _UserServicesListState extends State<UserServicesList> {
                                                   ],
                                                 ),
                                                 Padding(
-                                                  padding:
-                                                      EdgeInsetsDirectional.all(
-                                                          15.r),
+                                                  padding: EdgeInsetsDirectional.all(15.r),
                                                   child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       Text(
                                                         service['name'],
@@ -330,8 +326,7 @@ class _UserServicesListState extends State<UserServicesList> {
                                                       ),
                                                       SizedBox(height: 12.h),
                                                       Container(
-                                                        padding:
-                                                            EdgeInsets.all(8.r),
+                                                        padding: EdgeInsetsDirectional.all(8.r),
                                                         decoration:
                                                             BoxDecoration(
                                                           color: mainColor
@@ -351,27 +346,30 @@ class _UserServicesListState extends State<UserServicesList> {
                                                                       providerData[
                                                                           'profileImage']),
                                                             ),
-                                                            SizedBox(
-                                                                width: 8.w),
+                                                            SizedBox(width: 8.w),
                                                             Expanded(
                                                               child: Column(
                                                                 crossAxisAlignment:
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Text(
-                                                                    '${providerData['name']}',
-                                                                    maxLines: 1,
-                                                                    style: TextStyle(
-                                                                        fontSize: 11
-                                                                            .sp,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        color: Theme.of(context)
-                                                                            .textTheme
-                                                                            .bodyLarge!
-                                                                            .color),
+                                                                  Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: Text(
+                                                                          '${providerData['name'] ?? 'فني غير معروف'}',
+                                                                          maxLines: 1,
+                                                                          overflow: TextOverflow.ellipsis,
+                                                                          style: TextStyle(
+                                                                            fontSize: 11.sp,
+                                                                            fontWeight: FontWeight.bold,
+                                                                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(width: 5.w,),
+                                                                      SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,),
+                                                                    ],
                                                                   ),
                                                                   Text(
                                                                     '${providerData['specialization']}',

@@ -613,31 +613,37 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                   ),
                                 ),
                                 SizedBox(width: 12.w),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      width: 230.w,
-                                      child: Text(
-                                        providerData['name'] ?? '',
-                                        overflow: TextOverflow.ellipsis,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              '${providerData['name'] ?? 'فني غير معروف'}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context).textTheme.bodyLarge!.color,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 5.w,),
+                                          SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,),
+                                        ],
+                                      ),
+                                      Text(
+                                        providerData['specialization'] ?? '',
                                         style: TextStyle(
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: appCubit.isDark
-                                              ? Colors.white
-                                              : Colors.black,
+                                          fontSize: 12.sp,
+                                          color: Colors.grey,
                                         ),
                                       ),
-                                    ),
-                                    Text(
-                                      providerData['specialization'] ?? '',
-                                      style: TextStyle(
-                                        fontSize: 13.sp,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
