@@ -256,7 +256,7 @@ class AboutAppScreen extends StatelessWidget {
                     cubit: cubit,
                     title: 'ما هو التطبيق؟',
                     description:
-                        'تطبيق إتقان يساعد العملاء على طلب خدمات الصيانة المنزلية بسهولة، مثل الكهرباء والسباكة والتكييف، مع إمكانية متابعة حالة الطلب والتواصل مع العامل داخل التطبيق.',
+                        'تطبيق إتقان يساعد المستخدمين على حجز خدمات الصيانة المنزلية بسهولة، مثل الكهرباء والسباكة والتكييف، مع إمكانية متابعة حالة الحجز والتواصل مع الفني داخل التطبيق.',
                     icon: 'assets/mobile.svg',
                   ),
                   _buildInfoCard(
@@ -292,13 +292,13 @@ class AboutAppScreen extends StatelessWidget {
                       _buildFeatureItem(
                         context: context,
                         cubit: cubit,
-                        title: 'تتبع حالة الطلب',
+                        title: 'تتبع حالة الحجز',
                         icon: 'assets/timeline.svg',
                       ),
                       _buildFeatureItem(
                         context: context,
                         cubit: cubit,
-                        title: 'دردشة مباشرة',
+                        title: 'محادثة مباشرة',
                         icon: 'assets/chat.svg',
                       ),
                       _buildFeatureItem(

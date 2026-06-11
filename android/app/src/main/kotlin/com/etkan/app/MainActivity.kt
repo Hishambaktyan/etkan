@@ -1,4 +1,4 @@
-package com.example.edit_homy
+package com.etkan.app
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -14,6 +14,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
+
     private val CHANNEL = "sms_sender"
     private val SMS_PERMISSION_CODE = 1001
 
@@ -49,12 +50,13 @@ class MainActivity : FlutterActivity() {
                     }
 
                     try {
-                        val smsManager = getSystemService(SmsManager::class.java)
+                        val smsManager = SmsManager.getDefault()
                         smsManager.sendTextMessage(phone, null, message, null, null)
                         result.success(true)
                     } catch (e: Exception) {
                         result.error("SMS_FAILED", e.message, null)
                     }
+
                 } else {
                     result.notImplemented()
                 }
@@ -68,21 +70,17 @@ class MainActivity : FlutterActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "high_importance_channel"
-            val channelName = "High Importance Notifications"
-            val channelDescription = "This channel is used for important notifications."
-
             val channel = NotificationChannel(
-                channelId,
-                channelName,
+                "high_importance_channel",
+                "High Importance Notifications",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = channelDescription
+                description = "This channel is used for important notifications."
                 enableVibration(true)
             }
 
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
         }
     }
 }

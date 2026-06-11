@@ -1,10 +1,30 @@
 {
   "project_info": {
     "project_number": "128316026962",
+    "firebase_url": "https://homy-1de67-default-rtdb.firebaseio.com",
     "project_id": "homy-1de67",
     "storage_bucket": "homy-1de67.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128316026962:android:a571b58e7e21a3e1deef8b",
+        "android_client_info": {
+          "package_name": "com.etkan.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgre21IKottjnLP96FvT9nfT8sPFegI4w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:128316026962:android:45d703d91ac0002bdeef8b",

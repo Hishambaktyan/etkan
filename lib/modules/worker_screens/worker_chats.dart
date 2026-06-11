@@ -264,7 +264,7 @@
                                                 ),
                                                 child: Text(
                                                   requestId.isNotEmpty
-                                                      ? 'حجز اسم: ${chatData['requestTitle']}'
+                                                      ? 'عنوان الحجز: ${chatData['requestTitle']}'
                                                       : 'حجز خدمة',
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,
@@ -275,9 +275,7 @@
                                                   ),
                                                 ),
                                               ),
-
-                                              SizedBox(height: 6.h),
-
+                                              SizedBox(height: 5.h),
                                               Row(
                                                 children: [
                                                   if (isMe)

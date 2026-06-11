@@ -53,9 +53,8 @@ class _SelectUserTypeState extends State<SelectUserType> {
                     children: [
                       buildUserTypeCard(
                         index: 0,
-                        title: 'أنا عميل',
-                        description:
-                            'أبحث عن خدمات مهنية وأريد توظيف خبراء لمشاريعي القادمة.',
+                        title: 'أنا مستخدم',
+                        description: 'أبحث عن فنيين محترفين لإنجاز خدمات الصيانة والإصلاح بسرعة وكفاءة.',
                         image: 'assets/client.jpg',
                         icon: Icons.person_search_rounded,
                         appCubit: appCubit,
@@ -64,8 +63,7 @@ class _SelectUserTypeState extends State<SelectUserType> {
                       buildUserTypeCard(
                         index: 1,
                         title: 'أنا فني',
-                        description:
-                            'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
+                        description: 'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
                         image: 'assets/provider.jfif',
                         icon: Icons.build_circle_rounded,
                         appCubit: appCubit,
