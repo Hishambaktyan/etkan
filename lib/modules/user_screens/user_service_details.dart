@@ -648,7 +648,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                               ],
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 15.h),
+                              padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
                               child: Divider(
                                   color: appCubit.isDark
                                       ? darkSubTextColor
