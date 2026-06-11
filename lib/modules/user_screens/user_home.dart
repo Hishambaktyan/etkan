@@ -448,9 +448,7 @@ class _UserHomeState extends State<UserHome> {
                                                     );
                                                   },
                                                   child: Container(
-                                                    padding:
-                                                    EdgeInsetsDirectional
-                                                        .all(10.r),
+                                                    padding: EdgeInsetsDirectional.all(10.r),
                                                     decoration: BoxDecoration(
                                                       color: appCubit.isDark
                                                           ? lightDarkColor
@@ -531,7 +529,7 @@ class _UserHomeState extends State<UserHome> {
                                                         Expanded(
                                                           child: Text(
                                                             categoryTitle,
-                                                            maxLines: 1,
+                                                            maxLines: 2,
                                                             overflow:
                                                             TextOverflow
                                                                 .ellipsis,
@@ -626,32 +624,21 @@ class _UserHomeState extends State<UserHome> {
                                             height: 350.h,
                                             child: ListView.builder(
                                               scrollDirection: Axis.horizontal,
-                                              padding:
-                                              EdgeInsetsDirectional.only(
+                                              padding: EdgeInsetsDirectional.only(
                                                 start: 15.w,
                                                 bottom: 10.h,
                                               ),
-                                              itemCount: userCubit
-                                                  .userServices.length >
-                                                  4
-                                                  ? 4
-                                                  : userCubit
-                                                  .userServices.length,
+                                              itemCount: userCubit.userServices.length > 4 ? 4 : userCubit.userServices.length,
                                               itemBuilder: (context, index) {
                                                 var service = userCubit.userServices[index];
                                                 Map<String, dynamic> providerData = Map<String, dynamic>.from(userCubit.allUsers[service['providerId']] ?? {},);
                                                 String serviceImage = '${service['serviceImage'] ?? ''}';
                                                 String providerImage = '${providerData['profileImage'] ?? ''}';
                                                 return Padding(
-                                                  padding: EdgeInsetsDirectional.only(
-                                                    start: index == 0 ? 0 : 15.w,
-                                                    end: index == 3 ? 15.w : 0,
-                                                  ),
+                                                  padding: EdgeInsetsDirectional.only(start: index == 0 ? 0 : 15.w, end: index == 3 ? 15.w : 0,),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      move(
-                                                        context,
-                                                        UserServiceDetails(
+                                                      move(context, UserServiceDetails(
                                                           name: service['name'] ?? '',
                                                           image: service['serviceImage'] ?? '',
                                                           category: service['category'] ?? '',
@@ -663,20 +650,14 @@ class _UserHomeState extends State<UserHome> {
                                                           reviews: service['reviews'] ?? [],
                                                           providerId: providerData['uid'] ?? service['providerId'] ?? '',
                                                           serviceId: service['id'] ,
-                                                        ),
-                                                      );
+                                                        ),);
                                                     },
-                                                    borderRadius: BorderRadius.circular(
-                                                        25.r),
+                                                    borderRadius: BorderRadius.circular(25.r),
                                                     child: Container(
                                                       width: 280.w,
                                                       decoration: BoxDecoration(
-                                                        color: appCubit.isDark
-                                                            ? lightDarkColor
-                                                            : Colors.white,
-                                                        borderRadius:
-                                                        BorderRadius
-                                                            .circular(25.r),
+                                                        color: appCubit.isDark ? lightDarkColor : Colors.white,
+                                                        borderRadius: BorderRadius.circular(25.r),
                                                         boxShadow: blueShadow,
                                                       ),
                                                       child: Column(
@@ -685,38 +666,21 @@ class _UserHomeState extends State<UserHome> {
                                                           Stack(
                                                             children: [
                                                               ClipRRect(
-                                                                borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                    25.r),
-                                                                child: Image
-                                                                    .network(
+                                                                borderRadius: BorderRadius.circular(25.r),
+                                                                child: Image.network(
                                                                   serviceImage,
                                                                   height: 180.h,
-                                                                  width: double
-                                                                      .infinity,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  errorBuilder:
-                                                                      (context,
-                                                                      error,
-                                                                      stackTrace) {
+                                                                  width: double.infinity,
+                                                                  fit: BoxFit.cover,
+                                                                  errorBuilder: (context, error, stackTrace) {
                                                                     return Container(
-                                                                      height:
-                                                                      180.h,
-                                                                      width: double
-                                                                          .infinity,
-                                                                      color: mainColor
-                                                                          .withOpacity(
-                                                                          0.08),
-                                                                      child:
-                                                                      Icon(
-                                                                        Icons
-                                                                            .image_not_supported_rounded,
-                                                                        color:
-                                                                        mainColor,
-                                                                        size: 40
-                                                                            .sp,
+                                                                      height: 180.h,
+                                                                      width: double.infinity,
+                                                                      color: mainColor.withOpacity(0.08),
+                                                                      child: Icon(
+                                                                        Icons.image_not_supported_rounded,
+                                                                        color: mainColor,
+                                                                        size: 40.sp,
                                                                       ),
                                                                     );
                                                                   },
@@ -842,9 +806,7 @@ class _UserHomeState extends State<UserHome> {
                                                                         .black,
                                                                   ),
                                                                 ),
-                                                                SizedBox(
-                                                                    height:
-                                                                    8.h),
+                                                                SizedBox(height: 8.h),
                                                                 Row(
                                                                   children: [
                                                                     Icon(
@@ -882,12 +844,9 @@ class _UserHomeState extends State<UserHome> {
                                                                     ),
                                                                   ],
                                                                 ),
-                                                                SizedBox(
-                                                                    height:
-                                                                    12.h),
+                                                                SizedBox(height: 12.h),
                                                                 Container(
-                                                                  padding: EdgeInsets.all(8
-                                                                      .r),
+                                                                  padding: EdgeInsetsDirectional.all(8.r),
                                                                   decoration: BoxDecoration(
                                                                     color: mainColor
                                                                         .withOpacity(
@@ -935,7 +894,7 @@ class _UserHomeState extends State<UserHome> {
                                                                                   ),
                                                                                 ),
                                                                                 SizedBox(width: 5.w,),
-                                                                                SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,),
+                                                                                providerData['isVerified']?? false ?SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,):const SizedBox.shrink(),
                                                                               ],
                                                                             ),
                                                                             Text(

@@ -194,7 +194,7 @@ class _UserCategoriesState extends State<UserCategories> {
                                             Expanded(
                                               child: Text(
                                                 categoryTitle,
-                                                maxLines: 1,
+                                                maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,

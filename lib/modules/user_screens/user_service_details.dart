@@ -632,7 +632,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                             ),
                                           ),
                                           SizedBox(width: 5.w,),
-                                          SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,),
+                                          providerData['isVerified']?? false ?SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,):const SizedBox.shrink(),
                                         ],
                                       ),
                                       Text(

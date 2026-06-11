@@ -971,12 +971,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 height: 350.h,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
                   padding: EdgeInsetsDirectional.only(
                     start: 5.w,
                     bottom: 10.h,
                   ),
-                  itemCount: suggestedServices.length,
+                  itemCount: suggestedServices.length > 4 ? 4 : suggestedServices.length,
                   itemBuilder: (context, index) {
                     final service = suggestedServices[index];
                     final providerData = Map<String, dynamic>.from(
@@ -1728,7 +1727,7 @@ class _SearchScreenState extends State<SearchScreen> {
         crossAxisSpacing: 10.w,
         childAspectRatio: 2,
       ),
-      itemCount: categories.length,
+      itemCount: categories.length > 4 ? 4 : categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
 
@@ -1790,7 +1789,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Expanded(
             child: buildHighlightedText(
               text: categoryTitle,
-              maxLines: 1,
+              maxLines: 2,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12.sp,
@@ -2010,18 +2009,23 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '${providerData['name'] ?? ''}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 11.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color,
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${providerData['name'] ?? 'فني غير معروف'}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5.w,),
+                                  providerData['isVerified']?? false ?SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,):const SizedBox.shrink(),
+                                ],
                               ),
                               Text(
                                 '${providerData['specialization'] ?? ''}',
