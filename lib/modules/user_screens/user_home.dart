@@ -118,49 +118,50 @@ class _UserHomeState extends State<UserHome> {
         AppCubit appCubit = AppCubit.get(context);
         return Scaffold(
             body: Directionality(
-              textDirection: TextDirection.rtl,
-              child: BlocBuilder<UserCubit, UserStates>(
-                builder: (context, state) {
-                  UserCubit userCubit = UserCubit.get(context);
-                  String getCurrentUserName() {
-                    final String uid =
-                        CacheHelper.getData(key: 'uid')?.toString() ?? '';
+          textDirection: TextDirection.rtl,
+          child: BlocBuilder<UserCubit, UserStates>(
+            builder: (context, state) {
+              UserCubit userCubit = UserCubit.get(context);
+              String getCurrentUserName() {
+                final String uid =
+                    CacheHelper.getData(key: 'uid')?.toString() ?? '';
 
-                    if (uid.isEmpty) {
-                      return 'مستخدمنا العزيز';
-                    }
+                if (uid.isEmpty) {
+                  return 'مستخدمنا العزيز';
+                }
 
-                    Map<String, dynamic> currentUserData = {};
+                Map<String, dynamic> currentUserData = {};
 
-                    final dynamic userCubitData = userCubit.allUsers[uid];
-                    final dynamic appCubitData = appCubit.allUsers[uid];
+                final dynamic userCubitData = userCubit.allUsers[uid];
+                final dynamic appCubitData = appCubit.allUsers[uid];
 
-                    if (userCubitData is Map) {
-                      currentUserData = Map<String, dynamic>.from(userCubitData);
-                    } else if (appCubitData is Map) {
-                      currentUserData = Map<String, dynamic>.from(appCubitData);
-                    }
+                if (userCubitData is Map) {
+                  currentUserData = Map<String, dynamic>.from(userCubitData);
+                } else if (appCubitData is Map) {
+                  currentUserData = Map<String, dynamic>.from(appCubitData);
+                }
 
-                    final String name =
-                        currentUserData['name']?.toString().trim() ?? '';
+                final String name =
+                    currentUserData['name']?.toString().trim() ?? '';
 
-                    if (name.isEmpty) {
-                      return 'مستخدمنا العزيز';
-                    }
+                if (name.isEmpty) {
+                  return 'مستخدمنا العزيز';
+                }
 
-                    return name;
-                  }
+                return name;
+              }
 
-                  return ConditionalBuilder(
-                    condition:
+              return ConditionalBuilder(
+                condition:
                     checkingInternet || state is GetUserAllServicesLoadingState,
-                    builder: (context) => UserHomeShimmer(isDark: appCubit.isDark),
-                    fallback: (context) => ConditionalBuilder(
-                        condition: !hasInternet,
-                        builder: (context) => NoInternet(
-                          onRetry: () => checkConnectionAndGetData(forceRefresh: true),
+                builder: (context) => UserHomeShimmer(isDark: appCubit.isDark),
+                fallback: (context) => ConditionalBuilder(
+                    condition: !hasInternet,
+                    builder: (context) => NoInternet(
+                          onRetry: () =>
+                              checkConnectionAndGetData(forceRefresh: true),
                         ),
-                        fallback: (context) => RefreshIndicator(
+                    fallback: (context) => RefreshIndicator(
                           onRefresh: () =>
                               checkConnectionAndGetData(forceRefresh: true),
                           child: SingleChildScrollView(
@@ -189,7 +190,7 @@ class _UserHomeState extends State<UserHome> {
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           borderRadius:
-                                          BorderRadius.circular(30.r),
+                                              BorderRadius.circular(30.r),
                                           boxShadow: blueShadow,
                                           gradient: const LinearGradient(
                                             begin: Alignment.topLeft,
@@ -215,8 +216,8 @@ class _UserHomeState extends State<UserHome> {
                                                     color: Colors.white
                                                         .withOpacity(0.05),
                                                     borderRadius:
-                                                    BorderRadius.circular(
-                                                        35.r),
+                                                        BorderRadius.circular(
+                                                            35.r),
                                                   ),
                                                 ),
                                               ),
@@ -241,35 +242,35 @@ class _UserHomeState extends State<UserHome> {
                                             ),
                                             Padding(
                                               padding:
-                                              EdgeInsetsDirectional.all(
-                                                  20.r),
+                                                  EdgeInsetsDirectional.all(
+                                                      20.r),
                                               child: Row(
                                                 children: [
                                                   Expanded(
                                                     child: Column(
                                                       mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .center,
+                                                          MainAxisAlignment
+                                                              .center,
                                                       crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Container(
                                                           padding: EdgeInsets
                                                               .symmetric(
-                                                              horizontal:
-                                                              10.w,
-                                                              vertical:
-                                                              4.h),
+                                                                  horizontal:
+                                                                      10.w,
+                                                                  vertical:
+                                                                      4.h),
                                                           decoration:
-                                                          BoxDecoration(
+                                                              BoxDecoration(
                                                             color: Colors.white
                                                                 .withOpacity(
-                                                                0.15),
+                                                                    0.15),
                                                             borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                10.r),
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.r),
                                                           ),
                                                           child: Text(
                                                             'مرحباً بك في إتقان',
@@ -277,11 +278,11 @@ class _UserHomeState extends State<UserHome> {
                                                               color: Colors
                                                                   .white
                                                                   .withOpacity(
-                                                                  0.8),
+                                                                      0.8),
                                                               fontSize: 10.sp,
                                                               fontWeight:
-                                                              FontWeight
-                                                                  .w600,
+                                                                  FontWeight
+                                                                      .w600,
                                                             ),
                                                           ),
                                                         ),
@@ -292,7 +293,7 @@ class _UserHomeState extends State<UserHome> {
                                                             color: Colors.white,
                                                             fontSize: 17.sp,
                                                             fontWeight:
-                                                            FontWeight.w900,
+                                                                FontWeight.w900,
                                                             letterSpacing: 0.5,
                                                           ),
                                                         ),
@@ -302,7 +303,7 @@ class _UserHomeState extends State<UserHome> {
                                                           style: TextStyle(
                                                             color: Colors.white
                                                                 .withOpacity(
-                                                                0.7),
+                                                                    0.7),
                                                             fontSize: 10.sp,
                                                           ),
                                                         ),
@@ -316,16 +317,16 @@ class _UserHomeState extends State<UserHome> {
                                                         width: 75.r,
                                                         height: 75.r,
                                                         decoration:
-                                                        BoxDecoration(
+                                                            BoxDecoration(
                                                           color: Colors.white
                                                               .withOpacity(0.1),
                                                           shape:
-                                                          BoxShape.circle,
+                                                              BoxShape.circle,
                                                           border: Border.all(
                                                               color: Colors
                                                                   .white
                                                                   .withOpacity(
-                                                                  0.2)),
+                                                                      0.2)),
                                                         ),
                                                       ),
                                                       Transform.rotate(
@@ -345,7 +346,9 @@ class _UserHomeState extends State<UserHome> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 20.h,),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
                                     /*الأقسام*/
                                     Padding(
                                       padding: EdgeInsetsDirectional.symmetric(
@@ -378,7 +381,7 @@ class _UserHomeState extends State<UserHome> {
                                                     ? lightDarkColor
                                                     : Colors.white,
                                                 borderRadius:
-                                                BorderRadius.circular(25.r),
+                                                    BorderRadius.circular(25.r),
                                                 boxShadow: blueShadow,
                                               ),
                                               child: Column(
@@ -394,7 +397,7 @@ class _UserHomeState extends State<UserHome> {
                                                     style: TextStyle(
                                                       fontSize: 14.sp,
                                                       fontWeight:
-                                                      FontWeight.bold,
+                                                          FontWeight.bold,
                                                       color: appCubit.isDark
                                                           ? Colors.white
                                                           : Colors.black,
@@ -407,24 +410,24 @@ class _UserHomeState extends State<UserHome> {
                                             GridView.builder(
                                               shrinkWrap: true,
                                               padding:
-                                              EdgeInsetsDirectional.zero,
+                                                  EdgeInsetsDirectional.zero,
                                               physics:
-                                              const NeverScrollableScrollPhysics(),
+                                                  const NeverScrollableScrollPhysics(),
                                               gridDelegate:
-                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
                                                 crossAxisCount: 2,
                                                 mainAxisSpacing: 10.h,
                                                 crossAxisSpacing: 10.w,
                                                 childAspectRatio: 2.1,
                                               ),
                                               itemCount: userCubit
-                                                  .categories.length >
-                                                  4
+                                                          .categories.length >
+                                                      4
                                                   ? 4
                                                   : userCubit.categories.length,
                                               itemBuilder: (context, index) {
                                                 final category =
-                                                userCubit.categories[index];
+                                                    userCubit.categories[index];
                                                 final String categoryTitle =
                                                     '${category['title'] ?? ''}';
                                                 final String categoryImage =
@@ -432,30 +435,32 @@ class _UserHomeState extends State<UserHome> {
 
                                                 return InkWell(
                                                   splashColor:
-                                                  Colors.transparent,
+                                                      Colors.transparent,
                                                   highlightColor:
-                                                  Colors.transparent,
+                                                      Colors.transparent,
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      25.r),
+                                                      BorderRadius.circular(
+                                                          25.r),
                                                   onTap: () {
                                                     move(
                                                       context,
                                                       UserServicesList(
                                                         categoryType:
-                                                        categoryTitle,
+                                                            categoryTitle,
                                                       ),
                                                     );
                                                   },
                                                   child: Container(
-                                                    padding: EdgeInsetsDirectional.all(10.r),
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .all(10.r),
                                                     decoration: BoxDecoration(
                                                       color: appCubit.isDark
                                                           ? lightDarkColor
                                                           : Colors.white,
                                                       borderRadius:
-                                                      BorderRadius.circular(
-                                                          25.r),
+                                                          BorderRadius.circular(
+                                                              25.r),
                                                       boxShadow: blueShadow,
                                                     ),
                                                     child: Row(
@@ -464,66 +469,66 @@ class _UserHomeState extends State<UserHome> {
                                                           width: 50.w,
                                                           height: 50.h,
                                                           padding:
-                                                          EdgeInsets.all(
-                                                              12.r),
+                                                              EdgeInsets.all(
+                                                                  12.r),
                                                           decoration:
-                                                          BoxDecoration(
+                                                              BoxDecoration(
                                                             color: mainColor
                                                                 .withOpacity(
-                                                                0.08),
+                                                                    0.08),
                                                             borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                18.r),
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        18.r),
                                                           ),
                                                           child: categoryImage
-                                                              .trim()
-                                                              .isNotEmpty
+                                                                  .trim()
+                                                                  .isNotEmpty
                                                               ? SvgPicture
-                                                              .network(
-                                                            categoryImage,
-                                                            fit: BoxFit
-                                                                .contain,
-                                                            placeholderBuilder:
-                                                                (context) {
-                                                              return Shimmer
-                                                                  .fromColors(
-                                                                baseColor: appCubit
-                                                                    .isDark
-                                                                    ? const Color(
-                                                                    0xFF2A2A2A)
-                                                                    : const Color(
-                                                                    0xFFE3F2FD),
-                                                                highlightColor: appCubit
-                                                                    .isDark
-                                                                    ? const Color(
-                                                                    0xFF3A3A3A)
-                                                                    : const Color(
-                                                                    0xFFF8FCFF),
-                                                                child:
-                                                                Container(
-                                                                  width:
-                                                                  26.w,
-                                                                  height:
-                                                                  26.h,
-                                                                  decoration:
-                                                                  BoxDecoration(
-                                                                    color:
-                                                                    Colors.white,
-                                                                    borderRadius:
-                                                                    BorderRadius.circular(8.r),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            },
-                                                          )
+                                                                  .network(
+                                                                  categoryImage,
+                                                                  fit: BoxFit
+                                                                      .contain,
+                                                                  placeholderBuilder:
+                                                                      (context) {
+                                                                    return Shimmer
+                                                                        .fromColors(
+                                                                      baseColor: appCubit
+                                                                              .isDark
+                                                                          ? const Color(
+                                                                              0xFF2A2A2A)
+                                                                          : const Color(
+                                                                              0xFFE3F2FD),
+                                                                      highlightColor: appCubit
+                                                                              .isDark
+                                                                          ? const Color(
+                                                                              0xFF3A3A3A)
+                                                                          : const Color(
+                                                                              0xFFF8FCFF),
+                                                                      child:
+                                                                          Container(
+                                                                        width:
+                                                                            26.w,
+                                                                        height:
+                                                                            26.h,
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8.r),
+                                                                        ),
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                )
                                                               : Icon(
-                                                            Icons
-                                                                .category_rounded,
-                                                            color:
-                                                            mainColor,
-                                                            size: 25.sp,
-                                                          ),
+                                                                  Icons
+                                                                      .category_rounded,
+                                                                  color:
+                                                                      mainColor,
+                                                                  size: 25.sp,
+                                                                ),
                                                         ),
                                                         SizedBox(width: 10.w),
                                                         Expanded(
@@ -531,18 +536,18 @@ class _UserHomeState extends State<UserHome> {
                                                             categoryTitle,
                                                             maxLines: 2,
                                                             overflow:
-                                                            TextOverflow
-                                                                .ellipsis,
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                             style: TextStyle(
                                                               fontWeight:
-                                                              FontWeight
-                                                                  .bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                               fontSize: 12.sp,
                                                               color: appCubit
-                                                                  .isDark
+                                                                      .isDark
                                                                   ? Colors.white
                                                                   : Colors
-                                                                  .black87,
+                                                                      .black87,
                                                             ),
                                                           ),
                                                         ),
@@ -562,14 +567,16 @@ class _UserHomeState extends State<UserHome> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(height: 20.h,),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
                                     /*الخدمات الرائجة*/
                                     Column(
                                       children: [
                                         Padding(
                                           padding:
-                                          EdgeInsetsDirectional.symmetric(
-                                              horizontal: 10.w),
+                                              EdgeInsetsDirectional.symmetric(
+                                                  horizontal: 10.w),
                                           child: buildSectionTitle(
                                             title: 'الخدمات الرائجة',
                                             icon: 'assets/services.svg',
@@ -580,19 +587,19 @@ class _UserHomeState extends State<UserHome> {
                                         if (userCubit.userServices.isEmpty)
                                           Padding(
                                             padding:
-                                            EdgeInsetsDirectional.symmetric(
-                                                horizontal: 10.w),
+                                                EdgeInsetsDirectional.symmetric(
+                                                    horizontal: 10.w),
                                             child: Container(
                                               width: double.infinity,
                                               padding:
-                                              EdgeInsetsDirectional.all(
-                                                  20.r),
+                                                  EdgeInsetsDirectional.all(
+                                                      20.r),
                                               decoration: BoxDecoration(
                                                 color: appCubit.isDark
                                                     ? lightDarkColor
                                                     : Colors.white,
                                                 borderRadius:
-                                                BorderRadius.circular(25.r),
+                                                    BorderRadius.circular(25.r),
                                                 boxShadow: blueShadow,
                                               ),
                                               child: Column(
@@ -609,7 +616,7 @@ class _UserHomeState extends State<UserHome> {
                                                     style: TextStyle(
                                                       fontSize: 14.sp,
                                                       fontWeight:
-                                                      FontWeight.bold,
+                                                          FontWeight.bold,
                                                       color: appCubit.isDark
                                                           ? Colors.white
                                                           : Colors.black,
@@ -624,63 +631,136 @@ class _UserHomeState extends State<UserHome> {
                                             height: 350.h,
                                             child: ListView.builder(
                                               scrollDirection: Axis.horizontal,
-                                              padding: EdgeInsetsDirectional.only(
+                                              padding:
+                                                  EdgeInsetsDirectional.only(
                                                 start: 15.w,
                                                 bottom: 10.h,
                                               ),
-                                              itemCount: userCubit.userServices.length > 4 ? 4 : userCubit.userServices.length,
+                                              itemCount: userCubit
+                                                          .userServices.length >
+                                                      4
+                                                  ? 4
+                                                  : userCubit
+                                                      .userServices.length,
                                               itemBuilder: (context, index) {
-                                                var service = userCubit.userServices[index];
-                                                Map<String, dynamic> providerData = Map<String, dynamic>.from(userCubit.allUsers[service['providerId']] ?? {},);
-                                                String serviceImage = '${service['serviceImage'] ?? ''}';
-                                                String providerImage = '${providerData['profileImage'] ?? ''}';
+                                                var service = userCubit
+                                                    .userServices[index];
+                                                Map<String, dynamic>
+                                                    providerData =
+                                                    Map<String, dynamic>.from(
+                                                  userCubit.allUsers[service[
+                                                          'providerId']] ??
+                                                      {},
+                                                );
+                                                String serviceImage =
+                                                    '${service['serviceImage'] ?? ''}';
+                                                String providerImage =
+                                                    '${providerData['profileImage'] ?? ''}';
                                                 return Padding(
-                                                  padding: EdgeInsetsDirectional.only(start: index == 0 ? 0 : 15.w, end: index == 3 ? 15.w : 0,),
+                                                  padding: EdgeInsetsDirectional
+                                                      .only(
+                                                    start:
+                                                        index == 0 ? 0 : 15.w,
+                                                    end: index == 3 ? 15.w : 0,
+                                                  ),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      move(context, UserServiceDetails(
-                                                          name: service['name'] ?? '',
-                                                          image: service['serviceImage'] ?? '',
-                                                          category: service['category'] ?? '',
-                                                          desc: service['description'] ?? '',
-                                                          price: service['price'] ??0,
-                                                          period: service['period'] ?? '',
-                                                          providerName: providerData['name'] ??'فني غير معروف',
-                                                          providerSpec: providerData['specialization'] ?? '',
-                                                          reviews: service['reviews'] ?? [],
-                                                          providerId: providerData['uid'] ?? service['providerId'] ?? '',
-                                                          serviceId: service['id'] ,
-                                                        ),);
+                                                      move(
+                                                        context,
+                                                        UserServiceDetails(
+                                                          name:
+                                                              service['name'] ??
+                                                                  '',
+                                                          image: service[
+                                                                  'serviceImage'] ??
+                                                              '',
+                                                          category: service[
+                                                                  'category'] ??
+                                                              '',
+                                                          desc: service[
+                                                                  'description'] ??
+                                                              '',
+                                                          price: service[
+                                                                  'price'] ??
+                                                              0,
+                                                          period: service[
+                                                                  'period'] ??
+                                                              '',
+                                                          providerName:
+                                                              providerData[
+                                                                      'name'] ??
+                                                                  'فني غير معروف',
+                                                          providerSpec:
+                                                              providerData[
+                                                                      'specialization'] ??
+                                                                  '',
+                                                          reviews: service[
+                                                                  'reviews'] ??
+                                                              [],
+                                                          providerId: providerData[
+                                                                  'uid'] ??
+                                                              service[
+                                                                  'providerId'] ??
+                                                              '',
+                                                          serviceId:
+                                                              service['id'],
+                                                        ),
+                                                      );
                                                     },
-                                                    borderRadius: BorderRadius.circular(25.r),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            25.r),
                                                     child: Container(
                                                       width: 280.w,
                                                       decoration: BoxDecoration(
-                                                        color: appCubit.isDark ? lightDarkColor : Colors.white,
-                                                        borderRadius: BorderRadius.circular(25.r),
+                                                        color: appCubit.isDark
+                                                            ? lightDarkColor
+                                                            : Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(25.r),
                                                         boxShadow: blueShadow,
                                                       ),
                                                       child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Stack(
                                                             children: [
                                                               ClipRRect(
-                                                                borderRadius: BorderRadius.circular(25.r),
-                                                                child: Image.network(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            25.r),
+                                                                child: Image
+                                                                    .network(
                                                                   serviceImage,
                                                                   height: 180.h,
-                                                                  width: double.infinity,
-                                                                  fit: BoxFit.cover,
-                                                                  errorBuilder: (context, error, stackTrace) {
+                                                                  width: double
+                                                                      .infinity,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  errorBuilder:
+                                                                      (context,
+                                                                          error,
+                                                                          stackTrace) {
                                                                     return Container(
-                                                                      height: 180.h,
-                                                                      width: double.infinity,
-                                                                      color: mainColor.withOpacity(0.08),
-                                                                      child: Icon(
-                                                                        Icons.image_not_supported_rounded,
-                                                                        color: mainColor,
-                                                                        size: 40.sp,
+                                                                      height:
+                                                                          180.h,
+                                                                      width: double
+                                                                          .infinity,
+                                                                      color: mainColor
+                                                                          .withOpacity(
+                                                                              0.08),
+                                                                      child:
+                                                                          Icon(
+                                                                        Icons
+                                                                            .image_not_supported_rounded,
+                                                                        color:
+                                                                            mainColor,
+                                                                        size: 40
+                                                                            .sp,
                                                                       ),
                                                                     );
                                                                   },
@@ -690,42 +770,42 @@ class _UserHomeState extends State<UserHome> {
                                                                 bottom: 12.h,
                                                                 end: 12.w,
                                                                 child:
-                                                                Container(
+                                                                    Container(
                                                                   padding:
-                                                                  EdgeInsets
-                                                                      .symmetric(
+                                                                      EdgeInsets
+                                                                          .symmetric(
                                                                     horizontal:
-                                                                    12.w,
+                                                                        12.w,
                                                                     vertical:
-                                                                    6.h,
+                                                                        6.h,
                                                                   ),
                                                                   decoration:
-                                                                  BoxDecoration(
+                                                                      BoxDecoration(
                                                                     color:
-                                                                    mainColor,
+                                                                        mainColor,
                                                                     borderRadius:
-                                                                    BorderRadius.circular(
-                                                                        15.r),
+                                                                        BorderRadius.circular(
+                                                                            15.r),
                                                                     boxShadow: const [
                                                                       BoxShadow(
                                                                         color: Colors
                                                                             .black26,
                                                                         blurRadius:
-                                                                        8,
+                                                                            8,
                                                                       ),
                                                                     ],
                                                                   ),
                                                                   child: Text(
                                                                     '${service['price'] ?? ''} $reyalSymbol',
                                                                     style:
-                                                                    TextStyle(
+                                                                        TextStyle(
                                                                       color: Colors
                                                                           .white,
                                                                       fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
+                                                                          FontWeight
+                                                                              .bold,
                                                                       fontSize:
-                                                                      13.sp,
+                                                                          13.sp,
                                                                     ),
                                                                   ),
                                                                 ),
@@ -734,44 +814,44 @@ class _UserHomeState extends State<UserHome> {
                                                                 top: 12.h,
                                                                 start: 12.w,
                                                                 child:
-                                                                ClipRRect(
+                                                                    ClipRRect(
                                                                   child:
-                                                                  BackdropFilter(
+                                                                      BackdropFilter(
                                                                     filter:
-                                                                    ImageFilter
-                                                                        .blur(
+                                                                        ImageFilter
+                                                                            .blur(
                                                                       sigmaX: 5,
                                                                       sigmaY: 5,
                                                                     ),
                                                                     child:
-                                                                    Container(
+                                                                        Container(
                                                                       padding:
-                                                                      EdgeInsets
-                                                                          .symmetric(
+                                                                          EdgeInsets
+                                                                              .symmetric(
                                                                         horizontal:
-                                                                        10.w,
+                                                                            10.w,
                                                                         vertical:
-                                                                        4.h,
+                                                                            4.h,
                                                                       ),
                                                                       decoration:
-                                                                      BoxDecoration(
+                                                                          BoxDecoration(
                                                                         color: Colors
                                                                             .white
                                                                             .withOpacity(0.7),
                                                                         borderRadius:
-                                                                        BorderRadius.circular(10.r),
+                                                                            BorderRadius.circular(10.r),
                                                                       ),
                                                                       child:
-                                                                      Text(
+                                                                          Text(
                                                                         '${service['category'] ?? ''}',
                                                                         style:
-                                                                        TextStyle(
+                                                                            TextStyle(
                                                                           color:
-                                                                          mainColor,
+                                                                              mainColor,
                                                                           fontWeight:
-                                                                          FontWeight.w600,
+                                                                              FontWeight.w600,
                                                                           fontSize:
-                                                                          10.sp,
+                                                                              10.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -781,32 +861,38 @@ class _UserHomeState extends State<UserHome> {
                                                             ],
                                                           ),
                                                           Padding(
-                                                            padding: EdgeInsetsDirectional.all(15.r),
+                                                            padding:
+                                                                EdgeInsetsDirectional
+                                                                    .all(15.r),
                                                             child: Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
                                                               children: [
                                                                 Text(
                                                                   service['name'] ??
                                                                       '',
                                                                   maxLines: 1,
                                                                   overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
+                                                                      TextOverflow
+                                                                          .ellipsis,
                                                                   style:
-                                                                  TextStyle(
+                                                                      TextStyle(
                                                                     fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
+                                                                        FontWeight
+                                                                            .bold,
                                                                     fontSize:
-                                                                    15.sp,
+                                                                        15.sp,
                                                                     color: appCubit.isDark
                                                                         ? Colors
-                                                                        .white
+                                                                            .white
                                                                         : Colors
-                                                                        .black,
+                                                                            .black,
                                                                   ),
                                                                 ),
-                                                                SizedBox(height: 8.h),
+                                                                SizedBox(
+                                                                    height:
+                                                                        8.h),
                                                                 Row(
                                                                   children: [
                                                                     Icon(
@@ -815,7 +901,7 @@ class _UserHomeState extends State<UserHome> {
                                                                       color: Colors
                                                                           .amber,
                                                                       size:
-                                                                      18.sp,
+                                                                          18.sp,
                                                                     ),
                                                                     SizedBox(
                                                                         width: 5
@@ -823,13 +909,13 @@ class _UserHomeState extends State<UserHome> {
                                                                     Text(
                                                                       '${service['rate'] ?? 0}',
                                                                       style:
-                                                                      TextStyle(
+                                                                          TextStyle(
                                                                         color: Colors
                                                                             .grey,
                                                                         fontSize:
-                                                                        12.sp,
+                                                                            12.sp,
                                                                         fontWeight:
-                                                                        FontWeight.w600,
+                                                                            FontWeight.w600,
                                                                       ),
                                                                     ),
                                                                     const Spacer(),
@@ -838,46 +924,53 @@ class _UserHomeState extends State<UserHome> {
                                                                           .arrow_forward_ios_rounded,
                                                                       color: mainColor
                                                                           .withOpacity(
-                                                                          0.2),
+                                                                              0.2),
                                                                       size:
-                                                                      14.sp,
+                                                                          14.sp,
                                                                     ),
                                                                   ],
                                                                 ),
-                                                                SizedBox(height: 12.h),
+                                                                SizedBox(
+                                                                    height:
+                                                                        12.h),
                                                                 Container(
-                                                                  padding: EdgeInsetsDirectional.all(8.r),
-                                                                  decoration: BoxDecoration(
+                                                                  padding:
+                                                                      EdgeInsetsDirectional
+                                                                          .all(8
+                                                                              .r),
+                                                                  decoration:
+                                                                      BoxDecoration(
                                                                     color: mainColor
                                                                         .withOpacity(
-                                                                        0.05),
+                                                                            0.05),
                                                                     borderRadius:
-                                                                    BorderRadius.circular(
-                                                                        15.r),
+                                                                        BorderRadius.circular(
+                                                                            15.r),
                                                                   ),
                                                                   child: Row(
                                                                     children: [
                                                                       CircleAvatar(
                                                                         radius:
-                                                                        16.r,
+                                                                            16.r,
                                                                         backgroundImage: providerImage.trim().isNotEmpty
                                                                             ? NetworkImage(providerImage)
                                                                             : null,
                                                                         child: providerImage.trim().isEmpty
                                                                             ? Icon(
-                                                                          Icons.person,
-                                                                          size: 18.sp,
-                                                                          color: mainColor,
-                                                                        )
+                                                                                Icons.person,
+                                                                                size: 18.sp,
+                                                                                color: mainColor,
+                                                                              )
                                                                             : null,
                                                                       ),
                                                                       SizedBox(
                                                                           width:
-                                                                          8.w),
+                                                                              8.w),
                                                                       Expanded(
                                                                         child:
-                                                                        Column(
-                                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
                                                                           children: [
                                                                             Row(
                                                                               children: [
@@ -893,8 +986,15 @@ class _UserHomeState extends State<UserHome> {
                                                                                     ),
                                                                                   ),
                                                                                 ),
-                                                                                SizedBox(width: 5.w,),
-                                                                                providerData['isVerified']?? false ?SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,):const SizedBox.shrink(),
+                                                                                SizedBox(
+                                                                                  width: 5.w,
+                                                                                ),
+                                                                                providerData['isVerified'] ?? false
+                                                                                    ? SvgPicture.asset(
+                                                                                        'assets/verf_bold.svg',
+                                                                                        color: Colors.blue,
+                                                                                      )
+                                                                                    : const SizedBox.shrink(),
                                                                               ],
                                                                             ),
                                                                             Text(
@@ -925,17 +1025,19 @@ class _UserHomeState extends State<UserHome> {
                                           ),
                                       ],
                                     ),
-                                    SizedBox(height: 20.h,),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
                                   ],
                                 ),
                               ],
                             ),
                           ),
                         )),
-                  );
-                },
-              ),
-            ));
+              );
+            },
+          ),
+        ));
       },
     );
   }
