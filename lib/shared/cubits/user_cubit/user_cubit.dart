@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
 
 import '../../networks/local/cache_helper.dart';
 import '../../networks/remote/notification_service.dart';
@@ -86,8 +86,7 @@ class UserCubit extends Cubit<UserStates> {
   bool canProviderUseFreePlan({
     required Map<String, dynamic> providerData,
     required int completedRequestsCount,
-  })
-  {
+  }) {
     if (isSubscriptionExpired(providerData)) {
       return false;
     }
@@ -99,8 +98,7 @@ class UserCubit extends Cubit<UserStates> {
     return completedRequestsCount < freeCompletedRequestsLimit;
   }
 
-  Future<Map<String, int>> getCompletedRequestsCountByProvider()
-  async {
+  Future<Map<String, int>> getCompletedRequestsCountByProvider() async {
     final completedRequestsSnapshot = await FirebaseFirestore.instance
         .collection('requests')
         .where('status', isEqualTo: 'مكتمل')
@@ -192,8 +190,7 @@ class UserCubit extends Cubit<UserStates> {
   bool isServiceVisibleToCustomers(
     Map<String, dynamic> service,
     Set<String> visibleProviderIds,
-  )
-  {
+  ) {
     final String providerId = service['providerId']?.toString() ?? '';
     final bool isServiceActive = service['isActive'] != false;
 
@@ -224,8 +221,8 @@ class UserCubit extends Cubit<UserStates> {
 
   String? currentUserSpecServicesType;
 
-  Future<void> getUserSpecServices(String type, {bool forceRefresh = false})
-  async {
+  Future<void> getUserSpecServices(String type,
+      {bool forceRefresh = false}) async {
     try {
       final String categoryType = type.trim();
       currentUserSpecServicesType = categoryType;
@@ -280,7 +277,10 @@ class UserCubit extends Cubit<UserStates> {
       userServices.clear();
 
       final visibleProviderIdsFuture = getVisibleProviderIds();
-      final servicesFuture =FirebaseFirestore.instance.collection('services').where('isActive', isEqualTo: true).get();
+      final servicesFuture = FirebaseFirestore.instance
+          .collection('services')
+          .where('isActive', isEqualTo: true)
+          .get();
 
       await Future.wait([
         visibleProviderIdsFuture,
@@ -318,8 +318,7 @@ class UserCubit extends Cubit<UserStates> {
 
   Future<void> getServiceReviews({
     required String serviceId,
-  })
-  async {
+  }) async {
     try {
       emit(GetServiceReviewsLoadingState());
 
@@ -335,9 +334,8 @@ class UserCubit extends Cubit<UserStates> {
         return;
       }
 
-      final serviceRef = FirebaseFirestore.instance
-          .collection('services')
-          .doc(serviceId);
+      final serviceRef =
+          FirebaseFirestore.instance.collection('services').doc(serviceId);
 
       final serviceDoc = await serviceRef.get();
 
@@ -360,7 +358,8 @@ class UserCubit extends Cubit<UserStates> {
           .get();
 
       for (var doc in reviewsSnapshot.docs) {
-        final Map<String, dynamic> reviewData = Map<String, dynamic>.from(doc.data());
+        final Map<String, dynamic> reviewData =
+            Map<String, dynamic>.from(doc.data());
 
         reviewData['id'] = doc.id;
 
@@ -427,7 +426,6 @@ class UserCubit extends Cubit<UserStates> {
 
   Future<void> getUserRequests({bool forceRefresh = false}) async {
     try {
-
       if (isUserRequestsLoaded && !forceRefresh) {
         return;
       }
@@ -466,13 +464,12 @@ class UserCubit extends Cubit<UserStates> {
     required String duration,
     required int price,
     required Timestamp scheduledAt,
-  })
-  async {
+  }) async {
     try {
       emit(CreateRequestLoadingState());
 
       final providerRef =
-      FirebaseFirestore.instance.collection('users').doc(providerId);
+          FirebaseFirestore.instance.collection('users').doc(providerId);
 
       final providerFuture = providerRef.get();
       final completedRequestsCountFuture = FirebaseFirestore.instance
@@ -513,17 +510,21 @@ class UserCubit extends Cubit<UserStates> {
 
         emit(CreateRequestErrorState(
           error:
-          'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',
+              'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',
         ));
         return;
       }
 
-      final int completedRequestsCount = completedRequestsCountSnapshot.count ?? 0;
+      final int completedRequestsCount =
+          completedRequestsCountSnapshot.count ?? 0;
 
-      if (!canProviderUseFreePlan(providerData: providerData, completedRequestsCount: completedRequestsCount,)) {
+      if (!canProviderUseFreePlan(
+        providerData: providerData,
+        completedRequestsCount: completedRequestsCount,
+      )) {
         emit(CreateRequestErrorState(
           error:
-          'أكمل هذا الفني 5 حجوزات مجانية، ولا يمكنه استقبال حجوزات جديدة حتى يقوم بالاشتراك.',
+              'أكمل هذا الفني 5 حجوزات مجانية، ولا يمكنه استقبال حجوزات جديدة حتى يقوم بالاشتراك.',
         ));
         return;
       }
@@ -532,7 +533,7 @@ class UserCubit extends Cubit<UserStates> {
       final Timestamp nowTimestamp = Timestamp.fromDate(now);
 
       final requestRef =
-      FirebaseFirestore.instance.collection('requests').doc();
+          FirebaseFirestore.instance.collection('requests').doc();
 
       final Map<String, dynamic> requestData = {
         'requestId': requestRef.id,
@@ -607,8 +608,7 @@ class UserCubit extends Cubit<UserStates> {
     required String customerId,
     required double rating,
     required String review,
-  })
-  async {
+  }) async {
     try {
       emit(ConfirmBookingReviewLoadingState());
 
@@ -626,21 +626,16 @@ class UserCubit extends Cubit<UserStates> {
         return;
       }
 
-      final requestRef = FirebaseFirestore.instance
-          .collection('requests')
-          .doc(requestId);
+      final requestRef =
+          FirebaseFirestore.instance.collection('requests').doc(requestId);
 
-      final serviceRef = FirebaseFirestore.instance
-          .collection('services')
-          .doc(serviceId);
+      final serviceRef =
+          FirebaseFirestore.instance.collection('services').doc(serviceId);
 
-      final providerRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(providerId);
+      final providerRef =
+          FirebaseFirestore.instance.collection('users').doc(providerId);
 
-      final reviewRef = serviceRef
-          .collection('reviews')
-          .doc(requestId);
+      final reviewRef = serviceRef.collection('reviews').doc(requestId);
 
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final requestDoc = await transaction.get(requestRef);
@@ -672,21 +667,27 @@ class UserCubit extends Cubit<UserStates> {
           throw 'تم تقييم هذا الحجز مسبقًا';
         }
 
-        final int oldServiceReviewsCount = int.tryParse('${serviceData['reviewsCount'] ?? 0}') ?? 0;
+        final int oldServiceReviewsCount =
+            int.tryParse('${serviceData['reviewsCount'] ?? 0}') ?? 0;
 
-        final double oldServiceRatingSum = double.tryParse('${serviceData['ratingSum'] ?? 0}') ?? 0.0;
+        final double oldServiceRatingSum =
+            double.tryParse('${serviceData['ratingSum'] ?? 0}') ?? 0.0;
 
         final int newServiceReviewsCount = oldServiceReviewsCount + 1;
         final double newServiceRatingSum = oldServiceRatingSum + rating;
-        final double newServiceRate = newServiceRatingSum / newServiceReviewsCount;
+        final double newServiceRate =
+            newServiceRatingSum / newServiceReviewsCount;
 
-        final int oldProviderRatingsCount = int.tryParse('${providerData['ratingsCount'] ?? 0}') ?? 0;
+        final int oldProviderRatingsCount =
+            int.tryParse('${providerData['ratingsCount'] ?? 0}') ?? 0;
 
-        final double oldProviderRatingSum = double.tryParse('${providerData['ratingSum'] ?? 0}') ?? 0.0;
+        final double oldProviderRatingSum =
+            double.tryParse('${providerData['ratingSum'] ?? 0}') ?? 0.0;
 
         final int newProviderRatingsCount = oldProviderRatingsCount + 1;
         final double newProviderRatingSum = oldProviderRatingSum + rating;
-        final double newProviderAvgRating = newProviderRatingSum / newProviderRatingsCount;
+        final double newProviderAvgRating =
+            newProviderRatingSum / newProviderRatingsCount;
 
         transaction.set(reviewRef, {
           'requestId': requestId,
@@ -770,17 +771,16 @@ class UserCubit extends Cubit<UserStates> {
   Future<void> getSingleUserData({
     String? userId,
     bool forceRefresh = false,
-  })
-  async {
+  }) async {
     try {
-
       if (isSingleUserDataLoaded && !forceRefresh) {
         return;
       }
 
       emit(GetSingleUserDataLoadingState());
 
-      final String uid = userId ?? CacheHelper.getData(key: 'uid')?.toString() ?? '';
+      final String uid =
+          userId ?? CacheHelper.getData(key: 'uid')?.toString() ?? '';
 
       if (uid.isEmpty) {
         emit(GetSingleUserDataErrorState(
@@ -791,10 +791,8 @@ class UserCubit extends Cubit<UserStates> {
 
       singleUserData.clear();
 
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userDoc.exists) {
         emit(GetSingleUserDataErrorState(
@@ -818,8 +816,7 @@ class UserCubit extends Cubit<UserStates> {
     required String name,
     String? profileImagePath,
     String? oldProfileImage,
-  })
-  async {
+  }) async {
     emit(EditUserDataLoadingState());
 
     try {
@@ -927,14 +924,12 @@ class UserCubit extends Cubit<UserStates> {
 
   Future<void> cancelRequest({
     required String requestId,
-  })
-  async {
+  }) async {
     try {
       emit(CancelRequestLoadingState());
 
-      final requestRef = FirebaseFirestore.instance
-          .collection('requests')
-          .doc(requestId);
+      final requestRef =
+          FirebaseFirestore.instance.collection('requests').doc(requestId);
 
       final requestSnapshot = await requestRef.get();
 
@@ -949,14 +944,11 @@ class UserCubit extends Cubit<UserStates> {
 
       final requestData = requestSnapshot.data()!;
 
-      final customerId =
-          requestData['customerId']?.toString() ?? '';
+      final customerId = requestData['customerId']?.toString() ?? '';
 
-      final providerId =
-          requestData['providerId']?.toString() ?? '';
+      final providerId = requestData['providerId']?.toString() ?? '';
 
-      final requestTitle =
-          requestData['title']?.toString() ?? 'حجز خدمة';
+      final requestTitle = requestData['title']?.toString() ?? 'حجز خدمة';
 
       final chatsSnapshot = await FirebaseFirestore.instance
           .collection('chats')
@@ -970,8 +962,7 @@ class UserCubit extends Cubit<UserStates> {
         {
           'status': 'ملغي',
           'updatedAt': FieldValue.serverTimestamp(),
-          'statusHistory.cancelledAt':
-          FieldValue.serverTimestamp(),
+          'statusHistory.cancelledAt': FieldValue.serverTimestamp(),
         },
       );
 
@@ -1034,8 +1025,10 @@ class UserCubit extends Cubit<UserStates> {
             );
           }),
         ]).catchError((error) {
-          print('خطأ أثناء إرسال إشعار إلغاء الحجز: $error',);
-          return[];
+          print(
+            'خطأ أثناء إرسال إشعار إلغاء الحجز: $error',
+          );
+          return [];
         });
       }
     } catch (error) {

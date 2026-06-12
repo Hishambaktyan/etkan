@@ -6,8 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
@@ -37,7 +37,8 @@ class AuthCubit extends Cubit<AuthStates> {
       formattedPhone = formattedPhone.substring(4);
     } else if (formattedPhone.startsWith('00967')) {
       formattedPhone = formattedPhone.substring(5);
-    } else if (formattedPhone.startsWith('967') && formattedPhone.length == 12) {
+    } else if (formattedPhone.startsWith('967') &&
+        formattedPhone.length == 12) {
       formattedPhone = formattedPhone.substring(3);
     }
 
@@ -323,8 +324,7 @@ class AuthCubit extends Cubit<AuthStates> {
   Future<void> signUpUser(
       {required String name,
       required String phone,
-      required String password})
-  async {
+      required String password}) async {
     try {
       emit(UserSignUpLoadingState());
 
@@ -488,7 +488,8 @@ class AuthCubit extends Cubit<AuthStates> {
 
       String profileImageUrl = '';
       final List<String> previousWorksImageUrl = [];
-      final String profileImagePath = profileData['profileImage']?.toString() ?? '';
+      final String profileImagePath =
+          profileData['profileImage']?.toString() ?? '';
 
       if (profileImagePath.trim().isNotEmpty) {
         profileImageUrl = await uploadImageToCloudinary(profileImagePath);
@@ -551,9 +552,11 @@ class AuthCubit extends Cubit<AuthStates> {
 
       if (verificationData != null) {
         final uploadedImages = await Future.wait([
-          uploadImageToCloudinary((verificationData['frontImage'] as File).path),
+          uploadImageToCloudinary(
+              (verificationData['frontImage'] as File).path),
           uploadImageToCloudinary((verificationData['backImage'] as File).path),
-          uploadImageToCloudinary((verificationData['personalImage'] as File).path),
+          uploadImageToCloudinary(
+              (verificationData['personalImage'] as File).path),
         ]);
 
         final requestRef = FirebaseFirestore.instance
@@ -672,8 +675,7 @@ class AuthCubit extends Cubit<AuthStates> {
     required String name,
     required String phone,
     required String password,
-  })
-  async {
+  }) async {
     try {
       emit(WorkerSignUpLoadingState());
 
@@ -718,7 +720,7 @@ class AuthCubit extends Cubit<AuthStates> {
         'avgRating': 0.0,
         'ratingSum': 0.0,
         'ratingsCount': 0,
-        'isActive' : true,
+        'isActive': true,
         'isAvailable': true,
         'isSubscribed': false,
         'profileImage': '',
@@ -765,8 +767,7 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String userType,
     required String newPassword,
-  })
-  async {
+  }) async {
     try {
       emit(ResetPasswordLoadingState());
 
@@ -877,8 +878,7 @@ class AuthCubit extends Cubit<AuthStates> {
     required List<String> experiences,
     required List<String> previousWorks,
     required String profileImage,
-  })
-  async {
+  }) async {
     try {
       emit(CompleteWorkerProfileLoadingState());
 
@@ -932,8 +932,7 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String password,
     required String requiredRole,
-  })
-  async {
+  }) async {
     try {
       emit(LoginLoadingState());
 
@@ -946,7 +945,11 @@ class AuthCubit extends Cubit<AuthStates> {
           .get();
 
       if (userDoc.docs.isEmpty) {
-        emit(LoginErrorState(error: 'رقم الهاتف أو كلمة المرور غير صحيحة',),);
+        emit(
+          LoginErrorState(
+            error: 'رقم الهاتف أو كلمة المرور غير صحيحة',
+          ),
+        );
         return;
       }
 
@@ -956,7 +959,11 @@ class AuthCubit extends Cubit<AuthStates> {
       final bool isActive = userData['isActive'] ?? true;
 
       if (!isActive) {
-        emit(LoginErrorState(error: 'تم تعطيل هذا الحساب، يرجى التواصل مع الإدارة',),);
+        emit(
+          LoginErrorState(
+            error: 'تم تعطيل هذا الحساب، يرجى التواصل مع الإدارة',
+          ),
+        );
         return;
       }
 
@@ -964,18 +971,35 @@ class AuthCubit extends Cubit<AuthStates> {
       final String uid = doc.id;
 
       if (role != requiredRole) {
-        emit(LoginErrorState(error: 'ليس لديك صلاحية الدخول من هذه الصفحة',),);
+        emit(
+          LoginErrorState(
+            error: 'ليس لديك صلاحية الدخول من هذه الصفحة',
+          ),
+        );
         return;
       }
 
-      await CacheHelper.saveData(key: 'uid', value: uid,);
-      await CacheHelper.saveData(key: 'role', value: role,);
-      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true,);
+      await CacheHelper.saveData(
+        key: 'uid',
+        value: uid,
+      );
+      await CacheHelper.saveData(
+        key: 'role',
+        value: role,
+      );
+      await CacheHelper.setBoolen(
+        key: 'isLoggedIn',
+        value: true,
+      );
 
       await saveUserToken(uid);
       emit(LoginSuccessState());
     } catch (e) {
-      emit(LoginErrorState(error: e.toString(),),);
+      emit(
+        LoginErrorState(
+          error: e.toString(),
+        ),
+      );
     }
   }
 

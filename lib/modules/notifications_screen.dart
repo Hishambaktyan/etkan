@@ -5,12 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/notification_cubit/notification_cubit.dart';
-import 'package:trying_homy/shared/cubits/notification_cubit/notification_states.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/notification_cubit/notification_cubit.dart';
+import 'package:Etkan/shared/cubits/notification_cubit/notification_states.dart';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 import '../shared/compenents/components.dart';
 
@@ -30,8 +30,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void initState() {
     super.initState();
 
-     String? userRole  = CacheHelper.getData(key: 'role');
-    if(userRole!=null){
+    String? userRole = CacheHelper.getData(key: 'role');
+    if (userRole != null) {
       if (userRole == 'user') {
         statusFilters = [
           'الكل',

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
-import 'package:trying_homy/modules/admin_screens/admin_service_details.dart';
+import 'package:Etkan/modules/admin_screens/admin_provider_info.dart';
+import 'package:Etkan/modules/admin_screens/admin_service_details.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/admin_cubit/admin_cubit.dart';
@@ -96,8 +96,12 @@ class _AdminServicesListState extends State<AdminServicesList> {
           body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
-              final activeServices = adminCubit.services.where((service) => service['isActive'] == true).length;
-              final inactiveServices = adminCubit.services.where((service) => service['isActive'] == false).length;
+              final activeServices = adminCubit.services
+                  .where((service) => service['isActive'] == true)
+                  .length;
+              final inactiveServices = adminCubit.services
+                  .where((service) => service['isActive'] == false)
+                  .length;
               return SingleChildScrollView(
                 child: state is GetServicesLoadingState
                     ? const AdminServicesShimmer()
@@ -107,11 +111,13 @@ class _AdminServicesListState extends State<AdminServicesList> {
                               title: 'قائمة الخدمات',
                               context: context,
                               isNotif: false,
-                              isLeading: true
+                              isLeading: true),
+                          SizedBox(
+                            height: 10.h,
                           ),
-                          SizedBox(height: 10.h,),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 10.w),
                             child: Row(
                               children: [
                                 buildStatCard(
@@ -119,7 +125,9 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                     value: activeServices.toString(),
                                     icon: 'assets/all.svg',
                                     appCubit: appCubit),
-                                SizedBox(width: 10.w,),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
                                 buildStatCard(
                                     title: 'الخدمات المعطلة',
                                     value: inactiveServices.toString(),
@@ -136,23 +144,28 @@ class _AdminServicesListState extends State<AdminServicesList> {
                             itemCount: adminCubit.services.length,
                             itemBuilder: (context, index) {
                               final service = adminCubit.services[index];
-                              final providerData = adminCubit.providers.firstWhere((element) => element['id'] == service['providerId'],);
+                              final providerData =
+                                  adminCubit.providers.firstWhere(
+                                (element) =>
+                                    element['id'] == service['providerId'],
+                              );
                               return InkWell(
-                                onTap: () => move(context,
+                                onTap: () => move(
+                                    context,
                                     AdminServiceDetails(
-                                  name: service['name'],
-                                  image: service['serviceImage'],
-                                  category: service['category'],
-                                  desc: service['description'],
-                                  price: service['price'],
-                                  period: service['period'],
-                                  providerName: providerData['name'],
-                                  providerSpec: providerData['specialization'],
-                                  reviews: service['reviews'] ?? '',
-                                  providerId: providerData['uid'],
-                                  serviceId: service['id'],
-                                )
-                                ),
+                                      name: service['name'],
+                                      image: service['serviceImage'],
+                                      category: service['category'],
+                                      desc: service['description'],
+                                      price: service['price'],
+                                      period: service['period'],
+                                      providerName: providerData['name'],
+                                      providerSpec:
+                                          providerData['specialization'],
+                                      reviews: service['reviews'] ?? '',
+                                      providerId: providerData['uid'],
+                                      serviceId: service['id'],
+                                    )),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 borderRadius: BorderRadius.circular(25.r),

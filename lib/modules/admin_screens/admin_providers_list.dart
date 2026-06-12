@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/admin_screens/admin_provider_info.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_cubit.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class AdminProvidersList extends StatefulWidget {
   const AdminProvidersList({super.key});
@@ -94,8 +94,16 @@ class _AdminProvidersListState extends State<AdminProvidersList> {
           body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
-              final activeProviders = adminCubit.providers.where((element) => element['isActive'] == true,).length;
-              final inactiveProviders = adminCubit.providers.where((element) => element['isActive'] == false,).length;
+              final activeProviders = adminCubit.providers
+                  .where(
+                    (element) => element['isActive'] == true,
+                  )
+                  .length;
+              final inactiveProviders = adminCubit.providers
+                  .where(
+                    (element) => element['isActive'] == false,
+                  )
+                  .length;
               return SingleChildScrollView(
                 child: state is GetProvidersLoadingState
                     ? const AdminProvidersShimmer()
@@ -110,7 +118,8 @@ class _AdminProvidersListState extends State<AdminProvidersList> {
                             height: 10.h,
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 10.w),
                             child: Row(
                               children: [
                                 buildStatCard(

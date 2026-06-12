@@ -7,12 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class WorkerEditProfileScreen extends StatefulWidget {
   final Map<String, dynamic> worker;
@@ -397,44 +397,42 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       height: 135.h,
       child: previousWorks.isEmpty
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-              width: 60.w,
-              height: 60.w,
-              padding: EdgeInsetsDirectional.all(15.r),
-              decoration: BoxDecoration(
-                color: mainColor.withOpacity(0.08),
-                shape: BoxShape.circle,
-              ),
-              child: SvgPicture.asset('assets/image.svg',color: mainColor,)
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            'لا توجد أعمال سابقة',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14.sp,
-              color: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .color,
-            ),
-          ),
-          Text(
-            'أضف صورًا لأعمالك السابقة لعرض مهاراتك وزيادة ثقة العملاء بخدماتك.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 8.sp,
-              height: 1.6,
-              color: cubit.isDark
-                  ? darkSubTextColor
-                  : Colors.grey.shade600,
-            ),
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                    width: 60.w,
+                    height: 60.w,
+                    padding: EdgeInsetsDirectional.all(15.r),
+                    decoration: BoxDecoration(
+                      color: mainColor.withOpacity(0.08),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/image.svg',
+                      color: mainColor,
+                    )),
+                SizedBox(height: 10.h),
+                Text(
+                  'لا توجد أعمال سابقة',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                ),
+                Text(
+                  'أضف صورًا لأعمالك السابقة لعرض مهاراتك وزيادة ثقة العملاء بخدماتك.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 8.sp,
+                    height: 1.6,
+                    color:
+                        cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            )
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: previousWorks.length,
@@ -482,7 +480,8 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       return;
     }
 
-    final String oldProfileImage = widget.worker['profileImage']?.toString() ?? '';
+    final String oldProfileImage =
+        widget.worker['profileImage']?.toString() ?? '';
 
     if (oldProfileImage.trim().isEmpty && profileImage.trim().isEmpty) {
       showSnackBar(
@@ -645,7 +644,8 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                   controller: aboutController,
                                   cubit: appCubit,
                                   maxLines: 6,
-                                  hint: 'اكتب نبذة مختصرة عن خبرتك ومهاراتك وطريقة عملك',
+                                  hint:
+                                      'اكتب نبذة مختصرة عن خبرتك ومهاراتك وطريقة عملك',
                                   validator: (value) {
                                     if (value == null || value.trim().isEmpty) {
                                       return 'يرجى كتابة نبذة مختصرة عنك';

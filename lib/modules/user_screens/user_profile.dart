@@ -4,22 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_edit_profile.dart';
-import 'package:trying_homy/modules/user_screens/user_addresses_list.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/user_screens/user_edit_profile.dart';
+import 'package:Etkan/modules/user_screens/user_addresses_list.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_cubit.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_states.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 import '../../shared/cubits/user_cubit/user_cubit.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({super.key,});
+  const UserProfile({
+    super.key,
+  });
 
   @override
   State<UserProfile> createState() => _UserProfileState();
@@ -586,6 +588,7 @@ class _UserProfileState extends State<UserProfile> {
       debugPrint('Error loading user profile data: $e');
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -609,13 +612,19 @@ class _UserProfileState extends State<UserProfile> {
                   textDirection: TextDirection.rtl,
                   child: Scaffold(
                     body: RefreshIndicator(
-                      onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
+                      onRefresh: () =>
+                          checkConnectionAndGetData(forceRefresh: true),
                       child: ConditionalBuilder(
-                        condition: isPageLoading || state is GetSingleUserDataLoadingState,
-                        builder: (context) => UserProfileShimmer(isDark: appCubit.isDark),
+                        condition: isPageLoading ||
+                            state is GetSingleUserDataLoadingState,
+                        builder: (context) =>
+                            UserProfileShimmer(isDark: appCubit.isDark),
                         fallback: (context) => ConditionalBuilder(
                           condition: !hasInternet,
-                          builder: (context) => NoInternet(onRetry: () => checkConnectionAndGetData(forceRefresh: true),),
+                          builder: (context) => NoInternet(
+                            onRetry: () =>
+                                checkConnectionAndGetData(forceRefresh: true),
+                          ),
                           fallback: (context) => SingleChildScrollView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             child: Column(

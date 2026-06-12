@@ -6,15 +6,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/worker_screens/worker_subscriptions_screen.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 import '../../shared/networks/local/cache_helper.dart';
 
 class WorkerAccountVerification extends StatefulWidget {
@@ -831,11 +831,13 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                                   verificationItems[1]['image'] != null &&
                                   verificationItems[2]['image'] != null) {
                                 if (widget.isFromOnboarding) {
-                                  AuthCubit.get(context).setPendingWorkerVerification(
+                                  AuthCubit.get(context)
+                                      .setPendingWorkerVerification(
                                     documentType: selectedDocumentType,
                                     frontImage: verificationItems[0]['image'],
                                     backImage: verificationItems[1]['image'],
-                                    personalImage: verificationItems[2]['image'],
+                                    personalImage: verificationItems[2]
+                                        ['image'],
                                   );
                                   _goToSubscription();
                                 } else {
@@ -843,7 +845,8 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                                     documentType: selectedDocumentType,
                                     frontImage: verificationItems[0]['image'],
                                     backImage: verificationItems[1]['image'],
-                                    personalImage: verificationItems[2]['image'],
+                                    personalImage: verificationItems[2]
+                                        ['image'],
                                   );
                                 }
                               } else {

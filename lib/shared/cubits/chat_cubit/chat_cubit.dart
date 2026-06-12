@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/shared/cubits/chat_cubit/chat_states.dart';
+import 'package:Etkan/shared/cubits/chat_cubit/chat_states.dart';
 
 import '../../networks/remote/notification_service.dart';
 
-class ChatCubit extends Cubit<ChatStates>{
-  ChatCubit(): super(ChatInitState());
+class ChatCubit extends Cubit<ChatStates> {
+  ChatCubit() : super(ChatInitState());
 
-  static ChatCubit get(context)=>BlocProvider.of(context);
+  static ChatCubit get(context) => BlocProvider.of(context);
 
   TextEditingController message = TextEditingController();
 
@@ -19,34 +19,35 @@ class ChatCubit extends Cubit<ChatStates>{
     if (!isMe) return const SizedBox.shrink();
 
     switch (status) {
-      case 'sending': return SvgPicture.asset(
+      case 'sending':
+        return SvgPicture.asset(
           'assets/timer.svg',
           width: 12.w,
           height: 12.h,
           color: Colors.grey.shade300,
         );
-      case 'sent': return SvgPicture.asset(
+      case 'sent':
+        return SvgPicture.asset(
           'assets/check.svg',
           width: 12.w,
           height: 12.h,
           color: Colors.green.shade100,
         );
-      case 'seen': return SvgPicture.asset(
+      case 'seen':
+        return SvgPicture.asset(
           'assets/checks.svg',
           width: 12.w,
           height: 12.h,
           color: Colors.green.shade100,
         );
-      default: return const SizedBox.shrink();
+      default:
+        return const SizedBox.shrink();
     }
   }
 
   Future<void> resetUnreadCount(String chatId, String myId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId)
-          .update({
+      await FirebaseFirestore.instance.collection('chats').doc(chatId).update({
         'unreadCount.$myId': 0,
       });
     } catch (e) {
@@ -61,8 +62,7 @@ class ChatCubit extends Cubit<ChatStates>{
     required String requestId,
     required String body,
     required bool isImage,
-  })
-  async {
+  }) async {
     try {
       if (receiverId == senderId) {
         print('لن يتم إرسال إشعار لنفس المستخدم');
@@ -120,8 +120,7 @@ class ChatCubit extends Cubit<ChatStates>{
     required String text,
     String? replyText,
     String? replyName,
-  })
-  async {
+  }) async {
     try {
       final String finalText = text.trim();
 
@@ -131,13 +130,10 @@ class ChatCubit extends Cubit<ChatStates>{
 
       final Timestamp now = Timestamp.now();
 
-      final chatRef = FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId);
+      final chatRef =
+          FirebaseFirestore.instance.collection('chats').doc(chatId);
 
-      final messageRef = chatRef
-          .collection('messages')
-          .doc();
+      final messageRef = chatRef.collection('messages').doc();
 
       final batch = FirebaseFirestore.instance.batch();
 
@@ -200,7 +196,6 @@ class ChatCubit extends Cubit<ChatStates>{
     return response.data['secure_url'];
   }
 
-
   Future<void> sendImageMessage({
     required String chatId,
     required String receiverId,
@@ -209,8 +204,7 @@ class ChatCubit extends Cubit<ChatStates>{
     required String imageUrl,
     String? replyText,
     String? replyName,
-  })
-  async {
+  }) async {
     try {
       if (imageUrl.trim().isEmpty) return;
 
@@ -218,13 +212,10 @@ class ChatCubit extends Cubit<ChatStates>{
 
       final Timestamp now = Timestamp.now();
 
-      final chatRef = FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId);
+      final chatRef =
+          FirebaseFirestore.instance.collection('chats').doc(chatId);
 
-      final messageRef = chatRef
-          .collection('messages')
-          .doc();
+      final messageRef = chatRef.collection('messages').doc();
 
       final batch = FirebaseFirestore.instance.batch();
 
@@ -271,7 +262,8 @@ class ChatCubit extends Cubit<ChatStates>{
 
   Future<void> markAsSeen(String chatId, String myId) async {
     try {
-      final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+      final chatRef =
+          FirebaseFirestore.instance.collection('chats').doc(chatId);
 
       final query = await chatRef
           .collection('messages')
@@ -303,5 +295,4 @@ class ChatCubit extends Cubit<ChatStates>{
     message.dispose();
     return super.close();
   }
-
 }

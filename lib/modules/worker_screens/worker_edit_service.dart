@@ -6,17 +6,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_services_list.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/worker_screens/worker_services_list.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class WorkerEditService extends StatefulWidget {
   final Map<String, dynamic> service;
-  const WorkerEditService({super.key, required this.service,});
+  const WorkerEditService({
+    super.key,
+    required this.service,
+  });
 
   @override
   State<WorkerEditService> createState() => _WorkerEditServiceState();
@@ -30,7 +33,8 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
 
   final TextEditingController serviceNameController = TextEditingController();
   final TextEditingController servicePriceController = TextEditingController();
-  final TextEditingController serviceDurationController = TextEditingController();
+  final TextEditingController serviceDurationController =
+      TextEditingController();
   final TextEditingController serviceDescController = TextEditingController();
 
   Future<void> getServiceImage() async {
@@ -87,21 +91,25 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
             appBar: AppBar(
               automaticallyImplyLeading: false,
               leading: IconButton(
-                  onPressed: (){Navigator.pop(context);},
-                  icon: Icon(Icons.arrow_back_ios,color: Theme.of(context).iconTheme.color,)
-              ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).iconTheme.color,
+                  )),
               title: Text(
-                  'تعديل الخدمة',
+                'تعديل الخدمة',
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold
-                ),
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             body: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,vertical: 20.h),
+                padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: 10.w, vertical: 20.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -119,17 +127,16 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
                           height: 160.h,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: appCubit.isDark
-                                ? lightDarkColor
-                                : Colors.white,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
                             image: DecorationImage(
                               fit: BoxFit.cover,
                               image: serviceImage != null
                                   ? FileImage(serviceImage!) as ImageProvider
                                   : NetworkImage(
-                                widget.service['serviceImage'] ?? '',
-                              ) as ImageProvider,
+                                      widget.service['serviceImage'] ?? '',
+                                    ) as ImageProvider,
                             ),
                           ),
                           child: Container(
@@ -143,7 +150,9 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
                                 Container(
                                   padding: EdgeInsets.all(12.r),
                                   decoration: BoxDecoration(
-                                    color:appCubit.isDark? lightDarkColor.withOpacity(0.9): Colors.white.withOpacity(0.9),
+                                    color: appCubit.isDark
+                                        ? lightDarkColor.withOpacity(0.9)
+                                        : Colors.white.withOpacity(0.9),
                                     shape: BoxShape.circle,
                                   ),
                                   child: SvgPicture.asset(
@@ -171,9 +180,7 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
                     Container(
                       padding: EdgeInsetsDirectional.all(20.r),
                       decoration: BoxDecoration(
-                        color: appCubit.isDark
-                            ? lightDarkColor
-                            : Colors.white,
+                        color: appCubit.isDark ? lightDarkColor : Colors.white,
                         borderRadius: BorderRadius.circular(25.r),
                         boxShadow: blueShadow,
                       ),
@@ -219,7 +226,10 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
                             TextFormField(
                               style: TextStyle(
                                 fontSize: 13.sp,
-                                color: Theme.of(context).textTheme.bodyLarge!.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .color,
                               ),
                               maxLines: 5,
                               controller: serviceDescController,
@@ -236,13 +246,11 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
                                   color: Colors.grey,
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(15.r),
+                                  borderRadius: BorderRadius.circular(15.r),
                                   borderSide: BorderSide.none,
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(15.r),
+                                  borderRadius: BorderRadius.circular(15.r),
                                   borderSide: BorderSide(
                                     color: appCubit.isDark
                                         ? const Color(0xFF30363D)
@@ -250,10 +258,9 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(15.r),
+                                  borderRadius: BorderRadius.circular(15.r),
                                   borderSide:
-                                  const BorderSide(color: mainColor),
+                                      const BorderSide(color: mainColor),
                                 ),
                               ),
                             ),
@@ -281,7 +288,7 @@ class _WorkerEditServiceState extends State<WorkerEditService> {
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(30.r),
                 ),
-                boxShadow:  blueShadow,
+                boxShadow: blueShadow,
               ),
               child: defaultButton(
                 onPressed: () {

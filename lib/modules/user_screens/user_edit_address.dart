@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_cubit.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_states.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
 class UserEditAddress extends StatefulWidget {
-  final Map<String,dynamic> address;
+  final Map<String, dynamic> address;
   const UserEditAddress({super.key, required this.address});
 
   @override
@@ -21,17 +21,16 @@ class UserEditAddress extends StatefulWidget {
 }
 
 class _UserEditAddressState extends State<UserEditAddress> {
-
   TextEditingController titleController = TextEditingController();
   TextEditingController detailsController = TextEditingController();
-
 
   @override
   void initState() {
     GeoPoint geoPoint = widget.address['location'];
-    LocationCubit.get(context).selectedLocation=LatLng(geoPoint.latitude, geoPoint.longitude);
-    titleController.text=widget.address['label'];
-    detailsController.text=widget.address['addressName'];
+    LocationCubit.get(context).selectedLocation =
+        LatLng(geoPoint.latitude, geoPoint.longitude);
+    titleController.text = widget.address['label'];
+    detailsController.text = widget.address['addressName'];
     super.initState();
   }
 
@@ -42,20 +41,20 @@ class _UserEditAddressState extends State<UserEditAddress> {
         AppCubit appCubit = AppCubit.get(context);
         return BlocConsumer<LocationCubit, LocationStates>(
           listener: (context, state) {
-            if(state is EditAddressLoadingState){
+            if (state is EditAddressLoadingState) {
               showLoadingDialog(context);
             }
-            if(state is EditAddressSuccessState){
+            if (state is EditAddressSuccessState) {
               hideLoadingDialog(context);
-              LocationCubit.get(context).getAddresses(CacheHelper.getData(key: 'uid'));
+              LocationCubit.get(context)
+                  .getAddresses(CacheHelper.getData(key: 'uid'));
               Navigator.pop(context);
               showSnackBar(Colors.green, 'تم تعديل الموقع بنجاح', context);
             }
-            if(state is EditAddressErrorState){
+            if (state is EditAddressErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error, context);
             }
-
           },
           builder: (context, state) {
             LocationCubit locationCubit = LocationCubit.get(context);
@@ -94,7 +93,7 @@ class _UserEditAddressState extends State<UserEditAddress> {
                       child: Row(
                         children: [
                           InkWell(
-                            onTap: () =>Navigator.pop(context),
+                            onTap: () => Navigator.pop(context),
                             borderRadius: BorderRadius.circular(15.r),
                             child: Container(
                               height: 45.h,
@@ -161,7 +160,8 @@ class _UserEditAddressState extends State<UserEditAddress> {
                           InkWell(
                             onTap: locationCubit.isGettingLocation
                                 ? null
-                                : () => locationCubit.getCurrentLocation(context),
+                                : () =>
+                                    locationCubit.getCurrentLocation(context),
                             borderRadius: BorderRadius.circular(15.r),
                             child: Container(
                               height: 50.h,
@@ -176,18 +176,18 @@ class _UserEditAddressState extends State<UserEditAddress> {
                               child: Center(
                                 child: locationCubit.isGettingLocation
                                     ? SizedBox(
-                                  height: 22.h,
-                                  width: 22.w,
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    color: mainColor,
-                                  ),
-                                )
+                                        height: 22.h,
+                                        width: 22.w,
+                                        child: const CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          color: mainColor,
+                                        ),
+                                      )
                                     : Icon(
-                                  Icons.my_location_rounded,
-                                  color: mainColor,
-                                  size: 25.sp,
-                                ),
+                                        Icons.my_location_rounded,
+                                        color: mainColor,
+                                        size: 25.sp,
+                                      ),
                               ),
                             ),
                           ),
@@ -246,8 +246,7 @@ class _UserEditAddressState extends State<UserEditAddress> {
                                       text: 'اسم العنوان',
                                       prefixIcon: 'assets/saved.svg',
                                       type: TextInputType.text,
-                                      errorMes: 'يرجى تعبئة الحقل'
-                                  ),
+                                      errorMes: 'يرجى تعبئة الحقل'),
                                 ),
                                 SizedBox(height: 15.h),
                                 SizedBox(
@@ -258,24 +257,27 @@ class _UserEditAddressState extends State<UserEditAddress> {
                                       text: 'تفاصيل العنوان',
                                       prefixIcon: 'assets/note.svg',
                                       type: TextInputType.text,
-                                      errorMes: 'يرجى تعبئة الحقل'
-                                  ),
+                                      errorMes: 'يرجى تعبئة الحقل'),
                                 ),
                                 SizedBox(height: 10.h),
                                 defaultButton(
-                                  onPressed:() async {
-                                    if(titleController.text.isEmpty || detailsController.text.isEmpty){
-                                      showSnackBar(Colors.red, 'يرجى تعبئة كل الحقول', context);
-                                    }else{
+                                  onPressed: () async {
+                                    if (titleController.text.isEmpty ||
+                                        detailsController.text.isEmpty) {
+                                      showSnackBar(Colors.red,
+                                          'يرجى تعبئة كل الحقول', context);
+                                    } else {
                                       await locationCubit.editAddress(
                                           addressId: widget.address['id'],
                                           uId: CacheHelper.getData(key: 'uid'),
                                           label: titleController.text.trim(),
-                                          addressDetails: detailsController.text.trim(),
-                                          lat: locationCubit.selectedLocation.latitude,
-                                          long: locationCubit.selectedLocation.longitude,
-                                          isDefault: false
-                                      );
+                                          addressDetails:
+                                              detailsController.text.trim(),
+                                          lat: locationCubit
+                                              .selectedLocation.latitude,
+                                          long: locationCubit
+                                              .selectedLocation.longitude,
+                                          isDefault: false);
                                     }
                                   },
                                   text: 'حفظ الموقع',
@@ -283,7 +285,9 @@ class _UserEditAddressState extends State<UserEditAddress> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 10.h,),
+                          SizedBox(
+                            height: 10.h,
+                          ),
                         ],
                       ),
                     ),

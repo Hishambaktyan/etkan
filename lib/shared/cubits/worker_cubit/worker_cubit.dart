@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
 import '../../networks/local/cache_helper.dart';
 import '../../networks/remote/notification_service.dart';
 
@@ -20,7 +20,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
   String subscriptionStatus = 'not_submitted';
   DateTime? subscriptionEndDate;
   Timer? _subscriptionExpiryTimer;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?_workerSubscriptionListener;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      _workerSubscriptionListener;
   String? _listenedWorkerId;
 
   bool get isSubscriptionExpired => subscriptionStatus == 'expired';
@@ -355,7 +356,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
       workerCompletedRequestsCount = 0;
       workerRating = 0.0;
 
-      final userFuture = FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final userFuture =
+          FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       final completedRequestsCountFuture = FirebaseFirestore.instance
           .collection('requests')
@@ -437,8 +439,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
   Future<void> getWorkerServiceReviews({
     required String serviceId,
-  })
-  async {
+  }) async {
     try {
       emit(GetWorkerServiceReviewsLoadingState());
 
@@ -454,9 +455,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
         return;
       }
 
-      final serviceRef = FirebaseFirestore.instance
-          .collection('services')
-          .doc(serviceId);
+      final serviceRef =
+          FirebaseFirestore.instance.collection('services').doc(serviceId);
 
       final serviceDoc = await serviceRef.get();
 
@@ -469,8 +469,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       final serviceData = serviceDoc.data() ?? {};
 
-      workerServiceRate =
-          double.tryParse('${serviceData['rate'] ?? 0}') ?? 0.0;
+      workerServiceRate = double.tryParse('${serviceData['rate'] ?? 0}') ?? 0.0;
 
       workerServiceReviewsCount =
           int.tryParse('${serviceData['reviewsCount'] ?? 0}') ?? 0;
@@ -482,7 +481,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       for (var doc in reviewsSnapshot.docs) {
         final Map<String, dynamic> reviewData =
-        Map<String, dynamic>.from(doc.data());
+            Map<String, dynamic>.from(doc.data());
 
         reviewData['id'] = doc.id;
 
@@ -692,8 +691,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
     required String servicePrice,
     required String servicePeriod,
     required String serviceImage,
-  }) async
-  {
+  }) async {
     try {
       String serviceImageLink = '';
       emit(UploadServiceLoadingState());
@@ -704,8 +702,10 @@ class WorkerCubit extends Cubit<WorkerStates> {
         return;
       }
 
-      final userSnapshot =
-      await FirebaseFirestore.instance.collection('users').doc(uid.toString()).get();
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid.toString())
+          .get();
 
       if (!userSnapshot.exists || userSnapshot.data() == null) {
         emit(UploadServiceErrorState(error: 'بيانات الفني غير موجودة'));
@@ -880,32 +880,33 @@ class WorkerCubit extends Cubit<WorkerStates> {
   Future<void> getSingleWorkerData({
     String? userId,
     bool forceRefresh = false,
-  })
-  async {
+  }) async {
     try {
-
       if (isSingleWorkerDataLoaded && !forceRefresh) {
         return;
       }
 
       emit(GetSingleWorkerDataLoadingState());
 
-      final String uid = userId ?? CacheHelper.getData(key: 'uid')?.toString() ?? '';
+      final String uid =
+          userId ?? CacheHelper.getData(key: 'uid')?.toString() ?? '';
 
       if (uid.isEmpty) {
-        emit(GetSingleWorkerDataErrorState(error: 'تعذر العثور على معرف المستخدم',));
+        emit(GetSingleWorkerDataErrorState(
+          error: 'تعذر العثور على معرف المستخدم',
+        ));
         return;
       }
 
       singleWorkerData.clear();
 
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userDoc.exists) {
-        emit(GetSingleWorkerDataErrorState(error: 'تعذر العثور على بيانات المستخدم',));
+        emit(GetSingleWorkerDataErrorState(
+          error: 'تعذر العثور على بيانات المستخدم',
+        ));
         return;
       }
 
@@ -1115,7 +1116,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
         timeField = 'cancelledAt';
       }
 
-      final requestRef = FirebaseFirestore.instance.collection('requests').doc(requestId);
+      final requestRef =
+          FirebaseFirestore.instance.collection('requests').doc(requestId);
 
       final requestSnapshot = await requestRef.get();
 
@@ -1151,8 +1153,9 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       batch.update(requestRef, requestData);
 
-      batch.set(requestRef.collection('statusHistory').doc()
-        ,{
+      batch.set(
+        requestRef.collection('statusHistory').doc(),
+        {
           'status': status,
           'createdAt': FieldValue.serverTimestamp(),
         },

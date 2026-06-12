@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/modules/user_screens/user_service_details.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
+import 'package:Etkan/modules/user_screens/user_service_details.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
 import '../../shared/compenents/components.dart';
 import '../../main.dart';
 import '../../shared/styles/colors.dart';
@@ -150,7 +150,8 @@ class _UserServicesListState extends State<UserServicesList> {
                                           start: 15.w, end: 15.w, bottom: 20.h),
                                       itemBuilder: (context, index) {
                                         var service = filteredServices[index];
-                                        var providerData = appCubit.allUsers[service['providerId']];
+                                        var providerData = appCubit
+                                            .allUsers[service['providerId']];
                                         return InkWell(
                                           onTap: () => move(
                                               context,
@@ -161,15 +162,17 @@ class _UserServicesListState extends State<UserServicesList> {
                                                 desc: service['description'],
                                                 price: service['price'],
                                                 period: service['period'],
-                                                providerName: providerData['name'],
-                                                providerSpec: providerData['specialization'],
-                                                reviews: service['reviews'] ?? '',
+                                                providerName:
+                                                    providerData['name'],
+                                                providerSpec: providerData[
+                                                    'specialization'],
+                                                reviews:
+                                                    service['reviews'] ?? '',
                                                 providerId: providerData['uid'],
                                                 serviceId: service['id'],
-                                              )
-                                          ),
+                                              )),
                                           borderRadius:
-                                          BorderRadius.circular(25.r),
+                                              BorderRadius.circular(25.r),
                                           child: Container(
                                             width: 280.w,
                                             decoration: BoxDecoration(
@@ -276,9 +279,13 @@ class _UserServicesListState extends State<UserServicesList> {
                                                   ],
                                                 ),
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional.all(15.r),
+                                                  padding:
+                                                      EdgeInsetsDirectional.all(
+                                                          15.r),
                                                   child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
                                                         service['name'],
@@ -326,7 +333,9 @@ class _UserServicesListState extends State<UserServicesList> {
                                                       ),
                                                       SizedBox(height: 12.h),
                                                       Container(
-                                                        padding: EdgeInsetsDirectional.all(8.r),
+                                                        padding:
+                                                            EdgeInsetsDirectional
+                                                                .all(8.r),
                                                         decoration:
                                                             BoxDecoration(
                                                           color: mainColor
@@ -346,7 +355,8 @@ class _UserServicesListState extends State<UserServicesList> {
                                                                       providerData[
                                                                           'profileImage']),
                                                             ),
-                                                            SizedBox(width: 8.w),
+                                                            SizedBox(
+                                                                width: 8.w),
                                                             Expanded(
                                                               child: Column(
                                                                 crossAxisAlignment:
@@ -356,19 +366,37 @@ class _UserServicesListState extends State<UserServicesList> {
                                                                   Row(
                                                                     children: [
                                                                       Expanded(
-                                                                        child: Text(
+                                                                        child:
+                                                                            Text(
                                                                           '${providerData['name'] ?? 'فني غير معروف'}',
-                                                                          maxLines: 1,
-                                                                          overflow: TextOverflow.ellipsis,
-                                                                          style: TextStyle(
-                                                                            fontSize: 11.sp,
-                                                                            fontWeight: FontWeight.bold,
-                                                                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                11.sp,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color:
+                                                                                Theme.of(context).textTheme.bodyLarge!.color,
                                                                           ),
                                                                         ),
                                                                       ),
-                                                                      SizedBox(width: 5.w,),
-                                                                      providerData['isVerified']?? false ?SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,):const SizedBox.shrink(),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            5.w,
+                                                                      ),
+                                                                      providerData['isVerified'] ??
+                                                                              false
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              'assets/verf_bold.svg',
+                                                                              color: Colors.blue,
+                                                                            )
+                                                                          : const SizedBox
+                                                                              .shrink(),
                                                                     ],
                                                                   ),
                                                                   Text(

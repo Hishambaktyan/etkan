@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/select_user_type.dart';
-import 'package:trying_homy/modules/forgot_password_screen.dart';
-import 'package:trying_homy/modules/worker_screens/worker_signUp.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/layout/worker_layout/worker_main_screen.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/select_user_type.dart';
+import 'package:Etkan/modules/forgot_password_screen.dart';
+import 'package:Etkan/modules/worker_screens/worker_signUp.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
-import '../../../shared/compenents/components.dart';
+import 'package:Etkan/shared/styles/colors.dart';
+import 'package:Etkan/shared/compenents/components.dart';
 import '../../shared/cubits/worker_cubit/worker_cubit.dart';
 
 class WorkerLogin extends StatefulWidget {

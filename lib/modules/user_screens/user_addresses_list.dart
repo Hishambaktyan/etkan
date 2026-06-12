@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_add_address.dart';
-import 'package:trying_homy/modules/user_screens/user_edit_address.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/user_screens/user_add_address.dart';
+import 'package:Etkan/modules/user_screens/user_edit_address.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_cubit.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 import '../../shared/networks/local/cache_helper.dart';
 

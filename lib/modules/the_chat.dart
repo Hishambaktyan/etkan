@@ -8,12 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/modules/images_view.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/modules/images_view.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:trying_homy/shared/cubits/chat_cubit/chat_cubit.dart';
-import 'package:trying_homy/shared/cubits/chat_cubit/chat_states.dart';
+import 'package:Etkan/shared/cubits/chat_cubit/chat_cubit.dart';
+import 'package:Etkan/shared/cubits/chat_cubit/chat_states.dart';
 import '../main.dart';
 import '../shared/compenents/components.dart';
 import '../shared/styles/colors.dart';
@@ -29,13 +29,13 @@ class TheChat extends StatefulWidget {
   final String requestStatus;
   const TheChat(
       {super.key,
-        required this.otherUsername,
-        required this.otherUserImage,
-        required this.otherUserId,
-        required this.myId,
-        required this.chatId,
-        required this.requestId, required this.requestStatus
-      });
+      required this.otherUsername,
+      required this.otherUserImage,
+      required this.otherUserId,
+      required this.myId,
+      required this.chatId,
+      required this.requestId,
+      required this.requestStatus});
 
   @override
   State<TheChat> createState() => _TheChatState();
@@ -94,8 +94,7 @@ class _TheChatState extends State<TheChat> {
     required String chatId,
     required String receiverId,
     required String senderId,
-  })
-  async {
+  }) async {
     try {
       final ImagePicker picker = ImagePicker();
 
@@ -111,8 +110,8 @@ class _TheChatState extends State<TheChat> {
 
       String? rName = replyMessage != null
           ? (replyMessage!['senderId'] == senderId
-          ? 'أنت'
-          : widget.otherUsername)
+              ? 'أنت'
+              : widget.otherUsername)
           : null;
 
       setState(() {
@@ -128,7 +127,7 @@ class _TheChatState extends State<TheChat> {
       });
 
       final String imageUrl =
-      await chatCubit.uploadImageToCloudinary(pickedImage.path);
+          await chatCubit.uploadImageToCloudinary(pickedImage.path);
 
       if (!mounted) return;
 
@@ -249,7 +248,8 @@ class _TheChatState extends State<TheChat> {
     String otherUserId = widget.otherUserId;
     String myId = widget.myId;
     String requestId = widget.requestId;
-    final bool isChatClosed = widget.requestStatus == 'مكتمل' || widget.requestStatus == 'قيد الانتظار';
+    final bool isChatClosed = widget.requestStatus == 'مكتمل' ||
+        widget.requestStatus == 'قيد الانتظار';
 
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
@@ -286,10 +286,10 @@ class _TheChatState extends State<TheChat> {
                           backgroundColor: Colors.grey.withOpacity(0.15),
                           child: otherUserImage.isEmpty
                               ? Icon(
-                            Icons.person,
-                            color: Colors.grey,
-                            size: 22.r,
-                          )
+                                  Icons.person,
+                                  color: Colors.grey,
+                                  size: 22.r,
+                                )
                               : null,
                         ),
                       ),
@@ -379,372 +379,372 @@ class _TheChatState extends State<TheChat> {
                             Expanded(
                               child: docs.isEmpty && uploadingImagePath == null
                                   ? Center(
-                                child: Text(
-                                  'ابدأ المحادثة الآن',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                                  : ListView.builder(
-                                  reverse: true,
-                                  padding: EdgeInsetsDirectional.only(
-                                      bottom: 10.h),
-                                  controller: scrollController,
-                                  itemBuilder: (context, index) {
-                                    if (uploadingImagePath != null &&
-                                        index == 0) {
-                                      return Padding(
-                                        padding:
-                                        EdgeInsetsDirectional.symmetric(
-                                          vertical: 7.h,
-                                          horizontal: 7.w,
-                                        ),
-                                        child: Align(
-                                          alignment: AlignmentDirectional
-                                              .centerEnd,
-                                          child: Container(
-                                            padding:
-                                            EdgeInsetsDirectional.all(
-                                                5.r),
-                                            constraints: BoxConstraints(
-                                              maxWidth:
-                                              MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                                  0.75,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: appCubit.isDark
-                                                  ? Colors.blue.shade800
-                                                  : Colors.blue.shade700,
-                                              borderRadius:
-                                              BorderRadius.only(
-                                                topLeft:
-                                                Radius.circular(15.r),
-                                                topRight:
-                                                Radius.circular(15.r),
-                                                bottomLeft:
-                                                const Radius.circular(
-                                                    0),
-                                                bottomRight:
-                                                Radius.circular(15.r),
-                                              ),
-                                            ),
-                                            child: Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      12.r),
-                                                  child: Image.file(
-                                                    File(
-                                                        uploadingImagePath!),
-                                                    width: 200.w,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                                Container(
-                                                  width: 45.r,
-                                                  height: 45.r,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black
-                                                        .withOpacity(0.45),
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(
-                                                        10.r),
-                                                    child:
-                                                    const CircularProgressIndicator(
-                                                      strokeWidth: 3,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    final realIndex =
-                                    uploadingImagePath != null
-                                        ? index - 1
-                                        : index;
-
-                                    var doc = docs[realIndex];
-                                    var chatData =
-                                    doc.data() as Map<String, dynamic>;
-                                    bool isMe = chatData['senderId'] == myId
-                                        ? true
-                                        : false;
-                                    return SwipeableMessage(
-                                      onReply: () {
-                                        onReply(chatData);
-                                      },
-                                      isMe: isMe,
-                                      child: Padding(
-                                        padding:
-                                        EdgeInsetsDirectional.symmetric(
-                                            vertical: 7.h,
-                                            horizontal: 7.w),
-                                        child: Align(
-                                          alignment: isMe
-                                              ? AlignmentDirectional
-                                              .centerEnd
-                                              : AlignmentDirectional
-                                              .centerStart,
-                                          child: Container(
-                                            padding:
-                                            EdgeInsetsDirectional.only(
-                                                start: 10.w,
-                                                end: 10.w,
-                                                top: 8.h,
-                                                bottom: 2.h),
-                                            constraints: BoxConstraints(
-                                                maxWidth:
-                                                MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                    0.75),
-                                            decoration: BoxDecoration(
-                                              color: isMe
-                                                  ? appCubit.isDark
-                                                  ? Colors.blue.shade800
-                                                  : Colors.blue.shade700
-                                                  : appCubit.isDark
-                                                  ? const Color(
-                                                  0xFF1C2128)
-                                                  : Colors.blue
-                                                  .withOpacity(0.3),
-                                              borderRadius:
-                                              BorderRadius.only(
-                                                topLeft:
-                                                Radius.circular(15.r),
-                                                topRight:
-                                                Radius.circular(15.r),
-                                                bottomLeft: isMe
-                                                    ? const Radius.circular(
-                                                    0)
-                                                    : Radius.circular(15.r),
-                                                bottomRight: isMe
-                                                    ? Radius.circular(15.r)
-                                                    : const Radius.circular(
-                                                    0),
-                                              ),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment: isMe
-                                                  ? CrossAxisAlignment.end
-                                                  : CrossAxisAlignment
-                                                  .start,
-                                              children: [
-                                                if (chatData['replyText'] !=
-                                                    null)
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        bottom: 5.h),
-                                                    padding:
-                                                    EdgeInsets.all(8.r),
-                                                    decoration:
-                                                    BoxDecoration(
-                                                      color: Colors.black
-                                                          .withOpacity(
-                                                          0.05),
-                                                      borderRadius:
-                                                      BorderRadius
-                                                          .circular(
-                                                          10.r),
-                                                      border: Border(
-                                                        right: BorderSide(
-                                                          color: isMe
-                                                              ? Colors
-                                                              .white70
-                                                              : mainColor,
-                                                          width: 3.w,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
-                                                      children: [
-                                                        Text(
-                                                          chatData[
-                                                          'replyName'] ??
-                                                              '',
-                                                          style: TextStyle(
-                                                            color: isMe
-                                                                ? Colors
-                                                                .white
-                                                                : mainColor,
-                                                            fontWeight:
-                                                            FontWeight
-                                                                .bold,
-                                                            fontSize: 11.sp,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          chatData[
-                                                          'replyText'],
-                                                          maxLines: 2,
-                                                          overflow:
-                                                          TextOverflow
-                                                              .ellipsis,
-                                                          style: TextStyle(
-                                                            color: isMe
-                                                                ? Colors
-                                                                .white70
-                                                                : Colors
-                                                                .grey
-                                                                .shade700,
-                                                            fontSize: 10.sp,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                if (chatData['type'] ==
-                                                    'image')
-                                                  Column(
-                                                    children: [
-                                                      InkWell(
-                                                        splashColor: Colors
-                                                            .transparent,
-                                                        highlightColor:
-                                                        Colors
-                                                            .transparent,
-                                                        onTap: () => move(
-                                                            context,
-                                                            ImageViewerPage(
-                                                                imageUrl:
-                                                                chatData['imageUrl'] ??
-                                                                    '')),
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .circular(
-                                                              12.r),
-                                                          child:
-                                                          Image.network(
-                                                            chatData[
-                                                            'imageUrl'] ??
-                                                                '',
-                                                            width: 200.w,
-                                                            fit: BoxFit
-                                                                .cover,
-                                                            loadingBuilder:
-                                                                (context,
-                                                                child,
-                                                                loadingProgress) {
-                                                              if (loadingProgress ==
-                                                                  null)
-                                                                return child;
-                                                              return Container(
-                                                                width:
-                                                                200.w,
-                                                                height:
-                                                                160.h,
-                                                                alignment:
-                                                                Alignment
-                                                                    .center,
-                                                                child:
-                                                                const CircularProgressIndicator(),
-                                                              );
-                                                            },
-                                                            errorBuilder:
-                                                                (context,
-                                                                error,
-                                                                stackTrace) {
-                                                              return Container(
-                                                                width:
-                                                                200.w,
-                                                                height:
-                                                                120.h,
-                                                                alignment:
-                                                                Alignment
-                                                                    .center,
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                    0.2),
-                                                                child: const Icon(
-                                                                    Icons
-                                                                        .broken_image),
-                                                              );
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 5.h,
-                                                      ),
-                                                    ],
-                                                  )
-                                                else
-                                                  Text(
-                                                    chatData['text'] ?? '',
-                                                    style: TextStyle(
-                                                      color: isMe
-                                                          ? Colors.white
-                                                          : appCubit.isDark
-                                                          ? Colors.white
-                                                          .withOpacity(
-                                                          0.9)
-                                                          : Colors
-                                                          .black,
-                                                      fontSize: 13.sp,
-                                                    ),
-                                                  ),
-                                                Row(
-                                                  mainAxisSize:
-                                                  MainAxisSize.min,
-                                                  mainAxisAlignment: isMe
-                                                      ? MainAxisAlignment
-                                                      .end
-                                                      : MainAxisAlignment
-                                                      .start,
-                                                  children: [
-                                                    Text(
-                                                      chatData['timestamp'] ==
-                                                          null
-                                                          ? ''
-                                                          : timeFormatStatusTime(
-                                                          chatData[
-                                                          'timestamp']),
-                                                      style: TextStyle(
-                                                          color: isMe
-                                                              ? Colors.green
-                                                              .shade100
-                                                              : Colors.grey,
-                                                          fontSize: 8.sp),
-                                                    ),
-                                                    SizedBox(width: 3.w),
-                                                    isMe
-                                                        ? chatCubit
-                                                        .buildMessageStatus(
-                                                      chatData[
-                                                      'messageStatus'] ??
-                                                          'sent',
-                                                      isMe,
-                                                    )
-                                                        : const SizedBox()
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                      child: Text(
+                                        'ابدأ المحادثة الآن',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    );
-                                  },
-                                  itemCount: docs.length +
-                                      (uploadingImagePath != null ? 1 : 0)),
+                                    )
+                                  : ListView.builder(
+                                      reverse: true,
+                                      padding: EdgeInsetsDirectional.only(
+                                          bottom: 10.h),
+                                      controller: scrollController,
+                                      itemBuilder: (context, index) {
+                                        if (uploadingImagePath != null &&
+                                            index == 0) {
+                                          return Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.symmetric(
+                                              vertical: 7.h,
+                                              horizontal: 7.w,
+                                            ),
+                                            child: Align(
+                                              alignment: AlignmentDirectional
+                                                  .centerEnd,
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsetsDirectional.all(
+                                                        5.r),
+                                                constraints: BoxConstraints(
+                                                  maxWidth:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.75,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: appCubit.isDark
+                                                      ? Colors.blue.shade800
+                                                      : Colors.blue.shade700,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(15.r),
+                                                    topRight:
+                                                        Radius.circular(15.r),
+                                                    bottomLeft:
+                                                        const Radius.circular(
+                                                            0),
+                                                    bottomRight:
+                                                        Radius.circular(15.r),
+                                                  ),
+                                                ),
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12.r),
+                                                      child: Image.file(
+                                                        File(
+                                                            uploadingImagePath!),
+                                                        width: 200.w,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      width: 45.r,
+                                                      height: 45.r,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.black
+                                                            .withOpacity(0.45),
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Padding(
+                                                        padding: EdgeInsets.all(
+                                                            10.r),
+                                                        child:
+                                                            const CircularProgressIndicator(
+                                                          strokeWidth: 3,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        final realIndex =
+                                            uploadingImagePath != null
+                                                ? index - 1
+                                                : index;
+
+                                        var doc = docs[realIndex];
+                                        var chatData =
+                                            doc.data() as Map<String, dynamic>;
+                                        bool isMe = chatData['senderId'] == myId
+                                            ? true
+                                            : false;
+                                        return SwipeableMessage(
+                                          onReply: () {
+                                            onReply(chatData);
+                                          },
+                                          isMe: isMe,
+                                          child: Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.symmetric(
+                                                    vertical: 7.h,
+                                                    horizontal: 7.w),
+                                            child: Align(
+                                              alignment: isMe
+                                                  ? AlignmentDirectional
+                                                      .centerEnd
+                                                  : AlignmentDirectional
+                                                      .centerStart,
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsetsDirectional.only(
+                                                        start: 10.w,
+                                                        end: 10.w,
+                                                        top: 8.h,
+                                                        bottom: 2.h),
+                                                constraints: BoxConstraints(
+                                                    maxWidth:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.75),
+                                                decoration: BoxDecoration(
+                                                  color: isMe
+                                                      ? appCubit.isDark
+                                                          ? Colors.blue.shade800
+                                                          : Colors.blue.shade700
+                                                      : appCubit.isDark
+                                                          ? const Color(
+                                                              0xFF1C2128)
+                                                          : Colors.blue
+                                                              .withOpacity(0.3),
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(15.r),
+                                                    topRight:
+                                                        Radius.circular(15.r),
+                                                    bottomLeft: isMe
+                                                        ? const Radius.circular(
+                                                            0)
+                                                        : Radius.circular(15.r),
+                                                    bottomRight: isMe
+                                                        ? Radius.circular(15.r)
+                                                        : const Radius.circular(
+                                                            0),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment: isMe
+                                                      ? CrossAxisAlignment.end
+                                                      : CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    if (chatData['replyText'] !=
+                                                        null)
+                                                      Container(
+                                                        margin: EdgeInsets.only(
+                                                            bottom: 5.h),
+                                                        padding:
+                                                            EdgeInsets.all(8.r),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.black
+                                                              .withOpacity(
+                                                                  0.05),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.r),
+                                                          border: Border(
+                                                            right: BorderSide(
+                                                              color: isMe
+                                                                  ? Colors
+                                                                      .white70
+                                                                  : mainColor,
+                                                              width: 3.w,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              chatData[
+                                                                      'replyName'] ??
+                                                                  '',
+                                                              style: TextStyle(
+                                                                color: isMe
+                                                                    ? Colors
+                                                                        .white
+                                                                    : mainColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 11.sp,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              chatData[
+                                                                  'replyText'],
+                                                              maxLines: 2,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: TextStyle(
+                                                                color: isMe
+                                                                    ? Colors
+                                                                        .white70
+                                                                    : Colors
+                                                                        .grey
+                                                                        .shade700,
+                                                                fontSize: 10.sp,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    if (chatData['type'] ==
+                                                        'image')
+                                                      Column(
+                                                        children: [
+                                                          InkWell(
+                                                            splashColor: Colors
+                                                                .transparent,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            onTap: () => move(
+                                                                context,
+                                                                ImageViewerPage(
+                                                                    imageUrl:
+                                                                        chatData['imageUrl'] ??
+                                                                            '')),
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12.r),
+                                                              child:
+                                                                  Image.network(
+                                                                chatData[
+                                                                        'imageUrl'] ??
+                                                                    '',
+                                                                width: 200.w,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                loadingBuilder:
+                                                                    (context,
+                                                                        child,
+                                                                        loadingProgress) {
+                                                                  if (loadingProgress ==
+                                                                      null)
+                                                                    return child;
+                                                                  return Container(
+                                                                    width:
+                                                                        200.w,
+                                                                    height:
+                                                                        160.h,
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    child:
+                                                                        const CircularProgressIndicator(),
+                                                                  );
+                                                                },
+                                                                errorBuilder:
+                                                                    (context,
+                                                                        error,
+                                                                        stackTrace) {
+                                                                  return Container(
+                                                                    width:
+                                                                        200.w,
+                                                                    height:
+                                                                        120.h,
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    color: Colors
+                                                                        .grey
+                                                                        .withOpacity(
+                                                                            0.2),
+                                                                    child: const Icon(
+                                                                        Icons
+                                                                            .broken_image),
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5.h,
+                                                          ),
+                                                        ],
+                                                      )
+                                                    else
+                                                      Text(
+                                                        chatData['text'] ?? '',
+                                                        style: TextStyle(
+                                                          color: isMe
+                                                              ? Colors.white
+                                                              : appCubit.isDark
+                                                                  ? Colors.white
+                                                                      .withOpacity(
+                                                                          0.9)
+                                                                  : Colors
+                                                                      .black,
+                                                          fontSize: 13.sp,
+                                                        ),
+                                                      ),
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      mainAxisAlignment: isMe
+                                                          ? MainAxisAlignment
+                                                              .end
+                                                          : MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          chatData['timestamp'] ==
+                                                                  null
+                                                              ? ''
+                                                              : timeFormatStatusTime(
+                                                                  chatData[
+                                                                      'timestamp']),
+                                                          style: TextStyle(
+                                                              color: isMe
+                                                                  ? Colors.green
+                                                                      .shade100
+                                                                  : Colors.grey,
+                                                              fontSize: 8.sp),
+                                                        ),
+                                                        SizedBox(width: 3.w),
+                                                        isMe
+                                                            ? chatCubit
+                                                                .buildMessageStatus(
+                                                                chatData[
+                                                                        'messageStatus'] ??
+                                                                    'sent',
+                                                                isMe,
+                                                              )
+                                                            : const SizedBox()
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      itemCount: docs.length +
+                                          (uploadingImagePath != null ? 1 : 0)),
                             ),
                             StreamBuilder<DocumentSnapshot>(
                               stream: FirebaseFirestore.instance
@@ -755,9 +755,9 @@ class _TheChatState extends State<TheChat> {
                                 if (typingSnapshot.hasData &&
                                     typingSnapshot.data!.exists) {
                                   var data = typingSnapshot.data!.data()
-                                  as Map<String, dynamic>;
+                                      as Map<String, dynamic>;
                                   var typingMap = data['typingStatus']
-                                  as Map<String, dynamic>?;
+                                      as Map<String, dynamic>?;
                                   bool isOtherTyping =
                                       typingMap?[widget.otherUserId] ?? false;
 
@@ -765,10 +765,10 @@ class _TheChatState extends State<TheChat> {
                                     return AnimatedOpacity(
                                       opacity: isOtherTyping ? 1.0 : 0.0,
                                       duration:
-                                      const Duration(milliseconds: 300),
+                                          const Duration(milliseconds: 300),
                                       child: Align(
                                         alignment:
-                                        AlignmentDirectional.centerStart,
+                                            AlignmentDirectional.centerStart,
                                         child: Container(
                                           margin: EdgeInsetsDirectional.only(
                                               start: 7.w),
@@ -777,8 +777,8 @@ class _TheChatState extends State<TheChat> {
                                               horizontal: 3, vertical: 8),
                                           constraints: BoxConstraints(
                                               maxWidth: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
+                                                      .size
+                                                      .width *
                                                   0.15),
                                           decoration: BoxDecoration(
                                             color: appCubit.isDark
@@ -789,7 +789,7 @@ class _TheChatState extends State<TheChat> {
                                               topRight: Radius.circular(15.r),
                                               bottomLeft: Radius.circular(15.r),
                                               bottomRight:
-                                              const Radius.circular(0),
+                                                  const Radius.circular(0),
                                             ),
                                           ),
                                           child: SpinKitThreeBounce(
@@ -817,45 +817,46 @@ class _TheChatState extends State<TheChat> {
                                   top: 5.h,
                                 ),
                                 child: Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                       child: Container(
                                         clipBehavior: Clip.antiAlias,
                                         decoration: BoxDecoration(
-                                          color: appCubit.isDark ? const Color(0xFF161B22)
-                                              : Colors.grey.withOpacity(0.2), borderRadius:
-                                        BorderRadius.circular(17.r),
+                                          color: appCubit.isDark
+                                              ? const Color(0xFF161B22)
+                                              : Colors.grey.withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(17.r),
                                         ),
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             if (replyMessage != null)
                                               Container(
-                                                width:
-                                                double.infinity,
-                                                padding: EdgeInsetsDirectional.only(top: 8.r,bottom: 8.r,start: 8.r),
-                                                margin: EdgeInsetsDirectional.all(
-                                                    5.r),
+                                                width: double.infinity,
+                                                padding:
+                                                    EdgeInsetsDirectional.only(
+                                                        top: 8.r,
+                                                        bottom: 8.r,
+                                                        start: 8.r),
+                                                margin:
+                                                    EdgeInsetsDirectional.all(
+                                                        5.r),
                                                 decoration: BoxDecoration(
-                                                  color: appCubit
-                                                      .isDark
+                                                  color: appCubit.isDark
                                                       ? Colors.black
-                                                      .withOpacity(
-                                                      0.3)
+                                                          .withOpacity(0.3)
                                                       : Colors.white
-                                                      .withOpacity(
-                                                      0.5),
+                                                          .withOpacity(0.5),
                                                   borderRadius:
-                                                  BorderRadius.circular(
-                                                      12.r),
+                                                      BorderRadius.circular(
+                                                          12.r),
                                                   border: Border(
-                                                    right:
-                                                    BorderSide(
-                                                      color:
-                                                      mainColor,
+                                                    right: BorderSide(
+                                                      color: mainColor,
                                                       width: 4.w,
                                                     ),
                                                   ),
@@ -865,36 +866,34 @@ class _TheChatState extends State<TheChat> {
                                                     Expanded(
                                                       child: Column(
                                                         crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
-                                                            replyMessage!['senderId'] ==
-                                                                myId
+                                                            replyMessage![
+                                                                        'senderId'] ==
+                                                                    myId
                                                                 ? 'أنت'
                                                                 : otherUsername,
-                                                            style:
-                                                            TextStyle(
-                                                              color:
-                                                              mainColor,
+                                                            style: TextStyle(
+                                                              color: mainColor,
                                                               fontWeight:
-                                                              FontWeight.bold,
-                                                              fontSize:
-                                                              12.sp,
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                           Text(
-                                                            getReplyText(replyMessage!),
-                                                            maxLines:
-                                                            1,
+                                                            getReplyText(
+                                                                replyMessage!),
+                                                            maxLines: 1,
                                                             overflow:
-                                                            TextOverflow.ellipsis,
-                                                            style:
-                                                            TextStyle(
-                                                              fontSize:
-                                                              11.sp,
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: TextStyle(
+                                                              fontSize: 11.sp,
                                                               color:
-                                                              Colors.grey,
+                                                                  Colors.grey,
                                                             ),
                                                           ),
                                                         ],
@@ -903,10 +902,8 @@ class _TheChatState extends State<TheChat> {
                                                     IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          replyMessage =
-                                                          null;
+                                                          replyMessage = null;
                                                         });
-
                                                       },
                                                       icon: Icon(
                                                         Icons.close_rounded,
@@ -918,17 +915,17 @@ class _TheChatState extends State<TheChat> {
                                                 ),
                                               ),
                                             TextFormField(
-                                              key: const ValueKey('chat_message_input'),
+                                              key: const ValueKey(
+                                                  'chat_message_input'),
                                               controller: chatCubit.message,
                                               readOnly: isChatClosed,
                                               focusNode: messageFocus,
-                                              style: TextStyle(
-                                                  fontSize: 12.sp
-                                              ),
+                                              style: TextStyle(fontSize: 12.sp),
                                               minLines: 1,
                                               maxLines: 5,
                                               onChanged: (value) {
-                                                final bool typingNow = value.trim().isNotEmpty;
+                                                final bool typingNow =
+                                                    value.trim().isNotEmpty;
                                                 typingTimer?.cancel();
 
                                                 if (typingNow) {
@@ -936,7 +933,7 @@ class _TheChatState extends State<TheChat> {
 
                                                   typingTimer = Timer(
                                                     const Duration(seconds: 1),
-                                                        () {
+                                                    () {
                                                       if (!mounted) return;
                                                       setTypingStatus(false);
                                                     },
@@ -945,43 +942,51 @@ class _TheChatState extends State<TheChat> {
                                                   setTypingStatus(false);
                                                 }
                                               },
-                                              keyboardType: TextInputType.multiline,
-                                              textAlignVertical: TextAlignVertical.center,
+                                              keyboardType:
+                                                  TextInputType.multiline,
+                                              textAlignVertical:
+                                                  TextAlignVertical.center,
                                               decoration: InputDecoration(
-                                                contentPadding: EdgeInsetsDirectional.symmetric(horizontal: 15.w, vertical: 10.h,),
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .symmetric(
+                                                  horizontal: 15.w,
+                                                  vertical: 10.h,
+                                                ),
                                                 hintText: isChatClosed
-                                                    ? widget.requestStatus == 'مكتمل'
-                                                    ? 'تم إغلاق المحادثة بعد اكتمال الحجز'
-                                                    : 'المحادثة متاحة بعد قبول الحجز'
+                                                    ? widget.requestStatus ==
+                                                            'مكتمل'
+                                                        ? 'تم إغلاق المحادثة بعد اكتمال الحجز'
+                                                        : 'المحادثة متاحة بعد قبول الحجز'
                                                     : 'اكتب رسالة...',
                                                 hintStyle: TextStyle(
                                                   fontSize: 13.sp,
-                                                  color:
-                                                  Colors.grey,
+                                                  color: Colors.grey,
                                                 ),
                                                 border: InputBorder.none,
                                                 suffixIcon: Row(
                                                   mainAxisSize:
-                                                  MainAxisSize.min,
+                                                      MainAxisSize.min,
                                                   children: [
                                                     InkWell(
                                                       onTap: isChatClosed
                                                           ? null
                                                           : () {
-                                                        pickAndSendImage(
-                                                          chatCubit: chatCubit,
-                                                          chatId: widget.chatId,
-                                                          receiverId: otherUserId,
-                                                          senderId: myId,
-                                                        );
-                                                      },
+                                                              pickAndSendImage(
+                                                                chatCubit:
+                                                                    chatCubit,
+                                                                chatId: widget
+                                                                    .chatId,
+                                                                receiverId:
+                                                                    otherUserId,
+                                                                senderId: myId,
+                                                              );
+                                                            },
                                                       child: SvgPicture.asset(
                                                         'assets/image.svg',
-                                                        height:
-                                                        23.h,
+                                                        height: 23.h,
                                                         width: 23.h,
-                                                        color: Colors
-                                                            .grey,
+                                                        color: Colors.grey,
                                                       ),
                                                     ),
                                                     SizedBox(width: 10.w),
@@ -997,7 +1002,7 @@ class _TheChatState extends State<TheChat> {
                                     Transform.scale(
                                       scale: 0.9,
                                       child: FloatingActionButton(
-                                        onPressed: ()  {
+                                        onPressed: () {
                                           if (isChatClosed) {
                                             showSnackBar(
                                               Colors.orange,
@@ -1008,17 +1013,22 @@ class _TheChatState extends State<TheChat> {
                                             );
                                             return;
                                           }
-                                          final String messageText = chatCubit.message.text.trim();
+                                          final String messageText =
+                                              chatCubit.message.text.trim();
                                           if (messageText.isEmpty) {
                                             return;
                                           }
-                                          String? rText = replyMessage != null ? getReplyText(replyMessage!) : null;
-                                          String? rName = replyMessage != null
-                                              ? (replyMessage!['senderId'] == myId
-                                              ? 'أنت'
-                                              : widget.otherUsername)
+                                          String? rText = replyMessage != null
+                                              ? getReplyText(replyMessage!)
                                               : null;
-                                          final bool hadReply = replyMessage != null;
+                                          String? rName = replyMessage != null
+                                              ? (replyMessage!['senderId'] ==
+                                                      myId
+                                                  ? 'أنت'
+                                                  : widget.otherUsername)
+                                              : null;
+                                          final bool hadReply =
+                                              replyMessage != null;
                                           chatCubit.message.clear();
                                           clearTypingStatus();
                                           if (hadReply) {
@@ -1026,10 +1036,13 @@ class _TheChatState extends State<TheChat> {
                                               replyMessage = null;
                                             });
                                           }
-                                          FocusScope.of(context).requestFocus(messageFocus);
-                                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                                          FocusScope.of(context)
+                                              .requestFocus(messageFocus);
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
                                             if (!mounted) return;
-                                            FocusScope.of(context).requestFocus(messageFocus);
+                                            FocusScope.of(context)
+                                                .requestFocus(messageFocus);
                                           });
                                           chatCubit.sendMessage(
                                             chatId: widget.chatId,
@@ -1042,18 +1055,18 @@ class _TheChatState extends State<TheChat> {
                                           );
                                           Future.delayed(
                                             const Duration(milliseconds: 50),
-                                                () {
+                                            () {
                                               if (!mounted) return;
                                               scrollToBottom();
-                                              FocusScope.of(context).requestFocus(messageFocus);
+                                              FocusScope.of(context)
+                                                  .requestFocus(messageFocus);
                                             },
                                           );
                                         },
                                         elevation: 0,
                                         shape: const CircleBorder(),
                                         backgroundColor: mainColor,
-                                        splashColor:
-                                        Colors.transparent,
+                                        splashColor: Colors.transparent,
                                         child: Transform.rotate(
                                           angle: 0.4,
                                           child: Icon(
@@ -1143,7 +1156,6 @@ class _SwipeableMessageState extends State<SwipeableMessage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-
       onHorizontalDragUpdate: (details) {
         setState(() {
           final double newOffset = _offset + details.delta.dx;
@@ -1165,7 +1177,6 @@ class _SwipeableMessageState extends State<SwipeableMessage> {
           }
         });
       },
-
       onHorizontalDragEnd: (details) {
         if (_offset.abs() >= 50 && canSwipeToThisDirection) {
           widget.onReply();
@@ -1175,21 +1186,17 @@ class _SwipeableMessageState extends State<SwipeableMessage> {
           _offset = 0.0;
         });
       },
-
       onHorizontalDragCancel: () {
         setState(() {
           _offset = 0.0;
         });
       },
-
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutBack,
         transform: Matrix4.translationValues(_offset, 0, 0),
         child: Stack(
-          alignment: widget.isMe
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
+          alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
           children: [
             if (_offset.abs() > 10)
               Padding(

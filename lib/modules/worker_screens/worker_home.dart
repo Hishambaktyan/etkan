@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_add_service.dart';
-import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
-import 'package:trying_homy/modules/worker_screens/worker_service_details.dart';
-import 'package:trying_homy/modules/worker_screens/worker_subscriptions_screen.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/notification_cubit/notification_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/worker_screens/worker_add_service.dart';
+import 'package:Etkan/modules/worker_screens/worker_account_verification.dart';
+import 'package:Etkan/modules/worker_screens/worker_service_details.dart';
+import 'package:Etkan/modules/worker_screens/worker_subscriptions_screen.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/notification_cubit/notification_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 import '../../shared/networks/local/cache_helper.dart';
@@ -318,9 +318,9 @@ class _WorkerHomeState extends State<WorkerHome> {
     required AppCubit appCubit,
     required Map<String, dynamic> userData,
     required WorkerCubit workerCubit,
-  })
-  {
-    final Map<String, dynamic> subscription = getMapData(userData['subscription']);
+  }) {
+    final Map<String, dynamic> subscription =
+        getMapData(userData['subscription']);
 
     String status = subscription['status']?.toString() ?? 'not_submitted';
     final String requestId = subscription['requestId']?.toString() ?? '';
@@ -329,13 +329,16 @@ class _WorkerHomeState extends State<WorkerHome> {
       status = 'not_submitted';
     }
 
-    final dynamic endDate = subscription['endDate'] ?? subscription['endAt'] ?? subscription['expiresAt'];
+    final dynamic endDate = subscription['endDate'] ??
+        subscription['endAt'] ??
+        subscription['expiresAt'];
 
     final String packageName = subscription['packageName']?.toString() ??
         subscription['planName']?.toString() ??
         'الباقة الحالية';
 
-    final String rejectionReason = subscription['rejectionReason']?.toString() ?? '';
+    final String rejectionReason =
+        subscription['rejectionReason']?.toString() ?? '';
 
     final String endDateText = formatDate(endDate);
     final bool isExpired = status == 'expired' || isDateExpired(endDate);
@@ -438,7 +441,8 @@ class _WorkerHomeState extends State<WorkerHome> {
       icon: Icons.card_membership_rounded,
       color: mainColor,
       title: 'أنت على الخطة المجانية',
-      body: 'يمكنك إضافة 5 خدمات وإكمال 5 حجوزات فقط، وبعدها يجب الاشتراك للاستمرار بلا حدود.',
+      body:
+          'يمكنك إضافة 5 خدمات وإكمال 5 حجوزات فقط، وبعدها يجب الاشتراك للاستمرار بلا حدود.',
       buttonText: 'الاشتراك',
       onTap: () => move(
         context,
@@ -448,8 +452,7 @@ class _WorkerHomeState extends State<WorkerHome> {
   }
 
   Widget buildWorkerAccountStatusSection(
-      AppCubit appCubit, WorkerCubit workerCubit)
-  {
+      AppCubit appCubit, WorkerCubit workerCubit) {
     final uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
 
     if (uid.isEmpty) {
@@ -457,7 +460,8 @@ class _WorkerHomeState extends State<WorkerHome> {
     }
 
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      stream:
+          FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || !snapshot.data!.exists) {
           return const SizedBox.shrink();
@@ -573,24 +577,23 @@ class _WorkerHomeState extends State<WorkerHome> {
                   textDirection: TextDirection.rtl,
                   child: Scaffold(
                     body: RefreshIndicator(
-                      onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
+                      onRefresh: () =>
+                          checkConnectionAndGetData(forceRefresh: true),
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             header(
-                              title: 'مرحبا، ${(workerCubit.workerName ?? '')
-                                  .trim().split(RegExp(r'\s+')).where((name) => name.isNotEmpty)
-                                  .take(2).join(' ')}',
+                              title:
+                                  'مرحبا، ${(workerCubit.workerName ?? '').trim().split(RegExp(r'\s+')).where((name) => name.isNotEmpty).take(2).join(' ')}',
                               context: context,
                             ),
                             SizedBox(
                               height: 10.h,
                             ),
                             buildWorkerAccountStatusSection(
-                                appCubit, workerCubit
-                            ),
+                                appCubit, workerCubit),
                             SizedBox(
                               height: 10.h,
                             ),
@@ -731,7 +734,9 @@ class _WorkerHomeState extends State<WorkerHome> {
                                 );
                               },
                             ),
-                            SizedBox(height: 20.h,),
+                            SizedBox(
+                              height: 20.h,
+                            ),
                             Padding(
                               padding: EdgeInsetsDirectional.only(
                                 start: 10.w,
@@ -745,51 +750,57 @@ class _WorkerHomeState extends State<WorkerHome> {
                             ),
                             publishedServices.isEmpty
                                 ? Center(
-                              child: Padding(
-                                padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 100.w,
-                                      height: 100.w,
-                                      padding: EdgeInsets.all(18.r),
-                                      decoration: BoxDecoration(
-                                        color: mainColor.withOpacity(0.08),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.home_repair_service_rounded,
-                                        color: mainColor,
-                                        size: 48.sp,
+                                    child: Padding(
+                                      padding: EdgeInsetsDirectional.symmetric(
+                                          horizontal: 10.w),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: 100.w,
+                                            height: 100.w,
+                                            padding: EdgeInsets.all(18.r),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  mainColor.withOpacity(0.08),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.home_repair_service_rounded,
+                                              color: mainColor,
+                                              size: 48.sp,
+                                            ),
+                                          ),
+                                          SizedBox(height: 20.h),
+                                          Text(
+                                            'لا توجد خدمات منشورة',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.sp,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .color,
+                                            ),
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          Text(
+                                            'عند إضافة خدمة جديدة ستظهر هنا ليتمكن العملاء من حجزها.',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              height: 1.6,
+                                              color: appCubit.isDark
+                                                  ? darkSubTextColor
+                                                  : Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    SizedBox(height: 20.h),
-                                    Text(
-                                      'لا توجد خدمات منشورة',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.sp,
-                                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.h),
-                                    Text(
-                                      'عند إضافة خدمة جديدة ستظهر هنا ليتمكن العملاء من حجزها.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        height: 1.6,
-                                        color: appCubit.isDark
-                                            ? darkSubTextColor
-                                            : Colors.grey.shade600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
+                                  )
                                 : GridView.builder(
                                     itemCount: publishedServices.length > 4
                                         ? 4
@@ -967,7 +978,9 @@ class _WorkerHomeState extends State<WorkerHome> {
                                       );
                                     },
                                   ),
-                            SizedBox(height: 20.h,),
+                            SizedBox(
+                              height: 20.h,
+                            ),
                             Padding(
                               padding: EdgeInsetsDirectional.symmetric(
                                   horizontal: 10.w),

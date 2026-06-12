@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_request_details.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/user_screens/user_request_details.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
@@ -139,20 +139,24 @@ class _UserRequestsListState extends State<UserRequestsList> {
                 .toList();
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: Scaffold(
-              body: BlocBuilder<UserCubit, UserStates>(
+          child: Scaffold(body: BlocBuilder<UserCubit, UserStates>(
             builder: (context, state) {
               UserCubit userCubit = UserCubit.get(context);
               return ConditionalBuilder(
                   condition:
-                  checkingInternet || state is GetUserRequestLoadingState,
-                  builder: (context) => UserBookingsShimmer(isDark: appCubit.isDark),
+                      checkingInternet || state is GetUserRequestLoadingState,
+                  builder: (context) =>
+                      UserBookingsShimmer(isDark: appCubit.isDark),
                   fallback: (context) => ConditionalBuilder(
                         condition: !hasInternet,
-                        builder: (context) => NoInternet(onRetry: () => checkConnectionAndGetData(forceRefresh: true),),
+                        builder: (context) => NoInternet(
+                          onRetry: () =>
+                              checkConnectionAndGetData(forceRefresh: true),
+                        ),
                         fallback: (context) => RefreshIndicator(
                           color: mainColor,
-                          onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
+                          onRefresh: () =>
+                              checkConnectionAndGetData(forceRefresh: true),
                           child: SingleChildScrollView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             child: Column(
@@ -161,15 +165,19 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                   title: 'الحجوزات',
                                   context: context,
                                 ),
-                                SizedBox(height: 15.h,),
+                                SizedBox(
+                                  height: 15.h,
+                                ),
                                 SizedBox(
                                   height: 55.h,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                                    padding: EdgeInsetsDirectional.symmetric(
+                                        horizontal: 10.w),
                                     itemCount: statusFilters.length,
                                     itemBuilder: (context, index) {
-                                      bool isSelected = selectedStatus == statusFilters[index];
+                                      bool isSelected = selectedStatus ==
+                                          statusFilters[index];
                                       return Padding(
                                         padding: EdgeInsetsDirectional.only(
                                             end: 10.w, bottom: 10.h),
@@ -218,7 +226,9 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 10.h,),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
                                 filteredList.isEmpty
                                     ? SizedBox(
                                         height:
@@ -275,7 +285,8 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                         shrinkWrap: true,
                                         physics:
                                             const NeverScrollableScrollPhysics(),
-                                        padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 5.h),
+                                        padding: EdgeInsetsDirectional.only(
+                                            start: 10.w, end: 10.w, top: 5.h),
                                         itemCount: filteredList.length,
                                         itemBuilder: (context, index) {
                                           var request = filteredList[index];

@@ -5,12 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:trying_homy/modules/worker_screens/worker_services_list.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/modules/worker_screens/worker_services_list.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 import '../../main.dart';
 

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({super.key});
@@ -64,10 +64,9 @@ class AboutAppScreen extends StatelessWidget {
       margin: EdgeInsetsDirectional.only(bottom: 14.h),
       padding: EdgeInsetsDirectional.all(16.r),
       decoration: BoxDecoration(
-        color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
-        borderRadius: BorderRadius.circular(22.r),
-        boxShadow:blueShadow
-      ),
+          color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
+          borderRadius: BorderRadius.circular(22.r),
+          boxShadow: blueShadow),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -105,9 +104,7 @@ class AboutAppScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12.sp,
                     height: 1.6,
-                    color: cubit.isDark
-                        ? Colors.white70
-                        : Colors.grey.shade700,
+                    color: cubit.isDark ? Colors.white70 : Colors.grey.shade700,
                   ),
                 ),
               ],
@@ -127,10 +124,9 @@ class AboutAppScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsetsDirectional.all(14.r),
       decoration: BoxDecoration(
-        color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
-        borderRadius: BorderRadius.circular(22.r),
-        boxShadow: blueShadow
-      ),
+          color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
+          borderRadius: BorderRadius.circular(22.r),
+          boxShadow: blueShadow),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -166,10 +162,9 @@ class AboutAppScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsetsDirectional.all(16.r),
       decoration: BoxDecoration(
-        color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
-        borderRadius: BorderRadius.circular(22.r),
-        boxShadow: blueShadow
-      ),
+          color: cubit.isDark ? const Color(0xFF161B22) : Colors.white,
+          borderRadius: BorderRadius.circular(22.r),
+          boxShadow: blueShadow),
       child: Row(
         children: [
           Container(
@@ -250,7 +245,7 @@ class AboutAppScreen extends StatelessWidget {
                     cubit: cubit,
                     title: 'ما هو التطبيق؟',
                     desc:
-                    'تطبيق إتقان يوفر خدمات الصيانة المنزلية بسهولة وسرعة مع متابعة الطلب والتواصل مع الفني.',
+                        'تطبيق إتقان يوفر خدمات الصيانة المنزلية بسهولة وسرعة مع متابعة الطلب والتواصل مع الفني.',
                     icon: 'assets/mobile.svg',
                   ),
                   _card(
@@ -258,7 +253,7 @@ class AboutAppScreen extends StatelessWidget {
                     cubit: cubit,
                     title: 'هدف التطبيق',
                     desc:
-                    'تسهيل الوصول إلى الفنيين وتحسين جودة الخدمات عبر نظام تقييم موثوق.',
+                        'تسهيل الوصول إلى الفنيين وتحسين جودة الخدمات عبر نظام تقييم موثوق.',
                     icon: 'assets/flag.svg',
                   ),
                   SizedBox(height: 10.h),

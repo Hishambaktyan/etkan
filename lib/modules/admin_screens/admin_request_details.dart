@@ -6,11 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
-import 'package:trying_homy/modules/admin_screens/admin_user_info.dart';
-import 'package:trying_homy/modules/worker_screens/worker_profile.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:Etkan/modules/admin_screens/admin_provider_info.dart';
+import 'package:Etkan/modules/admin_screens/admin_user_info.dart';
+import 'package:Etkan/modules/worker_screens/worker_profile.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_cubit.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_states.dart';
 
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
@@ -44,16 +44,20 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
 
   final List<String> terminalStates = ["مرفوض", "ملغي"];
 
-  Color cardColor(AppCubit cubit) => cubit.isDark ? lightDarkColor : Colors.white;
+  Color cardColor(AppCubit cubit) =>
+      cubit.isDark ? lightDarkColor : Colors.white;
 
-  Color primaryTextColor(AppCubit cubit) => cubit.isDark ? Colors.white : Colors.black;
+  Color primaryTextColor(AppCubit cubit) =>
+      cubit.isDark ? Colors.white : Colors.black;
 
-  Color secondaryTextColor(AppCubit cubit) => cubit.isDark ? darkSubTextColor : Colors.grey;
+  Color secondaryTextColor(AppCubit cubit) =>
+      cubit.isDark ? darkSubTextColor : Colors.grey;
 
-  Color dividerColor(AppCubit cubit) => cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade300;
+  Color dividerColor(AppCubit cubit) =>
+      cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade300;
 
-  Color inactiveStepColor(AppCubit cubit) => cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200;
-
+  Color inactiveStepColor(AppCubit cubit) =>
+      cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade200;
 
   Widget buildHorizontalStepper(
       {required int currentStep, required dynamic cubit}) {
@@ -129,8 +133,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
   }
 
   void showFullTrackingSheet(
-      BuildContext context, AppCubit cubit, dynamic requestData)
-  {
+      BuildContext context, AppCubit cubit, dynamic requestData) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -171,42 +174,44 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                 Expanded(
                   child: ListView(
                       children: List.generate(
-                        stepperSteps.length,
-                            (index) {
-                          String currentStatusFromDb = requestData['status'];
-                          final Map<String, dynamic> statusHistory =
-                          Map<String, dynamic>.from(requestData['statusHistory'] ?? {});
-                          Map<int, dynamic> statusTimes = {
-                            0: statusHistory['pendingAt'] ?? requestData['createdAt'],
-                            1: statusHistory['acceptedAt'],
-                            2: statusHistory['onWayAt'],
-                            3: statusHistory['completedAt'],
-                          };
-                          String displayTime = formatStatusTime(statusTimes[index]);
-                          bool isDone;
-                          bool isActive;
-                          Color circleColor;
-                          int currentStepIndex =
+                    stepperSteps.length,
+                    (index) {
+                      String currentStatusFromDb = requestData['status'];
+                      final Map<String, dynamic> statusHistory =
+                          Map<String, dynamic>.from(
+                              requestData['statusHistory'] ?? {});
+                      Map<int, dynamic> statusTimes = {
+                        0: statusHistory['pendingAt'] ??
+                            requestData['createdAt'],
+                        1: statusHistory['acceptedAt'],
+                        2: statusHistory['onWayAt'],
+                        3: statusHistory['completedAt'],
+                      };
+                      String displayTime = formatStatusTime(statusTimes[index]);
+                      bool isDone;
+                      bool isActive;
+                      Color circleColor;
+                      int currentStepIndex =
                           stepperSteps.indexOf(currentStatusFromDb);
-                          if (terminalStates.contains(currentStatusFromDb)) {
-                            isDone = index < stepperSteps.indexOf("مقبول");
-                            isActive = false;
-                            circleColor = Colors.red;
-                          } else {
-                            isDone = index < currentStepIndex;
-                            isActive = index == currentStepIndex;
-                            circleColor = mainColor;
-                          }
-                          return buildVerticalStep(
-                            stepperSteps[index],
-                            displayTime,
-                            isDone,
-                            index != stepperSteps.length - 1,
-                            cubit,
-                            isActive: isActive,
-                          );
-                        },
-                      )),
+                      if (terminalStates.contains(currentStatusFromDb)) {
+                        isDone = index < stepperSteps.indexOf("مقبول");
+                        isActive = false;
+                        circleColor = Colors.red;
+                      } else {
+                        isDone = index < currentStepIndex;
+                        isActive = index == currentStepIndex;
+                        circleColor = mainColor;
+                      }
+                      return buildVerticalStep(
+                        stepperSteps[index],
+                        displayTime,
+                        isDone,
+                        index != stepperSteps.length - 1,
+                        cubit,
+                        isActive: isActive,
+                      );
+                    },
+                  )),
                 ),
               ],
             ),
@@ -215,6 +220,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
       },
     );
   }
+
   Widget buildVerticalStep(
       String title, String time, bool isDone, bool showLine, dynamic cubit,
       {bool isActive = false}) {
@@ -390,8 +396,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                           ? lightDarkColor
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(25.r),
-                                      boxShadow: blueShadow
-                                  ),
+                                      boxShadow: blueShadow),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -667,20 +672,23 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                     height: 15.h,
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 10.h),
+                    padding: EdgeInsetsDirectional.symmetric(
+                        horizontal: 16.w, vertical: 10.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        buildSectionTitle(title: 'مراحل التنفيذ', icon: Icons.route_outlined),
-                        SizedBox(height: 10.h,),
+                        buildSectionTitle(
+                            title: 'مراحل التنفيذ', icon: Icons.route_outlined),
+                        SizedBox(
+                          height: 10.h,
+                        ),
                         Container(
                           padding: EdgeInsetsDirectional.all(15.r),
                           decoration: BoxDecoration(
-                              color: appCubit.isDark
-                                  ? lightDarkColor
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: blueShadow,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
+                            borderRadius: BorderRadius.circular(25.r),
+                            boxShadow: blueShadow,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -731,8 +739,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                   ? lightDarkColor
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(20.r),
-                              boxShadow: blueShadow
-                          ),
+                              boxShadow: blueShadow),
                           child: Column(
                             children: [
                               ReadMoreText(
@@ -769,8 +776,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                   ? lightDarkColor
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: blueShadow
-                          ),
+                              boxShadow: blueShadow),
                           child: Column(
                             children: [
                               Row(
@@ -818,7 +824,8 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                               SizedBox(height: 20.h),
                               defaultOutlinedButtonWithIcon(
                                 onPressed: () => move(
-                                  context, AdminProviderInfo(provider: providerData),
+                                  context,
+                                  AdminProviderInfo(provider: providerData),
                                 ),
                                 text: 'المزيد',
                                 fontSize: 13.sp,
@@ -852,8 +859,7 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                   ? lightDarkColor
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: blueShadow
-                          ),
+                              boxShadow: blueShadow),
                           child: Column(
                             children: [
                               Row(
@@ -901,7 +907,8 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                               SizedBox(height: 20.h),
                               defaultOutlinedButtonWithIcon(
                                 onPressed: () => move(
-                                  context, AdminUserInfo(user: userData),
+                                  context,
+                                  AdminUserInfo(user: userData),
                                 ),
                                 text: 'المزيد',
                                 fontSize: 13.sp,

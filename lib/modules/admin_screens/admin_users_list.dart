@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/admin_screens/admin_user_info.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/admin_screens/admin_user_info.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_cubit.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/styles/colors.dart';
 
 class AdminUsersList extends StatefulWidget {
@@ -96,8 +96,12 @@ class _AdminUsersListState extends State<AdminUsersList> {
           body: BlocBuilder<AdminCubit, AdminStates>(
             builder: (context, state) {
               AdminCubit adminCubit = AdminCubit.get(context);
-              final activeUsers = adminCubit.users.where((user) => user['isActive'] == true).length;
-              final inactiveUsers = adminCubit.users.where((user) => user['isActive'] == false).length;
+              final activeUsers = adminCubit.users
+                  .where((user) => user['isActive'] == true)
+                  .length;
+              final inactiveUsers = adminCubit.users
+                  .where((user) => user['isActive'] == false)
+                  .length;
               return state is GetUsersLoadingState
                   ? const AdminUsersShimmer()
                   : SingleChildScrollView(
@@ -107,11 +111,13 @@ class _AdminUsersListState extends State<AdminUsersList> {
                               title: 'إدارة المستخدمين',
                               context: context,
                               isLeading: true,
-                              isNotif: false
+                              isNotif: false),
+                          SizedBox(
+                            height: 10.h,
                           ),
-                          SizedBox(height: 10.h,),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 10.w),
                             child: Row(
                               children: [
                                 buildStatCard(
@@ -119,7 +125,9 @@ class _AdminUsersListState extends State<AdminUsersList> {
                                     value: activeUsers.toString(),
                                     icon: 'assets/all.svg',
                                     appCubit: appCubit),
-                                SizedBox(width: 10.w,),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
                                 buildStatCard(
                                     title: 'الحسابات المعطلة',
                                     value: inactiveUsers.toString(),
@@ -128,21 +136,26 @@ class _AdminUsersListState extends State<AdminUsersList> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 20.h,),
+                          SizedBox(
+                            height: 20.h,
+                          ),
                           GridView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 15.h,
                                     crossAxisSpacing: 10.w,
                                     childAspectRatio: 0.78),
-                            padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h),
+                            padding: EdgeInsetsDirectional.only(
+                                start: 10.w, end: 10.w, bottom: 20.h),
                             itemCount: adminCubit.users.length,
                             itemBuilder: (context, index) {
                               final user = adminCubit.users[index];
                               return InkWell(
-                                onTap: () => move(context, AdminUserInfo(user: user)),
+                                onTap: () =>
+                                    move(context, AdminUserInfo(user: user)),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 borderRadius: BorderRadius.circular(25.r),

@@ -3,16 +3,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/select_user_type.dart';
-import 'package:trying_homy/modules/user_screens/user_login.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/select_user_type.dart';
+import 'package:Etkan/modules/user_screens/user_login.dart';
+import 'package:Etkan/modules/worker_screens/worker_login.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String phone;

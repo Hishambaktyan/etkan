@@ -6,16 +6,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/layout/worker_layout/worker_main_screen.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/layout/worker_layout/worker_main_screen.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class WorkerConfirmSubscription extends StatefulWidget {
   final Map<String, dynamic> plan;

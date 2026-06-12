@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_states.dart';
 
 import '../../compenents/components.dart';
 
-class LocationCubit extends Cubit<LocationStates>{
+class LocationCubit extends Cubit<LocationStates> {
+  LocationCubit() : super(LocationInitState());
 
-  LocationCubit(): super(LocationInitState());
-
-  static LocationCubit get(context)=>BlocProvider.of(context);
+  static LocationCubit get(context) => BlocProvider.of(context);
 
   bool isGettingLocation = false;
 
@@ -136,8 +135,7 @@ class LocationCubit extends Cubit<LocationStates>{
     required String addressDetails,
     required double lat,
     required double long,
-  })
-  async {
+  }) async {
     final CollectionReference addresses = FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -189,7 +187,7 @@ class LocationCubit extends Cubit<LocationStates>{
     }
   }
 
-  List<Map<String,dynamic>> allAddresses = [];
+  List<Map<String, dynamic>> allAddresses = [];
 
   Future<void> getAddresses(String uId) async {
     try {
@@ -223,8 +221,7 @@ class LocationCubit extends Cubit<LocationStates>{
   Future<void> setDefaultAddress({
     required String uId,
     required String addressId,
-  })
-  async {
+  }) async {
     emit(SetDefaultAddressLoadingState());
 
     try {
@@ -259,8 +256,7 @@ class LocationCubit extends Cubit<LocationStates>{
   Future<void> deleteAddress({
     required String uId,
     required String addressId,
-  })
-  async {
+  }) async {
     emit(DeleteAddressLoadingState());
 
     try {
@@ -286,8 +282,7 @@ class LocationCubit extends Cubit<LocationStates>{
     required double lat,
     required double long,
     required bool isDefault,
-  })
-  async {
+  }) async {
     emit(EditAddressLoadingState());
 
     try {

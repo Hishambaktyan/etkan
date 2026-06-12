@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/user_screens/user_add_profile_image.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_states.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/user_screens/user_add_profile_image.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_cubit.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_states.dart';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
 
 class UserAddAddress extends StatefulWidget {
@@ -346,7 +346,8 @@ class _UserAddAddressState extends State<UserAddAddress> {
                                           context,
                                         );
                                       } else if (widget.isOnboarding) {
-                                        AuthCubit.get(context).setPendingUserAddress(
+                                        AuthCubit.get(context)
+                                            .setPendingUserAddress(
                                           label: titleController.text.trim(),
                                           addressDetails:
                                               detailsController.text.trim(),

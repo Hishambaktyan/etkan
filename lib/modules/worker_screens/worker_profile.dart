@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/modules/images_view.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/modules/images_view.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/networks/local/cache_helper.dart';
@@ -24,11 +24,10 @@ class WorkerProfile extends StatefulWidget {
 }
 
 class _WorkerProfileState extends State<WorkerProfile> {
-
   bool hasInternet = true;
   bool checkingInternet = true;
 
-  Future<void> checkConnectionAndGetData({bool forceRefresh=false}) async {
+  Future<void> checkConnectionAndGetData({bool forceRefresh = false}) async {
     if (!mounted) return;
 
     setState(() {
@@ -82,104 +81,116 @@ class _WorkerProfileState extends State<WorkerProfile> {
         return BlocBuilder<WorkerCubit, WorkerStates>(
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
-            final Map<String, dynamic> user = Map<String, dynamic>.from(workerCubit.singleWorkerData);
+            final Map<String, dynamic> user =
+                Map<String, dynamic>.from(workerCubit.singleWorkerData);
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
                 body: ConditionalBuilder(
-                    condition: checkingInternet || state is GetSingleWorkerDataLoadingState,
-                    builder: (context) => WorkerProfileShimmer(isDark: appCubit.isDark),
-                    fallback: (context) => ConditionalBuilder(
-                        condition: !hasInternet,
-                        builder: (context) => NoInternet(onRetry: () => checkConnectionAndGetData(forceRefresh: true),),
-                        fallback: (context) => RefreshIndicator(
-                          backgroundColor: appCubit.isDark ? darkBgColor : Colors.white,
-                          onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                              children: [
-                                buildHeader(appCubit: appCubit, user: user),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 20.h,),
-                                  child: Column(
-                                    children: [
-                                      buildQuickStats(
-                                        cubit: appCubit,
-                                        user: user,
-                                        workerCubit: workerCubit,
-                                      ),
-                                      SizedBox(height: 25.h),
-                                      buildSectionHeader(
-                                        title: 'معلومات التواصل',
-                                        icon: SvgPicture.asset(
-                                          'assets/contact.svg',
-                                          color: mainColor,
-                                          width: 25.w,
-                                        ),
-                                        cubit: appCubit,
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      buildContactCard(
-                                        user: user,
-                                        cubit: appCubit,
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      buildSectionHeader(
-                                        title: 'نبذة عن العامل',
-                                        icon: SvgPicture.asset(
-                                          'assets/info.svg',
-                                          color: mainColor,
-                                          width: 25.w,
-                                        ),
-                                        cubit: appCubit,
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      buildAboutCard(
-                                        cubit: appCubit,
-                                        user: user,
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      buildSectionHeader(
-                                        title: 'الخبرات',
-                                        icon: SvgPicture.asset(
-                                          'assets/subs.svg',
-                                          color: mainColor,
-                                          width: 25.w,
-                                        ),
-                                        cubit: appCubit,
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      buildExperiencesCard(
-                                        user: user,
-                                        cubit: appCubit,
-                                        experiences: user['experiences'] ?? [],
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      buildSectionHeader(
-                                        title: 'الأعمال السابقة',
-                                        icon: SvgPicture.asset(
-                                          'assets/image.svg',
-                                          color: mainColor,
-                                          width: 25.w,
-                                        ),
-                                        cubit: appCubit,
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      buildPreviousWorksCard(
-                                        user: user,
-                                        cubit: appCubit,
-                                        previousWorks:
-                                        user['previousWorks'] ?? [],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                  condition: checkingInternet ||
+                      state is GetSingleWorkerDataLoadingState,
+                  builder: (context) =>
+                      WorkerProfileShimmer(isDark: appCubit.isDark),
+                  fallback: (context) => ConditionalBuilder(
+                    condition: !hasInternet,
+                    builder: (context) => NoInternet(
+                      onRetry: () =>
+                          checkConnectionAndGetData(forceRefresh: true),
                     ),
+                    fallback: (context) => RefreshIndicator(
+                      backgroundColor:
+                          appCubit.isDark ? darkBgColor : Colors.white,
+                      onRefresh: () =>
+                          checkConnectionAndGetData(forceRefresh: true),
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          children: [
+                            buildHeader(appCubit: appCubit, user: user),
+                            Padding(
+                              padding: EdgeInsetsDirectional.only(
+                                start: 10.w,
+                                end: 10.w,
+                                top: 20.h,
+                                bottom: 20.h,
+                              ),
+                              child: Column(
+                                children: [
+                                  buildQuickStats(
+                                    cubit: appCubit,
+                                    user: user,
+                                    workerCubit: workerCubit,
+                                  ),
+                                  SizedBox(height: 25.h),
+                                  buildSectionHeader(
+                                    title: 'معلومات التواصل',
+                                    icon: SvgPicture.asset(
+                                      'assets/contact.svg',
+                                      color: mainColor,
+                                      width: 25.w,
+                                    ),
+                                    cubit: appCubit,
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  buildContactCard(
+                                    user: user,
+                                    cubit: appCubit,
+                                  ),
+                                  SizedBox(height: 20.h),
+                                  buildSectionHeader(
+                                    title: 'نبذة عن العامل',
+                                    icon: SvgPicture.asset(
+                                      'assets/info.svg',
+                                      color: mainColor,
+                                      width: 25.w,
+                                    ),
+                                    cubit: appCubit,
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  buildAboutCard(
+                                    cubit: appCubit,
+                                    user: user,
+                                  ),
+                                  SizedBox(height: 20.h),
+                                  buildSectionHeader(
+                                    title: 'الخبرات',
+                                    icon: SvgPicture.asset(
+                                      'assets/subs.svg',
+                                      color: mainColor,
+                                      width: 25.w,
+                                    ),
+                                    cubit: appCubit,
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  buildExperiencesCard(
+                                    user: user,
+                                    cubit: appCubit,
+                                    experiences: user['experiences'] ?? [],
+                                  ),
+                                  SizedBox(height: 20.h),
+                                  buildSectionHeader(
+                                    title: 'الأعمال السابقة',
+                                    icon: SvgPicture.asset(
+                                      'assets/image.svg',
+                                      color: mainColor,
+                                      width: 25.w,
+                                    ),
+                                    cubit: appCubit,
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  buildPreviousWorksCard(
+                                    user: user,
+                                    cubit: appCubit,
+                                    previousWorks: user['previousWorks'] ?? [],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             );
@@ -612,45 +623,44 @@ class _WorkerProfileState extends State<WorkerProfile> {
         cubit: cubit,
         child: experiences.isEmpty
             ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80.w,
-              height: 80.w,
-              padding: EdgeInsets.all(15.r),
-              decoration: BoxDecoration(
-                color: mainColor.withOpacity(0.08),
-                shape: BoxShape.circle,
-              ),
-              child: SvgPicture.asset('assets/subs.svg',color: mainColor,)
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              'لا توجد خبرات سابقة لك',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-                color: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .color,
-              ),
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              'قم بإضافة خبراتك السابقة ليتمكن العملاء من الاطلاع عليها وزيادة فرص الحصول على الحجوزات.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 10.sp,
-                height: 1.6,
-                color: cubit.isDark
-                    ? darkSubTextColor
-                    : Colors.grey.shade600,
-              ),
-            ),
-          ],
-        )
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      width: 80.w,
+                      height: 80.w,
+                      padding: EdgeInsets.all(15.r),
+                      decoration: BoxDecoration(
+                        color: mainColor.withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/subs.svg',
+                        color: mainColor,
+                      )),
+                  SizedBox(height: 20.h),
+                  Text(
+                    'لا توجد خبرات سابقة لك',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.sp,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  Text(
+                    'قم بإضافة خبراتك السابقة ليتمكن العملاء من الاطلاع عليها وزيادة فرص الحصول على الحجوزات.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      height: 1.6,
+                      color: cubit.isDark
+                          ? darkSubTextColor
+                          : Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              )
             : ListView.builder(
                 padding: EdgeInsetsDirectional.zero,
                 physics: const NeverScrollableScrollPhysics(),
@@ -659,7 +669,8 @@ class _WorkerProfileState extends State<WorkerProfile> {
                 itemBuilder: (context, index) {
                   final experience = experiences[index];
                   return Padding(
-                    padding: EdgeInsetsDirectional.only(bottom: index==experiences.length-1?0: 10.h),
+                    padding: EdgeInsetsDirectional.only(
+                        bottom: index == experiences.length - 1 ? 0 : 10.h),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -693,8 +704,7 @@ class _WorkerProfileState extends State<WorkerProfile> {
                     ),
                   );
                 },
-              )
-    );
+              ));
   }
 
   Widget buildPreviousWorksCard(
@@ -705,45 +715,43 @@ class _WorkerProfileState extends State<WorkerProfile> {
       cubit: cubit,
       child: previousWorks.isEmpty
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80.w,
-            height: 80.w,
-            padding: EdgeInsetsDirectional.all(20.r),
-            decoration: BoxDecoration(
-              color: mainColor.withOpacity(0.08),
-              shape: BoxShape.circle,
-            ),
-            child: SvgPicture.asset('assets/image.svg',color: mainColor,)
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'لا توجد أعمال سابقة',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.sp,
-              color: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .color,
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            'أضف صورًا لأعمالك السابقة لعرض مهاراتك وزيادة ثقة العملاء بخدماتك.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10.sp,
-              height: 1.6,
-              color: cubit.isDark
-                  ? darkSubTextColor
-                  : Colors.grey.shade600,
-            ),
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                    width: 80.w,
+                    height: 80.w,
+                    padding: EdgeInsetsDirectional.all(20.r),
+                    decoration: BoxDecoration(
+                      color: mainColor.withOpacity(0.08),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/image.svg',
+                      color: mainColor,
+                    )),
+                SizedBox(height: 20.h),
+                Text(
+                  'لا توجد أعمال سابقة',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                ),
+                SizedBox(height: 10.h),
+                Text(
+                  'أضف صورًا لأعمالك السابقة لعرض مهاراتك وزيادة ثقة العملاء بخدماتك.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    height: 1.6,
+                    color:
+                        cubit.isDark ? darkSubTextColor : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

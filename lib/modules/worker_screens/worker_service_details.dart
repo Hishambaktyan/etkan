@@ -6,14 +6,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_edit_service.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/worker_screens/worker_edit_service.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class WorkerServiceDetails extends StatefulWidget {
   final Map<String, dynamic> service;
@@ -62,8 +62,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
     required AppCubit appCubit,
     required WorkerCubit workerCubit,
     required WorkerStates state,
-  })
-  {
+  }) {
     if (state is GetWorkerServiceReviewsLoadingState) {
       return Container(
         width: double.infinity,
@@ -104,8 +103,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
       );
     }
 
-    final List<Map<String, dynamic>> reviews =
-        workerCubit.workerServiceReviews;
+    final List<Map<String, dynamic>> reviews = workerCubit.workerServiceReviews;
 
     final double rate = workerCubit.workerServiceRate;
     final int reviewsCount = workerCubit.workerServiceReviewsCount;
@@ -139,9 +137,8 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
               return Icon(
                 Icons.star_rounded,
                 size: 18.r,
-                color: index < rate.round()
-                    ? Colors.orange
-                    : Colors.grey.shade300,
+                color:
+                    index < rate.round() ? Colors.orange : Colors.grey.shade300,
               );
             }),
           ),
@@ -200,8 +197,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                 final String customerName =
                     '${review['customerName'] ?? 'مستخدم'}';
 
-                final String customerImage =
-                    '${review['customerImage'] ?? ''}';
+                final String customerImage = '${review['customerImage'] ?? ''}';
 
                 return Container(
                   padding: EdgeInsetsDirectional.all(10.r),
@@ -224,15 +220,15 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
                                 : null,
                             child: customerImage.isEmpty
                                 ? Icon(
-                              Icons.person_outline_rounded,
-                              color: mainColor,
-                              size: 20.r,
-                            )
+                                    Icons.person_outline_rounded,
+                                    color: mainColor,
+                                    size: 20.r,
+                                  )
                                 : null,
                           ),
                           SizedBox(width: 10.w),
                           Expanded(
-                            child: Column (
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -295,6 +291,7 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
       ),
     );
   }
+
   Widget buildServiceActionItem({
     required BuildContext context,
     required AppCubit appCubit,
@@ -512,7 +509,8 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final String serviceId = '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
+      final String serviceId =
+          '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
 
       if (serviceId.isNotEmpty) {
         WorkerCubit.get(context).getWorkerServiceReviews(
@@ -543,18 +541,26 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
               showSnackBar(Colors.red, state.error, context);
             }
             if (state is GetWorkerServiceReviewsErrorState) {
-              showSnackBar(Colors.red, state.error, context,);
+              showSnackBar(
+                Colors.red,
+                state.error,
+                context,
+              );
             }
           },
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
 
-            final String currentServiceId = '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
+            final String currentServiceId =
+                '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
 
-            final int serviceIndex = workerCubit.workerServices.indexWhere((service) {
-                final String id = '${service['id'] ?? service['serviceId'] ?? ''}';
+            final int serviceIndex = workerCubit.workerServices.indexWhere(
+              (service) {
+                final String id =
+                    '${service['id'] ?? service['serviceId'] ?? ''}';
                 return id == currentServiceId;
-              },);
+              },
+            );
 
             if (serviceIndex == -1) {
               return Directionality(

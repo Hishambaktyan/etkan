@@ -5,14 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_account_verification.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/worker_screens/worker_account_verification.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class WorkerCompleteProfile extends StatefulWidget {
   const WorkerCompleteProfile({super.key});
@@ -43,12 +43,11 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
       isLoadingDialogShown = true;
       showLoadingDialog(context);
 
-      final snapshot = await FirebaseFirestore.instance
-          .collection('categories')
-          .get();
+      final snapshot =
+          await FirebaseFirestore.instance.collection('categories').get();
 
       final List<Map<String, dynamic>> loadedCategories =
-      snapshot.docs.map((doc) {
+          snapshot.docs.map((doc) {
         final data = doc.data();
         data['id'] = doc.id;
         return data;
@@ -428,8 +427,10 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
       );
     }
 
-    final String? currentValue = categories.any((category) =>
-      '${category['title'] ?? ''}'.trim() == authCubit.selectedCategory,)
+    final String? currentValue = categories.any(
+      (category) =>
+          '${category['title'] ?? ''}'.trim() == authCubit.selectedCategory,
+    )
         ? authCubit.selectedCategory
         : null;
 
@@ -440,11 +441,10 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
         isExpanded: true,
         value: currentValue,
         style: TextStyle(
-          fontSize: 13.sp,
-          color: cubit.isDark ? Colors.white : Colors.black,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'tajawal'
-        ),
+            fontSize: 13.sp,
+            color: cubit.isDark ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'tajawal'),
         hint: Text(
           'اختر القسم من الأقسام المتاحة',
           maxLines: 1,
@@ -481,17 +481,15 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15.r),
             borderSide: BorderSide(
-              color: cubit.isDark
-                  ? const Color(0xFF30363D)
-                  : Colors.grey.shade100,
+              color:
+                  cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade100,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15.r),
             borderSide: BorderSide(
-              color: cubit.isDark
-                  ? const Color(0xFF30363D)
-                  : Colors.grey.shade100,
+              color:
+                  cubit.isDark ? const Color(0xFF30363D) : Colors.grey.shade100,
             ),
           ),
           focusedBorder: OutlineInputBorder(

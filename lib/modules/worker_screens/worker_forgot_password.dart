@@ -1,11 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/worker_screens/worker_login.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class WorkerForgotPassword extends StatefulWidget {
   const WorkerForgotPassword({super.key});
@@ -15,8 +15,7 @@ class WorkerForgotPassword extends StatefulWidget {
 }
 
 class _WorkerForgotPasswordState extends State<WorkerForgotPassword> {
-  final TextEditingController emailController =
-  TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +132,8 @@ class _WorkerForgotPasswordState extends State<WorkerForgotPassword> {
                           ),
                           SizedBox(height: 10.h),
                           Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 30.w),
+                            padding: EdgeInsetsDirectional.symmetric(
+                                horizontal: 30.w),
                             child: Text(
                               'أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين',
                               textAlign: TextAlign.center,
@@ -177,8 +177,7 @@ class _WorkerForgotPasswordState extends State<WorkerForgotPassword> {
                       cubit: cubit,
                       text: 'البريد الألكتروني',
                       prefixIcon: 'assets/phone.svg',
-                      errorMes:
-                      'البريد الألكتروني يجب ان لا يكون فارغ',
+                      errorMes: 'البريد الألكتروني يجب ان لا يكون فارغ',
                       controller: emailController,
                       type: TextInputType.emailAddress,
                     ),
@@ -187,14 +186,9 @@ class _WorkerForgotPasswordState extends State<WorkerForgotPassword> {
                       onPressed: () {
                         if (emailController.text.isNotEmpty) {
                           showSnackBar(
-                              Colors.green,
-                              'تفقد بريدك الألكتروني',
-                              context);
+                              Colors.green, 'تفقد بريدك الألكتروني', context);
                         } else {
-                          showSnackBar(
-                              Colors.red,
-                              'يرجى تعبية الحقل',
-                              context);
+                          showSnackBar(Colors.red, 'يرجى تعبية الحقل', context);
                         }
                       },
                       text: 'إرسال',
@@ -202,8 +196,7 @@ class _WorkerForgotPasswordState extends State<WorkerForgotPassword> {
                     ),
                     SizedBox(height: 20.h),
                     TextButton(
-                      onPressed: () =>
-                          move(context, const WorkerLogin()),
+                      onPressed: () => move(context, const WorkerLogin()),
                       child: Text(
                         "العودة لتسجيل الدخول",
                         style: TextStyle(

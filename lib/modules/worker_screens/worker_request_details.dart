@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_cubit.dart';
-import 'package:trying_homy/shared/cubits/worker_cubit/worker_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
+import 'package:Etkan/shared/cubits/worker_cubit/worker_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../main.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
@@ -34,8 +34,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
   final List<String> terminalStates = ["مرفوض", "ملغي"];
 
   Widget buildHorizontalStepper(
-      {required int currentStep, required dynamic cubit})
-  {
+      {required int currentStep, required dynamic cubit}) {
     List<String> steps = [
       'تم الطلب',
       'تم القبول',
@@ -108,8 +107,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     );
   }
 
-  void showFullTrackingSheet(BuildContext context, AppCubit cubit, dynamic requestData)
-  {
+  void showFullTrackingSheet(
+      BuildContext context, AppCubit cubit, dynamic requestData) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -150,42 +149,44 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                 Expanded(
                   child: ListView(
                       children: List.generate(
-                        stepperSteps.length,
-                            (index) {
-                          String currentStatusFromDb = requestData['status'];
-                          final Map<String, dynamic> statusHistory =
-                          Map<String, dynamic>.from(requestData['statusHistory'] ?? {});
-                          Map<int, dynamic> statusTimes = {
-                            0: statusHistory['pendingAt'] ?? requestData['createdAt'],
-                            1: statusHistory['acceptedAt'],
-                            2: statusHistory['onWayAt'],
-                            3: statusHistory['completedAt'],
-                          };
-                          String displayTime = formatStatusTime(statusTimes[index]);
-                          bool isDone;
-                          bool isActive;
-                          Color circleColor;
-                          int currentStepIndex =
+                    stepperSteps.length,
+                    (index) {
+                      String currentStatusFromDb = requestData['status'];
+                      final Map<String, dynamic> statusHistory =
+                          Map<String, dynamic>.from(
+                              requestData['statusHistory'] ?? {});
+                      Map<int, dynamic> statusTimes = {
+                        0: statusHistory['pendingAt'] ??
+                            requestData['createdAt'],
+                        1: statusHistory['acceptedAt'],
+                        2: statusHistory['onWayAt'],
+                        3: statusHistory['completedAt'],
+                      };
+                      String displayTime = formatStatusTime(statusTimes[index]);
+                      bool isDone;
+                      bool isActive;
+                      Color circleColor;
+                      int currentStepIndex =
                           stepperSteps.indexOf(currentStatusFromDb);
-                          if (terminalStates.contains(currentStatusFromDb)) {
-                            isDone = index < stepperSteps.indexOf("مقبول");
-                            isActive = false;
-                            circleColor = Colors.red;
-                          } else {
-                            isDone = index < currentStepIndex;
-                            isActive = index == currentStepIndex;
-                            circleColor = mainColor;
-                          }
-                          return buildVerticalStep(
-                            stepperSteps[index],
-                            displayTime,
-                            isDone,
-                            index != stepperSteps.length - 1,
-                            cubit,
-                            isActive: isActive,
-                          );
-                        },
-                      )),
+                      if (terminalStates.contains(currentStatusFromDb)) {
+                        isDone = index < stepperSteps.indexOf("مقبول");
+                        isActive = false;
+                        circleColor = Colors.red;
+                      } else {
+                        isDone = index < currentStepIndex;
+                        isActive = index == currentStepIndex;
+                        circleColor = mainColor;
+                      }
+                      return buildVerticalStep(
+                        stepperSteps[index],
+                        displayTime,
+                        isDone,
+                        index != stepperSteps.length - 1,
+                        cubit,
+                        isActive: isActive,
+                      );
+                    },
+                  )),
                 ),
               ],
             ),
@@ -197,8 +198,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
 
   Widget buildVerticalStep(
       String title, String time, bool isDone, bool showLine, dynamic cubit,
-      {bool isActive = false})
-  {
+      {bool isActive = false}) {
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -270,8 +270,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     required String title,
     required IconData icon,
     required dynamic cubit,
-  })
-  {
+  }) {
     return Row(
       children: [
         Container(
@@ -305,8 +304,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     required BuildContext context,
     required AppCubit appCubit,
     required WorkerCubit workerCubit,
-  })
-  {
+  }) {
     final String status = widget.request['status'] ?? '';
     if (status == 'قيد الانتظار') {
       return Container(
@@ -447,8 +445,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     return const SizedBox.shrink();
   }
 
-  Future<void> openLocationInGoogleMaps(GeoPoint? location) async
-  {
+  Future<void> openLocationInGoogleMaps(GeoPoint? location) async {
     if (location == null) {
       showSnackBar(Colors.red, 'لا يوجد موقع لهذا الحجز', context);
       return;
@@ -477,7 +474,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
         var userData = appCubit.allUsers[widget.request['customerId']] ?? {};
-        var providerData = appCubit.allUsers[widget.request['providerId']] ?? {};
+        var providerData =
+            appCubit.allUsers[widget.request['providerId']] ?? {};
         WorkerCubit workerCubit = WorkerCubit.get(context);
         return BlocConsumer<WorkerCubit, WorkerStates>(
           listener: (context, state) async {
@@ -649,7 +647,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                                                           7.r),
                                                 ),
                                                 child: Text(
-                                                  widget.request['status'] ?? '',
+                                                  widget.request['status'] ??
+                                                      '',
                                                   style: TextStyle(
                                                     color: statusColor,
                                                     fontWeight: FontWeight.bold,
@@ -702,7 +701,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                                                         ),
                                                         Text(
                                                           dateFormatStatusTime(
-                                                              widget.request['scheduledAt'] ??
+                                                              widget.request[
+                                                                      'scheduledAt'] ??
                                                                   ''),
                                                           style: TextStyle(
                                                             color: appCubit
@@ -757,7 +757,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                                                         ),
                                                         Text(
                                                           timeFormatStatusTime(
-                                                              widget.request['scheduledAt'] ??
+                                                              widget.request[
+                                                                      'scheduledAt'] ??
                                                                   ''),
                                                           style: TextStyle(
                                                             color: appCubit
@@ -910,8 +911,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                             buildSectionTitle(
                                 title: 'مراحل التنفيذ',
                                 icon: Icons.route_outlined,
-                                cubit: appCubit
-                            ),
+                                cubit: appCubit),
                             SizedBox(
                               height: 10.h,
                             ),
@@ -928,8 +928,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   buildHorizontalStepper(
-                                      currentStep:
-                                          getStepFromStatus(widget.request['status']),
+                                      currentStep: getStepFromStatus(
+                                          widget.request['status']),
                                       cubit: appCubit),
                                   SizedBox(height: 10.h),
                                   Center(
@@ -963,8 +963,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                             buildSectionTitle(
                                 title: 'ملاحظات الحجز',
                                 icon: Icons.notes_rounded,
-                                cubit: appCubit
-                            ),
+                                cubit: appCubit),
                             SizedBox(
                               height: 10.h,
                             ),
@@ -1002,8 +1001,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                             buildSectionTitle(
                                 title: 'معلومات العميل',
                                 icon: Icons.person_pin_outlined,
-                                cubit: appCubit
-                            ),
+                                cubit: appCubit),
                             SizedBox(
                               height: 10.h,
                             ),
@@ -1050,7 +1048,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                                     ],
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
+                                    padding: EdgeInsetsDirectional.symmetric(
+                                        vertical: 15.h),
                                     child: Divider(
                                         color: appCubit.isDark
                                             ? darkSubTextColor
@@ -1066,15 +1065,25 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                                             opacity: canContact ? 1.0 : 0.45,
                                             child: defaultButtonWithIcon(
                                               onPressed: () async {
-                                                await workerCubit.createOrGetChat(
-                                                        customerId: widget.request['customerId'],
-                                                        providerId: widget.request['providerId'],
-                                                        requestId: widget.request['id'],
-                                                        requestTitle: widget.request['title'],
+                                                await workerCubit
+                                                    .createOrGetChat(
+                                                        customerId:
+                                                            widget.request[
+                                                                'customerId'],
+                                                        providerId:
+                                                            widget.request[
+                                                                'providerId'],
+                                                        requestId: widget
+                                                            .request['id'],
+                                                        requestTitle: widget
+                                                            .request['title'],
                                                         customerData: userData,
-                                                        providerData: providerData,
-                                                        requestStatus: widget.request['status'] ?? ''
-                                                );
+                                                        providerData:
+                                                            providerData,
+                                                        requestStatus:
+                                                            widget.request[
+                                                                    'status'] ??
+                                                                '');
                                               },
                                               text: 'دردشة',
                                               height: 45.h,
@@ -1100,7 +1109,10 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
                                             opacity: canContact ? 1.0 : 0.45,
                                             child:
                                                 defaultOutlinedButtonWithIcon(
-                                              onPressed: () => openLocationInGoogleMaps(widget.request['addressLocation']),
+                                              onPressed: () =>
+                                                  openLocationInGoogleMaps(
+                                                      widget.request[
+                                                          'addressLocation']),
                                               text: 'الموقع',
                                               fontSize: 13.sp,
                                               height: 45.h,

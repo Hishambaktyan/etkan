@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_states.dart';
 import '../../networks/local/sms_bridge.dart';
 import '../../networks/remote/notification_service.dart';
 
@@ -13,6 +14,7 @@ class AdminCubit extends Cubit<AdminStates> {
   static AdminCubit get(context) => BlocProvider.of(context);
 
   StreamSubscription? streamSubscription;
+  String adminName = 'مشرف';
 
   void startListening() {
     streamSubscription = FirebaseFirestore.instance
@@ -171,26 +173,28 @@ class AdminCubit extends Cubit<AdminStates> {
       providers = [];
       categories = [];
       isGetAdminDataLoading = true;
-
+      await getCurrentAdminName();
       final usersSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('role', isEqualTo: 'user')
           .get();
-      final servicesSnapshot = await FirebaseFirestore.instance.collection('services').get();
-      final requestsSnapshot = await FirebaseFirestore.instance.collection('requests').get();
+      final servicesSnapshot =
+          await FirebaseFirestore.instance.collection('services').get();
+      final requestsSnapshot =
+          await FirebaseFirestore.instance.collection('requests').get();
       final providersSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('role', isEqualTo: 'provider')
           .get();
-      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
+      final categoriesSnapshot =
+          await FirebaseFirestore.instance.collection('categories').get();
 
       await verificationSubscription?.cancel();
-       FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection('profile_verification_requests')
           .where('status', isEqualTo: 'pending')
           .snapshots()
           .listen((event) {
-
         verificationRequests = [];
         for (var element in event.docs) {
           Map<String, dynamic> data = element.data();
@@ -253,13 +257,9 @@ class AdminCubit extends Cubit<AdminStates> {
   Future<void> updateAccountStatus({
     required String userId,
     required bool isActive,
-  })
-  async {
+  }) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'isActive': isActive,
       });
       emit(ChangeProviderActivity());
@@ -1092,4 +1092,22 @@ class AdminCubit extends Cubit<AdminStates> {
     }
   }
 
+  Future<void> getCurrentAdminName() async {
+    final uid = CacheHelper.getData(key: 'uid')?.toString();
+
+    if (uid == null || uid.isEmpty) {
+      adminName = 'مشرف';
+      return;
+    }
+
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    final data = doc.data();
+    final name = data?['name']?.toString().trim();
+
+    adminName = name == null || name.isEmpty
+        ? 'مشرف'
+        : name.split(RegExp(r'\s+')).first;
+  }
 }

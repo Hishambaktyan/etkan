@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/images_view.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/images_view.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_cubit.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class AdminProviderInfo extends StatefulWidget {
   final Map<String, dynamic> provider;
@@ -235,9 +235,8 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                           padding: EdgeInsetsDirectional.symmetric(
                               horizontal: 12.w, vertical: 5.h),
                           decoration: BoxDecoration(
-                            color: appCubit.isDark
-                                ? lightDarkColor
-                                : Colors.white,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
                             boxShadow: blueShadow,
                           ),
@@ -247,8 +246,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                                   padding: EdgeInsets.all(8.r),
                                   decoration: BoxDecoration(
                                     color: mainColor.withOpacity(0.1),
-                                    borderRadius:
-                                    BorderRadius.circular(10.r),
+                                    borderRadius: BorderRadius.circular(10.r),
                                   ),
                                   child: SvgPicture.asset(
                                     'assets/power.svg',
@@ -270,15 +268,12 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                               Switch.adaptive(
                                 value: isActive,
                                 activeColor: mainColor,
-                                activeTrackColor:
-                                mainColor.withOpacity(0.3),
+                                activeTrackColor: mainColor.withOpacity(0.3),
                                 onChanged: (value) {
                                   setState(() {
                                     isActive = value;
                                     adminCubit.updateAccountStatus(
-                                        userId: providerId,
-                                        isActive: isActive
-                                    );
+                                        userId: providerId, isActive: isActive);
                                   });
                                 },
                               ),

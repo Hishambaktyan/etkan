@@ -6,12 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class UserEditProfile extends StatefulWidget {
   final Map<String, dynamic> user;

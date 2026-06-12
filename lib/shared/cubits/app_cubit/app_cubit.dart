@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trying_homy/modules/worker_screens/worker_services_list.dart';
+import 'package:Etkan/modules/worker_screens/worker_services_list.dart';
 
 import '../../../modules/user_screens/user_requests_list.dart';
 import '../../../modules/user_screens/user_categories.dart';

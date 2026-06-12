@@ -6,16 +6,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/reset_password_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_add_address.dart';
-import 'package:trying_homy/modules/worker_screens/worker_complete_profile.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/reset_password_screen.dart';
+import 'package:Etkan/modules/user_screens/user_add_address.dart';
+import 'package:Etkan/modules/worker_screens/worker_complete_profile.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class VerifiedPhone extends StatefulWidget {
   final String phone;
@@ -176,7 +176,9 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w,),
+              padding: EdgeInsetsDirectional.symmetric(
+                horizontal: 10.w,
+              ),
               child: Row(
                 children: [
                   buildBackButton(),
@@ -446,8 +448,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
     required AppCubit appCubit,
     required AuthCubit authCubit,
     required AuthStates state,
-  })
-  {
+  }) {
     final bool isLoading = state is CheckPhoneCodeLoadingState ||
         state is SendPhoneCodeLoadingState ||
         state is UserSignUpLoadingState ||

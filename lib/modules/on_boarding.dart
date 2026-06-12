@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/select_user_type.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/select_user_type.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -32,8 +32,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     },
     {
       'title': 'تواصل مباشر مع الفني',
-      'body':
-          'تحدث مع الفني، اتفق على التفاصيل، وتابع حالة الحجز خطوة بخطوة.',
+      'body': 'تحدث مع الفني، اتفق على التفاصيل، وتابع حالة الحجز خطوة بخطوة.',
       'image': 'assets/walk2.jfif',
       'icon': 'assets/chat.svg',
     },
@@ -88,7 +87,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         ),
                         const Spacer(),
                         defaultTextButton(
-                          onPressed: () => moveAndReplace(context, const SelectUserType(),),
+                          onPressed: () => moveAndReplace(
+                            context,
+                            const SelectUserType(),
+                          ),
                           text: 'تخطي',
                           isLined: false,
                           isBold: true,

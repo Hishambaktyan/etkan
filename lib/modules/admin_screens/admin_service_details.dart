@@ -6,10 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
-import 'package:trying_homy/modules/user_screens/user_complete_request_info.dart';
-import 'package:trying_homy/modules/user_screens/user_worker_profile.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/modules/admin_screens/admin_provider_info.dart';
+import 'package:Etkan/modules/user_screens/user_complete_request_info.dart';
+import 'package:Etkan/modules/user_screens/user_worker_profile.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import '../../main.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/admin_cubit/admin_cubit.dart';
@@ -92,8 +92,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
     required AppCubit cubit,
     required UserCubit userCubit,
     required UserStates state,
-  })
-  {
+  }) {
     if (state is GetServiceReviewsLoadingState) {
       return Container(
         width: double.infinity,
@@ -167,9 +166,8 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
               return Icon(
                 Icons.star_rounded,
                 size: 18.r,
-                color: index < rate.round()
-                    ? Colors.orange
-                    : Colors.grey.shade300,
+                color:
+                    index < rate.round() ? Colors.orange : Colors.grey.shade300,
               );
             }),
           ),
@@ -181,13 +179,16 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
               color: cubit.isDark ? darkSubTextColor : Colors.grey,
             ),
           ),
-          SizedBox(height: 10.h,),
+          SizedBox(
+            height: 10.h,
+          ),
           if (reviews.isEmpty)
             Container(
               width: double.infinity,
               padding: EdgeInsetsDirectional.all(14.r),
               decoration: BoxDecoration(
-                color: cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.08),
+                color:
+                    cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(18.r),
               ),
               child: Text(
@@ -218,13 +219,13 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                     ? DateFormat('yyyy/MM/dd').format(createdAt.toDate())
                     : '';
 
-                final double rating = double.tryParse('${review['rating'] ?? 0}') ?? 0.0;
+                final double rating =
+                    double.tryParse('${review['rating'] ?? 0}') ?? 0.0;
 
                 final String reviewText = '${review['review'] ?? ''}';
                 final String customerName =
                     '${review['customerName'] ?? 'مستخدم'}';
-                final String customerImage =
-                    '${review['customerImage'] ?? ''}';
+                final String customerImage = '${review['customerImage'] ?? ''}';
 
                 return Container(
                   padding: EdgeInsetsDirectional.all(12.r),
@@ -247,10 +248,10 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                 : null,
                             child: customerImage.isEmpty
                                 ? Icon(
-                              Icons.person_outline_rounded,
-                              color: mainColor,
-                              size: 20.r,
-                            )
+                                    Icons.person_outline_rounded,
+                                    color: mainColor,
+                                    size: 20.r,
+                                  )
                                 : null,
                           ),
                           SizedBox(width: 10.w),
@@ -303,9 +304,8 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                           style: TextStyle(
                             fontSize: 12.sp,
                             height: 1.5,
-                            color: cubit.isDark
-                                ? Colors.white70
-                                : Colors.black54,
+                            color:
+                                cubit.isDark ? Colors.white70 : Colors.black54,
                           ),
                         ),
                       ],
@@ -339,20 +339,21 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
     final serviceId = widget.serviceId;
     final providerId = widget.providerId;
     AppCubit appCubit = AppCubit.get(context);
-    final providerData = Map<String, dynamic>.from(appCubit.allUsers[providerId] ?? {});
+    final providerData =
+        Map<String, dynamic>.from(appCubit.allUsers[providerId] ?? {});
 
     return BlocListener<AdminCubit, AdminStates>(
       listener: (context, state) {
-        if(state is GetServiceReviewsLoadingState){
+        if (state is GetServiceReviewsLoadingState) {
           showLoadingDialog(context);
         }
-        if(state is GetServiceReviewsSuccessState){
+        if (state is GetServiceReviewsSuccessState) {
           hideLoadingDialog(context);
         }
-        if(state is GetServiceReviewsLoadingState){
+        if (state is GetServiceReviewsLoadingState) {
           showLoadingDialog(context);
         }
-        if(state is GetServiceReviewsErrorState){
+        if (state is GetServiceReviewsErrorState) {
           hideLoadingDialog(context);
         }
       },
@@ -362,7 +363,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox (
+                SizedBox(
                   height: 400.h,
                   child: Stack(
                     children: [
@@ -395,7 +396,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                         alignment: Alignment.bottomCenter,
                         child: Padding(
                           padding:
-                          EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                              EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -418,7 +419,8 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                         color: appCubit.isDark
                                             ? darkBgColor
                                             : Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(6.r),
+                                        borderRadius:
+                                            BorderRadius.circular(6.r),
                                       ),
                                       child: Text(
                                         '$category',
@@ -462,7 +464,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                               SizedBox(width: 8.w),
                                               Column(
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     'السعر التقديري',
@@ -478,7 +480,8 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                                     style: TextStyle(
                                                       color: mainColor,
                                                       fontSize: 14.sp,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ],
@@ -505,7 +508,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                               SizedBox(width: 8.w),
                                               Column(
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     'المدة المتوقعة',
@@ -523,7 +526,8 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                                           ? Colors.white
                                                           : Colors.black87,
                                                       fontSize: 14.sp,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ],
@@ -552,9 +556,12 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10.h,),
+                SizedBox(
+                  height: 10.h,
+                ),
                 Padding(
-                  padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 10.h),
+                  padding: EdgeInsetsDirectional.symmetric(
+                      horizontal: 16.w, vertical: 10.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -562,9 +569,8 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                         padding: EdgeInsetsDirectional.symmetric(
                             horizontal: 12.w, vertical: 5.h),
                         decoration: BoxDecoration(
-                          color: appCubit.isDark
-                              ? lightDarkColor
-                              : Colors.white,
+                          color:
+                              appCubit.isDark ? lightDarkColor : Colors.white,
                           borderRadius: BorderRadius.circular(20.r),
                           boxShadow: blueShadow,
                         ),
@@ -574,8 +580,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                 padding: EdgeInsets.all(8.r),
                                 decoration: BoxDecoration(
                                   color: mainColor.withOpacity(0.1),
-                                  borderRadius:
-                                  BorderRadius.circular(10.r),
+                                  borderRadius: BorderRadius.circular(10.r),
                                 ),
                                 child: SvgPicture.asset(
                                   'assets/power.svg',
@@ -597,16 +602,13 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                             Switch.adaptive(
                               value: isActive,
                               activeColor: mainColor,
-                              activeTrackColor:
-                              mainColor.withOpacity(0.3),
+                              activeTrackColor: mainColor.withOpacity(0.3),
                               onChanged: (value) {
                                 AdminCubit adminCubit = AdminCubit.get(context);
                                 setState(() {
                                   isActive = value;
                                   adminCubit.updateServiceStatus(
-                                      serviceId: serviceId,
-                                      isActive: isActive
-                                  );
+                                      serviceId: serviceId, isActive: isActive);
                                 });
                               },
                             ),
@@ -617,14 +619,14 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                       buildSectionTitle(
                           title: 'وصف الخدمة',
                           icon: Icons.notes_rounded,
-                          cubit: appCubit
-                      ),
+                          cubit: appCubit),
                       SizedBox(height: 10.h),
                       Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(15.r),
                         decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
                             boxShadow: blueShadow),
                         child: Column(
@@ -633,8 +635,9 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                               desc,
                               style: TextStyle(
                                   fontSize: 12.sp,
-                                  color:
-                                  appCubit.isDark ? Colors.white : Colors.black,
+                                  color: appCubit.isDark
+                                      ? Colors.white
+                                      : Colors.black,
                                   height: 1.5),
                               trimLines: 3,
                               colorClickableText: mainColor,
@@ -642,7 +645,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                               trimCollapsedText: ' عرض المزيد',
                               trimExpandedText: ' عرض أقل',
                               moreStyle:
-                              TextStyle(fontSize: 12.sp, color: mainColor),
+                                  TextStyle(fontSize: 12.sp, color: mainColor),
                             ),
                           ],
                         ),
@@ -651,14 +654,14 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                       buildSectionTitle(
                           title: 'معلومات الفني',
                           icon: Icons.person_pin_outlined,
-                          cubit: appCubit
-                      ),
+                          cubit: appCubit),
                       SizedBox(height: 10.h),
                       Container(
                         padding: EdgeInsetsDirectional.all(18.r),
                         width: double.infinity,
                         decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
                             boxShadow: blueShadow),
                         child: Column(
@@ -713,19 +716,20 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                               onPressed: () {
                                 move(
                                   context,
-                                  AdminProviderInfo(
-                                    provider: providerData
-                                  ),
+                                  AdminProviderInfo(provider: providerData),
                                 );
                               },
                               text: 'المزيد',
                               fontSize: 13.sp,
                               height: 45.h,
-                              textColor: appCubit.isDark ? Colors.white : mainColor,
-                              border: appCubit.isDark ? Colors.white : mainColor,
+                              textColor:
+                                  appCubit.isDark ? Colors.white : mainColor,
+                              border:
+                                  appCubit.isDark ? Colors.white : mainColor,
                               icon: SvgPicture.asset(
                                 'assets/acc.svg',
-                                color: appCubit.isDark ? Colors.white : mainColor,
+                                color:
+                                    appCubit.isDark ? Colors.white : mainColor,
                                 width: 20.r,
                                 height: 20.r,
                               ),
@@ -737,8 +741,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                       buildSectionTitle(
                           title: 'التقييمات والمراجعات',
                           icon: Icons.star_outline_rounded,
-                          cubit: appCubit
-                      ),
+                          cubit: appCubit),
                       SizedBox(height: 10.h),
                       BlocBuilder<UserCubit, UserStates>(
                         builder: (context, state) {

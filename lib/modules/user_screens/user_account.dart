@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/aboutApp_screen.dart';
-import 'package:trying_homy/modules/contact_us_screen.dart';
-import 'package:trying_homy/modules/faq_Screen.dart';
-import 'package:trying_homy/modules/notifications_screen.dart';
-import 'package:trying_homy/modules/privacy_policy_screen.dart';
-import 'package:trying_homy/modules/terms_conditions_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_profile.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/aboutApp_screen.dart';
+import 'package:Etkan/modules/contact_us_screen.dart';
+import 'package:Etkan/modules/faq_Screen.dart';
+import 'package:Etkan/modules/notifications_screen.dart';
+import 'package:Etkan/modules/privacy_policy_screen.dart';
+import 'package:Etkan/modules/terms_conditions_screen.dart';
+import 'package:Etkan/modules/user_screens/user_profile.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
@@ -30,7 +30,6 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
-
   Widget buildSectionTitle({
     required String title,
     required String icon,
@@ -197,7 +196,8 @@ class _UserAccountState extends State<UserAccount> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            final String uid = CacheHelper.getData(key: 'uid')?.toString() ?? '';
+            final String uid =
+                CacheHelper.getData(key: 'uid')?.toString() ?? '';
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
@@ -209,7 +209,9 @@ class _UserAccountState extends State<UserAccount> {
                         context: context,
                         title: 'الإعدادات',
                       ),
-                      SizedBox(height: 20.h,),
+                      SizedBox(
+                        height: 20.h,
+                      ),
                       buildSectionTitle(
                         title: 'الحساب الشخصي',
                         icon: 'assets/acc.svg',
@@ -223,7 +225,10 @@ class _UserAccountState extends State<UserAccount> {
                             title: 'عرض الحساب',
                             icon: 'assets/eye.svg',
                             onTap: () {
-                              move(context, const UserProfile(),);
+                              move(
+                                context,
+                                const UserProfile(),
+                              );
                             },
                           ),
                           buildDivider(appCubit),
@@ -331,8 +336,7 @@ class _UserAccountState extends State<UserAccount> {
                                 icon: 'assets/out.svg',
                                 iconColor: Colors.red,
                                 title: 'تأكيد تسجيل الخروج',
-                                body:
-                                'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                                body: 'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
                                 cancelText: 'إلغاء',
                                 confirmText: 'خروج',
                                 onConfirm: () {

@@ -8,14 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
-import 'package:trying_homy/layout/user_layout/user_main_screen.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/location_cubit/location_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
+import 'package:Etkan/layout/user_layout/user_main_screen.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/location_cubit/location_cubit.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
 import '../../shared/cubits/location_cubit/location_states.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
@@ -36,7 +36,8 @@ class UserCompleteRequestInfo extends StatefulWidget {
     required this.servicePrice,
     required this.servicePeriod,
     required this.serciveImage,
-    required this.providerId, required this.serviceId,
+    required this.providerId,
+    required this.serviceId,
   });
 
   @override
@@ -397,7 +398,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
               if (addresses.isEmpty)
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsetsDirectional.symmetric(horizontal: 12.w, vertical: 14.h),
+                  padding: EdgeInsetsDirectional.symmetric(
+                      horizontal: 12.w, vertical: 14.h),
                   decoration: BoxDecoration(
                     color: appCubit.isDark ? darkBgColor : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(14.r),
@@ -436,7 +438,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                       menuMaxHeight: 320.h,
                       borderRadius: BorderRadius.circular(25.r),
                       dropdownColor:
-                      appCubit.isDark ? lightDarkColor : Colors.white,
+                          appCubit.isDark ? lightDarkColor : Colors.white,
                       icon: Icon(
                         Icons.keyboard_arrow_down_rounded,
                         color: appCubit.isDark ? darkSubTextColor : Colors.grey,
@@ -557,8 +559,10 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                         final dynamic location = selected['location'];
                         setState(() {
                           selectedAddressId = value;
-                          selectedAddressText = details.isEmpty ? label : '$label - $details';
-                          selectedAddressLocation = location is GeoPoint ? location : null;
+                          selectedAddressText =
+                              details.isEmpty ? label : '$label - $details';
+                          selectedAddressLocation =
+                              location is GeoPoint ? location : null;
                         });
                       },
                     ),
@@ -833,7 +837,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
       if (uid.isNotEmpty) {
         LocationCubit.get(context).getAddresses(uid);
       }
-    });  }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -848,7 +853,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit appCubit = AppCubit.get(context);
-        return BlocListener<LocationCubit,LocationStates>(
+        return BlocListener<LocationCubit, LocationStates>(
           listener: (context, locationState) {
             if (locationState is GetAddressesLoadingState) {
               if (!isAddressLoadingDialogShown) {
@@ -874,7 +879,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                 context,
               );
             }
-            },
+          },
           child: Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(
@@ -952,7 +957,7 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                               : Colors.white,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(20.r),
+                                                BorderRadius.circular(20.r),
                                           ),
                                           contentPadding: EdgeInsets.all(20.r),
                                           content: Column(
@@ -993,10 +998,12 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                                 children: [
                                                   Expanded(
                                                     child: defaultButton(
-                                                      onPressed: () => moveAndReplace(
-                                                          context,
-                                                          const UserMainScreen()),
-                                                      text: 'العودة إلى الرئيسية',
+                                                      onPressed: () =>
+                                                          moveAndReplace(
+                                                              context,
+                                                              const UserMainScreen()),
+                                                      text:
+                                                          'العودة إلى الرئيسية',
                                                     ),
                                                   ),
                                                 ],
@@ -1025,7 +1032,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                           UserCubit userCubit = UserCubit.get(context);
                           return defaultButton(
                             onPressed: () async {
-                              if (selectedAddressId == null || selectedAddressText == null) {
+                              if (selectedAddressId == null ||
+                                  selectedAddressText == null) {
                                 showSnackBar(
                                   Colors.red,
                                   'يرجى اختيار موقع الخدمة',
@@ -1033,7 +1041,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                 );
                                 return;
                               }
-                              if (selectedDate == null || selectedTime == null) {
+                              if (selectedDate == null ||
+                                  selectedTime == null) {
                                 showSnackBar(
                                   Colors.red,
                                   'يرجى اختيار التاريخ والوقت',
@@ -1058,7 +1067,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                 selectedTime!.minute,
                               );
 
-                              var currentUser = appCubit.allUsers[CacheHelper.getData(key: 'uid')];
+                              var currentUser = appCubit
+                                  .allUsers[CacheHelper.getData(key: 'uid')];
                               await userCubit.createRequest(
                                 category: serviceCategory,
                                 customerId: currentUser['uid'],
@@ -1071,7 +1081,8 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
                                 image: serviceImage,
                                 duration: servicePeriod,
                                 price: servicePrice,
-                                scheduledAt: Timestamp.fromDate(bookingDateTime),
+                                scheduledAt:
+                                    Timestamp.fromDate(bookingDateTime),
                                 serviceId: serviceId,
                               );
                             },

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/modules/user_screens/user_login.dart';
-import 'package:trying_homy/modules/worker_screens/worker_login.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/modules/user_screens/user_login.dart';
+import 'package:Etkan/modules/worker_screens/worker_login.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 import '../main.dart';
 import 'admin_screens/admin_login_screen.dart';
@@ -54,7 +54,8 @@ class _SelectUserTypeState extends State<SelectUserType> {
                       buildUserTypeCard(
                         index: 0,
                         title: 'أنا مستخدم',
-                        description: 'أبحث عن فنيين محترفين لإنجاز خدمات الصيانة والإصلاح بسرعة وكفاءة.',
+                        description:
+                            'أبحث عن فنيين محترفين لإنجاز خدمات الصيانة والإصلاح بسرعة وكفاءة.',
                         image: 'assets/client.jpg',
                         icon: Icons.person_search_rounded,
                         appCubit: appCubit,
@@ -63,7 +64,8 @@ class _SelectUserTypeState extends State<SelectUserType> {
                       buildUserTypeCard(
                         index: 1,
                         title: 'أنا فني',
-                        description: 'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
+                        description:
+                            'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
                         image: 'assets/provider.jfif',
                         icon: Icons.build_circle_rounded,
                         appCubit: appCubit,

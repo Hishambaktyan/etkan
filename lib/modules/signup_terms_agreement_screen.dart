@@ -3,16 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/modules/privacy_policy_screen.dart';
-import 'package:trying_homy/modules/terms_conditions_screen.dart';
-import 'package:trying_homy/modules/verified_phone.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/modules/privacy_policy_screen.dart';
+import 'package:Etkan/modules/terms_conditions_screen.dart';
+import 'package:Etkan/modules/verified_phone.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class SignupTermsAgreementScreen extends StatefulWidget {
   final String phone;
@@ -29,7 +29,8 @@ class SignupTermsAgreementScreen extends StatefulWidget {
       _SignupTermsAgreementScreenState();
 }
 
-class _SignupTermsAgreementScreenState extends State<SignupTermsAgreementScreen> {
+class _SignupTermsAgreementScreenState
+    extends State<SignupTermsAgreementScreen> {
   bool isAccepted = false;
 
   String get accountTypeText {
@@ -140,8 +141,7 @@ class _SignupTermsAgreementScreenState extends State<SignupTermsAgreementScreen>
     required String title,
     required String subtitle,
     required Function onTap,
-  })
-  {
+  }) {
     return InkWell(
       onTap: () => onTap(),
       borderRadius: BorderRadius.circular(22.r),
@@ -205,6 +205,7 @@ class _SignupTermsAgreementScreenState extends State<SignupTermsAgreementScreen>
       ),
     );
   }
+
   Widget _buildAgreementCard(AppCubit cubit) {
     return Container(
       width: double.infinity,
@@ -318,14 +319,16 @@ class _SignupTermsAgreementScreenState extends State<SignupTermsAgreementScreen>
                 cubit: cubit,
                 icon: Icons.description_rounded,
                 title: 'الشروط والأحكام',
-                subtitle: 'تعرف على قواعد الحجز، الاشتراك، التوثيق، وحقوق العميل والفني.',
+                subtitle:
+                    'تعرف على قواعد الحجز، الاشتراك، التوثيق، وحقوق العميل والفني.',
                 onTap: () => move(context, const TermsConditionsScreen()),
               ),
               _buildInfoCard(
                 cubit: cubit,
                 icon: Icons.lock_rounded,
                 title: 'سياسة الخصوصية',
-                subtitle: 'تعرف على البيانات التي يحتاجها التطبيق لتشغيل الحجوزات وحماية الحسابات.',
+                subtitle:
+                    'تعرف على البيانات التي يحتاجها التطبيق لتشغيل الحجوزات وحماية الحسابات.',
                 onTap: () => move(context, PrivacyPolicyScreen()),
               ),
               SizedBox(height: 4.h),

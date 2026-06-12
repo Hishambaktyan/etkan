@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
 import '../../shared/compenents/components.dart';
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
@@ -25,7 +25,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
   void initState() {
     super.initState();
     String? uid = CacheHelper.getData(key: 'uid');
-    if(uid!=null){
+    if (uid != null) {
       AuthCubit.get(context).saveUserToken(uid);
     }
   }
@@ -43,7 +43,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
               if (didPop) return;
               final now = DateTime.now();
               final bool shouldExit = lastBackPressedTime != null &&
-                  now.difference(lastBackPressedTime!) <= const Duration(seconds: 2);
+                  now.difference(lastBackPressedTime!) <=
+                      const Duration(seconds: 2);
               if (shouldExit) {
                 SystemNavigator.pop();
               } else {
@@ -166,7 +167,9 @@ class _UserMainScreenState extends State<UserMainScreen> {
                             'assets/setting_bold.svg',
                             width: 25.w,
                             height: 25.h,
-                            color: appCubit.currentIndex == 4 ? mainColor : Colors.grey,
+                            color: appCubit.currentIndex == 4
+                                ? mainColor
+                                : Colors.grey,
                           ),
                           tooltip: 'الإعدادات',
                           label: 'الإعدادات',

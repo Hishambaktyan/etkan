@@ -4,20 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/modules/admin_screens/admin_request_details.dart';
-import 'package:trying_homy/modules/admin_screens/admin_services_list.dart';
-import 'package:trying_homy/modules/admin_screens/admin_provider_info.dart';
-import 'package:trying_homy/modules/admin_screens/admin_requests_list.dart';
-import 'package:trying_homy/modules/admin_screens/admin_user_info.dart';
-import 'package:trying_homy/modules/admin_screens/manage_dept.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_cubit.dart';
-import 'package:trying_homy/shared/cubits/admin_cubit/admin_states.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
-import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/modules/admin_screens/admin_request_details.dart';
+import 'package:Etkan/modules/admin_screens/admin_services_list.dart';
+import 'package:Etkan/modules/admin_screens/admin_provider_info.dart';
+import 'package:Etkan/modules/admin_screens/admin_requests_list.dart';
+import 'package:Etkan/modules/admin_screens/admin_user_info.dart';
+import 'package:Etkan/modules/admin_screens/manage_dept.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_cubit.dart';
+import 'package:Etkan/shared/cubits/admin_cubit/admin_states.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
+import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 import '../../main.dart';
 import '../on_boarding.dart';
 import 'admin_service_details.dart';
@@ -97,6 +97,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       ],
     );
   }
+
   DateTime? lastBackPressedTime;
 
   @override
@@ -151,9 +152,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     }
                                   },
                                   builder: (context, state) {
-                                    AuthCubit authCubit = AuthCubit.get(context);
+                                    AuthCubit authCubit =
+                                        AuthCubit.get(context);
                                     return header(
-                                      title: 'مرحبا، هشام',
+                                      title: 'مرحبا، ${adminCubit.adminName}',
                                       context: context,
                                       isNotif: false,
                                       isAction: true,
@@ -183,8 +185,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: adminCards.length,
-                                  padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 20.h, bottom: 15.h,),
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  padding: EdgeInsetsDirectional.only(
+                                    start: 10.w,
+                                    end: 10.w,
+                                    top: 20.h,
+                                    bottom: 15.h,
+                                  ),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 15.h,
                                     crossAxisSpacing: 12.w,
@@ -197,7 +205,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         color: appCubit.isDark
                                             ? lightDarkColor
                                             : Colors.white,
-                                        borderRadius: BorderRadius.circular(25.r),
+                                        borderRadius:
+                                            BorderRadius.circular(25.r),
                                         boxShadow: blueShadow,
                                       ),
                                       child: Stack(
@@ -229,15 +238,21 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             ),
                                           ),
                                           Padding(
-                                            padding: EdgeInsetsDirectional.all(15.r),
+                                            padding:
+                                                EdgeInsetsDirectional.all(15.r),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Container(
-                                                      padding: EdgeInsetsDirectional.all(10.r),
+                                                      padding:
+                                                          EdgeInsetsDirectional
+                                                              .all(10.r),
                                                       decoration: BoxDecoration(
                                                         color: card['color']
                                                             .withOpacity(0.08),
@@ -311,37 +326,50 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     );
                                   },
                                 ),
-                                SizedBox(height: 10.h,),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
                                 if (adminCubit.verificationRequests.isNotEmpty)
                                   Container(
-                                    margin: EdgeInsetsDirectional.only(start: 10.w, end: 10.w),
+                                    margin: EdgeInsetsDirectional.only(
+                                        start: 10.w, end: 10.w),
                                     padding: EdgeInsetsDirectional.all(15.r),
                                     decoration: BoxDecoration(
-                                      color: Colors.orange.withOpacity(appCubit.isDark ? 0.1 : 0.08),
+                                      color: Colors.orange.withOpacity(
+                                          appCubit.isDark ? 0.1 : 0.08),
                                       borderRadius: BorderRadius.circular(25.r),
-                                      border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1),
+                                      border: Border.all(
+                                          color: Colors.orange.withOpacity(0.5),
+                                          width: 1),
                                     ),
                                     child: Row(
                                       children: [
                                         Container(
-                                          padding: EdgeInsetsDirectional.all(10.r),
-                                          decoration: BoxDecoration(
-                                            color: Colors.orange.withOpacity(0.2),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: SvgPicture.asset('assets/verf.svg',color: Colors.orangeAccent,)
-                                        ),
+                                            padding:
+                                                EdgeInsetsDirectional.all(10.r),
+                                            decoration: BoxDecoration(
+                                              color: Colors.orange
+                                                  .withOpacity(0.2),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: SvgPicture.asset(
+                                              'assets/verf.svg',
+                                              color: Colors.orangeAccent,
+                                            )),
                                         SizedBox(width: 15.w),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 'طلبات توثيق',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14.sp,
-                                                  color: appCubit.isDark ? Colors.white : Colors.black,
+                                                  color: appCubit.isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               SizedBox(height: 4.h),
@@ -349,7 +377,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                 'يوجد ${adminCubit.verificationRequests.length} طلبات توثيق جديدة بانتظار المراجعة',
                                                 style: TextStyle(
                                                   fontSize: 11.sp,
-                                                  color: appCubit.isDark ? darkSubTextColor : Colors.grey[700],
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey[700],
                                                 ),
                                               ),
                                             ],
@@ -358,37 +388,50 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                       ],
                                     ),
                                   ),
-                                SizedBox(height: 15.h,),
+                                SizedBox(
+                                  height: 15.h,
+                                ),
                                 if (adminCubit.subscriptionRequests.isNotEmpty)
                                   Container(
-                                    margin: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, bottom: 20.h),
+                                    margin: EdgeInsetsDirectional.only(
+                                        start: 10.w, end: 10.w, bottom: 20.h),
                                     padding: EdgeInsetsDirectional.all(15.r),
                                     decoration: BoxDecoration(
-                                      color: Colors.blue.withOpacity(appCubit.isDark ? 0.1 : 0.08),
+                                      color: Colors.blue.withOpacity(
+                                          appCubit.isDark ? 0.1 : 0.08),
                                       borderRadius: BorderRadius.circular(25.r),
-                                      border: Border.all(color: Colors.blue.withOpacity(0.5), width: 1),
+                                      border: Border.all(
+                                          color: Colors.blue.withOpacity(0.5),
+                                          width: 1),
                                     ),
                                     child: Row(
                                       children: [
                                         Container(
-                                          padding: EdgeInsetsDirectional.all(10.r),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue.withOpacity(0.2),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: SvgPicture.asset('assets/subs.svg',color: Colors.blueAccent,)
-                                        ),
+                                            padding:
+                                                EdgeInsetsDirectional.all(10.r),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.blue.withOpacity(0.2),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: SvgPicture.asset(
+                                              'assets/subs.svg',
+                                              color: Colors.blueAccent,
+                                            )),
                                         SizedBox(width: 15.w),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 'طلبات اشتراك',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14.sp,
-                                                  color: appCubit.isDark ? Colors.white : Colors.black,
+                                                  color: appCubit.isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               SizedBox(height: 4.h),
@@ -396,7 +439,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                 'يوجد ${adminCubit.subscriptionRequests.length} طلبات اشتراك جديدة بانتظار المراجعة',
                                                 style: TextStyle(
                                                   fontSize: 11.sp,
-                                                  color: appCubit.isDark ? darkSubTextColor : Colors.grey[700],
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey[700],
                                                 ),
                                               ),
                                             ],
@@ -407,7 +452,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   ),
                                 Padding(
                                   padding:
-                                  EdgeInsetsDirectional.only(start: 15.w),
+                                      EdgeInsetsDirectional.only(start: 15.w),
                                   child: Row(
                                     children: [
                                       Container(
@@ -416,7 +461,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         padding: EdgeInsetsDirectional.all(8.w),
                                         decoration: BoxDecoration(
                                             color: mainColor.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(10.r)),
+                                            borderRadius:
+                                                BorderRadius.circular(10.r)),
                                         child: SvgPicture.asset(
                                           'assets/grid.svg',
                                           color: mainColor,
@@ -444,133 +490,155 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 10.h,),
-                                adminCubit.categories.isEmpty? Center(
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 70.w,
-                                        height: 70.w,
-                                        padding: EdgeInsetsDirectional.all(15.r),
-                                        decoration: BoxDecoration(
-                                          color:
-                                          mainColor.withOpacity(0.08),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/grid.svg',
-                                          color: mainColor,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        'لا توجد أقسام',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.sp,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Padding(
-                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
-                                        child: Text(
-                                          'لم يتم العثور على أي فنيين حالياً. سيتم عرض الفنيين المسجلين في النظام هنا.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            height: 1.6,
-                                            color: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                    :GridView.builder(
-                                  shrinkWrap: true,
-                                  padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 10.h,
-                                    crossAxisSpacing: 10.w,
-                                    childAspectRatio: 2.1,
-                                  ),
-                                  itemCount: adminCubit.categories.length > 4 ? 4 : adminCubit.categories.length,
-                                  itemBuilder: (context, index) {
-                                    final category = adminCubit.categories[index];
-                                    return InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () => move(context,
-                                          ManageDept(category: category)),
-                                      child: Container(
-                                        padding:
-                                            EdgeInsetsDirectional.all(10.w),
-                                        decoration: BoxDecoration(
-                                          color: appCubit.isDark
-                                              ? lightDarkColor
-                                              : Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(25.r),
-                                          boxShadow: blueShadow,
-                                        ),
-                                        child: Row(
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                adminCubit.categories.isEmpty
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Container(
-                                                width: 50.w,
-                                                height: 50.h,
-                                                padding:
-                                                    EdgeInsetsDirectional.all(
-                                                        12.w),
-                                                decoration: BoxDecoration(
-                                                  color: mainColor
-                                                      .withOpacity(0.08),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          18.r),
-                                                ),
-                                                child: SvgPicture.network(
-                                                  category['image'],
-                                                  fit: BoxFit.cover,
-                                                )),
-                                            SizedBox(width: 10.w),
-                                            Expanded(
+                                              width: 70.w,
+                                              height: 70.w,
+                                              padding:
+                                                  EdgeInsetsDirectional.all(
+                                                      15.r),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    mainColor.withOpacity(0.08),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: SvgPicture.asset(
+                                                'assets/grid.svg',
+                                                color: mainColor,
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'لا توجد أقسام',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.sp,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .symmetric(horizontal: 20.w),
                                               child: Text(
-                                                category['title']!,
+                                                'لم يتم العثور على أي فنيين حالياً. سيتم عرض الفنيين المسجلين في النظام هنا.',
+                                                textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
                                                   fontSize: 12.sp,
+                                                  height: 1.6,
                                                   color: appCubit.isDark
-                                                      ? Colors.white
-                                                          .withOpacity(0.9)
-                                                      : Colors.black87,
+                                                      ? darkSubTextColor
+                                                      : Colors.grey.shade600,
                                                 ),
                                               ),
                                             ),
-                                            Icon(
-                                              Icons.arrow_forward_ios_rounded,
-                                              color: mainColor.withOpacity(0.3),
-                                              size: 12.sp,
-                                            ),
                                           ],
                                         ),
+                                      )
+                                    : GridView.builder(
+                                        shrinkWrap: true,
+                                        padding:
+                                            EdgeInsetsDirectional.symmetric(
+                                                horizontal: 10.w),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          mainAxisSpacing: 10.h,
+                                          crossAxisSpacing: 10.w,
+                                          childAspectRatio: 2.1,
+                                        ),
+                                        itemCount:
+                                            adminCubit.categories.length > 4
+                                                ? 4
+                                                : adminCubit.categories.length,
+                                        itemBuilder: (context, index) {
+                                          final category =
+                                              adminCubit.categories[index];
+                                          return InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () => move(context,
+                                                ManageDept(category: category)),
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsetsDirectional.all(
+                                                      10.w),
+                                              decoration: BoxDecoration(
+                                                color: appCubit.isDark
+                                                    ? lightDarkColor
+                                                    : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(25.r),
+                                                boxShadow: blueShadow,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                      width: 50.w,
+                                                      height: 50.h,
+                                                      padding:
+                                                          EdgeInsetsDirectional
+                                                              .all(12.w),
+                                                      decoration: BoxDecoration(
+                                                        color: mainColor
+                                                            .withOpacity(0.08),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(18.r),
+                                                      ),
+                                                      child: SvgPicture.network(
+                                                        category['image'],
+                                                        fit: BoxFit.cover,
+                                                      )),
+                                                  SizedBox(width: 10.w),
+                                                  Expanded(
+                                                    child: Text(
+                                                      category['title']!,
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 12.sp,
+                                                        color: appCubit.isDark
+                                                            ? Colors.white
+                                                                .withOpacity(
+                                                                    0.9)
+                                                            : Colors.black87,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Icon(
+                                                    Icons
+                                                        .arrow_forward_ios_rounded,
+                                                    color: mainColor
+                                                        .withOpacity(0.3),
+                                                    size: 12.sp,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    );
-                                  },
+                                SizedBox(
+                                  height: 20.h,
                                 ),
-                                SizedBox(height: 20.h,),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.only(start: 15.w),
+                                  padding:
+                                      EdgeInsetsDirectional.only(start: 15.w),
                                   child: Row(
                                     children: [
                                       Container(
@@ -579,7 +647,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         padding: EdgeInsetsDirectional.all(8.w),
                                         decoration: BoxDecoration(
                                             color: mainColor.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(10.r)),
+                                            borderRadius:
+                                                BorderRadius.circular(10.r)),
                                         child: SvgPicture.asset(
                                           'assets/providers.svg',
                                           color: mainColor,
@@ -606,281 +675,319 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 10.h,),
-                                adminCubit.providers.isEmpty? Center(
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 70.w,
-                                        height: 70.w,
-                                        padding: EdgeInsetsDirectional.all(15.r),
-                                        decoration: BoxDecoration(
-                                          color:
-                                          mainColor.withOpacity(0.08),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/providers.svg',
-                                          color: mainColor,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        'لا يوجد فنيون',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.sp,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Padding(
-                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
-                                        child: Text(
-                                          'لم يتم العثور على أي فنيين حالياً. سيتم عرض الفنيين المسجلين في النظام هنا.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            height: 1.6,
-                                            color: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                    :SizedBox(
-                                  height: 270.h,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: adminCubit.providers.length > 4
-                                        ? 4
-                                        : adminCubit.providers.length,
-                                    padding: EdgeInsetsDirectional.only(
-                                        start: 15.w, end: 15.w, bottom: 15.h),
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(width: 15.w),
-                                    itemBuilder: (context, index) {
-                                      final provider =
-                                          adminCubit.providers[index];
-                                      return InkWell(
-                                        onTap: () => move(
-                                            context,
-                                            AdminProviderInfo(
-                                                provider: provider)),
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        borderRadius:
-                                            BorderRadius.circular(25.r),
-                                        child: Container(
-                                          width: 190.w,
-                                          decoration: BoxDecoration(
-                                            color: appCubit.isDark
-                                                ? lightDarkColor
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25.r),
-                                            boxShadow: blueShadow,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Stack(
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            25.r),
-                                                    child: Image.network(
-                                                      provider[
-                                                              'profileImage'] ??
-                                                          '',
-                                                      height: 130.h,
-                                                      width: double.infinity,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context,
-                                                              error,
-                                                              stackTrace) =>
-                                                          Container(
-                                                        height: 130.h,
-                                                        width: double.infinity,
-                                                        color: appCubit.isDark
-                                                            ? darkBgColor
-                                                            : Colors
-                                                                .grey.shade200,
-                                                        child: Icon(
-                                                            Icons.person,
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? darkSubTextColor
-                                                                : Colors.grey,
-                                                            size: 35.r),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  PositionedDirectional(
-                                                    top: 10.h,
-                                                    start: 10.w,
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.r),
-                                                      child: BackdropFilter(
-                                                        filter:
-                                                            ImageFilter.blur(
-                                                                sigmaX: 5,
-                                                                sigmaY: 5),
-                                                        child: Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      8.w,
-                                                                  vertical:
-                                                                      4.h),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? lightDarkColor
-                                                                    .withOpacity(
-                                                                        0.85)
-                                                                : Colors.white
-                                                                    .withOpacity(
-                                                                        0.7),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8.r),
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Icon(
-                                                                  Icons
-                                                                      .star_rounded,
-                                                                  color:
-                                                                      mainColor,
-                                                                  size: 14.sp),
-                                                              SizedBox(
-                                                                  width: 2.w),
-                                                              Padding(
-                                                                padding: EdgeInsetsDirectional
-                                                                    .only(
-                                                                        top: 5
-                                                                            .h),
-                                                                child: Text(
-                                                                  '${provider['avgRating'] ?? ''}',
-                                                                  style: TextStyle(
-                                                                      color:
-                                                                          mainColor,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      fontSize:
-                                                                          10.sp,
-                                                                      height:
-                                                                          1),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                adminCubit.providers.isEmpty
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 70.w,
+                                              height: 70.w,
+                                              padding:
+                                                  EdgeInsetsDirectional.all(
+                                                      15.r),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    mainColor.withOpacity(0.08),
+                                                shape: BoxShape.circle,
                                               ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.all(
-                                                        10.w),
+                                              child: SvgPicture.asset(
+                                                'assets/providers.svg',
+                                                color: mainColor,
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'لا يوجد فنيون',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.sp,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .symmetric(horizontal: 20.w),
+                                              child: Text(
+                                                'لم يتم العثور على أي فنيين حالياً. سيتم عرض الفنيين المسجلين في النظام هنا.',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  height: 1.6,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey.shade600,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        height: 270.h,
+                                        child: ListView.separated(
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              adminCubit.providers.length > 4
+                                                  ? 4
+                                                  : adminCubit.providers.length,
+                                          padding: EdgeInsetsDirectional.only(
+                                              start: 15.w,
+                                              end: 15.w,
+                                              bottom: 15.h),
+                                          separatorBuilder: (context, index) =>
+                                              SizedBox(width: 15.w),
+                                          itemBuilder: (context, index) {
+                                            final provider =
+                                                adminCubit.providers[index];
+                                            return InkWell(
+                                              onTap: () => move(
+                                                  context,
+                                                  AdminProviderInfo(
+                                                      provider: provider)),
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.r),
+                                              child: Container(
+                                                width: 190.w,
+                                                decoration: BoxDecoration(
+                                                  color: appCubit.isDark
+                                                      ? lightDarkColor
+                                                      : Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          25.r),
+                                                  boxShadow: blueShadow,
+                                                ),
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      provider['name'] ?? '',
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 14.sp,
-                                                        color: appCubit.isDark
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                      ),
+                                                    Stack(
+                                                      children: [
+                                                        ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      25.r),
+                                                          child: Image.network(
+                                                            provider[
+                                                                    'profileImage'] ??
+                                                                '',
+                                                            height: 130.h,
+                                                            width:
+                                                                double.infinity,
+                                                            fit: BoxFit.cover,
+                                                            errorBuilder: (context,
+                                                                    error,
+                                                                    stackTrace) =>
+                                                                Container(
+                                                              height: 130.h,
+                                                              width: double
+                                                                  .infinity,
+                                                              color: appCubit
+                                                                      .isDark
+                                                                  ? darkBgColor
+                                                                  : Colors.grey
+                                                                      .shade200,
+                                                              child: Icon(
+                                                                  Icons.person,
+                                                                  color: appCubit
+                                                                          .isDark
+                                                                      ? darkSubTextColor
+                                                                      : Colors
+                                                                          .grey,
+                                                                  size: 35.r),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        PositionedDirectional(
+                                                          top: 10.h,
+                                                          start: 10.w,
+                                                          child: ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8.r),
+                                                            child:
+                                                                BackdropFilter(
+                                                              filter: ImageFilter
+                                                                  .blur(
+                                                                      sigmaX: 5,
+                                                                      sigmaY:
+                                                                          5),
+                                                              child: Container(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            8.w,
+                                                                        vertical:
+                                                                            4.h),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: appCubit
+                                                                          .isDark
+                                                                      ? lightDarkColor
+                                                                          .withOpacity(
+                                                                              0.85)
+                                                                      : Colors
+                                                                          .white
+                                                                          .withOpacity(
+                                                                              0.7),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8.r),
+                                                                ),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Icon(
+                                                                        Icons
+                                                                            .star_rounded,
+                                                                        color:
+                                                                            mainColor,
+                                                                        size: 14
+                                                                            .sp),
+                                                                    SizedBox(
+                                                                        width: 2
+                                                                            .w),
+                                                                    Padding(
+                                                                      padding: EdgeInsetsDirectional.only(
+                                                                          top: 5
+                                                                              .h),
+                                                                      child:
+                                                                          Text(
+                                                                        '${provider['avgRating'] ?? ''}',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                mainColor,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            fontSize: 10.sp,
+                                                                            height: 1),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    SizedBox(height: 5.h),
-                                                    Text(
-                                                      provider[
-                                                              'specialization'] ??
-                                                          '',
-                                                      style: TextStyle(
-                                                        fontSize: 11.sp,
-                                                        color: appCubit.isDark
-                                                            ? darkSubTextColor
-                                                            : Colors.grey,
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 10.h),
-                                                    Container(
-                                                      width: double.infinity,
+                                                    Padding(
                                                       padding:
                                                           EdgeInsetsDirectional
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      10.w,
-                                                                  vertical:
-                                                                      6.h),
-                                                      decoration: BoxDecoration(
-                                                        color: mainColor
-                                                            .withOpacity(
-                                                                appCubit.isDark
-                                                                    ? 0.12
-                                                                    : 0.05),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12.r),
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
+                                                              .all(10.w),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
-                                                            'عرض الملف الشخصي',
+                                                            provider['name'] ??
+                                                                '',
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                             style: TextStyle(
-                                                              fontSize: 10.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
-                                                              color: mainColor,
+                                                              fontSize: 14.sp,
+                                                              color: appCubit
+                                                                      .isDark
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
                                                             ),
                                                           ),
-                                                          SizedBox(width: 5.w),
-                                                          Icon(
-                                                            Icons
-                                                                .arrow_forward_ios_rounded,
-                                                            color: mainColor,
-                                                            size: 10.sp,
+                                                          SizedBox(height: 5.h),
+                                                          Text(
+                                                            provider[
+                                                                    'specialization'] ??
+                                                                '',
+                                                            style: TextStyle(
+                                                              fontSize: 11.sp,
+                                                              color: appCubit
+                                                                      .isDark
+                                                                  ? darkSubTextColor
+                                                                  : Colors.grey,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                              height: 10.h),
+                                                          Container(
+                                                            width:
+                                                                double.infinity,
+                                                            padding: EdgeInsetsDirectional
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        10.w,
+                                                                    vertical:
+                                                                        6.h),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: mainColor
+                                                                  .withOpacity(
+                                                                      appCubit.isDark
+                                                                          ? 0.12
+                                                                          : 0.05),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12.r),
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  'عرض الملف الشخصي',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        10.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color:
+                                                                        mainColor,
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                    width: 5.w),
+                                                                Icon(
+                                                                  Icons
+                                                                      .arrow_forward_ios_rounded,
+                                                                  color:
+                                                                      mainColor,
+                                                                  size: 10.sp,
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -888,14 +995,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                   ],
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            );
+                                          },
                                         ),
-                                      );
-                                    },
-                                  ),
+                                      ),
+                                SizedBox(
+                                  height: 20.h,
                                 ),
-                                SizedBox(height: 20.h,),
                                 Padding(
                                   padding:
                                       EdgeInsetsDirectional.only(start: 15.w),
@@ -937,356 +1043,407 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 10.h,),
-                                adminCubit.services.isEmpty? Center(
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 70.w,
-                                        height: 70.w,
-                                        padding: EdgeInsetsDirectional.all(15.r),
-                                        decoration: BoxDecoration(
-                                          color:
-                                          mainColor.withOpacity(0.08),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/services.svg',
-                                          color: mainColor,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        'لا توجد خدمات',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.sp,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Padding(
-                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
-                                        child: Text(
-                                          'لم يتم العثور على أي خدمات حالياً. ستظهر الخدمات هنا بمجرد إضافتها إلى النظام.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            height: 1.6,
-                                            color: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                    :SizedBox(
-                                  height: 310.h,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: adminCubit.services.length > 4
-                                        ? 4
-                                        : adminCubit.services.length,
-                                    padding: EdgeInsetsDirectional.only(
-                                        start: 15.w, end: 15.w, bottom: 10.h),
-                                    itemBuilder: (context, index) {
-                                      final service =
-                                          adminCubit.services[index];
-                                      final providerData =
-                                          adminCubit.providers.firstWhere(
-                                        (element) =>
-                                            element['id'] ==
-                                            service['providerId'],
-                                        orElse: () => {},
-                                      );
-                                      return InkWell(
-                                        onTap: () => move(context,
-                                            AdminServiceDetails(
-                                              name: service['name'],
-                                              image: service['serviceImage'],
-                                              category: service['category'],
-                                              desc: service['description'],
-                                              price: service['price'],
-                                              period: service['period'],
-                                              providerName: providerData['name'],
-                                              providerSpec: providerData['specialization'],
-                                              reviews: service['reviews'] ?? '',
-                                              providerId: providerData['uid'],
-                                              serviceId: service['id'],
-                                            )
-                                        ),
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        borderRadius:
-                                            BorderRadius.circular(25.r),
-                                        child: Container(
-                                          width: 300.w,
-                                          decoration: BoxDecoration(
-                                            color: appCubit.isDark
-                                                ? lightDarkColor
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25.r),
-                                            boxShadow: blueShadow,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Stack(
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            25.r),
-                                                    child: Image.network(
-                                                      service['serviceImage'] ??
-                                                          '',
-                                                      height: 150.h,
-                                                      width: double.infinity,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context,
-                                                              error,
-                                                              stackTrace) =>
-                                                          Container(
-                                                        height: 150.h,
-                                                        color: appCubit.isDark
-                                                            ? darkBgColor
-                                                            : Colors
-                                                                .grey.shade200,
-                                                        child: Center(
-                                                          child: Icon(
-                                                              Icons
-                                                                  .image_not_supported_outlined,
-                                                              color: appCubit
-                                                                      .isDark
-                                                                  ? darkSubTextColor
-                                                                  : Colors
-                                                                      .grey),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  PositionedDirectional(
-                                                    bottom: 12.h,
-                                                    end: 12.w,
-                                                    child: Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 12.w,
-                                                              vertical: 6.h),
-                                                      decoration: BoxDecoration(
-                                                        color: mainColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15.r),
-                                                        boxShadow: const [
-                                                          BoxShadow(
-                                                              color: Colors
-                                                                  .black26,
-                                                              blurRadius: 8)
-                                                        ],
-                                                      ),
-                                                      child: Text(
-                                                        '${service['price'] ?? ''} $reyalSymbol',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 13.sp,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  PositionedDirectional(
-                                                    top: 12.h,
-                                                    start: 12.w,
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.r),
-                                                      child: BackdropFilter(
-                                                        filter:
-                                                            ImageFilter.blur(
-                                                                sigmaX: 5,
-                                                                sigmaY: 5),
-                                                        child: Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      10.w,
-                                                                  vertical:
-                                                                      4.h),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? lightDarkColor
-                                                                    .withOpacity(
-                                                                        0.85)
-                                                                : Colors.white
-                                                                    .withOpacity(
-                                                                        0.7),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10.r),
-                                                          ),
-                                                          child: Text(
-                                                            service['category'] ??
-                                                                '',
-                                                            style: TextStyle(
-                                                              color: mainColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 10.sp,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                adminCubit.services.isEmpty
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 70.w,
+                                              height: 70.w,
+                                              padding:
+                                                  EdgeInsetsDirectional.all(
+                                                      15.r),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    mainColor.withOpacity(0.08),
+                                                shape: BoxShape.circle,
                                               ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.all(
-                                                        15.r),
+                                              child: SvgPicture.asset(
+                                                'assets/services.svg',
+                                                color: mainColor,
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'لا توجد خدمات',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.sp,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .symmetric(horizontal: 20.w),
+                                              child: Text(
+                                                'لم يتم العثور على أي خدمات حالياً. ستظهر الخدمات هنا بمجرد إضافتها إلى النظام.',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  height: 1.6,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey.shade600,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        height: 310.h,
+                                        child: ListView.separated(
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              adminCubit.services.length > 4
+                                                  ? 4
+                                                  : adminCubit.services.length,
+                                          padding: EdgeInsetsDirectional.only(
+                                              start: 15.w,
+                                              end: 15.w,
+                                              bottom: 10.h),
+                                          itemBuilder: (context, index) {
+                                            final service =
+                                                adminCubit.services[index];
+                                            final providerData =
+                                                adminCubit.providers.firstWhere(
+                                              (element) =>
+                                                  element['id'] ==
+                                                  service['providerId'],
+                                              orElse: () => {},
+                                            );
+                                            return InkWell(
+                                              onTap: () => move(
+                                                  context,
+                                                  AdminServiceDetails(
+                                                    name: service['name'],
+                                                    image:
+                                                        service['serviceImage'],
+                                                    category:
+                                                        service['category'],
+                                                    desc:
+                                                        service['description'],
+                                                    price: service['price'],
+                                                    period: service['period'],
+                                                    providerName:
+                                                        providerData['name'],
+                                                    providerSpec: providerData[
+                                                        'specialization'],
+                                                    reviews:
+                                                        service['reviews'] ??
+                                                            '',
+                                                    providerId:
+                                                        providerData['uid'],
+                                                    serviceId: service['id'],
+                                                  )),
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.r),
+                                              child: Container(
+                                                width: 300.w,
+                                                decoration: BoxDecoration(
+                                                  color: appCubit.isDark
+                                                      ? lightDarkColor
+                                                      : Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          25.r),
+                                                  boxShadow: blueShadow,
+                                                ),
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      service['name'] ?? '',
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 14.sp,
-                                                        color: appCubit.isDark
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                      ),
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
+                                                    Stack(
                                                       children: [
-                                                        Icon(Icons.star_rounded,
-                                                            color: Colors.amber,
-                                                            size: 18.sp),
-                                                        SizedBox(width: 5.w),
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsetsDirectional
-                                                                  .only(
-                                                                      top: 5.h),
-                                                          child: Text(
-                                                            '${service['rate'] ?? ''}',
-                                                            style: TextStyle(
+                                                        ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      25.r),
+                                                          child: Image.network(
+                                                            service['serviceImage'] ??
+                                                                '',
+                                                            height: 150.h,
+                                                            width:
+                                                                double.infinity,
+                                                            fit: BoxFit.cover,
+                                                            errorBuilder: (context,
+                                                                    error,
+                                                                    stackTrace) =>
+                                                                Container(
+                                                              height: 150.h,
                                                               color: appCubit
                                                                       .isDark
-                                                                  ? darkSubTextColor
-                                                                  : Colors.grey,
-                                                              fontSize: 12.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
+                                                                  ? darkBgColor
+                                                                  : Colors.grey
+                                                                      .shade200,
+                                                              child: Center(
+                                                                child: Icon(
+                                                                    Icons
+                                                                        .image_not_supported_outlined,
+                                                                    color: appCubit
+                                                                            .isDark
+                                                                        ? darkSubTextColor
+                                                                        : Colors
+                                                                            .grey),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
-                                                        const Spacer(),
-                                                        Icon(
-                                                          Icons
-                                                              .arrow_forward_ios_rounded,
-                                                          color: mainColor
-                                                              .withOpacity(0.2),
-                                                          size: 14.sp,
+                                                        PositionedDirectional(
+                                                          bottom: 12.h,
+                                                          end: 12.w,
+                                                          child: Container(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        12.w,
+                                                                    vertical:
+                                                                        6.h),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: mainColor,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.r),
+                                                              boxShadow: const [
+                                                                BoxShadow(
+                                                                    color: Colors
+                                                                        .black26,
+                                                                    blurRadius:
+                                                                        8)
+                                                              ],
+                                                            ),
+                                                            child: Text(
+                                                              '${service['price'] ?? ''} $reyalSymbol',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 13.sp,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        PositionedDirectional(
+                                                          top: 12.h,
+                                                          start: 12.w,
+                                                          child: ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.r),
+                                                            child:
+                                                                BackdropFilter(
+                                                              filter: ImageFilter
+                                                                  .blur(
+                                                                      sigmaX: 5,
+                                                                      sigmaY:
+                                                                          5),
+                                                              child: Container(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal: 10
+                                                                            .w,
+                                                                        vertical:
+                                                                            4.h),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: appCubit
+                                                                          .isDark
+                                                                      ? lightDarkColor
+                                                                          .withOpacity(
+                                                                              0.85)
+                                                                      : Colors
+                                                                          .white
+                                                                          .withOpacity(
+                                                                              0.7),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10.r),
+                                                                ),
+                                                                child: Text(
+                                                                  service['category'] ??
+                                                                      '',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color:
+                                                                        mainColor,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontSize:
+                                                                        10.sp,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
-                                                    SizedBox(height: 10.h),
-                                                    Container(
+                                                    Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.r),
-                                                      decoration: BoxDecoration(
-                                                        color: mainColor
-                                                            .withOpacity(
-                                                                appCubit.isDark
-                                                                    ? 0.12
-                                                                    : 0.05),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15.r),
-                                                      ),
-                                                      child: Row(
+                                                          EdgeInsetsDirectional
+                                                              .all(15.r),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
-                                                          CircleAvatar(
-                                                            radius: 16.r,
-                                                            backgroundImage:
-                                                                NetworkImage(
-                                                                    providerData[
-                                                                            'profileImage'] ??
-                                                                        ''),
+                                                          Text(
+                                                            service['name'] ??
+                                                                '',
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 14.sp,
+                                                              color: appCubit
+                                                                      .isDark
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
+                                                            ),
                                                           ),
-                                                          SizedBox(width: 10.w),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  providerData[
-                                                                          'name'] ??
-                                                                      '',
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Icon(
+                                                                  Icons
+                                                                      .star_rounded,
+                                                                  color: Colors
+                                                                      .amber,
+                                                                  size: 18.sp),
+                                                              SizedBox(
+                                                                  width: 5.w),
+                                                              Padding(
+                                                                padding: EdgeInsetsDirectional
+                                                                    .only(
+                                                                        top: 5
+                                                                            .h),
+                                                                child: Text(
+                                                                  '${service['rate'] ?? ''}',
                                                                   style:
                                                                       TextStyle(
-                                                                    fontSize:
-                                                                        11.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    color: appCubit.isDark
-                                                                        ? Colors
-                                                                            .white
-                                                                        : Colors
-                                                                            .black,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  providerData[
-                                                                          'specialization'] ??
-                                                                      '',
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        9.sp,
                                                                     color: appCubit
                                                                             .isDark
                                                                         ? darkSubTextColor
                                                                         : Colors
                                                                             .grey,
+                                                                    fontSize:
+                                                                        12.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              const Spacer(),
+                                                              Icon(
+                                                                Icons
+                                                                    .arrow_forward_ios_rounded,
+                                                                color: mainColor
+                                                                    .withOpacity(
+                                                                        0.2),
+                                                                size: 14.sp,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                              height: 10.h),
+                                                          Container(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    8.r),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: mainColor
+                                                                  .withOpacity(
+                                                                      appCubit.isDark
+                                                                          ? 0.12
+                                                                          : 0.05),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.r),
+                                                            ),
+                                                            child: Row(
+                                                              children: [
+                                                                CircleAvatar(
+                                                                  radius: 16.r,
+                                                                  backgroundImage:
+                                                                      NetworkImage(
+                                                                          providerData['profileImage'] ??
+                                                                              ''),
+                                                                ),
+                                                                SizedBox(
+                                                                    width:
+                                                                        10.w),
+                                                                Expanded(
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                        providerData['name'] ??
+                                                                            '',
+                                                                        maxLines:
+                                                                            1,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              11.sp,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color: appCubit.isDark
+                                                                              ? Colors.white
+                                                                              : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        providerData['specialization'] ??
+                                                                            '',
+                                                                        maxLines:
+                                                                            1,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              9.sp,
+                                                                          color: appCubit.isDark
+                                                                              ? darkSubTextColor
+                                                                              : Colors.grey,
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
                                                                 ),
                                                               ],
@@ -1298,18 +1455,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                   ],
                                                 ),
                                               ),
-                                            ],
+                                            );
+                                          },
+                                          separatorBuilder: (context, index) =>
+                                              SizedBox(
+                                            width: 15.w,
                                           ),
                                         ),
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(
-                                      width: 15.w,
-                                    ),
-                                  ),
+                                      ),
+                                SizedBox(
+                                  height: 20.h,
                                 ),
-                                SizedBox(height: 20.h,),
                                 Padding(
                                   padding:
                                       EdgeInsetsDirectional.only(start: 15.w),
@@ -1352,356 +1508,389 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 10.h),
-                                adminCubit.requests.isEmpty? Center(
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 70.w,
-                                        height: 70.w,
-                                        padding: EdgeInsetsDirectional.all(15.r),
-                                        decoration: BoxDecoration(
-                                          color:
-                                          mainColor.withOpacity(0.08),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/ticket.svg',
-                                          color: mainColor,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        'لا توجد حجوزات لك',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.sp,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Padding(
-                                        padding:  EdgeInsetsDirectional.symmetric(horizontal: 20.w),
-                                        child: Text(
-                                          'عند حجز أي خدمة ستظهر تفاصيل الحجز هنا.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            height: 1.6,
-                                            color: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                    :SizedBox(
-                                  height: 410.h,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    padding: EdgeInsetsDirectional.only(
-                                        start: 15.w, end: 15.w),
-                                    itemCount: adminCubit.requests.length > 4
-                                        ? 4
-                                        : adminCubit.requests.length,
-                                    itemBuilder: (context, index) {
-                                      var request = adminCubit.requests[index];
-                                      final providerData =
-                                          adminCubit.providers.firstWhere(
-                                        (element) =>
-                                            element['id'] ==
-                                            request['providerId'],
-                                        orElse: () => {},
-                                      );
-                                      final userData =
-                                          adminCubit.users.firstWhere(
-                                        (element) =>
-                                            element['id'] ==
-                                            request['customerId'],
-                                        orElse: () => {},
-                                      );
-                                      Color statusColor;
-                                      String status = request['status'];
-
-                                      switch (status) {
-                                        case 'مكتمل':
-                                          statusColor = Colors.green;
-                                          break;
-                                        case 'مقبول':
-                                        case 'في الطريق':
-                                          statusColor = Colors.blueAccent;
-                                          break;
-                                        case 'مرفوض':
-                                        case 'ملغي':
-                                          statusColor = Colors.redAccent;
-                                          break;
-                                        default:
-                                          statusColor = Colors.orangeAccent;
-                                      }
-
-                                      return Padding(
-                                        padding: EdgeInsetsDirectional.only(
-                                            bottom: 20.h),
-                                        child: InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
-                                          onTap: () => move(
-                                              context,
-                                              AdminRequestDetails(
-                                                  request: request,
-                                                  providerData: providerData,
-                                                  userData: userData)),
-                                          child: Container(
-                                            width: 330.w,
-                                            padding:
-                                                EdgeInsetsDirectional.all(15.r),
-                                            decoration: BoxDecoration(
-                                              color: appCubit.isDark
-                                                  ? lightDarkColor
-                                                  : Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(25.r),
-                                              boxShadow: blueShadow,
+                                adminCubit.requests.isEmpty
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 70.w,
+                                              height: 70.w,
+                                              padding:
+                                                  EdgeInsetsDirectional.all(
+                                                      15.r),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    mainColor.withOpacity(0.08),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: SvgPicture.asset(
+                                                'assets/ticket.svg',
+                                                color: mainColor,
+                                              ),
                                             ),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20.r),
-                                                        border: Border.all(
-                                                          color: mainColor
-                                                              .withOpacity(0.1),
-                                                          width: 2,
-                                                        ),
-                                                      ),
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(18.r),
-                                                        child: Image.network(
-                                                          request['image'] ??
-                                                              '',
-                                                          width: 70.w,
-                                                          height: 70.h,
-                                                          fit: BoxFit.cover,
-                                                          errorBuilder: (context,
-                                                                  error,
-                                                                  stackTrace) =>
-                                                              Container(
-                                                            width: 70.w,
-                                                            height: 70.h,
-                                                            color: Colors
-                                                                .grey.shade200,
-                                                            child: Icon(
-                                                                Icons
-                                                                    .image_not_supported,
-                                                                color: appCubit
-                                                                        .isDark
-                                                                    ? darkSubTextColor
-                                                                    : Colors
-                                                                        .grey,
-                                                                size: 20.sp),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 15.w),
-                                                    Expanded(
-                                                      child: Column(
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'لا توجد حجوزات لك',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.sp,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .symmetric(horizontal: 20.w),
+                                              child: Text(
+                                                'عند حجز أي خدمة ستظهر تفاصيل الحجز هنا.',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  height: 1.6,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey.shade600,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        height: 410.h,
+                                        child: ListView.separated(
+                                          scrollDirection: Axis.horizontal,
+                                          padding: EdgeInsetsDirectional.only(
+                                              start: 15.w, end: 15.w),
+                                          itemCount:
+                                              adminCubit.requests.length > 4
+                                                  ? 4
+                                                  : adminCubit.requests.length,
+                                          itemBuilder: (context, index) {
+                                            var request =
+                                                adminCubit.requests[index];
+                                            final providerData =
+                                                adminCubit.providers.firstWhere(
+                                              (element) =>
+                                                  element['id'] ==
+                                                  request['providerId'],
+                                              orElse: () => {},
+                                            );
+                                            final userData =
+                                                adminCubit.users.firstWhere(
+                                              (element) =>
+                                                  element['id'] ==
+                                                  request['customerId'],
+                                              orElse: () => {},
+                                            );
+                                            Color statusColor;
+                                            String status = request['status'];
+
+                                            switch (status) {
+                                              case 'مكتمل':
+                                                statusColor = Colors.green;
+                                                break;
+                                              case 'مقبول':
+                                              case 'في الطريق':
+                                                statusColor = Colors.blueAccent;
+                                                break;
+                                              case 'مرفوض':
+                                              case 'ملغي':
+                                                statusColor = Colors.redAccent;
+                                                break;
+                                              default:
+                                                statusColor =
+                                                    Colors.orangeAccent;
+                                            }
+
+                                            return Padding(
+                                              padding:
+                                                  EdgeInsetsDirectional.only(
+                                                      bottom: 20.h),
+                                              child: InkWell(
+                                                splashColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () => move(
+                                                    context,
+                                                    AdminRequestDetails(
+                                                        request: request,
+                                                        providerData:
+                                                            providerData,
+                                                        userData: userData)),
+                                                child: Container(
+                                                  width: 330.w,
+                                                  padding:
+                                                      EdgeInsetsDirectional.all(
+                                                          15.r),
+                                                  decoration: BoxDecoration(
+                                                    color: appCubit.isDark
+                                                        ? lightDarkColor
+                                                        : Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            25.r),
+                                                    boxShadow: blueShadow,
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Row(
                                                         crossAxisAlignment:
                                                             CrossAxisAlignment
-                                                                .start,
+                                                                .center,
                                                         children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Text(
-                                                                  request['title'] ??
-                                                                      '',
-                                                                  maxLines: 2,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
+                                                          Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20.r),
+                                                              border:
+                                                                  Border.all(
+                                                                color: mainColor
+                                                                    .withOpacity(
+                                                                        0.1),
+                                                                width: 2,
+                                                              ),
+                                                            ),
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.r),
+                                                              child:
+                                                                  Image.network(
+                                                                request['image'] ??
+                                                                    '',
+                                                                width: 70.w,
+                                                                height: 70.h,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                errorBuilder: (context,
+                                                                        error,
+                                                                        stackTrace) =>
+                                                                    Container(
+                                                                  width: 70.w,
+                                                                  height: 70.h,
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade200,
+                                                                  child: Icon(
+                                                                      Icons
+                                                                          .image_not_supported,
+                                                                      color: appCubit
+                                                                              .isDark
+                                                                          ? darkSubTextColor
+                                                                          : Colors
+                                                                              .grey,
+                                                                      size: 20
+                                                                          .sp),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 15.w),
+                                                          Expanded(
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child:
+                                                                          Text(
+                                                                        request['title'] ??
+                                                                            '',
+                                                                        maxLines:
+                                                                            2,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14.sp,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color: appCubit.isDark
+                                                                              ? Colors.white
+                                                                              : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Container(
+                                                                      padding: EdgeInsets.symmetric(
+                                                                          horizontal: 10
+                                                                              .w,
+                                                                          vertical:
+                                                                              4.h),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: statusColor
+                                                                            .withOpacity(0.1),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(30.r),
+                                                                        border: Border.all(
+                                                                            color:
+                                                                                statusColor.withOpacity(0.2)),
+                                                                      ),
+                                                                      child:
+                                                                          Text(
+                                                                        status,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              statusColor,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          fontSize:
+                                                                              10.sp,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                SizedBox(
+                                                                    height:
+                                                                        6.h),
+                                                                Text(
+                                                                  '${request['price'] ?? ''} $reyalSymbol',
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:
                                                                         14.sp,
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .bold,
-                                                                    color: appCubit.isDark
-                                                                        ? Colors
-                                                                            .white
-                                                                        : Colors
-                                                                            .black,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Container(
-                                                                padding: EdgeInsets
-                                                                    .symmetric(
-                                                                        horizontal: 10
-                                                                            .w,
-                                                                        vertical:
-                                                                            4.h),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: statusColor
-                                                                      .withOpacity(
-                                                                          0.1),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              30.r),
-                                                                  border: Border.all(
-                                                                      color: statusColor
-                                                                          .withOpacity(
-                                                                              0.2)),
-                                                                ),
-                                                                child: Text(
-                                                                  status,
-                                                                  style:
-                                                                      TextStyle(
+                                                                            .w900,
                                                                     color:
-                                                                        statusColor,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    fontSize:
-                                                                        10.sp,
+                                                                        mainColor,
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          SizedBox(height: 6.h),
-                                                          Text(
-                                                            '${request['price'] ?? ''} $reyalSymbol',
-                                                            style: TextStyle(
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w900,
-                                                              color: mainColor,
+                                                              ],
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 15.h),
-                                                Container(
-                                                  padding: EdgeInsets.all(12.r),
-                                                  decoration: BoxDecoration(
-                                                    color: mainColor
-                                                        .withOpacity(0.04),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20.r),
-                                                  ),
-                                                  child: Column(
-                                                    children: [
-                                                      buildDetailRow(
-                                                          'العنوان:',
-                                                          request['address'] ??
-                                                              '',
-                                                          'assets/loc.svg',
-                                                          appCubit),
-                                                      Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 8.h),
-                                                        child: Divider(
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? darkSubTextColor
-                                                                    .withOpacity(
-                                                                        0.25)
-                                                                : Colors.grey
-                                                                    .withOpacity(
-                                                                        0.1),
-                                                            height: 1),
+                                                      SizedBox(height: 15.h),
+                                                      Container(
+                                                        padding: EdgeInsets.all(
+                                                            12.r),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: mainColor
+                                                              .withOpacity(
+                                                                  0.04),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20.r),
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            buildDetailRow(
+                                                                'العنوان:',
+                                                                request['address'] ??
+                                                                    '',
+                                                                'assets/loc.svg',
+                                                                appCubit),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          8.h),
+                                                              child: Divider(
+                                                                  color: appCubit
+                                                                          .isDark
+                                                                      ? darkSubTextColor
+                                                                          .withOpacity(
+                                                                              0.25)
+                                                                      : Colors
+                                                                          .grey
+                                                                          .withOpacity(
+                                                                              0.1),
+                                                                  height: 1),
+                                                            ),
+                                                            buildDetailRow(
+                                                                'الموعد:',
+                                                                formatStatusTime(
+                                                                    request['scheduledAt'] ??
+                                                                        ''),
+                                                                'assets/timer.svg',
+                                                                appCubit),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          8.h),
+                                                              child: Divider(
+                                                                  color: appCubit
+                                                                          .isDark
+                                                                      ? darkSubTextColor
+                                                                          .withOpacity(
+                                                                              0.25)
+                                                                      : Colors
+                                                                          .grey
+                                                                          .withOpacity(
+                                                                              0.1),
+                                                                  height: 1),
+                                                            ),
+                                                            buildDetailRow(
+                                                                'الفني:',
+                                                                providerData[
+                                                                        'name'] ??
+                                                                    '',
+                                                                'assets/providers.svg',
+                                                                appCubit),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          8.h),
+                                                              child: Divider(
+                                                                  color: appCubit
+                                                                          .isDark
+                                                                      ? darkSubTextColor
+                                                                          .withOpacity(
+                                                                              0.25)
+                                                                      : Colors
+                                                                          .grey
+                                                                          .withOpacity(
+                                                                              0.1),
+                                                                  height: 1),
+                                                            ),
+                                                            buildDetailRow(
+                                                                'المستخدم:',
+                                                                userData[
+                                                                        'name'] ??
+                                                                    '',
+                                                                'assets/acc.svg',
+                                                                appCubit),
+                                                          ],
+                                                        ),
                                                       ),
-                                                      buildDetailRow(
-                                                          'الموعد:',
-                                                          formatStatusTime(request[
-                                                                  'scheduledAt'] ??
-                                                              ''),
-                                                          'assets/timer.svg',
-                                                          appCubit),
-                                                      Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 8.h),
-                                                        child: Divider(
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? darkSubTextColor
-                                                                    .withOpacity(
-                                                                        0.25)
-                                                                : Colors.grey
-                                                                    .withOpacity(
-                                                                        0.1),
-                                                            height: 1),
-                                                      ),
-                                                      buildDetailRow(
-                                                          'الفني:',
-                                                          providerData[
-                                                                  'name'] ??
-                                                              '',
-                                                          'assets/providers.svg',
-                                                          appCubit),
-                                                      Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 8.h),
-                                                        child: Divider(
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? darkSubTextColor
-                                                                    .withOpacity(
-                                                                        0.25)
-                                                                : Colors.grey
-                                                                    .withOpacity(
-                                                                        0.1),
-                                                            height: 1),
-                                                      ),
-                                                      buildDetailRow(
-                                                          'المستخدم:',
-                                                          userData['name'] ??
-                                                              '',
-                                                          'assets/acc.svg',
-                                                          appCubit),
                                                     ],
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            );
+                                          },
+                                          separatorBuilder: (context, index) =>
+                                              SizedBox(
+                                            width: 15.w,
                                           ),
                                         ),
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(
-                                      width: 15.w,
-                                    ),
-                                  ),
+                                      ),
+                                SizedBox(
+                                  height: 20.h,
                                 ),
-                                SizedBox(height: 20.h,),
                                 Padding(
                                   padding:
                                       EdgeInsetsDirectional.only(start: 15.w),
@@ -1742,178 +1931,211 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 10.h,),
-                                adminCubit.users.isEmpty? Center(
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 70.w,
-                                        height: 70.w,
-                                        padding: EdgeInsetsDirectional.all(15.r),
-                                        decoration: BoxDecoration(
-                                          color:
-                                          mainColor.withOpacity(0.08),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/acc.svg',
-                                          color: mainColor,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        'لا يوجد مستخدمون',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18.sp,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w),
-                                        child: Text(
-                                          'سيظهر المستخدمون هنا بعد إنشاء حسابات جديدة في التطبيق.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            height: 1.6,
-                                            color: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                    :SizedBox(
-                                  height: 250.h,
-                                  child: ListView.separated(
-                                    padding: EdgeInsetsDirectional.only(
-                                        start: 15.w, bottom: 10.h),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: adminCubit.users.length > 4
-                                        ? 4
-                                        : adminCubit.users.length,
-                                    itemBuilder: (context, index) {
-                                      final user = adminCubit.users[index];
-                                      return InkWell(
-                                        onTap: () => move(
-                                            context, AdminUserInfo(user: user)),
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        borderRadius:
-                                            BorderRadius.circular(25.r),
-                                        child: Container(
-                                          width: 190.w,
-                                          decoration: BoxDecoration(
-                                            color: appCubit.isDark
-                                                ? lightDarkColor
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25.r),
-                                            boxShadow: blueShadow,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(25.r),
-                                                child: Image.network(
-                                                  user['profileImage'] ?? '',
-                                                  height: 140.h,
-                                                  width: double.infinity,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error,
-                                                          stackTrace) =>
-                                                      Container(
-                                                    height: 140.h,
-                                                    width: double.infinity,
-                                                    color: appCubit.isDark
-                                                        ? darkBgColor
-                                                        : Colors.grey.shade200,
-                                                    child: Icon(Icons.person,
-                                                        color: appCubit.isDark
-                                                            ? darkSubTextColor
-                                                            : Colors.grey,
-                                                        size: 35.r),
-                                                  ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                adminCubit.users.isEmpty
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 70.w,
+                                              height: 70.w,
+                                              padding:
+                                                  EdgeInsetsDirectional.all(
+                                                      15.r),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    mainColor.withOpacity(0.08),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: SvgPicture.asset(
+                                                'assets/acc.svg',
+                                                color: mainColor,
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'لا يوجد مستخدمون',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.sp,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .symmetric(horizontal: 20.w),
+                                              child: Text(
+                                                'سيظهر المستخدمون هنا بعد إنشاء حسابات جديدة في التطبيق.',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  height: 1.6,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey.shade600,
                                                 ),
                                               ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.all(
-                                                        10.w),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        height: 250.h,
+                                        child: ListView.separated(
+                                          padding: EdgeInsetsDirectional.only(
+                                              start: 15.w, bottom: 10.h),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount: adminCubit.users.length > 4
+                                              ? 4
+                                              : adminCubit.users.length,
+                                          itemBuilder: (context, index) {
+                                            final user =
+                                                adminCubit.users[index];
+                                            return InkWell(
+                                              onTap: () => move(context,
+                                                  AdminUserInfo(user: user)),
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(25.r),
+                                              child: Container(
+                                                width: 190.w,
+                                                decoration: BoxDecoration(
+                                                  color: appCubit.isDark
+                                                      ? lightDarkColor
+                                                      : Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          25.r),
+                                                  boxShadow: blueShadow,
+                                                ),
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      user['name'] ?? '',
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 14.sp,
-                                                        color: appCubit.isDark
-                                                            ? Colors.white
-                                                            : Colors.black,
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              25.r),
+                                                      child: Image.network(
+                                                        user['profileImage'] ??
+                                                            '',
+                                                        height: 140.h,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          height: 140.h,
+                                                          width:
+                                                              double.infinity,
+                                                          color: appCubit.isDark
+                                                              ? darkBgColor
+                                                              : Colors.grey
+                                                                  .shade200,
+                                                          child: Icon(
+                                                              Icons.person,
+                                                              color: appCubit
+                                                                      .isDark
+                                                                  ? darkSubTextColor
+                                                                  : Colors.grey,
+                                                              size: 35.r),
+                                                        ),
                                                       ),
                                                     ),
-                                                    SizedBox(height: 10.h),
-                                                    Container(
-                                                      width: double.infinity,
+                                                    Padding(
                                                       padding:
                                                           EdgeInsetsDirectional
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      10.w,
-                                                                  vertical:
-                                                                      6.h),
-                                                      decoration: BoxDecoration(
-                                                        color: mainColor
-                                                            .withOpacity(
-                                                                appCubit.isDark
-                                                                    ? 0.12
-                                                                    : 0.05),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12.r),
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
+                                                              .all(10.w),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
-                                                            'عرض الملف الشخصي',
+                                                            user['name'] ?? '',
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                             style: TextStyle(
-                                                              fontSize: 10.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
-                                                              color: mainColor,
+                                                              fontSize: 14.sp,
+                                                              color: appCubit
+                                                                      .isDark
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
                                                             ),
                                                           ),
-                                                          SizedBox(width: 5.w),
-                                                          Icon(
-                                                            Icons
-                                                                .arrow_forward_ios_rounded,
-                                                            color: mainColor,
-                                                            size: 10.sp,
+                                                          SizedBox(
+                                                              height: 10.h),
+                                                          Container(
+                                                            width:
+                                                                double.infinity,
+                                                            padding: EdgeInsetsDirectional
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        10.w,
+                                                                    vertical:
+                                                                        6.h),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: mainColor
+                                                                  .withOpacity(
+                                                                      appCubit.isDark
+                                                                          ? 0.12
+                                                                          : 0.05),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12.r),
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  'عرض الملف الشخصي',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        10.sp,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color:
+                                                                        mainColor,
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                    width: 5.w),
+                                                                Icon(
+                                                                  Icons
+                                                                      .arrow_forward_ios_rounded,
+                                                                  color:
+                                                                      mainColor,
+                                                                  size: 10.sp,
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -1921,26 +2143,24 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                   ],
                                                 ),
                                               ),
-                                            ],
+                                            );
+                                          },
+                                          separatorBuilder: (context, index) =>
+                                              SizedBox(
+                                            width: 15.w,
                                           ),
                                         ),
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(
-                                      width: 15.w,
-                                    ),
-                                  ),
+                                      ),
+                                SizedBox(
+                                  height: 20.h,
                                 ),
-                                SizedBox(height: 20.h,),
                               ],
                             ),
                           );
                   },
                 ),
               ),
-            )
-        );
+            ));
       },
     );
   }

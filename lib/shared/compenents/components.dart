@@ -12,9 +12,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:trying_homy/modules/notifications_screen.dart';
-import 'package:trying_homy/modules/search_screen.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/modules/notifications_screen.dart';
+import 'package:Etkan/modules/search_screen.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
 import '../../main.dart';
 import '../cubits/app_cubit/app_cubit.dart';
 import '../styles/colors.dart';
@@ -5652,21 +5652,17 @@ class WorkerProfileShimmer extends StatelessWidget {
               children: [
                 _buildStatsShimmer(),
                 SizedBox(height: 25.h),
-
                 _sectionTitleShimmer(),
                 SizedBox(height: 10.h),
                 _contactCardShimmer(),
-
                 SizedBox(height: 20.h),
                 _sectionTitleShimmer(),
                 SizedBox(height: 10.h),
                 _aboutCardShimmer(),
-
                 SizedBox(height: 20.h),
                 _sectionTitleShimmer(),
                 SizedBox(height: 10.h),
                 _experiencesCardShimmer(),
-
                 SizedBox(height: 20.h),
                 _sectionTitleShimmer(),
                 SizedBox(height: 10.h),

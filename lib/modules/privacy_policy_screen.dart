@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   PrivacyPolicyScreen({super.key});
@@ -396,8 +396,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     context: context,
                     cubit: cubit,
                     title: 'تحكم في حسابك',
-                    subtitle:
-                        'يمكنك تعديل بيانات حسابك وإدارة عناوينك.',
+                    subtitle: 'يمكنك تعديل بيانات حسابك وإدارة عناوينك.',
                     icon: 'assets/setting.svg',
                   ),
                   SizedBox(height: 25.h),

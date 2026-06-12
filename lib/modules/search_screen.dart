@@ -7,16 +7,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:trying_homy/modules/user_screens/user_request_details.dart';
-import 'package:trying_homy/modules/user_screens/user_service_details.dart';
-import 'package:trying_homy/modules/user_screens/user_services_list.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_cubit.dart';
-import 'package:trying_homy/shared/cubits/user_cubit/user_states.dart';
-import 'package:trying_homy/shared/networks/local/cache_helper.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
-import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
-import 'package:trying_homy/shared/styles/colors.dart';
+import 'package:Etkan/modules/user_screens/user_request_details.dart';
+import 'package:Etkan/modules/user_screens/user_service_details.dart';
+import 'package:Etkan/modules/user_screens/user_services_list.dart';
+import 'package:Etkan/shared/compenents/components.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
+import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
+import 'package:Etkan/shared/networks/local/cache_helper.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
+import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
+import 'package:Etkan/shared/styles/colors.dart';
 
 import '../main.dart';
 
@@ -975,7 +975,9 @@ class _SearchScreenState extends State<SearchScreen> {
                     start: 5.w,
                     bottom: 10.h,
                   ),
-                  itemCount: suggestedServices.length > 4 ? 4 : suggestedServices.length,
+                  itemCount: suggestedServices.length > 4
+                      ? 4
+                      : suggestedServices.length,
                   itemBuilder: (context, index) {
                     final service = suggestedServices[index];
                     final providerData = Map<String, dynamic>.from(
@@ -2019,12 +2021,22 @@ class _SearchScreenState extends State<SearchScreen> {
                                       style: TextStyle(
                                         fontSize: 11.sp,
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .color,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 5.w,),
-                                  providerData['isVerified']?? false ?SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,):const SizedBox.shrink(),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  providerData['isVerified'] ?? false
+                                      ? SvgPicture.asset(
+                                          'assets/verf_bold.svg',
+                                          color: Colors.blue,
+                                        )
+                                      : const SizedBox.shrink(),
                                 ],
                               ),
                               Text(
@@ -2539,7 +2551,8 @@ class _SearchScreenState extends State<SearchScreen> {
         price: service['price'] ?? 0,
         period: '${service['period'] ?? ''}',
         providerName: '${providerData['name'] ?? 'فني غير معروف'}',
-        providerSpec: '${providerData['specialization'] ?? service['category'] ?? ''}',
+        providerSpec:
+            '${providerData['specialization'] ?? service['category'] ?? ''}',
         reviews: service['reviews'] ?? [],
         providerId: '${providerData['uid'] ?? service['providerId'] ?? ''}',
         serviceId: service['id'],

@@ -6,8 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readmore/readmore.dart';
-import 'package:trying_homy/main.dart';
-import 'package:trying_homy/shared/compenents/components.dart';
+import 'package:Etkan/main.dart';
+import 'package:Etkan/shared/compenents/components.dart';
 
 import '../../shared/cubits/app_cubit/app_cubit.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
@@ -767,51 +767,51 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
               cubit: cubit,
             )
           : ListView.builder(
-        shrinkWrap: true,
-        padding: EdgeInsetsDirectional.zero,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: experiences.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsetsDirectional.only(
-              bottom: index == experiences.length - 1 ? 0 : 12.h,
+              shrinkWrap: true,
+              padding: EdgeInsetsDirectional.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: experiences.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsetsDirectional.only(
+                    bottom: index == experiences.length - 1 ? 0 : 12.h,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(4.r),
+                        decoration: BoxDecoration(
+                          color: cubit.isDark
+                              ? mainColor.withOpacity(0.20)
+                              : mainColor.withOpacity(0.10),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check_rounded,
+                          color: mainColor,
+                          size: 14.r,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          experiences[index],
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: cubit.isDark
+                                ? darkSubTextColor
+                                : Colors.black87,
+                            height: 1.6,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(4.r),
-                  decoration: BoxDecoration(
-                    color: cubit.isDark
-                        ? mainColor.withOpacity(0.20)
-                        : mainColor.withOpacity(0.10),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.check_rounded,
-                    color: mainColor,
-                    size: 14.r,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(
-                    experiences[index],
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: cubit.isDark
-                          ? darkSubTextColor
-                          : Colors.black87,
-                      height: 1.6,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
     );
   }
 
