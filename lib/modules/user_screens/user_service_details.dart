@@ -89,8 +89,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
     required AppCubit cubit,
     required UserCubit userCubit,
     required UserStates state,
-  })
-  {
+  }) {
     if (state is GetServiceReviewsLoadingState) {
       return Container(
         width: double.infinity,
@@ -164,9 +163,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
               return Icon(
                 Icons.star_rounded,
                 size: 18.r,
-                color: index < rate.round()
-                    ? Colors.orange
-                    : Colors.grey.shade300,
+                color:
+                    index < rate.round() ? Colors.orange : Colors.grey.shade300,
               );
             }),
           ),
@@ -178,13 +176,16 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
               color: cubit.isDark ? darkSubTextColor : Colors.grey,
             ),
           ),
-          SizedBox(height: 10.h,),
+          SizedBox(
+            height: 10.h,
+          ),
           if (reviews.isEmpty)
             Container(
               width: double.infinity,
               padding: EdgeInsetsDirectional.all(14.r),
               decoration: BoxDecoration(
-                color: cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.08),
+                color:
+                    cubit.isDark ? darkBgColor : Colors.grey.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(18.r),
               ),
               child: Text(
@@ -215,13 +216,13 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                     ? DateFormat('yyyy/MM/dd').format(createdAt.toDate())
                     : '';
 
-                final double rating = double.tryParse('${review['rating'] ?? 0}') ?? 0.0;
+                final double rating =
+                    double.tryParse('${review['rating'] ?? 0}') ?? 0.0;
 
                 final String reviewText = '${review['review'] ?? ''}';
                 final String customerName =
                     '${review['customerName'] ?? 'مستخدم'}';
-                final String customerImage =
-                    '${review['customerImage'] ?? ''}';
+                final String customerImage = '${review['customerImage'] ?? ''}';
 
                 return Container(
                   padding: EdgeInsetsDirectional.all(12.r),
@@ -244,10 +245,10 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                 : null,
                             child: customerImage.isEmpty
                                 ? Icon(
-                              Icons.person_outline_rounded,
-                              color: mainColor,
-                              size: 20.r,
-                            )
+                                    Icons.person_outline_rounded,
+                                    color: mainColor,
+                                    size: 20.r,
+                                  )
                                 : null,
                           ),
                           SizedBox(width: 10.w),
@@ -300,9 +301,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                           style: TextStyle(
                             fontSize: 12.sp,
                             height: 1.5,
-                            color: cubit.isDark
-                                ? Colors.white70
-                                : Colors.black54,
+                            color:
+                                cubit.isDark ? Colors.white70 : Colors.black54,
                           ),
                         ),
                       ],
@@ -335,30 +335,31 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
     final providerId = widget.providerId;
     final serviceId = widget.serviceId;
     AppCubit appCubit = AppCubit.get(context);
-    final providerData = Map<String, dynamic>.from(appCubit.allUsers[providerId] ?? {});
+    final providerData =
+        Map<String, dynamic>.from(appCubit.allUsers[providerId] ?? {});
 
-    return BlocListener<UserCubit,UserStates>(
-        listener: (context, state) {
-          if(state is GetServiceReviewsLoadingState){
-            showLoadingDialog(context);
-          }
-          if(state is GetServiceReviewsSuccessState){
-            hideLoadingDialog(context);
-          }
-          if(state is GetServiceReviewsLoadingState){
-            showLoadingDialog(context);
-          }
-          if(state is GetServiceReviewsErrorState){
-            hideLoadingDialog(context);
-          }
-        },
+    return BlocListener<UserCubit, UserStates>(
+      listener: (context, state) {
+        if (state is GetServiceReviewsLoadingState) {
+          showLoadingDialog(context);
+        }
+        if (state is GetServiceReviewsSuccessState) {
+          hideLoadingDialog(context);
+        }
+        if (state is GetServiceReviewsLoadingState) {
+          showLoadingDialog(context);
+        }
+        if (state is GetServiceReviewsErrorState) {
+          hideLoadingDialog(context);
+        }
+      },
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
           body: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox (
+                SizedBox(
                   height: 400.h,
                   child: Stack(
                     children: [
@@ -391,7 +392,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                         alignment: Alignment.bottomCenter,
                         child: Padding(
                           padding:
-                          EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                              EdgeInsetsDirectional.symmetric(horizontal: 15.w),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -414,7 +415,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                         color: appCubit.isDark
                                             ? darkBgColor
                                             : Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(6.r),
+                                        borderRadius:
+                                            BorderRadius.circular(6.r),
                                       ),
                                       child: Text(
                                         '$category',
@@ -456,28 +458,35 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                                 width: 20.w,
                                               ),
                                               SizedBox(width: 8.w),
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'السعر التقديري',
-                                                    style: TextStyle(
-                                                      fontSize: 10.sp,
-                                                      color: appCubit.isDark
-                                                          ? darkSubTextColor
-                                                          : Colors.grey,
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'السعر التقديري',
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      softWrap: false,
+                                                      style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        color: appCubit.isDark
+                                                            ? darkSubTextColor
+                                                            : Colors.grey,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  Text(
-                                                    '$price $reyalSymbol',
-                                                    style: TextStyle(
-                                                      color: mainColor,
-                                                      fontSize: 14.sp,
-                                                      fontWeight: FontWeight.bold,
+                                                    Text(
+                                                      '$price $reyalSymbol',
+                                                      style: TextStyle(
+                                                        color: mainColor,
+                                                        fontSize: 14.sp,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -501,7 +510,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                               SizedBox(width: 8.w),
                                               Column(
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     'المدة المتوقعة',
@@ -519,7 +528,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                                           ? Colors.white
                                                           : Colors.black87,
                                                       fontSize: 14.sp,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ],
@@ -548,23 +558,26 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10.h,),
+                SizedBox(
+                  height: 10.h,
+                ),
                 Padding(
-                  padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 10.h),
+                  padding: EdgeInsetsDirectional.symmetric(
+                      horizontal: 16.w, vertical: 10.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       buildSectionTitle(
                           title: 'وصف الخدمة',
                           icon: Icons.notes_rounded,
-                          cubit: appCubit
-                      ),
+                          cubit: appCubit),
                       SizedBox(height: 10.h),
                       Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(15.r),
                         decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(20.r),
                             boxShadow: blueShadow),
                         child: Column(
@@ -573,8 +586,9 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                               desc,
                               style: TextStyle(
                                   fontSize: 12.sp,
-                                  color:
-                                  appCubit.isDark ? Colors.white : Colors.black,
+                                  color: appCubit.isDark
+                                      ? Colors.white
+                                      : Colors.black,
                                   height: 1.5),
                               trimLines: 3,
                               colorClickableText: mainColor,
@@ -582,7 +596,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                               trimCollapsedText: ' عرض المزيد',
                               trimExpandedText: ' عرض أقل',
                               moreStyle:
-                              TextStyle(fontSize: 12.sp, color: mainColor),
+                                  TextStyle(fontSize: 12.sp, color: mainColor),
                             ),
                           ],
                         ),
@@ -591,14 +605,14 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                       buildSectionTitle(
                           title: 'معلومات الفني',
                           icon: Icons.person_pin_outlined,
-                          cubit: appCubit
-                      ),
+                          cubit: appCubit),
                       SizedBox(height: 10.h),
                       Container(
                         padding: EdgeInsetsDirectional.all(18.r),
                         width: double.infinity,
                         decoration: BoxDecoration(
-                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            color:
+                                appCubit.isDark ? lightDarkColor : Colors.white,
                             borderRadius: BorderRadius.circular(25.r),
                             boxShadow: blueShadow),
                         child: Column(
@@ -615,7 +629,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                 SizedBox(width: 12.w),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
@@ -627,12 +642,22 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                                               style: TextStyle(
                                                 fontSize: 13.sp,
                                                 fontWeight: FontWeight.bold,
-                                                color: Theme.of(context).textTheme.bodyLarge!.color,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 5.w,),
-                                          providerData['isVerified']?? false ?SvgPicture.asset('assets/verf_bold.svg',color: Colors.blue,):const SizedBox.shrink(),
+                                          SizedBox(
+                                            width: 5.w,
+                                          ),
+                                          providerData['isVerified'] ?? false
+                                              ? SvgPicture.asset(
+                                                  'assets/verf_bold.svg',
+                                                  color: Colors.blue,
+                                                )
+                                              : const SizedBox.shrink(),
                                         ],
                                       ),
                                       Text(
@@ -648,7 +673,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                               ],
                             ),
                             Padding(
-                              padding: EdgeInsetsDirectional.symmetric(vertical: 15.h),
+                              padding: EdgeInsetsDirectional.symmetric(
+                                  vertical: 15.h),
                               child: Divider(
                                   color: appCubit.isDark
                                       ? darkSubTextColor
@@ -668,11 +694,14 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                               text: 'المزيد',
                               fontSize: 13.sp,
                               height: 45.h,
-                              textColor: appCubit.isDark ? Colors.white : mainColor,
-                              border: appCubit.isDark ? Colors.white : mainColor,
+                              textColor:
+                                  appCubit.isDark ? Colors.white : mainColor,
+                              border:
+                                  appCubit.isDark ? Colors.white : mainColor,
                               icon: SvgPicture.asset(
                                 'assets/acc.svg',
-                                color: appCubit.isDark ? Colors.white : mainColor,
+                                color:
+                                    appCubit.isDark ? Colors.white : mainColor,
                                 width: 20.r,
                                 height: 20.r,
                               ),
@@ -684,8 +713,7 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
                       buildSectionTitle(
                           title: 'التقييمات والمراجعات',
                           icon: Icons.star_outline_rounded,
-                          cubit: appCubit
-                      ),
+                          cubit: appCubit),
                       SizedBox(height: 10.h),
                       BlocBuilder<UserCubit, UserStates>(
                         builder: (context, state) {
@@ -705,8 +733,8 @@ class _UserServiceDetailsState extends State<UserServiceDetails> {
             ),
           ),
           bottomNavigationBar: Padding(
-            padding:
-            EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 10.h),
+            padding: EdgeInsetsDirectional.symmetric(
+                horizontal: 20.w, vertical: 10.h),
             child: defaultButton(
                 onPressed: () => move(
                     context,

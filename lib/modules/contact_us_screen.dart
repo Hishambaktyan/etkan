@@ -119,9 +119,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                     margin: EdgeInsets.symmetric(horizontal: 15.w),
                     padding: EdgeInsets.all(20.r),
                     decoration: BoxDecoration(
-                      color: cubit.isDark
-                          ? const Color(0xFF161B22)
-                          : Colors.white,
+                      color:
+                          cubit.isDark ? const Color(0xFF161B22) : Colors.white,
                       borderRadius: BorderRadius.circular(25.r),
                       boxShadow: blueShadow,
                     ),
@@ -169,13 +168,17 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'واتساب',
                                         style: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
                                         ),
                                       ),
                                       SizedBox(height: 4.h),
@@ -230,13 +233,17 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'البريد الإلكتروني',
                                         style: TextStyle(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
                                         ),
                                       ),
                                       SizedBox(height: 4.h),
