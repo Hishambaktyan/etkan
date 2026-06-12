@@ -182,7 +182,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await showLocalNotification(message);
 }
 
-
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -213,7 +212,6 @@ Future<void> main() async {
     }
   });
 
-  bool? isDark = CacheHelper.getBoolen(key: 'isDark');
   bool isLoggedIn = CacheHelper.getBoolen(key: 'isLoggedIn') ?? false;
   String role = CacheHelper.getData(key: 'role') ?? '';
 
@@ -231,14 +229,11 @@ Future<void> main() async {
     startWidget = const OnBoardingScreen();
   }
 
-  runApp(MyApp(
-    isDark: isDark,
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool? isDark;
-  const MyApp({super.key, this.isDark});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +241,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AppCubit>(
           create: (context) => AppCubit()
-            ..changeTheme(fromShared: isDark)
+            ..syncThemeWithSystem()
             ..getAllUsers(),
         ),
         BlocProvider<AuthCubit>(
@@ -282,7 +277,7 @@ class MyApp extends StatelessWidget {
               var appCubit = AppCubit.get(context);
               return MaterialApp(
                   navigatorKey: navigatorKey,
-                  themeMode: appCubit.isDark ? ThemeMode.dark : ThemeMode.light,
+                  themeMode: ThemeMode.system,
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   debugShowCheckedModeBanner: false,
@@ -294,4 +289,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

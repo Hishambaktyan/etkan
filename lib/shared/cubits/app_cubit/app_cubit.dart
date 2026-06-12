@@ -14,8 +14,11 @@ import '../../../modules/worker_screens/worker_home.dart';
 import '../../networks/local/cache_helper.dart';
 import 'app_states.dart';
 
-class AppCubit extends Cubit<AppStates> {
-  AppCubit() : super(InitState());
+class AppCubit extends Cubit<AppStates> with WidgetsBindingObserver {
+  AppCubit() : super(InitState()) {
+    WidgetsBinding.instance.addObserver(this);
+    syncThemeWithSystem(emitChange: false);
+  }
 
   static AppCubit get(context) => BlocProvider.of(context);
 
@@ -42,21 +45,38 @@ class AppCubit extends Cubit<AppStates> {
     emit(ChangeNavBarState());
   }
 
-  bool isDark = true;
+  bool isDark = WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+      Brightness.dark;
 
-  void changeTheme({bool? fromShared}) {
-    if (fromShared != null) {
-      isDark = fromShared;
-    } else {
-      isDark = !isDark;
-      CacheHelper.setBoolen(key: 'isDark', value: isDark).then(
-        (value) {
-          emit(ChangeThemeState());
-        },
-      ).catchError((error) {
-        print(error.toString());
-      });
+  void syncThemeWithSystem({bool emitChange = true}) {
+    final bool systemIsDark =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark;
+
+    if (isDark == systemIsDark) return;
+
+    isDark = systemIsDark;
+
+    if (emitChange) {
+      emit(ChangeThemeState());
     }
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    syncThemeWithSystem();
+  }
+
+// هذه الدالة خليتها عشان ما تتعطل الأماكن القديمة التي تستدعي changeTheme
+// لكنها الآن لا تقلب الوضع يدويًا، فقط تزامن التطبيق مع وضع الجهاز.
+  void changeTheme({bool? fromShared}) {
+    syncThemeWithSystem();
+  }
+
+  @override
+  Future<void> close() {
+    WidgetsBinding.instance.removeObserver(this);
+    return super.close();
   }
 
   Map<String, dynamic> allUsers = {};

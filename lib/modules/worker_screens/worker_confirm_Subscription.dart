@@ -65,7 +65,8 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
     final AuthStates currentState = authCubit.state;
 
     if (currentState is WorkerSignUpSuccessState) {
-      showSnackBar(Colors.green, 'تم إنشاء حسابك وإرسال طلب الاشتراك بنجاح', context);
+      showSnackBar(
+          Colors.green, 'تم إنشاء حسابك وإرسال طلب الاشتراك بنجاح', context);
       moveAndReplace(context, const WorkerMainScreen());
     } else if (currentState is WorkerSignUpErrorState) {
       showSnackBar(Colors.red, currentState.error, context);
@@ -156,7 +157,12 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
     );
   }
 
-  Widget _buildBankInfoCard(AppCubit cubit) {
+  Widget _buildBankInfoCard({
+    required String namebank,
+    required String nameeuser,
+    required String numberbank,
+    required AppCubit cubit,
+  }) {
     return Container(
       width: double.infinity,
       padding: EdgeInsetsDirectional.all(15.r),
@@ -167,17 +173,21 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
       ),
       child: Column(
         children: [
-          _buildBankInfoRow('اسم البنك', 'بنك الكريمي', cubit),
-          Divider(
-              color: cubit.isDark
-                  ? const Color(0xFF30363D)
-                  : Colors.grey.shade200),
-          _buildBankInfoRow('اسم الحساب', 'Homy Services', cubit),
-          Divider(
-              color: cubit.isDark
-                  ? const Color(0xFF30363D)
-                  : Colors.grey.shade200),
-          _buildBankInfoRow('رقم الحساب', '1234567890', cubit),
+          Column(
+            children: [
+              _buildBankInfoRow('اسم البنك', namebank, cubit),
+              Divider(
+                  color: cubit.isDark
+                      ? const Color(0xFF30363D)
+                      : Colors.grey.shade200),
+              _buildBankInfoRow('اسم الحساب', nameeuser, cubit),
+              Divider(
+                  color: cubit.isDark
+                      ? const Color(0xFF30363D)
+                      : Colors.grey.shade200),
+              _buildBankInfoRow('رقم الحساب', numberbank, cubit),
+            ],
+          ),
         ],
       ),
     );
@@ -482,7 +492,17 @@ class _WorkerConfirmSubscriptionState extends State<WorkerConfirmSubscription> {
                         cubit,
                       ),
                       SizedBox(height: 15.h),
-                      _buildBankInfoCard(cubit),
+                      _buildBankInfoCard(
+                          namebank: 'بنك القطيبي',
+                          nameeuser: 'هادي محمد مهدي لكمج',
+                          numberbank: '82047011',
+                          cubit: cubit),
+                      SizedBox(height: 20.h),
+                      _buildBankInfoCard(
+                          namebank: 'بنك الكريمي',
+                          nameeuser: 'هادي محمد مهدي لكمج',
+                          numberbank: '3075178262',
+                          cubit: cubit),
                       SizedBox(height: 20.h),
                       _buildSectionTitle(
                         'سند الدفع',
