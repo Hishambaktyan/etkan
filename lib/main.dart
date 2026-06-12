@@ -277,7 +277,7 @@ class MyApp extends StatelessWidget {
               var appCubit = AppCubit.get(context);
               return MaterialApp(
                   navigatorKey: navigatorKey,
-                  themeMode: ThemeMode.system,
+                  themeMode: appCubit.isDark ? ThemeMode.dark : ThemeMode.light,
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   debugShowCheckedModeBanner: false,
