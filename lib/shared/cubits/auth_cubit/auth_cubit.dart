@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/networks/local/cache_helper.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
   AuthCubit() : super(AuthInitSatate());
@@ -314,6 +316,10 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
+  String hashPassword(String password) {
+    return sha256.convert(utf8.encode(password.trim())).toString();
+  }
+
   Future<void> signUpUser(
       {required String name,
       required String phone,
@@ -356,7 +362,7 @@ class AuthCubit extends Cubit<AuthStates> {
         'uid': uid,
         'name': formattedName,
         'phone': formattedPhone,
-        'password': password,
+        'password': hashPassword(password),
         'role': 'user',
         'profileImage': '',
         'createdAt': FieldValue.serverTimestamp(),
@@ -705,7 +711,7 @@ class AuthCubit extends Cubit<AuthStates> {
         'uid': uid,
         'phone': formattedPhone,
         'name': formattedName,
-        'password': password,
+        'password': hashPassword(password),
         'role': 'provider',
         'specialization': '',
         'address': '',
@@ -827,7 +833,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final batch = FirebaseFirestore.instance.batch();
 
       batch.update(userDoc.reference, {
-        'password': formattedPassword,
+        'password': hashPassword(formattedPassword),
         'passwordUpdatedAt': FieldValue.serverTimestamp(),
       });
 
@@ -871,7 +877,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required List<String> experiences,
     required List<String> previousWorks,
     required String profileImage,
-  }) async {
+  })
+  async {
     try {
       emit(CompleteWorkerProfileLoadingState());
 
@@ -925,30 +932,21 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String password,
     required String requiredRole,
-  }) async {
+  })
+  async {
     try {
       emit(LoginLoadingState());
 
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .where('phone', isEqualTo: normalizeYemeniPhone(phone))
-          .where('password', isEqualTo: password.trim())
+          .where('password', isEqualTo: hashPassword(password.trim()))
           .where('role', isEqualTo: requiredRole)
           .limit(1)
           .get();
 
       if (userDoc.docs.isEmpty) {
-        String message = 'رقم الهاتف أو كلمة المرور غير صحيحة';
-
-        if (requiredRole == 'admin') {
-          message = 'هذا الحساب ليس حساب مسؤول';
-        } else if (requiredRole == 'provider') {
-          message = 'هذا الحساب ليس حساب فني';
-        } else if (requiredRole == 'user') {
-          message = 'هذا الحساب ليس حساب مستخدم';
-        }
-
-        emit(LoginErrorState(error: message));
+        emit(LoginErrorState(error: 'رقم الهاتف أو كلمة المرور غير صحيحة',),);
         return;
       }
 
@@ -958,7 +956,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final bool isActive = userData['isActive'] ?? true;
 
       if (!isActive) {
-        emit(LoginErrorState(error: 'تم تعطيل هذا الحساب، يرجى التواصل مع الإدارة',));
+        emit(LoginErrorState(error: 'تم تعطيل هذا الحساب، يرجى التواصل مع الإدارة',),);
         return;
       }
 
@@ -966,19 +964,18 @@ class AuthCubit extends Cubit<AuthStates> {
       final String uid = doc.id;
 
       if (role != requiredRole) {
-        emit(LoginErrorState(error: 'ليس لديك صلاحية الدخول من هذه الصفحة'));
+        emit(LoginErrorState(error: 'ليس لديك صلاحية الدخول من هذه الصفحة',),);
         return;
       }
 
-      await CacheHelper.saveData(key: 'uid', value: uid);
-      await CacheHelper.saveData(key: 'role', value: role);
-      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
+      await CacheHelper.saveData(key: 'uid', value: uid,);
+      await CacheHelper.saveData(key: 'role', value: role,);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true,);
 
       await saveUserToken(uid);
-
       emit(LoginSuccessState());
     } catch (e) {
-      emit(LoginErrorState(error: e.toString()));
+      emit(LoginErrorState(error: e.toString(),),);
     }
   }
 

@@ -30,6 +30,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
     'ملغي'
   ];
   String selectedStatus = 'الكل';
+
   Widget buildDetailRow(
       String label, String value, String iconPath, dynamic cubit) {
     return Row(
@@ -144,19 +145,14 @@ class _UserRequestsListState extends State<UserRequestsList> {
               UserCubit userCubit = UserCubit.get(context);
               return ConditionalBuilder(
                   condition:
-                      checkingInternet || state is GetUserRequestLoadingState,
-                  builder: (context) =>
-                      UserBookingsShimmer(isDark: appCubit.isDark),
+                  checkingInternet || state is GetUserRequestLoadingState,
+                  builder: (context) => UserBookingsShimmer(isDark: appCubit.isDark),
                   fallback: (context) => ConditionalBuilder(
                         condition: !hasInternet,
-                        builder: (context) => NoInternet(
-                          onRetry: () =>
-                              checkConnectionAndGetData(forceRefresh: true),
-                        ),
+                        builder: (context) => NoInternet(onRetry: () => checkConnectionAndGetData(forceRefresh: true),),
                         fallback: (context) => RefreshIndicator(
                           color: mainColor,
-                          onRefresh: () =>
-                              checkConnectionAndGetData(forceRefresh: true),
+                          onRefresh: () => checkConnectionAndGetData(forceRefresh: true),
                           child: SingleChildScrollView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             child: Column(
@@ -165,19 +161,15 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                   title: 'الحجوزات',
                                   context: context,
                                 ),
-                                SizedBox(
-                                  height: 15.h,
-                                ),
+                                SizedBox(height: 15.h,),
                                 SizedBox(
                                   height: 55.h,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    padding: EdgeInsetsDirectional.symmetric(
-                                        horizontal: 10.w),
+                                    padding: EdgeInsetsDirectional.symmetric(horizontal: 10.w),
                                     itemCount: statusFilters.length,
                                     itemBuilder: (context, index) {
-                                      bool isSelected = selectedStatus ==
-                                          statusFilters[index];
+                                      bool isSelected = selectedStatus == statusFilters[index];
                                       return Padding(
                                         padding: EdgeInsetsDirectional.only(
                                             end: 10.w, bottom: 10.h),
@@ -226,9 +218,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                     },
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
+                                SizedBox(height: 10.h,),
                                 filteredList.isEmpty
                                     ? SizedBox(
                                         height:
@@ -285,15 +275,12 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                         shrinkWrap: true,
                                         physics:
                                             const NeverScrollableScrollPhysics(),
-                                        padding: EdgeInsetsDirectional.only(
-                                            start: 10.w, end: 10.w, top: 5.h),
-                                        itemCount:
-                                            userCubit.userRequests.length,
+                                        padding: EdgeInsetsDirectional.only(start: 10.w, end: 10.w, top: 5.h),
+                                        itemCount: filteredList.length,
                                         itemBuilder: (context, index) {
-                                          var booking =
-                                              userCubit.userRequests[index];
+                                          var request = filteredList[index];
                                           Color statusColor;
-                                          String status = booking['status'];
+                                          String status = request['status'];
                                           switch (status) {
                                             case 'مكتمل':
                                               statusColor = Colors.green;
@@ -310,7 +297,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                               statusColor = Colors.orangeAccent;
                                           }
                                           var providerData = appCubit
-                                              .allUsers[booking['providerId']];
+                                              .allUsers[request['providerId']];
                                           return Padding(
                                             padding: EdgeInsetsDirectional.only(
                                                 bottom: 20.h),
@@ -321,7 +308,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                               onTap: () => move(
                                                   context,
                                                   UserRequestDetails(
-                                                      request: booking,
+                                                      request: request,
                                                       providerData:
                                                           providerData)),
                                               child: Container(
@@ -365,7 +352,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                                                         18.r),
                                                             child:
                                                                 Image.network(
-                                                              booking['image'] ??
+                                                              request['image'] ??
                                                                   '',
                                                               width: 70.w,
                                                               height: 70.h,
@@ -402,7 +389,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                                                 children: [
                                                                   Expanded(
                                                                     child: Text(
-                                                                      booking[
+                                                                      request[
                                                                           'title'],
                                                                       maxLines:
                                                                           2,
@@ -460,7 +447,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                                               SizedBox(
                                                                   height: 6.h),
                                                               Text(
-                                                                '${booking['price']} $reyalSymbol',
+                                                                '${request['price']} $reyalSymbol',
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize:
@@ -492,7 +479,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                                         children: [
                                                           buildDetailRow(
                                                               'العنوان:',
-                                                              booking[
+                                                              request[
                                                                   'address'],
                                                               'assets/loc.svg',
                                                               appCubit),
@@ -511,7 +498,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
                                                           buildDetailRow(
                                                               'الموعد:',
                                                               formatStatusTime(
-                                                                  booking[
+                                                                  request[
                                                                       'scheduledAt']),
                                                               'assets/timer.svg',
                                                               appCubit),

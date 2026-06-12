@@ -5,15 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trying_homy/main.dart';
 import 'package:trying_homy/modules/admin_screens/admin_home_screen.dart';
-import 'package:trying_homy/modules/forgot_password_screen.dart';
-import 'package:trying_homy/modules/user_screens/user_sign_up.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:trying_homy/shared/cubits/app_cubit/app_states.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:trying_homy/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:trying_homy/shared/styles/colors.dart';
 import '../../../shared/compenents/components.dart';
-import '../../layout/user_layout/user_main_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -220,8 +217,7 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                       child: Container(
                         height: 420.h,
                         width: double.infinity,
-                        padding: EdgeInsetsDirectional.symmetric(
-                            horizontal: 20.w, vertical: 30.h),
+                        padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w, vertical: 30.h),
                         decoration: BoxDecoration(
                           color: appCubit.isDark ? darkBgColor : bgColor,
                           borderRadius: BorderRadius.only(
@@ -268,17 +264,11 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                                 SizedBox(height: 20.h),
                                 defaultButton(
                                     onPressed: () async {
-                                      // إغلاق الكيبورد قبل إرسال الطلب
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
+                                      FocusManager.instance.primaryFocus?.unfocus();
                                       if (formKey.currentState!.validate()) {
                                         await authCubit.loginUser(
-                                          phone: authCubit
-                                              .userLoginPhoneController.text
-                                              .trim(),
-                                          password: authCubit
-                                              .userLoginPasswordController.text
-                                              .trim(),
+                                          phone: authCubit.userLoginPhoneController.text.trim(),
+                                          password: authCubit.userLoginPasswordController.text.trim(),
                                           requiredRole: 'admin',
                                         );
                                       }

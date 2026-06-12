@@ -17,7 +17,7 @@ import '../the_chat.dart';
 
 class WorkerRequestDetails extends StatefulWidget {
   final Map<String, dynamic> request;
-  WorkerRequestDetails({super.key, required this.request});
+  const WorkerRequestDetails({super.key, required this.request});
 
   @override
   State<WorkerRequestDetails> createState() => _WorkerRequestDetailsState();
@@ -34,7 +34,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
   final List<String> terminalStates = ["مرفوض", "ملغي"];
 
   Widget buildHorizontalStepper(
-      {required int currentStep, required dynamic cubit}) {
+      {required int currentStep, required dynamic cubit})
+  {
     List<String> steps = [
       'تم الطلب',
       'تم القبول',
@@ -107,8 +108,7 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     );
   }
 
-  void showFullTrackingSheet(
-      BuildContext context, AppCubit cubit, dynamic requestData)
+  void showFullTrackingSheet(BuildContext context, AppCubit cubit, dynamic requestData)
   {
     showModalBottomSheet(
       context: context,
@@ -197,7 +197,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
 
   Widget buildVerticalStep(
       String title, String time, bool isDone, bool showLine, dynamic cubit,
-      {bool isActive = false}) {
+      {bool isActive = false})
+  {
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -269,7 +270,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     required String title,
     required IconData icon,
     required dynamic cubit,
-  }) {
+  })
+  {
     return Row(
       children: [
         Container(
@@ -303,7 +305,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     required BuildContext context,
     required AppCubit appCubit,
     required WorkerCubit workerCubit,
-  }) {
+  })
+  {
     final String status = widget.request['status'] ?? '';
     if (status == 'قيد الانتظار') {
       return Container(
@@ -444,7 +447,8 @@ class _WorkerRequestDetailsState extends State<WorkerRequestDetails> {
     return const SizedBox.shrink();
   }
 
-  Future<void> openLocationInGoogleMaps(GeoPoint? location) async {
+  Future<void> openLocationInGoogleMaps(GeoPoint? location) async
+  {
     if (location == null) {
       showSnackBar(Colors.red, 'لا يوجد موقع لهذا الحجز', context);
       return;

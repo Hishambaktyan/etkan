@@ -679,7 +679,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       case 'فني مياه':
       case 'مياه':
-        return 'ماء';
+        return 'مياه';
 
       default:
         return specialization;
