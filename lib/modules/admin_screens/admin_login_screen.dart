@@ -12,6 +12,7 @@ import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:Etkan/shared/styles/colors.dart';
 import 'package:Etkan/shared/compenents/components.dart';
+//fk
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
