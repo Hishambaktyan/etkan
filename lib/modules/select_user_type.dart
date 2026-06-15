@@ -48,7 +48,7 @@ class _SelectUserTypeState extends State<SelectUserType> {
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsetsDirectional.all(20.r),
+                  padding: EdgeInsetsDirectional.all(10.r),
                   child: Column(
                     children: [
                       buildUserTypeCard(
@@ -122,14 +122,10 @@ class _SelectUserTypeState extends State<SelectUserType> {
           color: appCubit.isDark ? lightDarkColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
-            color: isSelected
-                ? mainColor
-                : (appCubit.isDark
-                    ? const Color(0xFF30363D)
-                    : Colors.transparent),
+            color: isSelected ? mainColor : Colors.transparent,
             width: 2,
           ),
-          boxShadow: isSelected ? [] : (appCubit.isDark ? [] : blueShadow),
+          boxShadow: blueShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,11 +149,6 @@ class _SelectUserTypeState extends State<SelectUserType> {
                     borderRadius: BorderRadius.circular(15.r),
                     color: Colors.black.withOpacity(0.2),
                   ),
-                ),
-                CircleAvatar(
-                  radius: 28.r,
-                  backgroundColor: mainColor.withOpacity(0.9),
-                  child: Icon(icon, color: Colors.white, size: 30.sp),
                 ),
               ],
             ),

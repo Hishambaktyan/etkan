@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:Etkan/modules/select_user_type.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -126,36 +127,40 @@ class _UserLoginScreenState extends State<AdminLoginScreen> {
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.symmetric(
-                                      horizontal: 10.w,
-                                    ),
+                                    padding: EdgeInsetsDirectional.only(
+                                        start: 10.w, end: 10.w),
                                     child: Row(
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(7),
-                                          child: Container(
-                                            width: 40.r,
-                                            height: 40.r,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.white.withOpacity(0.1),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
+                                          child: InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(15.r),
+                                            onTap: () => moveAndReplace(context,
+                                                const SelectUserType()),
+                                            child: Container(
+                                              width: 42.w,
+                                              height: 42.h,
+                                              margin:
+                                                  EdgeInsetsDirectional.only(
+                                                      end: 10.w),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
                                                 color: Colors.white
-                                                    .withOpacity(0.2),
+                                                    .withOpacity(0.16),
+                                                borderRadius:
+                                                    BorderRadius.circular(15.r),
+                                                border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.12)),
                                               ),
-                                            ),
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(50.r),
-                                              splashColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
-                                              onTap: () =>
-                                                  Navigator.pop(context),
-                                              child: const Icon(
-                                                CupertinoIcons.back,
+                                              child: Icon(
+                                                Icons
+                                                    .arrow_back_ios_new_rounded,
                                                 color: Colors.white,
+                                                size: 18.sp,
                                               ),
                                             ),
                                           ),
