@@ -416,7 +416,6 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
       ),
       child: Container(
         width: double.infinity,
-        height: 350.h,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -549,6 +548,7 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
                         ),
                         SizedBox(height: 10.h),
                         Text(
+                          textAlign: TextAlign.center,
                           providerData['name'] ?? 'عامل',
                           style: TextStyle(
                             fontSize: 18.sp,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,7 @@ class AdminServiceDetails extends StatefulWidget {
   final String providerSpec;
   final dynamic reviews;
   final String providerId;
+  final bool serviceStatus;
   final String serviceId;
 
   const AdminServiceDetails({
@@ -44,6 +47,7 @@ class AdminServiceDetails extends StatefulWidget {
     required this.providerId,
     required this.image,
     required this.serviceId,
+    required this.serviceStatus,
   });
 
   @override
@@ -320,9 +324,11 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
   }
 
   bool isActive = true;
+
   @override
   void initState() {
     super.initState();
+    isActive = widget.serviceStatus;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       UserCubit.get(context).getServiceReviews(serviceId: widget.serviceId);
     });
@@ -338,6 +344,7 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
     final image = widget.image;
     final serviceId = widget.serviceId;
     final providerId = widget.providerId;
+    bool serviceStatus = widget.serviceStatus;
     AppCubit appCubit = AppCubit.get(context);
     final providerData =
         Map<String, dynamic>.from(appCubit.allUsers[providerId] ?? {});
@@ -607,9 +614,9 @@ class _AdminServiceDetailsState extends State<AdminServiceDetails> {
                                 AdminCubit adminCubit = AdminCubit.get(context);
                                 setState(() {
                                   isActive = value;
-                                  adminCubit.updateServiceStatus(
-                                      serviceId: serviceId, isActive: isActive);
                                 });
+                                adminCubit.updateServiceStatus(
+                                    serviceId: serviceId, isActive: isActive);
                               },
                             ),
                           ],

@@ -165,6 +165,7 @@ class _AdminServicesListState extends State<AdminServicesList> {
                                       reviews: service['reviews'] ?? '',
                                       providerId: providerData['uid'],
                                       serviceId: service['id'],
+                                      serviceStatus: service['isActive'],
                                     )),
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,

@@ -278,7 +278,7 @@ class AuthCubit extends Cubit<AuthStates> {
         'uid': uid,
         'name': formattedName,
         'phone': formattedPhone,
-        'password': password,
+        'password': hashPassword(password),
         'role': 'user',
         'profileImage': profileImageUrl,
         'address': addressData['addressDetails'] ?? '',
@@ -513,7 +513,7 @@ class AuthCubit extends Cubit<AuthStates> {
         'uid': uid,
         'phone': formattedPhone,
         'name': formattedName,
-        'password': password,
+        'password': hashPassword(password),
         'role': 'provider',
         'specialization': profileData['specialization'] ?? '',
         'address': profileData['address'] ?? '',
@@ -939,7 +939,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .where('phone', isEqualTo: normalizeYemeniPhone(phone))
-          .where('password', isEqualTo: hashPassword(password.trim()))
+          .where('password', isEqualTo: hashPassword(password))
           .where('role', isEqualTo: requiredRole)
           .limit(1)
           .get();

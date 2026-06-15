@@ -574,29 +574,32 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                                   width: 20.w,
                                                 ),
                                                 SizedBox(width: 8.w),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'السعر التقديري',
-                                                      style: TextStyle(
-                                                        fontSize: 10.sp,
-                                                        color:
-                                                            secondaryTextColor(
-                                                                appCubit),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'السعر التقديري',
+                                                        style: TextStyle(
+                                                          fontSize: 10.sp,
+                                                          color:
+                                                              secondaryTextColor(
+                                                                  appCubit),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Text(
-                                                      '${request['price']} $reyalSymbol',
-                                                      style: TextStyle(
-                                                        color: mainColor,
-                                                        fontSize: 14.sp,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                      Text(
+                                                        '${request['price']} $reyalSymbol',
+                                                        style: TextStyle(
+                                                          color: mainColor,
+                                                          fontSize: 14.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -787,12 +790,17 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                         providerData['profileImage'] ?? ''),
                                   ),
                                   SizedBox(width: 12.w),
-                                  Text(
-                                    providerData['name'] ?? '',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: primaryTextColor(appCubit),
+                                  SizedBox(
+                                    width: 230.w,
+                                    child: Text(
+                                      providerData['name'] ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryTextColor(appCubit),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -870,12 +878,17 @@ class _AdminRequestDetailsState extends State<AdminRequestDetails> {
                                         userData['profileImage'] ?? ''),
                                   ),
                                   SizedBox(width: 12.w),
-                                  Text(
-                                    userData['name'] ?? '',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: primaryTextColor(appCubit),
+                                  SizedBox(
+                                    width: 230.w,
+                                    child: Text(
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      userData['name'] ?? '',
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryTextColor(appCubit),
+                                      ),
                                     ),
                                   ),
                                 ],
