@@ -125,9 +125,10 @@ class _AdminHomeState extends State<AdminHome> {
           child: Scaffold(
             body: BlocBuilder<AdminCubit, AdminStates>(
               builder: (context, state) {
-                return adminCubit.isGetAdminDataLoading
-                    ? const AdminHomeShimmer()
-                    : RefreshIndicator(
+                if (adminCubit.isGetAdminDataLoading) {
+                  return const AdminHomeShimmer();
+                } else {
+                  return RefreshIndicator(
                         onRefresh: () => adminCubit.getAdminData(),
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -153,8 +154,7 @@ class _AdminHomeState extends State<AdminHome> {
                                   }
                                 },
                                 builder: (context, state) {
-                                  AuthCubit authCubit =
-                                      AuthCubit.get(context);
+                                  AuthCubit authCubit = AuthCubit.get(context);
                                   return header(
                                     title: 'مرحبا، ${adminCubit.adminName}',
                                     context: context,
@@ -184,8 +184,7 @@ class _AdminHomeState extends State<AdminHome> {
                               ),
                               GridView.builder(
                                 shrinkWrap: true,
-                                physics:
-                                    const NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: adminCards.length,
                                 padding: EdgeInsetsDirectional.only(
                                   start: 10.w,
@@ -335,135 +334,179 @@ class _AdminHomeState extends State<AdminHome> {
                                   );
                                 },
                               ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              if (adminCubit
-                                  .verificationRequests.isNotEmpty)
-                                Container(
-                                  margin: EdgeInsetsDirectional.only(
-                                      start: 10.w, end: 10.w),
-                                  padding: EdgeInsetsDirectional.all(15.r),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange.withOpacity(
-                                        appCubit.isDark ? 0.1 : 0.08),
-                                    borderRadius:
-                                        BorderRadius.circular(25.r),
-                                    border: Border.all(
-                                        color:
-                                            Colors.orange.withOpacity(0.5),
-                                        width: 1),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                          padding:
-                                              EdgeInsetsDirectional.all(
-                                                  10.r),
-                                          decoration: BoxDecoration(
-                                            color: Colors.orange
-                                                .withOpacity(0.2),
-                                            shape: BoxShape.circle,
+                              SizedBox(height: 10.h,),
+                              if (adminCubit.verificationRequests.isNotEmpty)
+                                InkWell(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () {
+                                    if (adminCubit.verificationRequests.isEmpty) {
+                                      showSnackBar(Colors.orange, 'لا توجد طلبات توثيق حالياً', context,);
+                                      return;
+                                    }
+
+                                    final request = adminCubit.verificationRequests.first;
+
+                                    final providerId = request['providerId']?.toString() ?? '';
+
+                                    final provider = adminCubit.providers.firstWhere(
+                                          (item) =>
+                                      item['id']?.toString() == providerId ||
+                                          item['uid']?.toString() == providerId, orElse: () => {},);
+
+                                    if (provider.isEmpty) {
+                                      showSnackBar(Colors.red, 'تعذر العثور على بيانات الفني', context);
+                                      return;
+                                    }
+                                    move(context, AdminProviderInfo(provider: provider),);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsetsDirectional.only(
+                                        start: 10.w, end: 10.w),
+                                    padding: EdgeInsetsDirectional.all(15.r),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.withOpacity(
+                                          appCubit.isDark ? 0.1 : 0.08),
+                                      borderRadius:
+                                          BorderRadius.circular(25.r),
+                                      border: Border.all(
+                                          color:
+                                              Colors.orange.withOpacity(0.5),
+                                          width: 1),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                            padding:
+                                                EdgeInsetsDirectional.all(
+                                                    10.r),
+                                            decoration: BoxDecoration(
+                                              color: Colors.orange
+                                                  .withOpacity(0.2),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: SvgPicture.asset(
+                                              'assets/verf.svg',
+                                              color: Colors.orangeAccent,
+                                            )),
+                                        SizedBox(width: 15.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'طلبات توثيق',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.sp,
+                                                  color: appCubit.isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                ),
+                                              ),
+                                              SizedBox(height: 4.h),
+                                              Text(
+                                                'يوجد ${adminCubit.verificationRequests.length} طلبات توثيق جديدة بانتظار المراجعة',
+                                                style: TextStyle(
+                                                  fontSize: 11.sp,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey[700],
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          child: SvgPicture.asset(
-                                            'assets/verf.svg',
-                                            color: Colors.orangeAccent,
-                                          )),
-                                      SizedBox(width: 15.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'طلبات توثيق',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14.sp,
-                                                color: appCubit.isDark
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                            SizedBox(height: 4.h),
-                                            Text(
-                                              'يوجد ${adminCubit.verificationRequests.length} طلبات توثيق جديدة بانتظار المراجعة',
-                                              style: TextStyle(
-                                                fontSize: 11.sp,
-                                                color: appCubit.isDark
-                                                    ? darkSubTextColor
-                                                    : Colors.grey[700],
-                                              ),
-                                            ),
-                                          ],
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              SizedBox(
-                                height: 15.h,
-                              ),
-                              if (adminCubit
-                                  .subscriptionRequests.isNotEmpty)
-                                Container(
-                                  margin: EdgeInsetsDirectional.only(
-                                      start: 10.w, end: 10.w, bottom: 20.h),
-                                  padding: EdgeInsetsDirectional.all(15.r),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(
-                                        appCubit.isDark ? 0.1 : 0.08),
-                                    borderRadius:
-                                        BorderRadius.circular(25.r),
-                                    border: Border.all(
-                                        color: Colors.blue.withOpacity(0.5),
-                                        width: 1),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                          padding:
-                                              EdgeInsetsDirectional.all(
-                                                  10.r),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue
-                                                .withOpacity(0.2),
-                                            shape: BoxShape.circle,
+                              SizedBox(height: 15.h,),
+                              if (adminCubit.subscriptionRequests.isNotEmpty)
+                                InkWell(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () {
+                                    if (adminCubit.subscriptionRequests.isEmpty) {
+                                      showSnackBar(Colors.orange, 'لا توجد طلبات توثيق حالياً', context,);
+                                      return;
+                                    }
+
+                                    final request = adminCubit.subscriptionRequests.first;
+
+                                    final providerId = request['providerId']?.toString() ?? '';
+
+                                    final provider = adminCubit.providers.firstWhere(
+                                          (item) =>
+                                      item['id']?.toString() == providerId ||
+                                          item['uid']?.toString() == providerId, orElse: () => {},);
+
+                                    if (provider.isEmpty) {
+                                      showSnackBar(Colors.red, 'تعذر العثور على بيانات الفني', context);
+                                      return;
+                                    }
+                                    move(context, AdminProviderInfo(provider: provider),);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsetsDirectional.only(
+                                        start: 10.w, end: 10.w, bottom: 20.h),
+                                    padding: EdgeInsetsDirectional.all(15.r),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(
+                                          appCubit.isDark ? 0.1 : 0.08),
+                                      borderRadius:
+                                          BorderRadius.circular(25.r),
+                                      border: Border.all(
+                                          color: Colors.blue.withOpacity(0.5),
+                                          width: 1),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                            padding:
+                                                EdgeInsetsDirectional.all(
+                                                    10.r),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue
+                                                  .withOpacity(0.2),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: SvgPicture.asset(
+                                              'assets/subs.svg',
+                                              color: Colors.blueAccent,
+                                            )),
+                                        SizedBox(width: 15.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'طلبات اشتراك',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.sp,
+                                                  color: appCubit.isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                ),
+                                              ),
+                                              SizedBox(height: 4.h),
+                                              Text(
+                                                'يوجد ${adminCubit.subscriptionRequests.length} طلبات اشتراك جديدة بانتظار المراجعة',
+                                                style: TextStyle(
+                                                  fontSize: 11.sp,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey[700],
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          child: SvgPicture.asset(
-                                            'assets/subs.svg',
-                                            color: Colors.blueAccent,
-                                          )),
-                                      SizedBox(width: 15.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'طلبات اشتراك',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14.sp,
-                                                color: appCubit.isDark
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                            SizedBox(height: 4.h),
-                                            Text(
-                                              'يوجد ${adminCubit.subscriptionRequests.length} طلبات اشتراك جديدة بانتظار المراجعة',
-                                              style: TextStyle(
-                                                fontSize: 11.sp,
-                                                color: appCubit.isDark
-                                                    ? darkSubTextColor
-                                                    : Colors.grey[700],
-                                              ),
-                                            ),
-                                          ],
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               Padding(
@@ -2218,6 +2261,7 @@ class _AdminHomeState extends State<AdminHome> {
                           ),
                         ),
                       );
+                }
               },
             ),
           ),
