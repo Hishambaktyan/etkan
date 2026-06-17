@@ -258,12 +258,11 @@ class _WorkerAddServiceState extends State<WorkerAddService> {
                   } else {
                     workerCubit.uploadService(
                         serviceName: workerCubit.serviceName.text.trim(),
-                        serviceDescription:
-                            workerCubit.serviceDesc.text.trim(),
+                        serviceDescription: workerCubit.serviceDesc.text.trim(),
                         servicePrice: workerCubit.servicePrice.text.trim(),
-                        servicePeriod:
-                            workerCubit.serviceDuration.text.trim(),
-                        serviceImage: serviceImage!.path);
+                        servicePeriod: workerCubit.serviceDuration.text.trim(),
+                        serviceImage: serviceImage!.path,
+                    );
                   }
                 }
               },

@@ -663,47 +663,14 @@ class WorkerCubit extends Cubit<WorkerStates> {
     return uploadedUrls;
   }
 
-  String getCategoryFromSpecialization(String specialization) {
-    switch (specialization.trim()) {
-      case 'كهربائي':
-        return 'كهرباء';
-
-      case 'سباك':
-        return 'سباكة';
-
-      case 'فني تكييف':
-      case 'تكييف':
-        return 'تكييف';
-
-      case 'بناء':
-      case 'بنّاء':
-        return 'بناء';
-
-      case 'حداد':
-        return 'حدادة';
-
-      case 'نجار':
-        return 'نجارة';
-
-      case 'دهان':
-        return 'دهان';
-
-      case 'فني مياه':
-      case 'مياه':
-        return 'مياه';
-
-      default:
-        return specialization;
-    }
-  }
-
   Future<void> uploadService({
     required String serviceName,
     required String serviceDescription,
     required String servicePrice,
     required String servicePeriod,
     required String serviceImage,
-  }) async {
+  })
+  async {
     try {
       String serviceImageLink = '';
       emit(UploadServiceLoadingState());
@@ -725,6 +692,14 @@ class WorkerCubit extends Cubit<WorkerStates> {
       }
 
       final userData = userSnapshot.data()!;
+
+      final serviceCategoryId = userData['categoryId']?.toString() ?? '';
+      final serviceCategory = userData['category']?.toString() ?? '';
+
+      if (serviceCategoryId.isEmpty || serviceCategory.isEmpty) {
+        emit(UploadServiceErrorState(error: 'لم يتم تحديد قسم الفني. يرجى مراجعة بيانات الحساب.',));
+        return;
+      }
 
       if (isSubscriptionExpiredFromData(userData)) {
         final currentStatus =
@@ -762,9 +737,6 @@ class WorkerCubit extends Cubit<WorkerStates> {
         return;
       }
 
-      final specialization = userData['specialization'] ?? '';
-      final serviceCategory = getCategoryFromSpecialization(specialization);
-
       if (serviceImage.trim().isNotEmpty) {
         serviceImageLink = await uploadImageToCloudinary(serviceImage);
       }
@@ -779,7 +751,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
       Map<String, dynamic> serviceData = {
         'name': serviceName.trim(),
         'description': serviceDescription.trim(),
-        'category': serviceCategory,
+        'categoryId':serviceCategoryId,
+        'category': serviceCategory.trim(),
         'price': price,
         'period': servicePeriod.trim(),
         'serviceImage': serviceImageLink,

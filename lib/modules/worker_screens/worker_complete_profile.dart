@@ -43,11 +43,9 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
       isLoadingDialogShown = true;
       showLoadingDialog(context);
 
-      final snapshot =
-          await FirebaseFirestore.instance.collection('categories').get();
+      final snapshot = await FirebaseFirestore.instance.collection('categories').get();
 
-      final List<Map<String, dynamic>> loadedCategories =
-          snapshot.docs.map((doc) {
+      final List<Map<String, dynamic>> loadedCategories = snapshot.docs.map((doc) {
         final data = doc.data();
         data['id'] = doc.id;
         return data;
@@ -78,11 +76,7 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
         isCategoriesLoaded = true;
       });
 
-      showSnackBar(
-        Colors.red,
-        'تعذر تحميل الأقسام، حاول مرة أخرى',
-        context,
-      );
+      showSnackBar(Colors.red, 'تعذر تحميل الأقسام، حاول مرة أخرى', context);
     } finally {
       if (mounted && isLoadingDialogShown) {
         hideLoadingDialog(context);
@@ -427,19 +421,25 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
       );
     }
 
-    final String? currentValue = categories.any(
-      (category) =>
-          '${category['title'] ?? ''}'.trim() == authCubit.selectedCategory,
-    )
-        ? authCubit.selectedCategory
+    final Map<String, dynamic>? currentValue =
+    authCubit.selectedCategory == null
+        ? null
+        : categories.firstWhere(
+          (category) =>
+      category['id'] == authCubit.selectedCategory!['id'],
+      orElse: () => {},
+    );
+
+    final value = currentValue != null && currentValue.isNotEmpty
+        ? currentValue
         : null;
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: DropdownButtonFormField<String>(
+      child: DropdownButtonFormField<Map<String, dynamic>>(
         dropdownColor: cubit.isDark ? lightDarkColor : Colors.white,
         isExpanded: true,
-        value: currentValue,
+        value: value,
         style: TextStyle(
             fontSize: 13.sp,
             color: cubit.isDark ? Colors.white : Colors.black,
@@ -548,8 +548,8 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
         items: categories.map((category) {
           final String title = '${category['title'] ?? ''}'.trim();
 
-          return DropdownMenuItem<String>(
-            value: title,
+          return DropdownMenuItem<Map<String, dynamic>>(
+            value: category,
             alignment: AlignmentDirectional.centerStart,
             child: Directionality(
               textDirection: TextDirection.rtl,
@@ -595,7 +595,7 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
           });
         },
         validator: (value) {
-          if (value == null || value.trim().isEmpty) {
+          if (value == null) {
             return 'يرجى اختيار القسم';
           }
           return null;
@@ -751,11 +751,14 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
     }
 
     if (profileImageFile == null) {
-      showSnackBar(
-        Colors.red,
-        'يرجى إضافة صورة شخصية واضحة',
-        context,
-      );
+      showSnackBar(Colors.red, 'يرجى إضافة صورة شخصية واضحة', context);
+      return;
+    }
+
+    final selectedCategory = authCubit.selectedCategory;
+
+    if (selectedCategory == null) {
+      showSnackBar(Colors.red, 'يرجى اختيار القسم', context);
       return;
     }
 
@@ -764,14 +767,13 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
       address: addressController.text.trim(),
       experiences: experiences,
       profileImage: profileImageFile!.path,
-      specialization: authCubit.selectedCategory!.trim(),
+      specialization: selectedCategory['title']?.toString() ?? '',
+      categoryId: selectedCategory['id']?.toString() ?? '',
+      category: selectedCategory['title']?.toString() ?? '',
       previousWorks: previousWorks,
     );
 
-    moveAndReplace(
-      context,
-      const WorkerAccountVerification(isFromOnboarding: true),
-    );
+    moveAndReplace(context, const WorkerAccountVerification(isFromOnboarding: true),);
   }
 
   @override
@@ -794,11 +796,7 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
               showLoadingDialog(context);
             } else if (state is CompleteWorkerProfileSuccessState) {
               hideLoadingDialog(context);
-              showSnackBar(
-                Colors.green,
-                'تم إكمال إعداد حسابك بنجاح',
-                context,
-              );
+              showSnackBar(Colors.green, 'تم إكمال إعداد حسابك بنجاح', context);
               moveAndReplace(
                 context,
                 const WorkerAccountVerification(isFromOnboarding: true),

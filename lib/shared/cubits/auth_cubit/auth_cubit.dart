@@ -315,7 +315,7 @@ class AuthCubit extends Cubit<AuthStates> {
   }
 
 
-  String? selectedCategory;
+  Map<String, dynamic>? selectedCategory;
   var workerNameController = TextEditingController();
   var workerPasswordController = TextEditingController();
   var workerAddController = TextEditingController();
@@ -327,6 +327,8 @@ class AuthCubit extends Cubit<AuthStates> {
 
   void setPendingWorkerProfile({
     required String specialization,
+    required String categoryId,
+    required String category,
     required String address,
     required String about,
     required List<String> experiences,
@@ -336,6 +338,8 @@ class AuthCubit extends Cubit<AuthStates> {
   {
     pendingWorkerProfile = {
       'specialization': specialization.trim(),
+      'categoryId': categoryId,
+      'category': category,
       'address': address.trim(),
       'about': about.trim(),
       'experiences': List<String>.from(experiences),
@@ -447,6 +451,8 @@ class AuthCubit extends Cubit<AuthStates> {
         'name': formattedName,
         'password': hashPassword(password),
         'role': 'provider',
+        'categoryId':profileData['categoryId'],
+        'category':profileData['category'],
         'specialization': profileData['specialization'] ?? '',
         'address': profileData['address'] ?? '',
         'avgRating': 0.0,
