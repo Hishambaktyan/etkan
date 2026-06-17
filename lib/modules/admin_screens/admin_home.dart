@@ -100,6 +100,283 @@ class _AdminHomeState extends State<AdminHome> {
 
   DateTime? lastBackPressedTime;
 
+  void showRequestsSheet({
+    required BuildContext context,
+    required List<Map<String, dynamic>> requests,
+    required List<Map<String, dynamic>> providers,
+    required String title,
+    required String icon,
+    required Color color,
+  }) {
+    final appCubit = AppCubit.get(context);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.45),
+      builder: (_) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.78,
+            ),
+            padding: EdgeInsetsDirectional.only(
+              start: 15.w,
+              end: 15.w,
+              top: 10.h,
+              bottom: 20.h,
+            ),
+            decoration: BoxDecoration(
+              color: appCubit.isDark ? darkBgColor : bgColor,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(35.r),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 25,
+                  offset: const Offset(0, -8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 45.w,
+                  height: 5.h,
+                  margin: EdgeInsets.only(bottom: 15.h),
+                  decoration: BoxDecoration(
+                    color: appCubit.isDark
+                        ? Colors.white.withOpacity(0.18)
+                        : Colors.grey.withOpacity(0.35),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                ),
+
+                Container(
+                  padding: EdgeInsetsDirectional.all(15.r),
+                  decoration: BoxDecoration(
+                    color: appCubit.isDark ? lightDarkColor : Colors.white,
+                    borderRadius: BorderRadius.circular(25.r),
+                    boxShadow: blueShadow,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsetsDirectional.all(10.r),
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: SvgPicture.asset(
+                          icon,
+                          color: color,
+                          width: 24.w,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp,
+                                color: appCubit.isDark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              'يوجد ${requests.length} طلب بانتظار المراجعة',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                color: appCubit.isDark
+                                    ? darkSubTextColor
+                                    : Colors.grey.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 15.h),
+
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: requests.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final request = requests[index];
+                      final providerId =
+                          request['providerId']?.toString() ?? '';
+
+                      final provider = providers.firstWhere(
+                            (item) =>
+                        item['id']?.toString() == providerId ||
+                            item['uid']?.toString() == providerId,
+                        orElse: () => {},
+                      );
+
+                      final providerName =
+                          provider['name'] ?? request['providerName'] ?? 'فني غير معروف';
+
+                      final providerPhone =
+                          provider['phone'] ?? request['providerPhone'] ?? '';
+
+                      final providerImage =
+                          provider['profileImage'] ?? request['providerImage'] ?? '';
+
+                      final providerSpecialization =
+                          provider['specialization'] ?? provider['category'] ?? '';
+
+                      return InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        borderRadius: BorderRadius.circular(25.r),
+                        onTap: () {
+                          if (provider.isEmpty) {
+                            showSnackBar(
+                              Colors.red,
+                              'تعذر العثور على بيانات الفني',
+                              context,
+                            );
+                            return;
+                          }
+
+                          Navigator.pop(context);
+                          move(
+                            context,
+                            AdminProviderInfo(provider: provider),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsetsDirectional.all(12.r),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark ? lightDarkColor : Colors.white,
+                            borderRadius: BorderRadius.circular(25.r),
+                            border: Border.all(
+                              color: color.withOpacity(0.18),
+                            ),
+                            boxShadow: blueShadow,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 58.r,
+                                height: 58.r,
+                                padding: EdgeInsetsDirectional.all(2.r),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: color.withOpacity(0.35),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  backgroundColor: color.withOpacity(0.10),
+                                  backgroundImage: providerImage
+                                      .toString()
+                                      .trim()
+                                      .isNotEmpty
+                                      ? NetworkImage(providerImage)
+                                      : null,
+                                  child: providerImage
+                                      .toString()
+                                      .trim()
+                                      .isEmpty
+                                      ? Icon(
+                                    Icons.person_rounded,
+                                    color: color,
+                                    size: 28.sp,
+                                  )
+                                      : null,
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      providerName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: appCubit.isDark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5.h),
+                                    if (providerSpecialization.toString().isNotEmpty)
+                                      Text(
+                                        providerSpecialization.toString(),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: appCubit.isDark
+                                              ? darkSubTextColor
+                                              : Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    if (providerPhone.toString().isNotEmpty)
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.only(top: 4.h),
+                                        child: Text(
+                                          providerPhone.toString(),
+                                          style: TextStyle(
+                                            fontSize: 10.sp,
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: 34.r,
+                                height: 34.r,
+                                decoration: BoxDecoration(
+                                  color: color.withOpacity(0.10),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: color,
+                                  size: 15.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppStates>(
@@ -340,25 +617,14 @@ class _AdminHomeState extends State<AdminHome> {
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () {
-                                    if (adminCubit.verificationRequests.isEmpty) {
-                                      showSnackBar(Colors.orange, 'لا توجد طلبات توثيق حالياً', context,);
-                                      return;
-                                    }
-
-                                    final request = adminCubit.verificationRequests.first;
-
-                                    final providerId = request['providerId']?.toString() ?? '';
-
-                                    final provider = adminCubit.providers.firstWhere(
-                                          (item) =>
-                                      item['id']?.toString() == providerId ||
-                                          item['uid']?.toString() == providerId, orElse: () => {},);
-
-                                    if (provider.isEmpty) {
-                                      showSnackBar(Colors.red, 'تعذر العثور على بيانات الفني', context);
-                                      return;
-                                    }
-                                    move(context, AdminProviderInfo(provider: provider),);
+                                    showRequestsSheet(
+                                      context: context,
+                                      requests: adminCubit.verificationRequests,
+                                      providers: adminCubit.providers,
+                                      title: 'طلبات التوثيق',
+                                      icon: 'assets/verf.svg',
+                                      color: Colors.orangeAccent,
+                                    );
                                   },
                                   child: Container(
                                     margin: EdgeInsetsDirectional.only(
@@ -427,26 +693,15 @@ class _AdminHomeState extends State<AdminHome> {
                                 InkWell(
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
-                                  onTap: () {
-                                    if (adminCubit.subscriptionRequests.isEmpty) {
-                                      showSnackBar(Colors.orange, 'لا توجد طلبات توثيق حالياً', context,);
-                                      return;
-                                    }
-
-                                    final request = adminCubit.subscriptionRequests.first;
-
-                                    final providerId = request['providerId']?.toString() ?? '';
-
-                                    final provider = adminCubit.providers.firstWhere(
-                                          (item) =>
-                                      item['id']?.toString() == providerId ||
-                                          item['uid']?.toString() == providerId, orElse: () => {},);
-
-                                    if (provider.isEmpty) {
-                                      showSnackBar(Colors.red, 'تعذر العثور على بيانات الفني', context);
-                                      return;
-                                    }
-                                    move(context, AdminProviderInfo(provider: provider),);
+                                  onTap: (){
+                                    showRequestsSheet(
+                                      context: context,
+                                      requests: adminCubit.subscriptionRequests,
+                                      providers: adminCubit.providers,
+                                      title: 'طلبات الاشتراك',
+                                      icon: 'assets/subs.svg',
+                                      color: Colors.blueAccent,
+                                    );
                                   },
                                   child: Container(
                                     margin: EdgeInsetsDirectional.only(

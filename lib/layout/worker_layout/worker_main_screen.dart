@@ -109,7 +109,7 @@ class _WorkerMainScreenState extends State<WorkerMainScreen> {
                               color: Colors.grey,
                             ),
                             selectedIcon: SvgPicture.asset(
-                              'assets/services_bold.svg',
+                              'assets/services.svg',
                               width: 25.w,
                               height: 25.h,
                               color: cubit.currentIndex == 1
