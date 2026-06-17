@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Etkan/modules/worker_screens/worker_request_details.dart';
-import 'package:Etkan/modules/worker_screens/worker_subscriptions_screen.dart';
+import 'package:Etkan/modules/worker_screens/worker_subscriptions.dart';
 import 'package:Etkan/modules/worker_screens/worker_account_verification.dart';
 import 'package:Etkan/shared/cubits/notification_cubit/notification_states.dart';
 import 'package:Etkan/shared/networks/local/cache_helper.dart';
@@ -215,7 +215,7 @@ class NotificationCubit extends Cubit<NotificationStates> {
       _runWhenNavigatorReady(() {
         navigatorKey.currentState!.push(
           MaterialPageRoute(
-            builder: (_) => const WorkerSubscriptionsScreen(),
+            builder: (_) => const WorkerSubscriptions(),
           ),
         );
       });

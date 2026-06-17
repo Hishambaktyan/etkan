@@ -376,128 +376,125 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
       context: parentContext,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Container(
-            padding: EdgeInsetsDirectional.only(
-              start: 10.w,
-              end: 10.w,
-              top: 10.h,
-              bottom: 25.h,
+        return Container(
+          padding: EdgeInsetsDirectional.only(
+            start: 10.w,
+            end: 10.w,
+            top: 10.h,
+            bottom: 25.h,
+          ),
+          decoration: BoxDecoration(
+            color: appCubit.isDark ? lightDarkColor : Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(30.r),
             ),
-            decoration: BoxDecoration(
-              color: appCubit.isDark ? lightDarkColor : Colors.white,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(30.r),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 45.w,
+                height: 5.h,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
               ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 45.w,
-                  height: 5.h,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                Row(
-                  children: [
-                    Container(
-                        padding: EdgeInsetsDirectional.all(10.r),
-                        decoration: BoxDecoration(
-                          color: mainColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(14.r),
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/setting.svg',
-                          color: mainColor,
-                        )),
-                    SizedBox(width: 10.w),
-                    Text(
-                      'إجراءات الخدمة',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            Theme.of(parentContext).textTheme.bodyLarge!.color,
+              SizedBox(height: 10.h),
+              Row(
+                children: [
+                  Container(
+                      padding: EdgeInsetsDirectional.all(10.r),
+                      decoration: BoxDecoration(
+                        color: mainColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(14.r),
                       ),
+                      child: SvgPicture.asset(
+                        'assets/setting.svg',
+                        color: mainColor,
+                      )),
+                  SizedBox(width: 10.w),
+                  Text(
+                    'إجراءات الخدمة',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(parentContext).textTheme.bodyLarge!.color,
                     ),
-                  ],
-                ),
-                SizedBox(height: 10.h),
-                buildServiceActionItem(
-                  context: parentContext,
-                  appCubit: appCubit,
-                  icon: isActive ? 'assets/eye-slash.svg' : 'assets/eye.svg',
-                  iconColor: isActive ? Colors.orange : Colors.green,
-                  title: isActive ? 'إلغاء تفعيل الخدمة' : 'تفعيل الخدمة',
-                  subtitle: isActive
-                      ? 'لن تظهر هذه الخدمة للعملاء'
-                      : 'ستظهر هذه الخدمة للعملاء',
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    workerCubit.changeServiceActivity(
-                      serviceId: service['id'],
-                      value: !isActive,
+                  ),
+                ],
+              ),
+              SizedBox(height: 10.h),
+              buildServiceActionItem(
+                context: parentContext,
+                appCubit: appCubit,
+                icon: isActive ? 'assets/eye-slash.svg' : 'assets/eye.svg',
+                iconColor: isActive ? Colors.orange : Colors.green,
+                title: isActive ? 'إلغاء تفعيل الخدمة' : 'تفعيل الخدمة',
+                subtitle: isActive
+                    ? 'لن تظهر هذه الخدمة للعملاء'
+                    : 'ستظهر هذه الخدمة للعملاء',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  workerCubit.changeServiceActivity(
+                    serviceId: service['id'],
+                    value: !isActive,
+                  );
+                },
+              ),
+              SizedBox(height: 10.h),
+              buildServiceActionItem(
+                context: parentContext,
+                appCubit: appCubit,
+                icon: 'assets/pen.svg',
+                iconColor: mainColor,
+                title: 'تعديل الخدمة',
+                subtitle: 'تعديل الاسم، السعر، المدة أو الصورة',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  move(
+                    parentContext,
+                    WorkerEditService(service: service),
+                  );
+                },
+              ),
+              SizedBox(height: 10.h),
+              buildServiceActionItem(
+                context: parentContext,
+                appCubit: appCubit,
+                icon: 'assets/delete.svg',
+                iconColor: Colors.red,
+                title: 'حذف الخدمة',
+                subtitle: 'حذف الخدمة نهائيًا من قائمة خدماتك',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+
+                  Future.delayed(const Duration(milliseconds: 150), () {
+                    if (!mounted) return;
+
+                    defaultConfirmDialog(
+                      context: parentContext,
+                      isDark: appCubit.isDark,
+                      icon: 'assets/delete.svg',
+                      iconColor: Colors.red,
+                      title: 'حذف الخدمة',
+                      body:
+                          'هل أنت متأكد أنك تريد حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.',
+                      confirmText: 'حذف',
+                      cancelText: 'إلغاء',
+                      onConfirm: () {
+                        Navigator.pop(parentContext);
+
+                        workerCubit.deleteService(
+                          serviceId: service['id'],
+                        );
+                      },
                     );
-                  },
-                ),
-                SizedBox(height: 10.h),
-                buildServiceActionItem(
-                  context: parentContext,
-                  appCubit: appCubit,
-                  icon: 'assets/pen.svg',
-                  iconColor: mainColor,
-                  title: 'تعديل الخدمة',
-                  subtitle: 'تعديل الاسم، السعر، المدة أو الصورة',
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    move(
-                      parentContext,
-                      WorkerEditService(service: service),
-                    );
-                  },
-                ),
-                SizedBox(height: 10.h),
-                buildServiceActionItem(
-                  context: parentContext,
-                  appCubit: appCubit,
-                  icon: 'assets/delete.svg',
-                  iconColor: Colors.red,
-                  title: 'حذف الخدمة',
-                  subtitle: 'حذف الخدمة نهائيًا من قائمة خدماتك',
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-
-                    Future.delayed(const Duration(milliseconds: 150), () {
-                      if (!mounted) return;
-
-                      defaultConfirmDialog(
-                        context: parentContext,
-                        isDark: appCubit.isDark,
-                        icon: 'assets/delete.svg',
-                        iconColor: Colors.red,
-                        title: 'حذف الخدمة',
-                        body:
-                            'هل أنت متأكد أنك تريد حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.',
-                        confirmText: 'حذف',
-                        cancelText: 'إلغاء',
-                        onConfirm: () {
-                          Navigator.pop(parentContext);
-
-                          workerCubit.deleteService(
-                            serviceId: service['id'],
-                          );
-                        },
-                      );
-                    });
-                  },
-                ),
-              ],
-            ),
+                  });
+                },
+              ),
+            ],
           ),
         );
       },
@@ -550,33 +547,27 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
           },
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
-
-            final String currentServiceId =
-                '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
+            final String currentServiceId = '${widget.service['id'] ?? widget.service['serviceId'] ?? ''}';
 
             final int serviceIndex = workerCubit.workerServices.indexWhere(
               (service) {
-                final String id =
-                    '${service['id'] ?? service['serviceId'] ?? ''}';
+                final String id = '${service['id'] ?? service['serviceId'] ?? ''}';
                 return id == currentServiceId;
               },
             );
 
             if (serviceIndex == -1) {
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: Scaffold(
-                  body: Center(
-                    child: Padding(
-                      padding: EdgeInsetsDirectional.all(20.r),
-                      child: Text(
-                        'تم حذف الخدمة أو لم تعد موجودة.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+              return Scaffold(
+                body: Center(
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.all(20.r),
+                    child: Text(
+                      'تم حذف الخدمة أو لم تعد موجودة.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -587,297 +578,294 @@ class _WorkerServiceDetailsState extends State<WorkerServiceDetails> {
             Map<String, dynamic> service = Map<String, dynamic>.from(
                 workerCubit.workerServices[serviceIndex]);
 
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 400.h,
-                        child: Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadiusDirectional.vertical(
-                                  bottom: Radius.circular(15.r)),
-                              child: Image.network(
-                                '${service['serviceImage'] ?? ''}',
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: 300.h,
-                              ),
+            return Scaffold(
+              body: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 400.h,
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadiusDirectional.vertical(
+                                bottom: Radius.circular(15.r)),
+                            child: Image.network(
+                              '${service['serviceImage'] ?? ''}',
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 300.h,
                             ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.only(
-                                  top: 35.h, start: 10.w, end: 10.w),
-                              child: Row(
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.only(
+                                top: 35.h, start: 10.w, end: 10.w),
+                            child: Row(
+                              children: [
+                                buildButton(
+                                  context: context,
+                                  isDark: appCubit.isDark,
+                                  icon: Icons.arrow_back_ios_new_rounded,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                const Spacer(),
+                                buildButton(
+                                  context: context,
+                                  isDark: appCubit.isDark,
+                                  icon: Icons.more_vert_rounded,
+                                  onTap: () {
+                                    showServiceActionsSheet(
+                                      context: context,
+                                      service: service,
+                                      appCubit: appCubit,
+                                      workerCubit: workerCubit,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: EdgeInsetsDirectional.symmetric(
+                                  horizontal: 10.w),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  buildButton(
-                                    context: context,
-                                    isDark: appCubit.isDark,
-                                    icon: Icons.arrow_back_ios_new_rounded,
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  const Spacer(),
-                                  buildButton(
-                                    context: context,
-                                    isDark: appCubit.isDark,
-                                    icon: Icons.more_vert_rounded,
-                                    onTap: () {
-                                      showServiceActionsSheet(
-                                        context: context,
-                                        service: service,
-                                        appCubit: appCubit,
-                                        workerCubit: workerCubit,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Padding(
-                                padding: EdgeInsetsDirectional.symmetric(
-                                    horizontal: 10.w),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsetsDirectional.all(18.r),
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: appCubit.isDark
-                                            ? lightDarkColor
-                                            : Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(25.r),
-                                        boxShadow: blueShadow,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding:
-                                                EdgeInsetsDirectional.symmetric(
-                                                    horizontal: 10.w,
-                                                    vertical: 4.h),
-                                            decoration: BoxDecoration(
-                                              color: mainColor.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(6.r),
-                                            ),
-                                            child: Text(
-                                              '${service['category']}',
-                                              style: TextStyle(
-                                                color: appCubit.isDark
-                                                    ? Colors.white
-                                                    : Colors.grey.shade700,
-                                                fontSize: 10.sp,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
+                                  Container(
+                                    padding: EdgeInsetsDirectional.all(18.r),
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: appCubit.isDark
+                                          ? lightDarkColor
+                                          : Colors.white,
+                                      borderRadius:
+                                          BorderRadius.circular(25.r),
+                                      boxShadow: blueShadow,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding:
+                                              EdgeInsetsDirectional.symmetric(
+                                                  horizontal: 10.w,
+                                                  vertical: 4.h),
+                                          decoration: BoxDecoration(
+                                            color: mainColor.withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(6.r),
                                           ),
-                                          SizedBox(height: 10.h),
-                                          Text(
-                                            service['name'],
+                                          child: Text(
+                                            '${service['category']}',
                                             style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15.sp,
                                               color: appCubit.isDark
                                                   ? Colors.white
-                                                  : Colors.black,
+                                                  : Colors.grey.shade700,
+                                              fontSize: 10.sp,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
-                                          SizedBox(height: 15.h),
-                                          Divider(
+                                        ),
+                                        SizedBox(height: 10.h),
+                                        Text(
+                                          service['name'],
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15.sp,
+                                            color: appCubit.isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 15.h),
+                                        Divider(
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade300,
+                                            height: 1),
+                                        SizedBox(height: 15.h),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.payments_outlined,
+                                                    size: 18.r,
+                                                    color: appCubit.isDark
+                                                        ? darkSubTextColor
+                                                        : Colors.grey,
+                                                  ),
+                                                  SizedBox(width: 8.w),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'السعر التقديري',
+                                                        style: TextStyle(
+                                                          fontSize: 10.sp,
+                                                          color: appCubit
+                                                                  .isDark
+                                                              ? darkSubTextColor
+                                                              : Colors.grey,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${service['price']} $reyalSymbol',
+                                                        style: TextStyle(
+                                                          color: mainColor,
+                                                          fontSize: 14.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 30.h,
+                                              width: 1,
                                               color: appCubit.isDark
                                                   ? darkSubTextColor
                                                   : Colors.grey.shade300,
-                                              height: 1),
-                                          SizedBox(height: 15.h),
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.payments_outlined,
-                                                      size: 18.r,
-                                                      color: appCubit.isDark
-                                                          ? darkSubTextColor
-                                                          : Colors.grey,
-                                                    ),
-                                                    SizedBox(width: 8.w),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          'السعر التقديري',
-                                                          style: TextStyle(
-                                                            fontSize: 10.sp,
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? darkSubTextColor
-                                                                : Colors.grey,
-                                                          ),
+                                            ),
+                                            SizedBox(width: 15.w),
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.timer_outlined,
+                                                    size: 18.r,
+                                                    color: appCubit.isDark
+                                                        ? darkSubTextColor
+                                                        : Colors.grey,
+                                                  ),
+                                                  SizedBox(width: 8.w),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'المدة المتوقعة',
+                                                        style: TextStyle(
+                                                          fontSize: 10.sp,
+                                                          color: appCubit
+                                                                  .isDark
+                                                              ? darkSubTextColor
+                                                              : Colors.grey,
                                                         ),
-                                                        Text(
-                                                          '${service['price']} $reyalSymbol',
-                                                          style: TextStyle(
-                                                            color: mainColor,
-                                                            fontSize: 14.sp,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
+                                                      ),
+                                                      Text(
+                                                        '${service['period']} دقيقة',
+                                                        style: TextStyle(
+                                                          color: appCubit
+                                                                  .isDark
+                                                              ? Colors.white
+                                                              : Colors
+                                                                  .black87,
+                                                          fontSize: 14.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
-                                              Container(
-                                                height: 30.h,
-                                                width: 1,
-                                                color: appCubit.isDark
-                                                    ? darkSubTextColor
-                                                    : Colors.grey.shade300,
-                                              ),
-                                              SizedBox(width: 15.w),
-                                              Expanded(
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.timer_outlined,
-                                                      size: 18.r,
-                                                      color: appCubit.isDark
-                                                          ? darkSubTextColor
-                                                          : Colors.grey,
-                                                    ),
-                                                    SizedBox(width: 8.w),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          'المدة المتوقعة',
-                                                          style: TextStyle(
-                                                            fontSize: 10.sp,
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? darkSubTextColor
-                                                                : Colors.grey,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          '${service['period']} دقيقة',
-                                                          style: TextStyle(
-                                                            color: appCubit
-                                                                    .isDark
-                                                                ? Colors.white
-                                                                : Colors
-                                                                    .black87,
-                                                            fontSize: 14.sp,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 10.h,
-                                          ),
-                                          Text(
-                                            '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
-                                            style: TextStyle(
-                                                color: Colors.grey.shade400,
-                                                fontSize: 8.sp),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.symmetric(
-                            horizontal: 10.w, vertical: 10.h),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildSectionTitle(
-                                title: 'وصف الخدمة',
-                                icon: Icons.notes_rounded,
-                                cubit: appCubit),
-                            SizedBox(
-                              height: 10.h,
-                            ),
-                            Container(
-                              width: double.infinity,
-                              padding: EdgeInsetsDirectional.all(15.r),
-                              decoration: BoxDecoration(
-                                color: appCubit.isDark
-                                    ? lightDarkColor
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(15.r),
-                                boxShadow: blueShadow,
-                              ),
-                              child: Column(
-                                children: [
-                                  ReadMoreText(
-                                    service['description'],
-                                    style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: appCubit.isDark
-                                            ? Colors.white
-                                            : Colors.black,
-                                        height: 1.5),
-                                    trimLines: 3,
-                                    colorClickableText: mainColor,
-                                    trimMode: TrimMode.Line,
-                                    trimCollapsedText: ' عرض المزيد',
-                                    trimExpandedText: ' عرض أقل',
-                                    moreStyle: TextStyle(
-                                        fontSize: 12.sp, color: mainColor),
-                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10.h,
+                                        ),
+                                        Text(
+                                          '* السعر النهائي قد يزيد أو ينقص حسب طبيعة الخدمة الفعلية، وحجم العمل المطلوب، وبعد موقع العميل عن مقدم الخدمة',
+                                          style: TextStyle(
+                                              color: Colors.grey.shade400,
+                                              fontSize: 8.sp),
+                                        ),
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
-                            SizedBox(height: 20.h),
-                            buildSectionTitle(
-                              title: 'التقييم والمراجعة',
-                              icon: Icons.star_border_rounded,
-                              cubit: appCubit,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.symmetric(
+                          horizontal: 10.w, vertical: 10.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildSectionTitle(
+                              title: 'وصف الخدمة',
+                              icon: Icons.notes_rounded,
+                              cubit: appCubit),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsetsDirectional.all(15.r),
+                            decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(15.r),
+                              boxShadow: blueShadow,
                             ),
-                            SizedBox(height: 10.h),
-                            buildWorkerReviewsCard(
-                              appCubit: appCubit,
-                              workerCubit: workerCubit,
-                              state: state,
+                            child: Column(
+                              children: [
+                                ReadMoreText(
+                                  service['description'],
+                                  style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: appCubit.isDark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      height: 1.5),
+                                  trimLines: 3,
+                                  colorClickableText: mainColor,
+                                  trimMode: TrimMode.Line,
+                                  trimCollapsedText: ' عرض المزيد',
+                                  trimExpandedText: ' عرض أقل',
+                                  moreStyle: TextStyle(
+                                      fontSize: 12.sp, color: mainColor),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                          SizedBox(height: 20.h),
+                          buildSectionTitle(
+                            title: 'التقييم والمراجعة',
+                            icon: Icons.star_border_rounded,
+                            cubit: appCubit,
+                          ),
+                          SizedBox(height: 10.h),
+                          buildWorkerReviewsCard(
+                            appCubit: appCubit,
+                            workerCubit: workerCubit,
+                            state: state,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             );

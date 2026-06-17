@@ -359,118 +359,114 @@ class _UserEditProfileState extends State<UserEditProfile> {
             }
           },
           builder: (context, userState) {
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-                appBar: AppBar(
-                  titleSpacing: 10,
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(7),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () => Navigator.pop(context),
-                          child: Icon(
-                            CupertinoIcons.back,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
+            return Scaffold(
+              appBar: AppBar(
+                titleSpacing: 10,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                automaticallyImplyLeading: false,
+                title: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(7),
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        onTap: () => Navigator.pop(context),
+                        child: Icon(
+                          CupertinoIcons.back,
+                          color: Theme.of(context).iconTheme.color,
                         ),
                       ),
-                      SizedBox(width: 10.w),
-                      Text(
-                        'تعديل الملف الشخصي',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.sp,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Text(
+                      'تعديل الملف الشخصي',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.sp,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                body: SingleChildScrollView(
-                  padding: EdgeInsetsDirectional.only(bottom: 95.h),
-                  child: Form(
-                    key: formKey,
-                    child: Padding(
-                      padding: EdgeInsetsDirectional.all(10.r),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildIntroCard(appCubit),
-                          SizedBox(height: 20.h),
-                          buildSectionHeader(
-                            title: 'المعلومات الشخصية',
-                            icon: SvgPicture.asset(
-                              'assets/contact.svg',
-                              color: mainColor,
-                              width: 22.w,
-                            ),
-                            cubit: appCubit,
+              ),
+              body: SingleChildScrollView(
+                padding: EdgeInsetsDirectional.only(bottom: 95.h),
+                child: Form(
+                  key: formKey,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.all(10.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildIntroCard(appCubit),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'المعلومات الشخصية',
+                          icon: SvgPicture.asset(
+                            'assets/contact.svg',
+                            color: mainColor,
+                            width: 22.w,
                           ),
-                          SizedBox(height: 10.h),
-                          buildWhiteCard(
-                            cubit: appCubit,
-                            child: Column(
-                              children: [
-                                _buildProfileImagePicker(appCubit),
-                                SizedBox(height: 25.h),
-                                defaultTextFormField(
-                                  text: 'الاسم الرباعي',
-                                  prefixIcon: 'assets/acc.svg',
-                                  errorMes:
-                                      'الاسم الرباعي يجب أن لا يكون فارغًا',
-                                  controller: nameController,
-                                  type: TextInputType.name,
-                                  cubit: appCubit,
-                                  validator: validateQuadName,
-                                  onChanged: (value) => limitNameToFourWords(
-                                    nameController,
-                                    value,
-                                  ),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        buildWhiteCard(
+                          cubit: appCubit,
+                          child: Column(
+                            children: [
+                              _buildProfileImagePicker(appCubit),
+                              SizedBox(height: 25.h),
+                              defaultTextFormField(
+                                text: 'الاسم الرباعي',
+                                prefixIcon: 'assets/acc.svg',
+                                errorMes:
+                                    'الاسم الرباعي يجب أن لا يكون فارغًا',
+                                controller: nameController,
+                                type: TextInputType.name,
+                                cubit: appCubit,
+                                validator: validateQuadName,
+                                onChanged: (value) => limitNameToFourWords(
+                                  nameController,
+                                  value,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 20.h),
-                          buildSectionHeader(
-                            title: 'ملاحظة',
-                            icon: SvgPicture.asset(
-                              'assets/info.svg',
-                              color: mainColor,
-                              width: 22.w,
-                            ),
-                            cubit: appCubit,
+                        ),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'ملاحظة',
+                          icon: SvgPicture.asset(
+                            'assets/info.svg',
+                            color: mainColor,
+                            width: 22.w,
                           ),
-                          SizedBox(height: 10.h),
-                          _buildNoteCard(appCubit),
-                        ],
-                      ),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        _buildNoteCard(appCubit),
+                      ],
                     ),
                   ),
                 ),
-                bottomNavigationBar: Container(
-                  padding: EdgeInsetsDirectional.only(
-                    start: 20.w,
-                    end: 20.w,
-                    top: 10.h,
-                    bottom: 20.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: appCubit.isDark ? darkBgColor : Colors.white,
-                    boxShadow: blueShadow,
-                  ),
-                  child: defaultButton(
-                    onPressed: () => _saveUserData(userCubit),
-                    text: 'حفظ التعديلات',
-                    height: 50.h,
-                  ),
+              ),
+              bottomNavigationBar: Container(
+                padding: EdgeInsetsDirectional.only(
+                  start: 20.w,
+                  end: 20.w,
+                  top: 10.h,
+                  bottom: 20.h,
+                ),
+                decoration: BoxDecoration(
+                  color: appCubit.isDark ? darkBgColor : Colors.white,
+                  boxShadow: blueShadow,
+                ),
+                child: defaultButton(
+                  onPressed: () => _saveUserData(userCubit),
+                  text: 'حفظ التعديلات',
+                  height: 50.h,
                 ),
               ),
             );

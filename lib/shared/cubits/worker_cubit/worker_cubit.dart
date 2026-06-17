@@ -14,14 +14,13 @@ class WorkerCubit extends Cubit<WorkerStates> {
   static WorkerCubit get(context) => BlocProvider.of(context);
 
   static const int freeServicesLimit = 5;
-  static const int freeCompletedRequestsLimit = 5;
+  static const int freeAcceptedRequestsLimit = 5;
 
   bool isSubscriptionActive = false;
   String subscriptionStatus = 'not_submitted';
   DateTime? subscriptionEndDate;
   Timer? _subscriptionExpiryTimer;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-      _workerSubscriptionListener;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?_workerSubscriptionListener;
   String? _listenedWorkerId;
 
   bool get isSubscriptionExpired => subscriptionStatus == 'expired';
@@ -31,15 +30,15 @@ class WorkerCubit extends Cubit<WorkerStates> {
       !isSubscriptionExpired &&
       (workerServicesCount ?? 0) >= freeServicesLimit;
 
-  bool get hasReachedFreeCompletedRequestsLimit =>
+  bool get hasReachedFreeAcceptedRequestsLimit =>
       !isSubscriptionActive &&
-      !isSubscriptionExpired &&
-      (workerCompletedRequestsCount ?? 0) >= freeCompletedRequestsLimit;
+          !isSubscriptionExpired &&
+          (workerAcceptedRequestsCount ?? 0) >= freeAcceptedRequestsLimit;
 
   bool get shouldShowSubscriptionWarning =>
       isSubscriptionExpired ||
       hasReachedFreeServicesLimit ||
-      hasReachedFreeCompletedRequestsLimit;
+      hasReachedFreeAcceptedRequestsLimit;
 
   String? get addServiceRestrictionMessage {
     if (isSubscriptionExpired) {
@@ -58,12 +57,12 @@ class WorkerCubit extends Cubit<WorkerStates> {
       return 'انتهت مدة اشتراكك';
     }
 
-    if (hasReachedFreeServicesLimit && hasReachedFreeCompletedRequestsLimit) {
+    if (hasReachedFreeServicesLimit && hasReachedFreeAcceptedRequestsLimit) {
       return 'لقد استهلكت الخطة المجانية';
     }
 
-    if (hasReachedFreeCompletedRequestsLimit) {
-      return 'أكملت 5 حجوزات مجانية';
+    if (hasReachedFreeAcceptedRequestsLimit) {
+      return 'قبلت 5 حجوزات مجانية';
     }
 
     return 'أضفت 5 خدمات مجانية';
@@ -78,12 +77,12 @@ class WorkerCubit extends Cubit<WorkerStates> {
       return 'وصلت إلى الحد المجاني، وطلب اشتراكك قيد المراجعة حالياً. يمكنك إكمال الحجوزات القديمة فقط.';
     }
 
-    if (hasReachedFreeServicesLimit && hasReachedFreeCompletedRequestsLimit) {
-      return 'أضفت 5 خدمات وأكملت 5 حجوزات مجانية. اشترك الآن لإضافة خدمات واستقبال حجوزات جديدة بلا حدود.';
+    if (hasReachedFreeServicesLimit && hasReachedFreeAcceptedRequestsLimit) {
+      return 'أضفت 5 خدمات قبلت 5 حجوزات مجانية. اشترك الآن لإضافة خدمات واستقبال حجوزات جديدة بلا حدود.';
     }
 
-    if (hasReachedFreeCompletedRequestsLimit) {
-      return 'أكملت 5 حجوزات مجانية. اشترك الآن لاستقبال حجوزات جديدة بلا حدود، ويمكنك إكمال الحجوزات القديمة.';
+    if (hasReachedFreeAcceptedRequestsLimit) {
+      return 'قبلت 5 حجوزات مجانية. اشترك الآن لاستقبال حجوزات جديدة بلا حدود، ويمكنك إكمال الحجوزات القديمة.';
     }
 
     return 'أضفت 5 خدمات مجانية. اشترك الآن لإضافة عدد غير محدود من الخدمات.';
@@ -317,6 +316,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
   int? workerRequestsCount;
   int? workerServicesCount;
   int? workerCompletedRequestsCount;
+  int? workerAcceptedRequestsCount;
   double? workerRating;
 
   List<Map<String, dynamic>> workerServices = [];
@@ -354,10 +354,18 @@ class WorkerCubit extends Cubit<WorkerStates> {
       workerRequestsCount = 0;
       workerServicesCount = 0;
       workerCompletedRequestsCount = 0;
+      workerAcceptedRequestsCount = 0;
       workerRating = 0.0;
 
       final userFuture =
-          FirebaseFirestore.instance.collection('users').doc(uid).get();
+      FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      final acceptedRequestsCountFuture = FirebaseFirestore.instance
+          .collection('requests')
+          .where('providerId', isEqualTo: uid)
+          .where('statusHistory.acceptedAt', isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(0))
+          .count()
+          .get();
 
       final completedRequestsCountFuture = FirebaseFirestore.instance
           .collection('requests')
@@ -380,11 +388,13 @@ class WorkerCubit extends Cubit<WorkerStates> {
       await Future.wait([
         userFuture,
         completedRequestsCountFuture,
+        acceptedRequestsCountFuture,
         requestsCountFuture,
         servicesFuture,
       ]);
 
       final userSnapshot = await userFuture;
+      final acceptedRequestSnapshot = await acceptedRequestsCountFuture;
       final completedRequestSnapshot = await completedRequestsCountFuture;
       final requestSnapshot = await requestsCountFuture;
       final getServicesSnapshot = await servicesFuture;
@@ -412,6 +422,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       workerName = userData['name'] ?? '';
       workerDept = userData['specialization'] ?? '';
       workerRequestsCount = requestSnapshot.count ?? 0;
+      workerAcceptedRequestsCount = acceptedRequestSnapshot.count ?? 0;
       workerCompletedRequestsCount = completedRequestSnapshot.count ?? 0;
       workerRating = (userData['avgRating'] ?? 0.0).toDouble();
 
@@ -429,6 +440,7 @@ class WorkerCubit extends Cubit<WorkerStates> {
       emit(GetWorkerDataSuccessState());
     } catch (e) {
       emit(GetWorkerDataErrorState(error: e.toString()));
+      print(e.toString());
     }
   }
 
@@ -929,7 +941,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
     String? profileImagePath,
     String? oldProfileImage,
     required List<String> previousWorks,
-  }) async {
+  })
+  async {
     emit(EditWorkerDataLoadingState());
 
     try {
@@ -948,11 +961,9 @@ class WorkerCubit extends Cubit<WorkerStates> {
         finalProfileImage = await uploadImageToCloudinary(profileImagePath);
       }
 
-      List<String> oldImages =
-          previousWorks.where((image) => image.startsWith('http')).toList();
+      List<String> oldImages = previousWorks.where((image) => image.startsWith('http')).toList();
 
-      List<String> newImages =
-          previousWorks.where((image) => !image.startsWith('http')).toList();
+      List<String> newImages = previousWorks.where((image) => !image.startsWith('http')).toList();
 
       List<String> uploadedNewImages = await Future.wait(
         newImages.map((imagePath) => uploadImageToCloudinary(imagePath)),
@@ -1027,22 +1038,23 @@ class WorkerCubit extends Cubit<WorkerStates> {
     }
   }
 
-  Future<void> _handleCompletedRequestLimit({
+  Future<void> _handleAcceptedRequestLimit({
     required String providerId,
     required String requestId,
-  }) async {
+  })
+  async {
     if (providerId.isEmpty) return;
 
     try {
-      final completedCountSnapshot = await FirebaseFirestore.instance
+      final acceptedCountSnapshot = await FirebaseFirestore.instance
           .collection('requests')
           .where('providerId', isEqualTo: providerId)
-          .where('status', isEqualTo: 'مكتمل')
+          .where('statusHistory.acceptedAt', isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(0),)
           .count()
           .get();
 
-      final int completedCount = completedCountSnapshot.count ?? 0;
-      workerCompletedRequestsCount = completedCount;
+      final int acceptedCount = acceptedCountSnapshot.count ?? 0;
+      workerAcceptedRequestsCount = acceptedCount;
 
       final providerRef =
           FirebaseFirestore.instance.collection('users').doc(providerId);
@@ -1053,20 +1065,20 @@ class WorkerCubit extends Cubit<WorkerStates> {
       final providerData = providerDoc.data()!;
 
       await providerRef.update({
-        'completedJobs': completedCount,
+        'acceptedJobs': acceptedCount,
       });
 
       setSubscriptionInfo(providerData);
 
       if (_hasActiveSubscription(providerData) ||
           isSubscriptionExpiredFromData(providerData) ||
-          completedCount != freeCompletedRequestsLimit) {
+          acceptedCount != freeAcceptedRequestsLimit) {
         return;
       }
 
-      const String title = 'اكتملت حجوزاتك المجانية';
+      const String title = 'وصلت إلى حد الحجوزات المجانية';
       const String body =
-          'لقد أكملت 5 حجوزات مجانية. اشترك الآن لاستقبال حجوزات جديدة بلا حدود.';
+          'لقد قبلت 5 حجوزات مجانية. اشترك الآن لاستقبال حجوزات جديدة بلا حدود.';
 
       final String receiverToken = providerData['token']?.toString() ?? '';
 
@@ -1098,7 +1110,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
   Future<void> updateRequestStatus({
     required String requestId,
     required String status,
-  }) async {
+  })
+  async {
     try {
       emit(UpdateRequestStatusLoadingState());
 
@@ -1132,6 +1145,33 @@ class WorkerCubit extends Cubit<WorkerStates> {
       final customerId = oldRequestData['customerId']?.toString() ?? '';
       final providerId = oldRequestData['providerId']?.toString() ?? '';
       final requestTitle = oldRequestData['title']?.toString() ?? 'حجز خدمة';
+
+      if (status == 'مقبول' && oldStatus != 'مقبول') {
+        final providerDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(providerId)
+            .get();
+
+        final providerData = providerDoc.data() ?? {};
+
+        final bool hasActiveSubscription = _hasActiveSubscription(providerData);
+
+        final acceptedCountSnapshot = await FirebaseFirestore.instance
+            .collection('requests')
+            .where('providerId', isEqualTo: providerId)
+            .where('statusHistory.acceptedAt', isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(0),)
+            .count()
+            .get();
+
+        final int acceptedCount = acceptedCountSnapshot.count ?? 0;
+
+        if (!hasActiveSubscription && acceptedCount >= freeAcceptedRequestsLimit) {
+          emit(UpdateRequestStatusErrorState(
+            error: 'لقد قبلت 5 حجوزات مجانية. يرجى الاشتراك لقبول حجوزات جديدة.',
+          ));
+          return;
+        }
+      }
 
       final Map<String, dynamic> requestData = {
         'status': status,
@@ -1171,8 +1211,8 @@ class WorkerCubit extends Cubit<WorkerStates> {
 
       await batch.commit();
 
-      if (status == 'مكتمل' && oldStatus != 'مكتمل') {
-        await _handleCompletedRequestLimit(
+      if (status == 'مقبول' && oldStatus != 'مقبول') {
+        await _handleAcceptedRequestLimit(
           providerId: providerId,
           requestId: requestId,
         );

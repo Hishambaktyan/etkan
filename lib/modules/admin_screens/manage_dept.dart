@@ -132,199 +132,196 @@ class _ManageDeptState extends State<ManageDept> {
   Widget build(BuildContext context) {
     AppCubit appCubit = AppCubit.get(context);
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: BlocBuilder<AppCubit, AppStates>(builder: (context, state) {
-        AdminCubit adminCubit = AdminCubit.get(context);
+    return BlocBuilder<AppCubit, AppStates>(builder: (context, state) {
+      AdminCubit adminCubit = AdminCubit.get(context);
 
-        return BlocConsumer<AdminCubit, AdminStates>(
-          listener: (context, state) {
-            if (state is DeleteCategoryLoadingState) {
-              showLoadingDialog(context);
-            }
-            if (state is DeleteCategorySuccessState) {
-              showSnackBar(Colors.green, 'تم حذف القسم بنجاح', context);
-              hideLoadingDialog(context);
-              Navigator.pop(context);
-              Navigator.pop(context);
-              adminCubit.getCategories();
-            }
-            if (state is EditCategoryLoadingState) {
-              showLoadingDialog(context);
-            }
-            if (state is EditCategorySuccessState) {
-              showSnackBar(Colors.green, 'تم تعديل القسم بنجاح', context);
-              hideLoadingDialog(context);
-              adminCubit.getCategories();
-              Navigator.pop(context);
-            }
-          },
-          builder: (context, state) {
-            return Scaffold(
-              body: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    header(
-                        title: 'إدارة القسم',
-                        context: context,
-                        isLeading: true,
-                        isNotif: false,
-                        isAction: true,
-                        actionIcon: 'assets/delete.svg',
-                        onActionPresses: () => showTheDialog(
-                            context: context,
-                            appCubit: AppCubit.get(context),
-                            onConfirm: () => adminCubit
-                                .deleteCategory(widget.category['id']))),
-                    Padding(
-                      padding: EdgeInsetsDirectional.all(10.r),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            padding: EdgeInsetsDirectional.all(20.w),
-                            decoration: BoxDecoration(
-                              color: appCubit.isDark
-                                  ? lightDarkColor
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(25.r),
-                              boxShadow: blueShadow,
-                            ),
-                            child: Column(
-                              children: [
-                                Stack(
-                                  alignment: AlignmentDirectional.bottomEnd,
-                                  children: [
-                                    Container(
-                                      width: 110.r,
-                                      height: 110.r,
-                                      decoration: BoxDecoration(
-                                        color: mainColor.withOpacity(0.05),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: mainColor.withOpacity(0.2),
-                                            width: 2),
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(55.r),
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.all(
-                                                  25),
-                                          child: SvgPicture.network(
-                                            catImage!,
-                                            fit: BoxFit.cover,
-                                          ),
+      return BlocConsumer<AdminCubit, AdminStates>(
+        listener: (context, state) {
+          if (state is DeleteCategoryLoadingState) {
+            showLoadingDialog(context);
+          }
+          if (state is DeleteCategorySuccessState) {
+            showSnackBar(Colors.green, 'تم حذف القسم بنجاح', context);
+            hideLoadingDialog(context);
+            Navigator.pop(context);
+            Navigator.pop(context);
+            adminCubit.getCategories();
+          }
+          if (state is EditCategoryLoadingState) {
+            showLoadingDialog(context);
+          }
+          if (state is EditCategorySuccessState) {
+            showSnackBar(Colors.green, 'تم تعديل القسم بنجاح', context);
+            hideLoadingDialog(context);
+            adminCubit.getCategories();
+            Navigator.pop(context);
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  header(
+                      title: 'إدارة القسم',
+                      context: context,
+                      isLeading: true,
+                      isNotif: false,
+                      isAction: true,
+                      actionIcon: 'assets/delete.svg',
+                      onActionPresses: () => showTheDialog(
+                          context: context,
+                          appCubit: AppCubit.get(context),
+                          onConfirm: () => adminCubit
+                              .deleteCategory(widget.category['id']))),
+                  Padding(
+                    padding: EdgeInsetsDirectional.all(10.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          padding: EdgeInsetsDirectional.all(20.w),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark
+                                ? lightDarkColor
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(25.r),
+                            boxShadow: blueShadow,
+                          ),
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: AlignmentDirectional.bottomEnd,
+                                children: [
+                                  Container(
+                                    width: 110.r,
+                                    height: 110.r,
+                                    decoration: BoxDecoration(
+                                      color: mainColor.withOpacity(0.05),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: mainColor.withOpacity(0.2),
+                                          width: 2),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(55.r),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsetsDirectional.all(
+                                                25),
+                                        child: SvgPicture.network(
+                                          catImage!,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
                                     ),
-                                    InkWell(
-                                      onTap: () => pickCategoryImage(),
-                                      child: CircleAvatar(
-                                        radius: 18.r,
-                                        backgroundColor: mainColor,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.all(
-                                                  8.0),
-                                          child: SvgPicture.asset(
-                                            'assets/camera.svg',
-                                            color: Colors.white,
-                                            width: 18.w,
-                                          ),
+                                  ),
+                                  InkWell(
+                                    onTap: () => pickCategoryImage(),
+                                    child: CircleAvatar(
+                                      radius: 18.r,
+                                      backgroundColor: mainColor,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsetsDirectional.all(
+                                                8.0),
+                                        child: SvgPicture.asset(
+                                          'assets/camera.svg',
+                                          color: Colors.white,
+                                          width: 18.w,
                                         ),
                                       ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 25.h),
+                              defaultTextFormField(
+                                text: 'الكهرباء',
+                                prefixIcon: 'assets/grid.svg',
+                                errorMes: 'يرجى تعبئة الحقل',
+                                controller: titleController,
+                                type: TextInputType.text,
+                                cubit: AppCubit.get(context),
+                              ),
+                              SizedBox(height: 15.h),
+                              Container(
+                                padding: EdgeInsetsDirectional.symmetric(
+                                    horizontal: 12.w, vertical: 5.h),
+                                decoration: BoxDecoration(
+                                  color: appCubit.isDark
+                                      ? lightDarkColor
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  boxShadow: blueShadow,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(8.r),
+                                      decoration: BoxDecoration(
+                                        color: mainColor.withOpacity(0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(10.r),
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/work.svg',
+                                        width: 18.w,
+                                        color: mainColor,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: Text(
+                                        'حالة القسم (مفعل / معطل)',
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: appCubit.isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    Switch.adaptive(
+                                      value: isActive,
+                                      activeColor: mainColor,
+                                      activeTrackColor:
+                                          mainColor.withOpacity(0.3),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isActive = value;
+                                        });
+                                      },
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 25.h),
-                                defaultTextFormField(
-                                  text: 'الكهرباء',
-                                  prefixIcon: 'assets/grid.svg',
-                                  errorMes: 'يرجى تعبئة الحقل',
-                                  controller: titleController,
-                                  type: TextInputType.text,
-                                  cubit: AppCubit.get(context),
-                                ),
-                                SizedBox(height: 15.h),
-                                Container(
-                                  padding: EdgeInsetsDirectional.symmetric(
-                                      horizontal: 12.w, vertical: 5.h),
-                                  decoration: BoxDecoration(
-                                    color: appCubit.isDark
-                                        ? lightDarkColor
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(20.r),
-                                    boxShadow: blueShadow,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(8.r),
-                                        decoration: BoxDecoration(
-                                          color: mainColor.withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(10.r),
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/work.svg',
-                                          width: 18.w,
-                                          color: mainColor,
-                                        ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Text(
-                                          'حالة القسم (مفعل / معطل)',
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: appCubit.isDark
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                      Switch.adaptive(
-                                        value: isActive,
-                                        activeColor: mainColor,
-                                        activeTrackColor:
-                                            mainColor.withOpacity(0.3),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            isActive = value;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 40.h),
-                          defaultButton(
-                            onPressed: () async {
-                              await adminCubit.editCategory(
-                                  docId: widget.category['id'],
-                                  title: titleController.text.trim(),
-                                  isActive: isActive,
-                                  imageFile: File(catImage!));
-                            },
-                            text: 'حفظ التغييرات',
-                            height: 50.h,
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: 40.h),
+                        defaultButton(
+                          onPressed: () async {
+                            await adminCubit.editCategory(
+                                docId: widget.category['id'],
+                                title: titleController.text.trim(),
+                                isActive: isActive,
+                                imageFile: File(catImage!));
+                          },
+                          text: 'حفظ التغييرات',
+                          height: 50.h,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          },
-        );
-      }),
-    );
+            ),
+          );
+        },
+      );
+    });
   }
 }

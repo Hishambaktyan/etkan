@@ -4,11 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:Etkan/main.dart';
-import 'package:Etkan/modules/contact_us_screen.dart';
-import 'package:Etkan/modules/faq_Screen.dart';
+import 'package:Etkan/modules/contact_us.dart';
+import 'package:Etkan/modules/faq.dart';
 import 'package:Etkan/modules/worker_screens/worker_account_verification.dart';
 import 'package:Etkan/modules/worker_screens/worker_profile.dart';
-import 'package:Etkan/modules/worker_screens/worker_subscriptions_screen.dart';
+import 'package:Etkan/modules/worker_screens/worker_subscriptions.dart';
 import 'package:Etkan/shared/compenents/components.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
@@ -16,10 +16,10 @@ import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
 import '../../shared/networks/local/cache_helper.dart';
 import '../../shared/styles/colors.dart';
-import '../aboutApp_screen.dart';
+import '../about_app.dart';
 import '../on_boarding.dart';
-import '../privacy_policy_screen.dart';
-import '../terms_conditions_screen.dart';
+import '../privacy_policy_.dart';
+import '../terms_conditions.dart';
 
 class WorkerAccount extends StatefulWidget {
   const WorkerAccount({super.key});
@@ -195,174 +195,171 @@ class _WorkerAccountState extends State<WorkerAccount> {
           },
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      header(title: 'الإعدادات', context: context),
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                      buildSectionTitle(
-                        title: 'الحساب الشخصي',
-                        icon: 'assets/acc.svg',
-                        appCubit: appCubit,
-                      ),
-                      buildMenuCard(
-                        appCubit: appCubit,
-                        children: [
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'عرض الحساب',
-                            icon: 'assets/eye.svg',
-                            onTap: () {
-                              move(context, const WorkerProfile());
-                            },
-                          ),
-                        ],
-                      ),
-                      buildSectionTitle(
-                        title: 'خدمات التطبيق',
-                        icon: 'assets/grid.svg',
-                        appCubit: appCubit,
-                      ),
-                      buildMenuCard(
-                        appCubit: appCubit,
-                        children: [
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'الاشتراك',
-                            icon: 'assets/subs.svg',
-                            onTap: () {
-                              move(
-                                context,
-                                const WorkerSubscriptionsScreen(),
-                              );
-                            },
-                          ),
-                          buildDivider(appCubit),
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'توثيق الحساب',
-                            icon: 'assets/verf.svg',
-                            onTap: () {
-                              move(
-                                context,
-                                const WorkerAccountVerification(),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      buildSectionTitle(
-                        title: 'الدعم والمعلومات',
-                        icon: 'assets/support.svg',
-                        appCubit: appCubit,
-                      ),
-                      buildMenuCard(
-                        appCubit: appCubit,
-                        children: [
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'تواصل معنا',
-                            icon: 'assets/chat.svg',
-                            onTap: () {
-                              move(context, const ContactUsScreen());
-                            },
-                          ),
-                          buildDivider(appCubit),
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'الأسئلة الشائعة',
-                            icon: 'assets/ques.svg',
-                            onTap: () {
-                              move(context, const FaqScreen());
-                            },
-                          ),
-                          buildDivider(appCubit),
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'حول التطبيق',
-                            icon: 'assets/info.svg',
-                            onTap: () {
-                              move(context, const AboutAppScreen());
-                            },
-                          ),
-                          buildDivider(appCubit),
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'سياسة الخصوصية',
-                            icon: 'assets/reports.svg',
-                            onTap: () {
-                              move(context, PrivacyPolicyScreen());
-                            },
-                          ),
-                          buildDivider(appCubit),
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'الشروط والأحكام',
-                            icon: 'assets/hammer.svg',
-                            onTap: () {
-                              move(context, const TermsConditionsScreen());
-                            },
-                          ),
-                        ],
-                      ),
-                      buildSectionTitle(
-                        title: 'الإعدادات',
-                        icon: 'assets/setting.svg',
-                        appCubit: appCubit,
-                      ),
-                      buildMenuCard(
-                        appCubit: appCubit,
-                        children: [
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'الوضع المظلم',
-                            icon: 'assets/moon.svg',
-                            isSwitch: true,
-                            onTap: () {},
-                          ),
-                        ],
-                      ),
-                      buildSectionTitle(
-                        title: 'إدارة الحساب',
-                        icon: 'assets/acc_setting.svg',
-                        appCubit: appCubit,
-                      ),
-                      buildMenuCard(
-                        appCubit: appCubit,
-                        children: [
-                          buildMenuItem(
-                            appCubit: appCubit,
-                            title: 'تسجيل خروج',
-                            icon: 'assets/out.svg',
-                            isDanger: true,
-                            onTap: () {
-                              defaultConfirmDialog(
-                                context: context,
-                                isDark: appCubit.isDark,
-                                icon: 'assets/out.svg',
-                                iconColor: Colors.red,
-                                title: 'تأكيد تسجيل الخروج',
-                                body: 'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
-                                cancelText: 'إلغاء',
-                                confirmText: 'خروج',
-                                onConfirm: () {
-                                  Navigator.pop(context);
-                                  authCubit.logoutUser();
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20.h),
-                    ],
-                  ),
+            return Scaffold(
+              body: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    header(title: 'الإعدادات', context: context),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    buildSectionTitle(
+                      title: 'الحساب الشخصي',
+                      icon: 'assets/acc.svg',
+                      appCubit: appCubit,
+                    ),
+                    buildMenuCard(
+                      appCubit: appCubit,
+                      children: [
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'عرض الحساب',
+                          icon: 'assets/eye.svg',
+                          onTap: () {
+                            move(context, const WorkerProfile());
+                          },
+                        ),
+                      ],
+                    ),
+                    buildSectionTitle(
+                      title: 'خدمات التطبيق',
+                      icon: 'assets/grid.svg',
+                      appCubit: appCubit,
+                    ),
+                    buildMenuCard(
+                      appCubit: appCubit,
+                      children: [
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'الاشتراك',
+                          icon: 'assets/subs.svg',
+                          onTap: () {
+                            move(
+                              context,
+                              const WorkerSubscriptions(),
+                            );
+                          },
+                        ),
+                        buildDivider(appCubit),
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'توثيق الحساب',
+                          icon: 'assets/verf.svg',
+                          onTap: () {
+                            move(
+                              context,
+                              const WorkerAccountVerification(),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    buildSectionTitle(
+                      title: 'الدعم والمعلومات',
+                      icon: 'assets/support.svg',
+                      appCubit: appCubit,
+                    ),
+                    buildMenuCard(
+                      appCubit: appCubit,
+                      children: [
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'تواصل معنا',
+                          icon: 'assets/chat.svg',
+                          onTap: () {
+                            move(context, const ContactUs());
+                          },
+                        ),
+                        buildDivider(appCubit),
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'الأسئلة الشائعة',
+                          icon: 'assets/ques.svg',
+                          onTap: () {
+                            move(context, const Faq());
+                          },
+                        ),
+                        buildDivider(appCubit),
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'حول التطبيق',
+                          icon: 'assets/info.svg',
+                          onTap: () {
+                            move(context, const AboutApp());
+                          },
+                        ),
+                        buildDivider(appCubit),
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'سياسة الخصوصية',
+                          icon: 'assets/reports.svg',
+                          onTap: () {
+                            move(context, PrivacyPolicy());
+                          },
+                        ),
+                        buildDivider(appCubit),
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'الشروط والأحكام',
+                          icon: 'assets/hammer.svg',
+                          onTap: () {
+                            move(context, const TermsConditions());
+                          },
+                        ),
+                      ],
+                    ),
+                    buildSectionTitle(
+                      title: 'الإعدادات',
+                      icon: 'assets/setting.svg',
+                      appCubit: appCubit,
+                    ),
+                    buildMenuCard(
+                      appCubit: appCubit,
+                      children: [
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'الوضع المظلم',
+                          icon: 'assets/moon.svg',
+                          isSwitch: true,
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                    buildSectionTitle(
+                      title: 'إدارة الحساب',
+                      icon: 'assets/acc_setting.svg',
+                      appCubit: appCubit,
+                    ),
+                    buildMenuCard(
+                      appCubit: appCubit,
+                      children: [
+                        buildMenuItem(
+                          appCubit: appCubit,
+                          title: 'تسجيل خروج',
+                          icon: 'assets/out.svg',
+                          isDanger: true,
+                          onTap: () {
+                            defaultConfirmDialog(
+                              context: context,
+                              isDark: appCubit.isDark,
+                              icon: 'assets/out.svg',
+                              iconColor: Colors.red,
+                              title: 'تأكيد تسجيل الخروج',
+                              body: 'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                              cancelText: 'إلغاء',
+                              confirmText: 'خروج',
+                              onConfirm: () {
+                                Navigator.pop(context);
+                                authCubit.logoutUser();
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20.h),
+                  ],
                 ),
               ),
             );

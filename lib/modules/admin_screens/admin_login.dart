@@ -1,60 +1,28 @@
 import 'dart:ui';
+import 'package:Etkan/modules/select_user_type.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Etkan/main.dart';
-import 'package:Etkan/modules/select_user_type.dart';
-import 'package:Etkan/modules/forgot_password.dart';
-import 'package:Etkan/modules/user_screens/user_sign_up.dart';
+import 'package:Etkan/modules/admin_screens/admin_home.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
 import 'package:Etkan/shared/cubits/auth_cubit/auth_States.dart';
 import 'package:Etkan/shared/cubits/auth_cubit/auth_cubit.dart';
 import 'package:Etkan/shared/styles/colors.dart';
 import 'package:Etkan/shared/compenents/components.dart';
-import '../../layout/user_layout/user_main_screen.dart';
+//fk
 
-class UserLogin extends StatefulWidget {
-  const UserLogin({super.key});
+class AdminLogin extends StatefulWidget {
+  const AdminLogin({super.key});
 
   @override
-  State<UserLogin> createState() => _UserLoginState();
+  State<AdminLogin> createState() => _UserLoginScreenState();
 }
 
-Widget buildPhoneSuffix(AppCubit appCubit) {
-  return Container(
-    width: 62.w,
-    alignment: Alignment.center,
-    margin: EdgeInsetsDirectional.only(end: 5.w),
-    child: Text(
-      '+967',
-      textDirection: TextDirection.ltr,
-      style: TextStyle(
-        color: mainColor,
-        fontSize: 13.sp,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  );
-}
-
-class _UserLoginState extends State<UserLogin> {
+class _UserLoginScreenState extends State<AdminLogin> {
   var formKey = GlobalKey<FormState>();
-
-  String? validateYemeniPhone(String? value) {
-    final String phone = value?.trim() ?? '';
-
-    if (phone.isEmpty) {
-      return 'رقم الهاتف يجب أن لا يكون فارغ';
-    }
-
-    if (!RegExp(r'^7[0-9]{8}$').hasMatch(phone)) {
-      return 'أدخل رقم يمني مكون من 9 أرقام ويبدأ بـ 7';
-    }
-
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +37,17 @@ class _UserLoginState extends State<UserLogin> {
             }
             if (state is LoginSuccessState) {
               hideLoadingDialog(context);
-              moveAndReplace(context, const UserMainScreen());
+              moveAndReplace(
+                context,
+                const AdminHome(),
+              );
               authCubit.userLoginPhoneController.clear();
               authCubit.userLoginPasswordController.clear();
             }
             if (state is LoginErrorState) {
               hideLoadingDialog(context);
               showSnackBar(Colors.red, state.error.toString(), context);
+              print(state.error);
             }
           },
           builder: (context, state) {
@@ -198,7 +170,7 @@ class _UserLoginState extends State<UserLogin> {
                                 Align(
                                   alignment: AlignmentDirectional.topCenter,
                                   child: Container(
-                                    padding: EdgeInsets.all(20.r),
+                                    padding: EdgeInsetsDirectional.all(20.r),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.white.withOpacity(0.1),
@@ -231,7 +203,7 @@ class _UserLoginState extends State<UserLogin> {
                                   ),
                                 ),
                                 Text(
-                                  'سجل دخولك للاستمرار',
+                                  'سجل دخولك للإستمرار',
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(0.8),
                                     fontSize: 15.sp,
@@ -247,7 +219,7 @@ class _UserLoginState extends State<UserLogin> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                      height: 450.h,
+                      height: 420.h,
                       width: double.infinity,
                       padding: EdgeInsetsDirectional.symmetric(
                           horizontal: 20.w, vertical: 30.h),
@@ -274,26 +246,17 @@ class _UserLoginState extends State<UserLogin> {
                                 cubit: appCubit,
                                 text: 'رقم الهاتف',
                                 prefixIcon: 'assets/phone.svg',
-                                errorMes: 'رقم الهاتف يجب أن لا يكون فارغ',
+                                errorMes: 'الرجاء إدحال رقم الهاتف',
                                 controller:
                                     authCubit.userLoginPhoneController,
                                 type: TextInputType.phone,
-                                textDirection: TextDirection.ltr,
-                                textAlign: TextAlign.right,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(9),
-                                ],
-                                validator: validateYemeniPhone,
-                                suffixWidget: buildPhoneSuffix(appCubit),
                               ),
                               SizedBox(height: 20.h),
                               defaultTextFormField(
                                   cubit: appCubit,
                                   text: 'كلمة المرور',
                                   prefixIcon: 'assets/lock.svg',
-                                  errorMes:
-                                      'كلمة المرور يجب أن لا تكون فارغة',
+                                  errorMes: 'الرجاء إدخال كلمة المرور',
                                   controller:
                                       authCubit.userLoginPasswordController,
                                   type: TextInputType.visiblePassword,
@@ -303,64 +266,26 @@ class _UserLoginState extends State<UserLogin> {
                                   suffixPressed: () {
                                     authCubit.changePasswordVisiability();
                                   }),
-                              Align(
-                                alignment: AlignmentDirectional.centerStart,
-                                child: TextButton(
-                                  onPressed: () {
-                                    move(
-                                      context,
-                                      const ForgotPassword(
-                                        userType: 'user',
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    'نسيت كلمة المرور؟',
-                                    style: TextStyle(
-                                        color: mainColor,
-                                        fontSize: 12.sp,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: mainColor),
-                                  ),
-                                ),
-                              ),
                               SizedBox(height: 20.h),
                               defaultButton(
                                   onPressed: () async {
-                                    // إغلاق الكيبورد قبل إرسال الطلب
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                     if (formKey.currentState!.validate()) {
                                       await authCubit.loginUser(
-                                          phone: authCubit
-                                              .userLoginPhoneController.text
-                                              .trim(),
-                                          password: authCubit
-                                              .userLoginPasswordController
-                                              .text
-                                              .trim(),
-                                          requiredRole: 'user');
+                                        phone: authCubit
+                                            .userLoginPhoneController.text
+                                            .trim(),
+                                        password: authCubit
+                                            .userLoginPasswordController.text
+                                            .trim(),
+                                        requiredRole: 'admin',
+                                      );
                                     }
                                   },
                                   text: 'دخول',
                                   height: 50.h),
                               SizedBox(height: 20.h),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    'ليس لديك حساب؟',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey),
-                                  ),
-                                  defaultTextButton(
-                                    onPressed: () => moveAndReplace(
-                                        context, const UserSignUp()),
-                                    text: 'أنشئ حساب',
-                                  )
-                                ],
-                              ),
                             ],
                           ),
                         ),

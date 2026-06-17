@@ -811,248 +811,244 @@ class _WorkerCompleteProfileState extends State<WorkerCompleteProfile> {
           builder: (context, state) {
             AuthCubit authCubit = AuthCubit.get(context);
 
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-                appBar: AppBar(
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  title: Text(
-                    'إكمال الملف الشخصي',
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+            return Scaffold(
+              appBar: AppBar(
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                title: Text(
+                  'إكمال الملف الشخصي',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                body: SingleChildScrollView(
-                  padding: EdgeInsetsDirectional.only(bottom: 95.h),
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.all(10.r),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildIntroCard(appCubit),
-                              SizedBox(height: 20.h),
-                              buildSectionHeader(
-                                title: 'المعلومات الأساسية',
-                                icon: SvgPicture.asset(
-                                  'assets/contact.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
+              ),
+              body: SingleChildScrollView(
+                padding: EdgeInsetsDirectional.only(bottom: 95.h),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsDirectional.all(10.r),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildIntroCard(appCubit),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                              title: 'المعلومات الأساسية',
+                              icon: SvgPicture.asset(
+                                'assets/contact.svg',
+                                color: mainColor,
+                                width: 22.w,
                               ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: Column(
+                                children: [
+                                  _buildProfileImagePicker(appCubit),
+                                  SizedBox(height: 25.h),
+                                  _buildCategoryDropdown(appCubit, authCubit),
+                                  SizedBox(height: 15.h),
+                                  defaultTextFormField(
+                                    text: 'العنوان',
+                                    prefixIcon: 'assets/loc.svg',
+                                    errorMes: 'يرجى إدخال العنوان',
+                                    controller: addressController,
+                                    type: TextInputType.text,
+                                    cubit: appCubit,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return 'يرجى إدخال العنوان';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                              title: 'نبذة عنك',
+                              icon: SvgPicture.asset(
+                                'assets/info.svg',
+                                color: mainColor,
+                                width: 22.w,
+                              ),
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: buildInputField(
+                                controller: aboutController,
                                 cubit: appCubit,
-                                child: Column(
-                                  children: [
-                                    _buildProfileImagePicker(appCubit),
-                                    SizedBox(height: 25.h),
-                                    _buildCategoryDropdown(appCubit, authCubit),
-                                    SizedBox(height: 15.h),
-                                    defaultTextFormField(
-                                      text: 'العنوان',
-                                      prefixIcon: 'assets/loc.svg',
-                                      errorMes: 'يرجى إدخال العنوان',
-                                      controller: addressController,
-                                      type: TextInputType.text,
-                                      cubit: appCubit,
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.trim().isEmpty) {
-                                          return 'يرجى إدخال العنوان';
-                                        }
-                                        return null;
+                                maxLines: 6,
+                                hint:
+                                    'اكتب نبذة مختصرة عن خبرتك ومهاراتك وطريقة عملك',
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'يرجى كتابة نبذة مختصرة عنك';
+                                  }
+                                  if (value.trim().length < 20) {
+                                    return 'اكتب نبذة أوضح لا تقل عن 20 حرفًا';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                              title: 'الخبرات',
+                              icon: SvgPicture.asset(
+                                'assets/subs.svg',
+                                color: mainColor,
+                                width: 22.w,
+                              ),
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: defaultTextFormField(
+                                          text: 'أضف خبرة',
+                                          prefixIcon: 'assets/subs.svg',
+                                          errorMes: '',
+                                          controller: experienceController,
+                                          type: TextInputType.text,
+                                          cubit: appCubit,
+                                          validator: (value) => null,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      IconButton(
+                                        onPressed: () {
+                                          if (experienceController.text
+                                              .trim()
+                                              .isNotEmpty) {
+                                            setState(() {
+                                              experiences.add(
+                                                experienceController.text
+                                                    .trim(),
+                                              );
+                                              experienceController.clear();
+                                            });
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.add_box_rounded,
+                                          color: mainColor,
+                                          size: 35.r,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  if (experiences.isEmpty)
+                                    Container(
+                                      width: double.infinity,
+                                      padding:
+                                          EdgeInsetsDirectional.all(12.r),
+                                      decoration: BoxDecoration(
+                                        color: appCubit.isDark
+                                            ? darkBgColor
+                                            : Colors.grey.withOpacity(0.08),
+                                        borderRadius:
+                                            BorderRadius.circular(18.r),
+                                      ),
+                                      child: Text(
+                                        'يمكنك إضافة خبرات مثل: 5 سنوات في الصيانة المنزلية، تركيب وتمديد كهرباء، إصلاح أعطال السباكة.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          height: 1.6,
+                                          color: appCubit.isDark
+                                              ? darkSubTextColor
+                                              : Colors.grey.shade700,
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    ListView.builder(
+                                      itemCount: experiences.length,
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return _buildExperienceItem(
+                                          appCubit,
+                                          index,
+                                        );
                                       },
                                     ),
-                                  ],
-                                ),
+                                ],
                               ),
-                              SizedBox(height: 20.h),
-                              buildSectionHeader(
-                                title: 'نبذة عنك',
-                                icon: SvgPicture.asset(
-                                  'assets/info.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
+                            ),
+                            SizedBox(height: 20.h),
+                            buildSectionHeader(
+                              title: 'الأعمال السابقة',
+                              icon: SvgPicture.asset(
+                                'assets/image.svg',
+                                color: mainColor,
+                                width: 22.w,
                               ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
-                                cubit: appCubit,
-                                child: buildInputField(
-                                  controller: aboutController,
-                                  cubit: appCubit,
-                                  maxLines: 6,
-                                  hint:
-                                      'اكتب نبذة مختصرة عن خبرتك ومهاراتك وطريقة عملك',
-                                  validator: (value) {
-                                    if (value == null || value.trim().isEmpty) {
-                                      return 'يرجى كتابة نبذة مختصرة عنك';
-                                    }
-                                    if (value.trim().length < 20) {
-                                      return 'اكتب نبذة أوضح لا تقل عن 20 حرفًا';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              SizedBox(height: 20.h),
-                              buildSectionHeader(
-                                title: 'الخبرات',
-                                icon: SvgPicture.asset(
-                                  'assets/subs.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
-                              ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
-                                cubit: appCubit,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: defaultTextFormField(
-                                            text: 'أضف خبرة',
-                                            prefixIcon: 'assets/subs.svg',
-                                            errorMes: '',
-                                            controller: experienceController,
-                                            type: TextInputType.text,
-                                            cubit: appCubit,
-                                            validator: (value) => null,
-                                          ),
-                                        ),
-                                        SizedBox(width: 10.w),
-                                        IconButton(
-                                          onPressed: () {
-                                            if (experienceController.text
-                                                .trim()
-                                                .isNotEmpty) {
-                                              setState(() {
-                                                experiences.add(
-                                                  experienceController.text
-                                                      .trim(),
-                                                );
-                                                experienceController.clear();
-                                              });
-                                            }
-                                          },
-                                          icon: Icon(
-                                            Icons.add_box_rounded,
-                                            color: mainColor,
-                                            size: 35.r,
-                                          ),
-                                        ),
-                                      ],
+                              cubit: appCubit,
+                            ),
+                            SizedBox(height: 10.h),
+                            buildWhiteCard(
+                              cubit: appCubit,
+                              child: Column(
+                                children: [
+                                  defaultOutlinedButtonWithIcon(
+                                    onPressed: pickWorkImage,
+                                    text: 'إضافة صورة من أعمالك',
+                                    icon: const Icon(
+                                      Icons.add_rounded,
+                                      color: mainColor,
                                     ),
-                                    SizedBox(height: 15.h),
-                                    if (experiences.isEmpty)
-                                      Container(
-                                        width: double.infinity,
-                                        padding:
-                                            EdgeInsetsDirectional.all(12.r),
-                                        decoration: BoxDecoration(
-                                          color: appCubit.isDark
-                                              ? darkBgColor
-                                              : Colors.grey.withOpacity(0.08),
-                                          borderRadius:
-                                              BorderRadius.circular(18.r),
-                                        ),
-                                        child: Text(
-                                          'يمكنك إضافة خبرات مثل: 5 سنوات في الصيانة المنزلية، تركيب وتمديد كهرباء، إصلاح أعطال السباكة.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 11.sp,
-                                            height: 1.6,
-                                            color: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.grey.shade700,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      ListView.builder(
-                                        itemCount: experiences.length,
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return _buildExperienceItem(
-                                            appCubit,
-                                            index,
-                                          );
-                                        },
-                                      ),
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  _buildPreviousWorks(appCubit),
+                                ],
                               ),
-                              SizedBox(height: 20.h),
-                              buildSectionHeader(
-                                title: 'الأعمال السابقة',
-                                icon: SvgPicture.asset(
-                                  'assets/image.svg',
-                                  color: mainColor,
-                                  width: 22.w,
-                                ),
-                                cubit: appCubit,
-                              ),
-                              SizedBox(height: 10.h),
-                              buildWhiteCard(
-                                cubit: appCubit,
-                                child: Column(
-                                  children: [
-                                    defaultOutlinedButtonWithIcon(
-                                      onPressed: pickWorkImage,
-                                      text: 'إضافة صورة من أعمالك',
-                                      icon: const Icon(
-                                        Icons.add_rounded,
-                                        color: mainColor,
-                                      ),
-                                    ),
-                                    SizedBox(height: 15.h),
-                                    _buildPreviousWorks(appCubit),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                bottomNavigationBar: Container(
-                  padding: EdgeInsetsDirectional.only(
-                    start: 20.w,
-                    end: 20.w,
-                    top: 10.h,
-                    bottom: 20.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: appCubit.isDark ? darkBgColor : Colors.white,
-                    boxShadow: blueShadow,
-                  ),
-                  child: defaultButton(
-                    onPressed: () {
-                      // إغلاق الكيبورد قبل إرسال الطلب
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      _completeProfile(authCubit);
-                    },
-                    text: 'إكمال الملف والمتابعة',
-                    height: 50.h,
-                  ),
+              ),
+              bottomNavigationBar: Container(
+                padding: EdgeInsetsDirectional.only(
+                  start: 20.w,
+                  end: 20.w,
+                  top: 10.h,
+                  bottom: 20.h,
+                ),
+                decoration: BoxDecoration(
+                  color: appCubit.isDark ? darkBgColor : Colors.white,
+                  boxShadow: blueShadow,
+                ),
+                child: defaultButton(
+                  onPressed: () {
+                    // إغلاق الكيبورد قبل إرسال الطلب
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    _completeProfile(authCubit);
+                  },
+                  text: 'إكمال الملف والمتابعة',
+                  height: 50.h,
                 ),
               ),
             );

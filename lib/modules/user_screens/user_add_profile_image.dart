@@ -268,7 +268,7 @@ class _UserAddProfileImageState extends State<UserAddProfileImage> {
       return;
     }
 
-    authCubit.finalizeUserSignUp(
+    authCubit.userSignUp(
       profileImagePath: withImage ? profileImage : '',
     );
   }
@@ -295,96 +295,92 @@ class _UserAddProfileImageState extends State<UserAddProfileImage> {
           builder: (context, userState) {
             final AuthCubit authCubit = AuthCubit.get(context);
 
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: PopScope(
-                canPop: false,
-                child: Scaffold(
-                  backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-                  appBar: AppBar(
-                    titleSpacing: 10,
-                    elevation: 0,
-                    scrolledUnderElevation: 0,
-                    automaticallyImplyLeading: false,
-                    title: Row(
-                      children: [
-                        SizedBox(width: 10.w),
-                        Text(
-                          'الصورة الشخصية',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.sp,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                          ),
+            return PopScope(
+              canPop: false,
+              child: Scaffold(
+                appBar: AppBar(
+                  titleSpacing: 10,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  automaticallyImplyLeading: false,
+                  title: Row(
+                    children: [
+                      SizedBox(width: 10.w),
+                      Text(
+                        'الصورة الشخصية',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.sp,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  body: SingleChildScrollView(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 10.w,
-                      end: 10.w,
-                      top: 10.h,
-                      bottom: 120.h,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildIntroCard(appCubit),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'اختيار الصورة',
-                          icon: SvgPicture.asset(
-                            'assets/camera.svg',
-                            color: mainColor,
-                            width: 22.w,
-                          ),
-                          cubit: appCubit,
-                        ),
-                        SizedBox(height: 10.h),
-                        buildWhiteCard(
-                          cubit: appCubit,
-                          child: _buildProfileImagePicker(appCubit),
-                        ),
-                        SizedBox(height: 18.h),
-                        _buildNoteCard(appCubit),
-                      ],
-                    ),
+                ),
+                body: SingleChildScrollView(
+                  padding: EdgeInsetsDirectional.only(
+                    start: 10.w,
+                    end: 10.w,
+                    top: 10.h,
+                    bottom: 120.h,
                   ),
-                  bottomNavigationBar: Container(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 20.w,
-                      end: 20.w,
-                      top: 10.h,
-                      bottom: 20.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: appCubit.isDark ? darkBgColor : Colors.white,
-                      boxShadow: blueShadow,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        defaultButton(
-                          onPressed: () => _createAccount(authCubit),
-                          text: 'حفظ الصورة وإنشاء الحساب',
-                          height: 50.h,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildIntroCard(appCubit),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'اختيار الصورة',
+                        icon: SvgPicture.asset(
+                          'assets/camera.svg',
+                          color: mainColor,
+                          width: 22.w,
                         ),
-                        SizedBox(height: 10.h),
-                        defaultOutlinedButton(
-                          onPressed: () => _createAccount(
-                            authCubit,
-                            withImage: false,
-                          ),
-                          text: 'تخطي الآن وإنشاء الحساب',
-                          textColor: mainColor,
-                          border: mainColor,
-                          bgColor:
-                              appCubit.isDark ? lightDarkColor : Colors.white,
-                          fontSize: 14,
+                        cubit: appCubit,
+                      ),
+                      SizedBox(height: 10.h),
+                      buildWhiteCard(
+                        cubit: appCubit,
+                        child: _buildProfileImagePicker(appCubit),
+                      ),
+                      SizedBox(height: 18.h),
+                      _buildNoteCard(appCubit),
+                    ],
+                  ),
+                ),
+                bottomNavigationBar: Container(
+                  padding: EdgeInsetsDirectional.only(
+                    start: 20.w,
+                    end: 20.w,
+                    top: 10.h,
+                    bottom: 20.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: appCubit.isDark ? darkBgColor : Colors.white,
+                    boxShadow: blueShadow,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      defaultButton(
+                        onPressed: () => _createAccount(authCubit),
+                        text: 'حفظ الصورة وإنشاء الحساب',
+                        height: 50.h,
+                      ),
+                      SizedBox(height: 10.h),
+                      defaultOutlinedButton(
+                        onPressed: () => _createAccount(
+                          authCubit,
+                          withImage: false,
                         ),
-                      ],
-                    ),
+                        text: 'تخطي الآن وإنشاء الحساب',
+                        textColor: mainColor,
+                        border: mainColor,
+                        bgColor:
+                            appCubit.isDark ? lightDarkColor : Colors.white,
+                        fontSize: 14,
+                      ),
+                    ],
                   ),
                 ),
               ),

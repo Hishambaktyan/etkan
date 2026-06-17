@@ -20,14 +20,14 @@ import 'package:Etkan/shared/styles/colors.dart';
 
 import '../main.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+class Search extends StatefulWidget {
+  const Search({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<Search> createState() => _SearchState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchState extends State<Search> {
   final List<String> recentSearches = [
     'تركيب مكيفات سبليت',
     'حجوزات قيد الانتظار',
@@ -91,89 +91,86 @@ class _SearchScreenState extends State<SearchScreen> {
 
         return Scaffold(
           resizeToAvoidBottomInset: true,
-          body: Directionality(
-            textDirection: TextDirection.rtl,
-            child: BlocBuilder<UserCubit, UserStates>(
-              builder: (context, userServicesState) {
-                if (userServicesState is GetUserAllServicesLoadingState) {
-                  return SearchScreenShimmer(isDark: appCubit.isDark);
-                }
-                return BlocBuilder<UserCubit, UserStates>(
-                  builder: (context, bookingState) {
-                    final userServicesCubit = UserCubit.get(context);
-                    final bookingCubit = UserCubit.get(context);
-                    final services = List<Map<String, dynamic>>.from(
-                      userServicesCubit.userServices,
-                    );
-                    final bookings = List<Map<String, dynamic>>.from(
-                      bookingCubit.userRequests,
-                    );
-                    final allUsers = <dynamic, dynamic>{};
-                    allUsers.addAll(userServicesCubit.allUsers);
-                    allUsers.addAll(appCubit.allUsers);
-                    final suggestedServices = services.take(4).toList();
-                    final categories = List<Map<String, dynamic>>.from(
-                      userServicesCubit.categories,
-                    );
-                    final filteredDepartments = getFilteredDepartments(
-                      categories: categories,
-                    );
-                    final filteredServices = getFilteredServices(
-                      services: services,
-                      providers: allUsers,
-                    );
-                    final filteredBookings = getFilteredBookings(
-                      bookings: bookings,
-                      providers: allUsers,
-                    );
-                    final filteredWorkers = getFilteredWorkers(
-                      providers: allUsers,
-                      services: services,
-                      bookings: bookings,
-                    );
+          body: BlocBuilder<UserCubit, UserStates>(
+            builder: (context, userServicesState) {
+              if (userServicesState is GetUserAllServicesLoadingState) {
+                return SearchScreenShimmer(isDark: appCubit.isDark);
+              }
+              return BlocBuilder<UserCubit, UserStates>(
+                builder: (context, bookingState) {
+                  final userCubit = UserCubit.get(context);
+                  final bookingCubit = UserCubit.get(context);
+                  final services = List<Map<String, dynamic>>.from(
+                    userCubit.userServices,
+                  );
+                  final bookings = List<Map<String, dynamic>>.from(
+                    bookingCubit.userRequests,
+                  );
+                  final allUsers = <dynamic, dynamic>{};
+                  allUsers.addAll(userCubit.allUsers);
+                  allUsers.addAll(userCubit.allUsers);
+                  final suggestedServices = services.take(4).toList();
+                  final categories = List<Map<String, dynamic>>.from(
+                    userCubit.categories,
+                  );
+                  final filteredDepartments = getFilteredDepartments(
+                    categories: categories,
+                  );
+                  final filteredServices = getFilteredServices(
+                    services: services,
+                    providers: allUsers,
+                  );
+                  final filteredBookings = getFilteredBookings(
+                    bookings: bookings,
+                    providers: allUsers,
+                  );
+                  final filteredWorkers = getFilteredWorkers(
+                    providers: allUsers,
+                    services: services,
+                    bookings: bookings,
+                  );
 
-                    final hasQuery = searchController.text.trim().isNotEmpty;
-                    final isBookingLoading = bookingState
-                        .toString()
-                        .toLowerCase()
-                        .contains('loading');
+                  final hasQuery = searchController.text.trim().isNotEmpty;
+                  final isBookingLoading = bookingState
+                      .toString()
+                      .toLowerCase()
+                      .contains('loading');
 
-                    return SingleChildScrollView(
-                      padding: EdgeInsetsDirectional.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildSearchHeader(appCubit),
-                          SizedBox(height: 20.h),
-                          Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                              horizontal: 10.w,
-                            ),
-                            child: hasQuery
-                                ? buildSearchResults(
-                                    appCubit: appCubit,
-                                    departments: filteredDepartments,
-                                    services: filteredServices,
-                                    bookings: filteredBookings,
-                                    workers: filteredWorkers,
-                                    allUsers: allUsers,
-                                    isBookingLoading: isBookingLoading,
-                                  )
-                                : buildDefaultSearchContent(
-                                    appCubit: appCubit,
-                                    suggestedServices: suggestedServices,
-                                    allUsers: allUsers,
-                                  ),
+                  return SingleChildScrollView(
+                    padding: EdgeInsetsDirectional.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildSearchHeader(appCubit),
+                        SizedBox(height: 20.h),
+                        Padding(
+                          padding: EdgeInsetsDirectional.symmetric(
+                            horizontal: 10.w,
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                          child: hasQuery
+                              ? buildSearchResults(
+                                  appCubit: appCubit,
+                                  departments: filteredDepartments,
+                                  services: filteredServices,
+                                  bookings: filteredBookings,
+                                  workers: filteredWorkers,
+                                  allUsers: allUsers,
+                                  isBookingLoading: isBookingLoading,
+                                )
+                              : buildDefaultSearchContent(
+                                  appCubit: appCubit,
+                                  suggestedServices: suggestedServices,
+                                  allUsers: allUsers,
+                                ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
           ),
         );
       },

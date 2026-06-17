@@ -1110,4 +1110,17 @@ class AdminCubit extends Cubit<AdminStates> {
         ? 'مشرف'
         : name.split(RegExp(r'\s+')).first;
   }
+
+
+  Map<String, dynamic> allUsers = {};
+
+  Future<void> getAllUsers() async {
+    final snapshot = await FirebaseFirestore.instance.collection('users').get();
+
+    allUsers = {};
+
+    for (var doc in snapshot.docs) {
+      allUsers[doc.id] = doc.data();
+    }
+  }
 }

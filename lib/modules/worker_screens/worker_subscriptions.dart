@@ -16,20 +16,20 @@ import 'package:Etkan/shared/styles/colors.dart';
 
 import '../../shared/networks/local/cache_helper.dart';
 
-class WorkerSubscriptionsScreen extends StatefulWidget {
+class WorkerSubscriptions extends StatefulWidget {
   final bool isFromOnboarding;
 
-  const WorkerSubscriptionsScreen({
+  const WorkerSubscriptions({
     super.key,
     this.isFromOnboarding = false,
   });
 
   @override
-  State<WorkerSubscriptionsScreen> createState() =>
-      _WorkerSubscriptionsScreenState();
+  State<WorkerSubscriptions> createState() =>
+      _WorkerSubscriptionsState();
 }
 
-class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
+class _WorkerSubscriptionsState extends State<WorkerSubscriptions> {
   String selectedPlan = 'monthly';
   String selectedPaymentMethod = 'bank';
 
@@ -907,7 +907,7 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
     final AuthCubit authCubit = AuthCubit.get(context);
 
     showLoadingDialog(context);
-    await authCubit.finalizeWorkerSignUp();
+    await authCubit.workerSignUp();
 
     if (!mounted) return;
 
@@ -1072,189 +1072,186 @@ class _WorkerSubscriptionsScreenState extends State<WorkerSubscriptionsScreen> {
     AppCubit cubit = AppCubit.get(context);
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              titleSpacing: 10,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  if (!widget.isFromOnboarding) ...[
-                    Padding(
-                      padding: const EdgeInsets.all(7),
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () => Navigator.pop(context),
-                        child: Icon(
-                          CupertinoIcons.back,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+        return Scaffold(
+          appBar: AppBar(
+            titleSpacing: 10,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            automaticallyImplyLeading: false,
+            title: Row(
+              children: [
+                if (!widget.isFromOnboarding) ...[
+                  Padding(
+                    padding: const EdgeInsets.all(7),
+                    child: InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(
+                        CupertinoIcons.back,
+                        color: Theme.of(context).iconTheme.color,
                       ),
                     ),
-                    SizedBox(width: 10.w),
-                  ],
-                  Text(
-                    'الاشتراك',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.sp,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
                   ),
+                  SizedBox(width: 10.w),
                 ],
-              ),
-            ),
-            body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              stream: _userSubscriptionStream,
-              builder: (context, snapshot) {
-                if (_uid == null || _uid!.isEmpty) {
-                  if (widget.isFromOnboarding) {
-                    final Map<String, dynamic> subscription = {};
-                    const String currentStatus = 'not_submitted';
-
-                    return SingleChildScrollView(
-                      controller: _scrollController,
-                      padding: EdgeInsetsDirectional.only(
-                        start: 10.w,
-                        end: 10.w,
-                        top: 10.h,
-                        bottom: 20.h,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildStatusCard(cubit, currentStatus, subscription),
-                          SizedBox(height: 18.h),
-                          _buildReviewStatus(
-                              cubit, currentStatus, subscription),
-                          _buildSubscriptionForm(cubit),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return Center(
-                    child: Text(
-                      'تعذر جلب بيانات الحساب',
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: mainColor),
-                  );
-                }
-
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'تعذر جلب بيانات الاشتراك',
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                }
-
-                Map<String, dynamic> userData = {};
-
-                if (snapshot.hasData && snapshot.data!.exists) {
-                  userData = snapshot.data!.data() ?? {};
-                }
-
-                final Map<String, dynamic> subscription =
-                    _getSubscriptionData(userData);
-                final String currentStatus =
-                    _getCurrentStatus(userData, subscription);
-
-                return SingleChildScrollView(
-                  controller: _scrollController,
-                  padding: EdgeInsetsDirectional.only(
-                    start: 10.w,
-                    end: 10.w,
-                    top: 10.h,
-                    bottom: 20.h,
+                Text(
+                  'الاشتراك',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.sp,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildStatusCard(cubit, currentStatus, subscription),
-                      SizedBox(height: 18.h),
-                      _buildReviewStatus(cubit, currentStatus, subscription),
-                      _buildRejectionReasonCard(cubit, subscription),
-                      if (canChooseSubscription(currentStatus))
+                ),
+              ],
+            ),
+          ),
+          body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            stream: _userSubscriptionStream,
+            builder: (context, snapshot) {
+              if (_uid == null || _uid!.isEmpty) {
+                if (widget.isFromOnboarding) {
+                  final Map<String, dynamic> subscription = {};
+                  const String currentStatus = 'not_submitted';
+
+                  return SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: EdgeInsetsDirectional.only(
+                      start: 10.w,
+                      end: 10.w,
+                      top: 10.h,
+                      bottom: 20.h,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildStatusCard(cubit, currentStatus, subscription),
+                        SizedBox(height: 18.h),
+                        _buildReviewStatus(
+                            cubit, currentStatus, subscription),
                         _buildSubscriptionForm(cubit),
-                    ],
+                      ],
+                    ),
+                  );
+                }
+
+                return Center(
+                  child: Text(
+                    'تعذر جلب بيانات الحساب',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 );
-              },
-            ),
-            bottomNavigationBar:
-                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              stream: _userSubscriptionStream,
-              builder: (context, snapshot) {
-                if (_uid == null || _uid!.isEmpty) {
-                  if (widget.isFromOnboarding) {
-                    return _buildSubscribeButton(cubit, 'not_submitted');
-                  }
+              }
 
-                  return const SizedBox.shrink();
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: mainColor),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'تعذر جلب بيانات الاشتراك',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }
+
+              Map<String, dynamic> userData = {};
+
+              if (snapshot.hasData && snapshot.data!.exists) {
+                userData = snapshot.data!.data() ?? {};
+              }
+
+              final Map<String, dynamic> subscription =
+                  _getSubscriptionData(userData);
+              final String currentStatus =
+                  _getCurrentStatus(userData, subscription);
+
+              return SingleChildScrollView(
+                controller: _scrollController,
+                padding: EdgeInsetsDirectional.only(
+                  start: 10.w,
+                  end: 10.w,
+                  top: 10.h,
+                  bottom: 20.h,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStatusCard(cubit, currentStatus, subscription),
+                    SizedBox(height: 18.h),
+                    _buildReviewStatus(cubit, currentStatus, subscription),
+                    _buildRejectionReasonCard(cubit, subscription),
+                    if (canChooseSubscription(currentStatus))
+                      _buildSubscriptionForm(cubit),
+                  ],
+                ),
+              );
+            },
+          ),
+          bottomNavigationBar:
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            stream: _userSubscriptionStream,
+            builder: (context, snapshot) {
+              if (_uid == null || _uid!.isEmpty) {
+                if (widget.isFromOnboarding) {
+                  return _buildSubscribeButton(cubit, 'not_submitted');
                 }
 
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    snapshot.hasError) {
-                  return const SizedBox.shrink();
+                return const SizedBox.shrink();
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.hasError) {
+                return const SizedBox.shrink();
+              }
+
+              Map<String, dynamic> userData = {};
+
+              if (snapshot.hasData && snapshot.data!.exists) {
+                userData = snapshot.data!.data() ?? {};
+              }
+
+              final Map<String, dynamic> subscription =
+                  _getSubscriptionData(userData);
+              final String currentStatus =
+                  _getCurrentStatus(userData, subscription);
+
+              if (!canChooseSubscription(currentStatus)) {
+                if (widget.isFromOnboarding) {
+                  return Container(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 20.w,
+                      end: 20.w,
+                      top: 10.h,
+                      bottom: 20.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: cubit.isDark ? darkBgColor : Colors.white,
+                      boxShadow: blueShadow,
+                    ),
+                    child: _buildSkipSubscriptionButton(
+                      cubit,
+                      text: 'الدخول إلى التطبيق',
+                    ),
+                  );
                 }
 
-                Map<String, dynamic> userData = {};
+                return const SizedBox.shrink();
+              }
 
-                if (snapshot.hasData && snapshot.data!.exists) {
-                  userData = snapshot.data!.data() ?? {};
-                }
-
-                final Map<String, dynamic> subscription =
-                    _getSubscriptionData(userData);
-                final String currentStatus =
-                    _getCurrentStatus(userData, subscription);
-
-                if (!canChooseSubscription(currentStatus)) {
-                  if (widget.isFromOnboarding) {
-                    return Container(
-                      padding: EdgeInsetsDirectional.only(
-                        start: 20.w,
-                        end: 20.w,
-                        top: 10.h,
-                        bottom: 20.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: cubit.isDark ? darkBgColor : Colors.white,
-                        boxShadow: blueShadow,
-                      ),
-                      child: _buildSkipSubscriptionButton(
-                        cubit,
-                        text: 'الدخول إلى التطبيق',
-                      ),
-                    );
-                  }
-
-                  return const SizedBox.shrink();
-                }
-
-                return _buildSubscribeButton(cubit, currentStatus);
-              },
-            ),
+              return _buildSubscribeButton(cubit, currentStatus);
+            },
           ),
         );
       },

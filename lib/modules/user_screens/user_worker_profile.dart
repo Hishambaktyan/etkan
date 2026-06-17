@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,6 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
     });
 
     try {
-      final appCubit = AppCubit.get(context);
 
       String providerId = widget.providerId.trim();
 
@@ -58,7 +58,7 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
         providerId = '${data['uid'] ?? ''}'.trim();
       }
 
-      final cachedUser = appCubit.allUsers[providerId];
+      final cachedUser = UserCubit.get(context).allUsers[providerId];
       if (cachedUser is Map && cachedUser.isNotEmpty) {
         data.addAll(Map<String, dynamic>.from(cachedUser));
       }
@@ -164,68 +164,65 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
           return buildErrorScreen(appCubit);
         }
 
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            body: RefreshIndicator(
-              color: mainColor,
-              onRefresh: getWorkerProfileData,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    buildHeader(appCubit: appCubit),
-                    Padding(
-                      padding: EdgeInsetsDirectional.only(
-                        start: 10.w,
-                        end: 10.w,
-                        top: 20.h,
-                        bottom: 20.h,
-                      ),
-                      child: Column(
-                        children: [
-                          buildQuickStats(appCubit),
-                          SizedBox(height: 25.h),
-                          buildSectionHeader(
-                            title: 'نبذة عن الفني',
-                            icon: SvgPicture.asset(
-                              'assets/info.svg',
-                              color: mainColor,
-                              width: 25.w,
-                            ),
-                            cubit: appCubit,
-                          ),
-                          SizedBox(height: 10.h),
-                          buildAboutCard(appCubit),
-                          SizedBox(height: 20.h),
-                          buildSectionHeader(
-                            title: 'الخبرات',
-                            icon: SvgPicture.asset(
-                              'assets/subs.svg',
-                              color: mainColor,
-                              width: 25.w,
-                            ),
-                            cubit: appCubit,
-                          ),
-                          SizedBox(height: 10.h),
-                          buildExperiencesCard(appCubit),
-                          SizedBox(height: 20.h),
-                          buildSectionHeader(
-                            title: 'الأعمال السابقة',
-                            icon: SvgPicture.asset(
-                              'assets/image.svg',
-                              color: mainColor,
-                              width: 25.w,
-                            ),
-                            cubit: appCubit,
-                          ),
-                          SizedBox(height: 10.h),
-                          buildPreviousWorksCard(appCubit),
-                        ],
-                      ),
+        return Scaffold(
+          body: RefreshIndicator(
+            color: mainColor,
+            onRefresh: getWorkerProfileData,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  buildHeader(appCubit: appCubit),
+                  Padding(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 10.w,
+                      end: 10.w,
+                      top: 20.h,
+                      bottom: 20.h,
                     ),
-                  ],
-                ),
+                    child: Column(
+                      children: [
+                        buildQuickStats(appCubit),
+                        SizedBox(height: 25.h),
+                        buildSectionHeader(
+                          title: 'نبذة عن الفني',
+                          icon: SvgPicture.asset(
+                            'assets/info.svg',
+                            color: mainColor,
+                            width: 25.w,
+                          ),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        buildAboutCard(appCubit),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'الخبرات',
+                          icon: SvgPicture.asset(
+                            'assets/subs.svg',
+                            color: mainColor,
+                            width: 25.w,
+                          ),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        buildExperiencesCard(appCubit),
+                        SizedBox(height: 20.h),
+                        buildSectionHeader(
+                          title: 'الأعمال السابقة',
+                          icon: SvgPicture.asset(
+                            'assets/image.svg',
+                            color: mainColor,
+                            width: 25.w,
+                          ),
+                          cubit: appCubit,
+                        ),
+                        SizedBox(height: 10.h),
+                        buildPreviousWorksCard(appCubit),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -308,19 +305,11 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
   Widget buildHeader({
     required AppCubit appCubit,
   }) {
-    final workerName = getText(
-      worker['name'],
-    );
-    final workerSpec = getText(
-      worker['specialization'],
-    );
+    final workerName = getText(worker['name']);
+    final workerSpec = getText(worker['specialization']);
     final workerImage = getText(worker['profileImage']);
-    final isAvailable = worker['isAvailable'] == true;
-    final Map<String, dynamic> verification = worker['verification'] is Map
-        ? Map<String, dynamic>.from(worker['verification'])
-        : {};
-    final bool isVerified = worker['isVerified'] == true ||
-        verification['status']?.toString() == 'approved';
+    final Map<String, dynamic> verification = worker['verification'] is Map ? Map<String, dynamic>.from(worker['verification']) : {};
+    final bool isVerified = worker['isVerified'] == true || verification['status']?.toString() == 'approved';
     final rating = getDouble(worker['avgRating']);
 
     return ClipRRect(
@@ -329,7 +318,6 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
       ),
       child: Container(
         width: double.infinity,
-        height: 360.h,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -394,8 +382,7 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
               ),
             ),
             Padding(
-              padding: EdgeInsetsDirectional.only(
-                  top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
+              padding: EdgeInsetsDirectional.only(top: 30.h, start: 10.w, end: 10.w, bottom: 20.h),
               child: Column(
                 children: [
                   Row(
@@ -452,7 +439,8 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
                         SizedBox(height: 12.h),
                         Text(
                           workerName,
-                          maxLines: 1,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 18.sp,
@@ -473,13 +461,6 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
                             buildHeaderChip(
                               icon: 'assets/star.svg',
                               title: rating.toStringAsFixed(1),
-                            ),
-                            buildHeaderChip2(
-                              icon: isAvailable
-                                  ? Icons.check_circle_rounded
-                                  : Icons.access_time_filled_rounded,
-                              title: isAvailable ? 'متاح الآن' : 'غير متاح',
-                              color: isAvailable ? Colors.green : Colors.orange,
                             ),
                             if (isVerified)
                               buildHeaderChip2(
@@ -941,91 +922,88 @@ class _UserWorkerProfileState extends State<UserWorkerProfile> {
   }
 
   Widget buildErrorScreen(AppCubit appCubit) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        body: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadiusDirectional.vertical(
-                bottom: Radius.circular(35.r),
-              ),
-              child: Container(
-                height: 170.h,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      mainColor.withOpacity(0.9),
-                      const Color(0xFF0F0F1E),
-                    ],
-                  ),
+    return Scaffold(
+      body: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadiusDirectional.vertical(
+              bottom: Radius.circular(35.r),
+            ),
+            child: Container(
+              height: 170.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    mainColor.withOpacity(0.9),
+                    const Color(0xFF0F0F1E),
+                  ],
                 ),
-                child: Padding(
-                  padding: EdgeInsetsDirectional.only(
-                    top: 35.h,
-                    start: 10.w,
-                    end: 18.w,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              child: Padding(
+                padding: EdgeInsetsDirectional.only(
+                  top: 35.h,
+                  start: 10.w,
+                  end: 18.w,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildHeaderButton(),
+                    SizedBox(width: 12.w),
+                    Text(
+                      'ملف الفني',
+                      style: TextStyle(
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w),
+                child: buildWhiteCard(
+                  cubit: appCubit,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      buildHeaderButton(),
-                      SizedBox(width: 12.w),
+                      Icon(
+                        Icons.error_outline_rounded,
+                        color: Colors.red,
+                        size: 45.sp,
+                      ),
+                      SizedBox(height: 12.h),
                       Text(
-                        'ملف الفني',
+                        errorMessage,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 22.sp,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
+                      ),
+                      SizedBox(height: 15.h),
+                      defaultTextButton(
+                        onPressed: getWorkerProfileData,
+                        text: 'إعادة المحاولة',
+                        isBold: true,
+                        isLined: false,
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            Expanded(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsetsDirectional.symmetric(horizontal: 20.w),
-                  child: buildWhiteCard(
-                    cubit: appCubit,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.error_outline_rounded,
-                          color: Colors.red,
-                          size: 45.sp,
-                        ),
-                        SizedBox(height: 12.h),
-                        Text(
-                          errorMessage,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 15.h),
-                        defaultTextButton(
-                          onPressed: getWorkerProfileData,
-                          text: 'إعادة المحاولة',
-                          isBold: true,
-                          isLined: false,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

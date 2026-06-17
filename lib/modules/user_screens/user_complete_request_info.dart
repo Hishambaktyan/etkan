@@ -880,219 +880,214 @@ class _UserCompleteRequestInfoState extends State<UserCompleteRequestInfo> {
               );
             }
           },
-          child: Directionality(
-            textDirection: TextDirection.rtl,
-            child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: appCubit.isDark ? darkBgColor : Colors.white,
-                scrolledUnderElevation: 0,
-                elevation: 0,
-                automaticallyImplyLeading: false,
-                leading: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: appCubit.isDark ? Colors.white : Colors.black,
-                  ),
+          child: Scaffold(
+            appBar: AppBar(
+              scrolledUnderElevation: 0,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: appCubit.isDark ? Colors.white : Colors.black,
                 ),
-                title: Text(
-                  'تفاصيل الحجز',
-                  style: TextStyle(
-                    color: appCubit.isDark ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                titleSpacing: 15,
               ),
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      buildServiceInfoCard(
-                        appCubit: appCubit,
-                        serviceName: serviceName,
-                        serviceCategory: serviceCategory,
-                        servicePrice: servicePrice,
-                        servicePeriod: servicePeriod,
-                        serviceImage: serviceImage,
-                      ),
-                      SizedBox(height: 15.h),
-                      buildAddressCard(appCubit),
-                      SizedBox(height: 15.h),
-                      buildDateTimeCard(appCubit),
-                      SizedBox(height: 15.h),
-                      buildNotesCard(appCubit),
-                      SizedBox(height: 20.h),
-                      BlocConsumer<UserCubit, UserStates>(
-                        listener: (context, state) {
-                          if (state is CreateRequestLoadingState) {
-                            showLoadingDialog(context);
-                          }
-                          if (state is CreateRequestSuccessState) {
-                            hideLoadingDialog(context);
-                            appCubit.changeIndex(0);
-                            showDialog(
-                              context: context,
-                              barrierColor: Colors.black.withOpacity(0.2),
-                              builder: (BuildContext context) {
-                                return Directionality(
-                                  textDirection: TextDirection.rtl,
-                                  child: Stack(
-                                    children: [
-                                      BackdropFilter(
-                                        filter: ImageFilter.blur(
-                                          sigmaX: 10,
-                                          sigmaY: 10,
-                                        ),
-                                        child: Container(
-                                          color: Colors.transparent,
-                                        ),
+              title: Text(
+                'تفاصيل الحجز',
+                style: TextStyle(
+                  color: appCubit.isDark ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              titleSpacing: 15,
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsetsDirectional.symmetric(horizontal: 15.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    buildServiceInfoCard(
+                      appCubit: appCubit,
+                      serviceName: serviceName,
+                      serviceCategory: serviceCategory,
+                      servicePrice: servicePrice,
+                      servicePeriod: servicePeriod,
+                      serviceImage: serviceImage,
+                    ),
+                    SizedBox(height: 15.h),
+                    buildAddressCard(appCubit),
+                    SizedBox(height: 15.h),
+                    buildDateTimeCard(appCubit),
+                    SizedBox(height: 15.h),
+                    buildNotesCard(appCubit),
+                    SizedBox(height: 20.h),
+                    BlocConsumer<UserCubit, UserStates>(
+                      listener: (context, state) {
+                        if (state is CreateRequestLoadingState) {
+                          showLoadingDialog(context);
+                        }
+                        if (state is CreateRequestSuccessState) {
+                          hideLoadingDialog(context);
+                          appCubit.changeIndex(0);
+                          showDialog(
+                            context: context,
+                            barrierColor: Colors.black.withOpacity(0.2),
+                            builder: (BuildContext context) {
+                              return Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: Stack(
+                                  children: [
+                                    BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 10,
+                                        sigmaY: 10,
                                       ),
-                                      Center(
-                                        child: AlertDialog(
-                                          backgroundColor: appCubit.isDark
-                                              ? lightDarkColor
-                                              : Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.r),
-                                          ),
-                                          contentPadding: EdgeInsets.all(20.r),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Lottie.asset(
-                                                'assets/animations/done.json',
-                                                width: 130.w,
-                                                height: 130.h,
+                                      child: Container(
+                                        color: Colors.transparent,
+                                      ),
+                                    ),
+                                    Center(
+                                      child: AlertDialog(
+                                        backgroundColor: appCubit.isDark
+                                            ? lightDarkColor
+                                            : Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.r),
+                                        ),
+                                        contentPadding: EdgeInsets.all(20.r),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Lottie.asset(
+                                              'assets/animations/done.json',
+                                              width: 130.w,
+                                              height: 130.h,
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            Text(
+                                              'تم إرسال الطلب بنجاح',
+                                              style: TextStyle(
+                                                fontSize: 18.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
                                               ),
-                                              SizedBox(height: 20.h),
-                                              Text(
-                                                'تم إرسال الطلب بنجاح',
-                                                style: TextStyle(
-                                                  fontSize: 18.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge!
-                                                      .color,
-                                                ),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Text(
+                                              'تم إرسال طلبك بنجاح، سوف يصلك إشعار عند قبول الفني للطلب',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .color,
+                                                height: 1.5,
                                               ),
-                                              SizedBox(height: 10.h),
-                                              Text(
-                                                'تم إرسال طلبك بنجاح، سوف يصلك إشعار عند قبول الفني للطلب',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 13.sp,
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge!
-                                                      .color,
-                                                  height: 1.5,
-                                                ),
-                                              ),
-                                              SizedBox(height: 25.h),
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: defaultButton(
-                                                      onPressed: () =>
-                                                          moveAndReplace(
-                                                              context,
-                                                              const UserMainScreen()),
-                                                      text:
-                                                          'العودة إلى الرئيسية',
-                                                    ),
+                                            ),
+                                            SizedBox(height: 25.h),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: defaultButton(
+                                                    onPressed: () =>
+                                                        moveAndReplace(
+                                                            context,
+                                                            const UserMainScreen()),
+                                                    text:
+                                                        'العودة إلى الرئيسية',
                                                   ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          }
-
-                          if (state is CreateRequestErrorState) {
-                            hideLoadingDialog(context);
-                            showSnackBar(
-                              Colors.red,
-                              state.error,
-                              context,
-                            );
-                          }
-                        },
-                        builder: (context, state) {
-                          UserCubit userCubit = UserCubit.get(context);
-                          return defaultButton(
-                            onPressed: () async {
-                              if (selectedAddressId == null ||
-                                  selectedAddressText == null) {
-                                showSnackBar(
-                                  Colors.red,
-                                  'يرجى اختيار موقع الخدمة',
-                                  context,
-                                );
-                                return;
-                              }
-                              if (selectedDate == null ||
-                                  selectedTime == null) {
-                                showSnackBar(
-                                  Colors.red,
-                                  'يرجى اختيار التاريخ والوقت',
-                                  context,
-                                );
-                                return;
-                              }
-                              if (selectedAddressLocation == null) {
-                                showSnackBar(
-                                  Colors.red,
-                                  'تعذر قراءة إحداثيات الموقع، يرجى اختيار الموقع مرة أخرى',
-                                  context,
-                                );
-                                return;
-                              }
-
-                              DateTime bookingDateTime = DateTime(
-                                selectedDate!.year,
-                                selectedDate!.month,
-                                selectedDate!.day,
-                                selectedTime!.hour,
-                                selectedTime!.minute,
-                              );
-
-                              var currentUser = appCubit
-                                  .allUsers[CacheHelper.getData(key: 'uid')];
-                              await userCubit.createRequest(
-                                category: serviceCategory,
-                                customerId: currentUser['uid'],
-                                providerId: providerId,
-                                address: selectedAddressText!,
-                                addressId: selectedAddressId!,
-                                addressLocation: selectedAddressLocation!,
-                                title: serviceName,
-                                description: noteController.text.trim(),
-                                image: serviceImage,
-                                duration: servicePeriod,
-                                price: servicePrice,
-                                scheduledAt:
-                                    Timestamp.fromDate(bookingDateTime),
-                                serviceId: serviceId,
+                                    ),
+                                  ],
+                                ),
                               );
                             },
-                            text: 'تأكيد الحجز',
                           );
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                    ],
-                  ),
+                        }
+
+                        if (state is CreateRequestErrorState) {
+                          hideLoadingDialog(context);
+                          showSnackBar(
+                            Colors.red,
+                            state.error,
+                            context,
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        UserCubit userCubit = UserCubit.get(context);
+                        return defaultButton(
+                          onPressed: () async {
+                            if (selectedAddressId == null ||
+                                selectedAddressText == null) {
+                              showSnackBar(
+                                Colors.red,
+                                'يرجى اختيار موقع الخدمة',
+                                context,
+                              );
+                              return;
+                            }
+                            if (selectedDate == null ||
+                                selectedTime == null) {
+                              showSnackBar(
+                                Colors.red,
+                                'يرجى اختيار التاريخ والوقت',
+                                context,
+                              );
+                              return;
+                            }
+                            if (selectedAddressLocation == null) {
+                              showSnackBar(
+                                Colors.red,
+                                'تعذر قراءة إحداثيات الموقع، يرجى اختيار الموقع مرة أخرى',
+                                context,
+                              );
+                              return;
+                            }
+
+                            DateTime bookingDateTime = DateTime(
+                              selectedDate!.year,
+                              selectedDate!.month,
+                              selectedDate!.day,
+                              selectedTime!.hour,
+                              selectedTime!.minute,
+                            );
+
+                            var currentUser = userCubit.allUsers[CacheHelper.getData(key: 'uid')];
+                            await userCubit.createRequest(
+                              category: serviceCategory,
+                              customerId: currentUser['uid'],
+                              providerId: providerId,
+                              address: selectedAddressText!,
+                              addressId: selectedAddressId!,
+                              addressLocation: selectedAddressLocation!,
+                              title: serviceName,
+                              description: noteController.text.trim(),
+                              image: serviceImage,
+                              duration: servicePeriod,
+                              price: servicePrice,
+                              scheduledAt:
+                                  Timestamp.fromDate(bookingDateTime),
+                              serviceId: serviceId,
+                            );
+                          },
+                          text: 'تأكيد الحجز',
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20.h),
+                  ],
                 ),
               ),
             ),

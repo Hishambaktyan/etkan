@@ -1,13 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:Etkan/shared/cubits/admin_cubit/admin_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
@@ -20,10 +13,20 @@ import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
 import 'package:Etkan/shared/cubits/worker_cubit/worker_cubit.dart';
 import 'package:Etkan/shared/networks/local/cache_helper.dart';
 import 'package:Etkan/shared/styles/styles.dart';
+import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'firebase_options.dart';
 import 'layout/user_layout/user_main_screen.dart';
 import 'layout/worker_layout/worker_main_screen.dart';
-import 'modules/admin_screens/admin_home_screen.dart';
+import 'modules/admin_screens/admin_home.dart';
 import 'modules/on_boarding.dart';
 import 'modules/the_chat.dart';
 
@@ -58,13 +61,11 @@ void moveAndReplace(BuildContext context, Widget screen) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-final FlutterLocalNotificationsPlugin localNotifications =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
 
 Map<String, dynamic>? pendingNotificationData;
 
-const AndroidNotificationChannel highImportanceChannel =
-    AndroidNotificationChannel(
+const AndroidNotificationChannel highImportanceChannel = AndroidNotificationChannel(
   'high_importance_channel',
   'High Importance Notifications',
   description: 'This channel is used for important notifications.',
@@ -72,8 +73,7 @@ const AndroidNotificationChannel highImportanceChannel =
 );
 
 Future<void> initLocalNotifications({bool requestPermission = true}) async {
-  const androidSettings =
-      AndroidInitializationSettings('@mipmap/launcher_icon');
+  const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
 
   const settings = InitializationSettings(
     android: androidSettings,
@@ -221,7 +221,7 @@ Future<void> main() async {
     } else if (role == 'provider') {
       startWidget = const WorkerMainScreen();
     } else if (role == 'admin') {
-      startWidget = const AdminHomeScreen();
+      startWidget = const AdminHome();
     } else {
       startWidget = const OnBoardingScreen();
     }
@@ -241,19 +241,19 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AppCubit>(
           create: (context) => AppCubit()
-            ..syncThemeWithSystem()
-            ..getAllUsers(),
+            ..syncThemeWithSystem(),
         ),
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(),
         ),
         BlocProvider<UserCubit>(
-          create: (context) => UserCubit(),
+          create: (context) => UserCubit()..getAllUsers(),
         ),
         BlocProvider<WorkerCubit>(
-            create: (context) => WorkerCubit()..getWorkerData()),
+            create: (context) => WorkerCubit()..getWorkerData()..getAllUsers()),
         BlocProvider<AdminCubit>(
           create: (context) => AdminCubit()
+          ..getAllUsers()
             ..getAdminData()
             ..startListening(),
         ),
@@ -281,7 +281,9 @@ class MyApp extends StatelessWidget {
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   debugShowCheckedModeBanner: false,
-                  home: startWidget);
+                  builder: (context, child) => Directionality(textDirection: TextDirection.rtl, child: child!),
+                  home: startWidget
+              );
             },
           );
         },

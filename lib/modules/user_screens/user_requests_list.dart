@@ -9,6 +9,7 @@ import 'package:Etkan/shared/compenents/components.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/user_cubit/user_cubit.dart';
 import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../shared/cubits/app_cubit/app_states.dart';
 import '../../shared/styles/colors.dart';
 
@@ -100,7 +101,7 @@ class _UserRequestsListState extends State<UserRequestsList> {
     try {
       final userCubit = UserCubit.get(context);
 
-      userCubit.getUserRequests(forceRefresh: forceRefresh);
+      await userCubit.getUserRequests(forceRefresh: forceRefresh);
 
       if (!mounted) return;
 
@@ -137,418 +138,423 @@ class _UserRequestsListState extends State<UserRequestsList> {
             : userCubit.userRequests
                 .where((item) => item['status'] == selectedStatus)
                 .toList();
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(body: BlocBuilder<UserCubit, UserStates>(
-            builder: (context, state) {
-              UserCubit userCubit = UserCubit.get(context);
-              return ConditionalBuilder(
-                  condition:
-                      checkingInternet || state is GetUserRequestLoadingState,
-                  builder: (context) =>
-                      UserBookingsShimmer(isDark: appCubit.isDark),
-                  fallback: (context) => ConditionalBuilder(
-                        condition: !hasInternet,
-                        builder: (context) => NoInternet(
-                          onRetry: () =>
-                              checkConnectionAndGetData(forceRefresh: true),
-                        ),
-                        fallback: (context) => RefreshIndicator(
-                          color: mainColor,
-                          onRefresh: () =>
-                              checkConnectionAndGetData(forceRefresh: true),
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                              children: [
-                                header(
-                                  title: 'الحجوزات',
-                                  context: context,
-                                ),
-                                SizedBox(
-                                  height: 15.h,
-                                ),
-                                SizedBox(
-                                  height: 55.h,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    padding: EdgeInsetsDirectional.symmetric(
-                                        horizontal: 10.w),
-                                    itemCount: statusFilters.length,
-                                    itemBuilder: (context, index) {
-                                      bool isSelected = selectedStatus ==
-                                          statusFilters[index];
-                                      return Padding(
-                                        padding: EdgeInsetsDirectional.only(
-                                            end: 10.w, bottom: 10.h),
-                                        child: InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              selectedStatus =
-                                                  statusFilters[index];
-                                            });
-                                          },
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                                milliseconds: 300),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 20.w),
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
+        return Scaffold(body: BlocBuilder<UserCubit, UserStates>(
+          builder: (context, state) {
+            return ConditionalBuilder(
+                condition: checkingInternet || state is GetUserRequestLoadingState,
+                builder: (context) =>
+                    UserBookingsShimmer(isDark: appCubit.isDark),
+                fallback: (context) => ConditionalBuilder(
+                      condition: !hasInternet,
+                      builder: (context) => NoInternet(
+                        onRetry: () =>
+                            checkConnectionAndGetData(forceRefresh: true),
+                      ),
+                      fallback: (context) => RefreshIndicator(
+                        color: mainColor,
+                        onRefresh: () =>
+                            checkConnectionAndGetData(forceRefresh: true),
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            children: [
+                              header(
+                                title: 'الحجوزات',
+                                context: context,
+                              ),
+                              SizedBox(
+                                height: 15.h,
+                              ),
+                              SizedBox(
+                                height: 55.h,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: EdgeInsetsDirectional.symmetric(
+                                      horizontal: 10.w),
+                                  itemCount: statusFilters.length,
+                                  itemBuilder: (context, index) {
+                                    bool isSelected = selectedStatus ==
+                                        statusFilters[index];
+                                    return Padding(
+                                      padding: EdgeInsetsDirectional.only(
+                                          end: 10.w, bottom: 10.h),
+                                      child: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedStatus =
+                                                statusFilters[index];
+                                          });
+                                        },
+                                        child: AnimatedContainer(
+                                          duration: const Duration(
+                                              milliseconds: 300),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20.w),
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? mainColor
+                                                : appCubit.isDark
+                                                    ? lightDarkColor
+                                                    : Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(15.r),
+                                            boxShadow:
+                                                isSelected ? [] : blueShadow,
+                                          ),
+                                          child: Text(
+                                            statusFilters[index],
+                                            style: TextStyle(
                                               color: isSelected
-                                                  ? mainColor
-                                                  : appCubit.isDark
-                                                      ? lightDarkColor
-                                                      : Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(15.r),
-                                              boxShadow:
-                                                  isSelected ? [] : blueShadow,
-                                            ),
-                                            child: Text(
-                                              statusFilters[index],
-                                              style: TextStyle(
-                                                color: isSelected
-                                                    ? Colors.white
-                                                    : Theme.of(context)
-                                                        .textTheme
-                                                        .bodyLarge!
-                                                        .color,
-                                                fontSize: 12.sp,
-                                                fontWeight: isSelected
-                                                    ? FontWeight.bold
-                                                    : FontWeight.w600,
-                                              ),
+                                                  ? Colors.white
+                                                  : Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge!
+                                                      .color,
+                                              fontSize: 12.sp,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.bold
+                                                  : FontWeight.w600,
                                             ),
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                filteredList.isEmpty
-                                    ? SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.55,
-                                        width: double.infinity,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              width: 100.w,
-                                              height: 100.w,
-                                              padding: EdgeInsets.all(15.r),
+                              ),
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                              filteredList.isEmpty
+                                  ? SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.55,
+                                      width: double.infinity,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: 100.w,
+                                            height: 100.w,
+                                            padding: EdgeInsets.all(15.r),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  mainColor.withOpacity(0.08),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: SvgPicture.asset(
+                                              'assets/ticket.svg',
+                                              color: mainColor,
+                                            ),
+                                          ),
+                                          SizedBox(height: 20.h),
+                                          Text(
+                                            'لا توجد حجوزات لك',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.sp,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .color,
+                                            ),
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          Text(
+                                            'عند حجز أي خدمة ستظهر تفاصيل الحجز هنا.',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              height: 1.6,
+                                              color: appCubit.isDark
+                                                  ? darkSubTextColor
+                                                  : Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsetsDirectional.only(
+                                          start: 10.w, end: 10.w, top: 5.h),
+                                      itemCount: filteredList.length,
+                                      itemBuilder: (context, index) {
+                                        var request = filteredList[index];
+                                        Color statusColor;
+                                        String status = request['status'];
+                                        switch (status) {
+                                          case 'مكتمل':
+                                            statusColor = Colors.green;
+                                            break;
+                                          case 'مقبول':
+                                          case 'في الطريق':
+                                            statusColor = Colors.blueAccent;
+                                            break;
+                                          case 'مرفوض':
+                                          case 'ملغي':
+                                            statusColor = Colors.redAccent;
+                                            break;
+                                          default:
+                                            statusColor = Colors.orangeAccent;
+                                        }
+                                        var providerData = userCubit
+                                            .allUsers[request['providerId']];
+                                        return Padding(
+                                          padding: EdgeInsetsDirectional.only(
+                                              bottom: 20.h),
+                                          child: InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () => move(
+                                                context,
+                                                UserRequestDetails(
+                                                    request: request,
+                                                    providerData:
+                                                        providerData)),
+                                            child: Container(
+                                              padding: EdgeInsetsDirectional.all(
+                                                      15.r),
                                               decoration: BoxDecoration(
-                                                color:
-                                                    mainColor.withOpacity(0.08),
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: SvgPicture.asset(
-                                                'assets/ticket.svg',
-                                                color: mainColor,
-                                              ),
-                                            ),
-                                            SizedBox(height: 20.h),
-                                            Text(
-                                              'لا توجد حجوزات لك',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18.sp,
-                                                color: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyLarge!
-                                                    .color,
-                                              ),
-                                            ),
-                                            SizedBox(height: 10.h),
-                                            Text(
-                                              'عند حجز أي خدمة ستظهر تفاصيل الحجز هنا.',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                height: 1.6,
                                                 color: appCubit.isDark
-                                                    ? darkSubTextColor
-                                                    : Colors.grey.shade600,
+                                                    ? lightDarkColor
+                                                    : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        25.r),
+                                                boxShadow: blueShadow,
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    : ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        padding: EdgeInsetsDirectional.only(
-                                            start: 10.w, end: 10.w, top: 5.h),
-                                        itemCount: filteredList.length,
-                                        itemBuilder: (context, index) {
-                                          var request = filteredList[index];
-                                          Color statusColor;
-                                          String status = request['status'];
-                                          switch (status) {
-                                            case 'مكتمل':
-                                              statusColor = Colors.green;
-                                              break;
-                                            case 'مقبول':
-                                            case 'في الطريق':
-                                              statusColor = Colors.blueAccent;
-                                              break;
-                                            case 'مرفوض':
-                                            case 'ملغي':
-                                              statusColor = Colors.redAccent;
-                                              break;
-                                            default:
-                                              statusColor = Colors.orangeAccent;
-                                          }
-                                          var providerData = appCubit
-                                              .allUsers[request['providerId']];
-                                          return Padding(
-                                            padding: EdgeInsetsDirectional.only(
-                                                bottom: 20.h),
-                                            child: InkWell(
-                                              splashColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
-                                              onTap: () => move(
-                                                  context,
-                                                  UserRequestDetails(
-                                                      request: request,
-                                                      providerData:
-                                                          providerData)),
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsetsDirectional.all(
-                                                        15.r),
-                                                decoration: BoxDecoration(
-                                                  color: appCubit.isDark
-                                                      ? lightDarkColor
-                                                      : Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          25.r),
-                                                  boxShadow: blueShadow,
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20.r),
-                                                            border: Border.all(
-                                                              color: mainColor
-                                                                  .withOpacity(
-                                                                      0.1),
-                                                              width: 2,
-                                                            ),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: [
+                                                      Container(
+                                                        decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20.r),
+                                                          border: Border.all(
+                                                            color: mainColor
+                                                                .withOpacity(
+                                                                    0.1),
+                                                            width: 2,
                                                           ),
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        18.r),
-                                                            child:
-                                                                Image.network(
-                                                              request['image'] ??
-                                                                  '',
-                                                              width: 70.w,
-                                                              height: 70.h,
-                                                              fit: BoxFit.cover,
-                                                              errorBuilder:
-                                                                  (context,
-                                                                          error,
-                                                                          stackTrace) =>
-                                                                      Container(
+                                                        ),
+                                                        child: FutureBuilder(
+                                                          future: Future.delayed(const Duration(milliseconds: 300)),
+                                                          builder: (context, snapshot) {
+                                                            return ClipRRect(
+                                                              borderRadius: BorderRadius.circular(18.r),
+                                                              child: Image.network(
+                                                                request['image'] ?? '',
                                                                 width: 70.w,
                                                                 height: 70.h,
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade200,
-                                                                child: Icon(
-                                                                    Icons
-                                                                        .image_not_supported,
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    size:
-                                                                        20.sp),
+                                                                fit: BoxFit.cover,
+                                                                frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                                                                  if (wasSynchronouslyLoaded) return child;
+
+                                                                  if (frame == null ||
+                                                                      snapshot.connectionState != ConnectionState.done) {
+                                                                    return Shimmer.fromColors(
+                                                                      baseColor: appCubit.isDark
+                                                                          ? const Color(0xFF2A2A2A)
+                                                                          : const Color(0xFFE3F2FD),
+                                                                      highlightColor: appCubit.isDark
+                                                                          ? const Color(0xFF3A3A3A)
+                                                                          : const Color(0xFFF8FCFF),
+                                                                      child: Container(
+                                                                        width: 70.w,
+                                                                        height: 70.h,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    );
+                                                                  }
+
+                                                                  return child;
+                                                                },
+                                                                errorBuilder: (context, error, stackTrace) {
+                                                                  return Container(
+                                                                    width: 70.w,
+                                                                    height: 70.h,
+                                                                    color: Colors.grey.shade200,
+                                                                    child: Icon(
+                                                                      Icons.image_not_supported,
+                                                                      color: Colors.grey,
+                                                                      size: 20.sp,
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 15.w),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    request[
+                                                                        'title'],
+                                                                    maxLines:
+                                                                        2,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          14.sp,
+                                                                      fontWeight:
+                                                                          FontWeight.bold,
+                                                                      color: appCubit.isDark
+                                                                          ? Colors.white
+                                                                          : Colors.black,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 5.w,
+                                                                ),
+                                                                Container(
+                                                                  padding: EdgeInsets.symmetric(
+                                                                      horizontal: 10
+                                                                          .w,
+                                                                      vertical:
+                                                                          4.h),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: statusColor
+                                                                        .withOpacity(
+                                                                            0.1),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            30.r),
+                                                                    border: Border.all(
+                                                                        color:
+                                                                            statusColor.withOpacity(0.2)),
+                                                                  ),
+                                                                  child: Text(
+                                                                    status,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color:
+                                                                          statusColor,
+                                                                      fontWeight:
+                                                                          FontWeight.bold,
+                                                                      fontSize:
+                                                                          10.sp,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            SizedBox(
+                                                                height: 6.h),
+                                                            Text(
+                                                              '${request['price']} $reyalSymbol',
+                                                              style:
+                                                                  TextStyle(
+                                                                fontSize:
+                                                                    14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w900,
+                                                                color:
+                                                                    mainColor,
                                                               ),
                                                             ),
-                                                          ),
+                                                          ],
                                                         ),
-                                                        SizedBox(width: 15.w),
-                                                        Expanded(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      request[
-                                                                          'title'],
-                                                                      maxLines:
-                                                                          2,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            14.sp,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        color: appCubit.isDark
-                                                                            ? Colors.white
-                                                                            : Colors.black,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 5.w,
-                                                                  ),
-                                                                  Container(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        horizontal: 10
-                                                                            .w,
-                                                                        vertical:
-                                                                            4.h),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: statusColor
-                                                                          .withOpacity(
-                                                                              0.1),
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              30.r),
-                                                                      border: Border.all(
-                                                                          color:
-                                                                              statusColor.withOpacity(0.2)),
-                                                                    ),
-                                                                    child: Text(
-                                                                      status,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color:
-                                                                            statusColor,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        fontSize:
-                                                                            10.sp,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(
-                                                                  height: 6.h),
-                                                              Text(
-                                                                '${request['price']} $reyalSymbol',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize:
-                                                                      14.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w900,
-                                                                  color:
-                                                                      mainColor,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 15.h),
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.all(12.r),
+                                                    decoration: BoxDecoration(
+                                                      color: mainColor
+                                                          .withOpacity(0.04),
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(20.r),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        buildDetailRow(
+                                                            'العنوان:',
+                                                            request[
+                                                                'address'],
+                                                            'assets/loc.svg',
+                                                            appCubit),
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  vertical:
+                                                                      8.h),
+                                                          child: Divider(
+                                                              color: Colors
+                                                                  .grey
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                              height: 1),
                                                         ),
+                                                        buildDetailRow(
+                                                            'الموعد:',
+                                                            formatStatusTime(
+                                                                request[
+                                                                    'scheduledAt']),
+                                                            'assets/timer.svg',
+                                                            appCubit),
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  vertical:
+                                                                      8.h),
+                                                          child: Divider(
+                                                              color: Colors
+                                                                  .grey
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                              height: 1),
+                                                        ),
+                                                        buildDetailRow(
+                                                            'الفني:',
+                                                            providerData[
+                                                                'name'],
+                                                            'assets/acc.svg',
+                                                            appCubit),
                                                       ],
                                                     ),
-                                                    SizedBox(height: 15.h),
-                                                    Container(
-                                                      padding:
-                                                          EdgeInsets.all(12.r),
-                                                      decoration: BoxDecoration(
-                                                        color: mainColor
-                                                            .withOpacity(0.04),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20.r),
-                                                      ),
-                                                      child: Column(
-                                                        children: [
-                                                          buildDetailRow(
-                                                              'العنوان:',
-                                                              request[
-                                                                  'address'],
-                                                              'assets/loc.svg',
-                                                              appCubit),
-                                                          Padding(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical:
-                                                                        8.h),
-                                                            child: Divider(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                        0.1),
-                                                                height: 1),
-                                                          ),
-                                                          buildDetailRow(
-                                                              'الموعد:',
-                                                              formatStatusTime(
-                                                                  request[
-                                                                      'scheduledAt']),
-                                                              'assets/timer.svg',
-                                                              appCubit),
-                                                          Padding(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical:
-                                                                        8.h),
-                                                            child: Divider(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                        0.1),
-                                                                height: 1),
-                                                          ),
-                                                          buildDetailRow(
-                                                              'الفني:',
-                                                              providerData[
-                                                                  'name'],
-                                                              'assets/acc.svg',
-                                                              appCubit),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          );
-                                        },
-                                      )
-                              ],
-                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                            ],
                           ),
                         ),
-                      ));
-            },
-          )),
-        );
+                      ),
+                    ));
+          },
+        ));
       },
     );
   }

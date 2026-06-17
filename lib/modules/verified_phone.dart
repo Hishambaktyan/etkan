@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Etkan/main.dart';
-import 'package:Etkan/modules/reset_password_screen.dart';
+import 'package:Etkan/modules/reset_password.dart';
 import 'package:Etkan/modules/user_screens/user_add_address.dart';
 import 'package:Etkan/modules/worker_screens/worker_complete_profile.dart';
 import 'package:Etkan/shared/compenents/components.dart';
@@ -375,16 +375,13 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
                   ),
                 ),
                 SizedBox(height: 4.h),
-                Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Text(
-                    widget.phone,
-                    style: TextStyle(
-                      color: mainColor,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
+                Text(
+                  widget.phone,
+                  style: TextStyle(
+                    color: mainColor,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
@@ -615,7 +612,7 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
               if (isResetPassword) {
                 moveAndReplace(
                   context,
-                  ResetPasswordScreen(
+                  ResetPassword(
                     phone: widget.phone,
                     userType: widget.userType,
                   ),
@@ -706,94 +703,91 @@ class _VerifiedPhoneState extends State<VerifiedPhone> {
             }
           },
           builder: (context, state) {
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: Stack(
-                  children: [
-                    Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [
-                            mainColor.withOpacity(0.9),
-                            const Color(0xFF0F0F1E),
-                          ],
-                          stops: const [
-                            0.0,
-                            0.8,
-                          ],
-                        ),
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: -50.h,
-                            left: -50.w,
-                            child: CircleAvatar(
-                              radius: 100.r,
-                              backgroundColor: Colors.white.withOpacity(0.15),
-                            ),
-                          ),
-                          Positioned(
-                            top: 80.h,
-                            right: -60.w,
-                            child: Container(
-                              width: 250.r,
-                              height: 250.r,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    const Color(0xFF00F2FF).withOpacity(0.5),
-                                    const Color(0xFF00F2FF).withOpacity(0),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 200.h,
-                            left: -40.w,
-                            child: Container(
-                              width: 200.r,
-                              height: 200.r,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    mainColor.withOpacity(0.4),
-                                    mainColor.withOpacity(0),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 50,
-                                sigmaY: 50,
-                              ),
-                              child: Container(
-                                color: Colors.transparent,
-                              ),
-                            ),
-                          ),
-                          buildTopSection(),
+            return Scaffold(
+              body: Stack(
+                children: [
+                  Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                        colors: [
+                          mainColor.withOpacity(0.9),
+                          const Color(0xFF0F0F1E),
+                        ],
+                        stops: const [
+                          0.0,
+                          0.8,
                         ],
                       ),
                     ),
-                    buildBottomSection(
-                      appCubit: appCubit,
-                      authCubit: authCubit,
-                      state: state,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: -50.h,
+                          left: -50.w,
+                          child: CircleAvatar(
+                            radius: 100.r,
+                            backgroundColor: Colors.white.withOpacity(0.15),
+                          ),
+                        ),
+                        Positioned(
+                          top: 80.h,
+                          right: -60.w,
+                          child: Container(
+                            width: 250.r,
+                            height: 250.r,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  const Color(0xFF00F2FF).withOpacity(0.5),
+                                  const Color(0xFF00F2FF).withOpacity(0),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 200.h,
+                          left: -40.w,
+                          child: Container(
+                            width: 200.r,
+                            height: 200.r,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  mainColor.withOpacity(0.4),
+                                  mainColor.withOpacity(0),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(
+                              sigmaX: 50,
+                              sigmaY: 50,
+                            ),
+                            child: Container(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                        ),
+                        buildTopSection(),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  buildBottomSection(
+                    appCubit: appCubit,
+                    authCubit: authCubit,
+                    state: state,
+                  ),
+                ],
               ),
             );
           },

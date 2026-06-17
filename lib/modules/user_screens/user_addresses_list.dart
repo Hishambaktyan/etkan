@@ -433,145 +433,142 @@ class _UserAddressesListState extends State<UserAddressesList> {
         return BlocBuilder<LocationCubit, LocationStates>(
           builder: (context, state) {
             LocationCubit locationCubit = LocationCubit.get(context);
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                appBar: AppBar(
-                  titleSpacing: 10,
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(7),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () => Navigator.pop(context),
-                          child: Icon(
-                            CupertinoIcons.back,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
+            return Scaffold(
+              appBar: AppBar(
+                titleSpacing: 10,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                automaticallyImplyLeading: false,
+                title: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(7),
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        onTap: () => Navigator.pop(context),
+                        child: Icon(
+                          CupertinoIcons.back,
+                          color: Theme.of(context).iconTheme.color,
                         ),
                       ),
-                      SizedBox(width: 10.w),
-                      Text(
-                        'إدارة العناوين',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.sp,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Text(
+                      'إدارة العناوين',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.sp,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                body: SingleChildScrollView(
-                  padding: const EdgeInsetsDirectional.all(10),
-                  child: state is GetAddressesLoadingState
-                      ? AddressManagementShimmer(
-                          isDark: appCubit.isDark,
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildHeaderCard(appCubit),
-                            SizedBox(height: 25.h),
-                            _buildSectionTitle(appCubit),
-                            SizedBox(height: 15.h),
-                            locationCubit.allAddresses.isEmpty
-                                ? SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.55,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 85.w,
-                                          height: 85.w,
-                                          padding: EdgeInsets.all(18.r),
-                                          decoration: BoxDecoration(
-                                            color: mainColor.withOpacity(0.08),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: SvgPicture.asset(
-                                            'assets/no_loc.svg',
-                                            width: 45.w,
-                                            colorFilter: ColorFilter.mode(
-                                              mainColor.withOpacity(0.75),
-                                              BlendMode.srcIn,
-                                            ),
+              ),
+              body: SingleChildScrollView(
+                padding: const EdgeInsetsDirectional.all(10),
+                child: state is GetAddressesLoadingState
+                    ? AddressManagementShimmer(
+                        isDark: appCubit.isDark,
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildHeaderCard(appCubit),
+                          SizedBox(height: 25.h),
+                          _buildSectionTitle(appCubit),
+                          SizedBox(height: 15.h),
+                          locationCubit.allAddresses.isEmpty
+                              ? SizedBox(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.55,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 85.w,
+                                        height: 85.w,
+                                        padding: EdgeInsets.all(18.r),
+                                        decoration: BoxDecoration(
+                                          color: mainColor.withOpacity(0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/no_loc.svg',
+                                          width: 45.w,
+                                          colorFilter: ColorFilter.mode(
+                                            mainColor.withOpacity(0.75),
+                                            BlendMode.srcIn,
                                           ),
                                         ),
-                                        SizedBox(height: 20.h),
-                                        Text(
-                                          'لا توجد عناوين محفوظة',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 18.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge!
-                                                .color,
-                                          ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      Text(
+                                        'لا توجد عناوين محفوظة',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
                                         ),
-                                        SizedBox(height: 10.h),
-                                        Text(
-                                          'أضف عنوانك الآن لتسهيل استخدامه عند حجز الخدمات.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            height: 1.6,
-                                            color: appCubit.isDark
-                                                ? darkSubTextColor
-                                                : Colors.grey.shade600,
-                                          ),
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Text(
+                                        'أضف عنوانك الآن لتسهيل استخدامه عند حجز الخدمات.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          height: 1.6,
+                                          color: appCubit.isDark
+                                              ? darkSubTextColor
+                                              : Colors.grey.shade600,
                                         ),
-                                      ],
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount:
-                                        locationCubit.allAddresses.length,
-                                    itemBuilder: (context, index) {
-                                      final address =
-                                          locationCubit.allAddresses[index];
-                                      return _buildAddressCard(
-                                          appCubit: appCubit,
-                                          address: address,
-                                          index: index,
-                                          locationCubit: locationCubit,
-                                          uId: CacheHelper.getData(key: 'uid'));
-                                    },
+                                      ),
+                                    ],
                                   ),
-                          ],
-                        ),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics:
+                                      const NeverScrollableScrollPhysics(),
+                                  itemCount:
+                                      locationCubit.allAddresses.length,
+                                  itemBuilder: (context, index) {
+                                    final address =
+                                        locationCubit.allAddresses[index];
+                                    return _buildAddressCard(
+                                        appCubit: appCubit,
+                                        address: address,
+                                        index: index,
+                                        locationCubit: locationCubit,
+                                        uId: CacheHelper.getData(key: 'uid'));
+                                  },
+                                ),
+                        ],
+                      ),
+              ),
+              bottomNavigationBar: Container(
+                padding: EdgeInsetsDirectional.only(
+                  start: 20.w,
+                  end: 20.w,
+                  top: 10.h,
+                  bottom: 20.h,
                 ),
-                bottomNavigationBar: Container(
-                  padding: EdgeInsetsDirectional.only(
-                    start: 20.w,
-                    end: 20.w,
-                    top: 10.h,
-                    bottom: 20.h,
-                  ),
-                  decoration: BoxDecoration(
-                      color: appCubit.isDark ? darkBgColor : Colors.white,
-                      boxShadow: blueShadow),
-                  child: defaultButtonWithIcon(
-                      onPressed: () => move(context, const UserAddAddress()),
-                      height: 50.h,
-                      text: 'إضافة عنوان جديد',
-                      icon: SvgPicture.asset(
-                        'assets/add_loc.svg',
-                        color: Colors.white,
-                      )),
-                ),
+                decoration: BoxDecoration(
+                    color: appCubit.isDark ? darkBgColor : Colors.white,
+                    boxShadow: blueShadow),
+                child: defaultButtonWithIcon(
+                    onPressed: () => move(context, const UserAddAddress()),
+                    height: 50.h,
+                    text: 'إضافة عنوان جديد',
+                    icon: SvgPicture.asset(
+                      'assets/add_loc.svg',
+                      color: Colors.white,
+                    )),
               ),
             );
           },

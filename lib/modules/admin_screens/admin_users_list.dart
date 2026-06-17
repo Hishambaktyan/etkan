@@ -89,183 +89,180 @@ class _AdminUsersListState extends State<AdminUsersList> {
   Widget build(BuildContext context) {
     final AppCubit appCubit = context.watch<AppCubit>();
 
-    return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-          body: BlocBuilder<AdminCubit, AdminStates>(
-            builder: (context, state) {
-              AdminCubit adminCubit = AdminCubit.get(context);
-              final activeUsers = adminCubit.users
-                  .where((user) => user['isActive'] == true)
-                  .length;
-              final inactiveUsers = adminCubit.users
-                  .where((user) => user['isActive'] == false)
-                  .length;
-              return state is GetUsersLoadingState
-                  ? const AdminUsersShimmer()
-                  : SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          header(
-                              title: 'إدارة المستخدمين',
-                              context: context,
-                              isLeading: true,
-                              isNotif: false),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 10.w),
-                            child: Row(
-                              children: [
-                                buildStatCard(
-                                    title: 'الحسابات المفعلة',
-                                    value: activeUsers.toString(),
-                                    icon: 'assets/all.svg',
-                                    appCubit: appCubit),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                buildStatCard(
-                                    title: 'الحسابات المعطلة',
-                                    value: inactiveUsers.toString(),
-                                    icon: 'assets/dis.svg',
-                                    appCubit: appCubit),
-                              ],
+    return Scaffold(
+      body: BlocBuilder<AdminCubit, AdminStates>(
+        builder: (context, state) {
+          AdminCubit adminCubit = AdminCubit.get(context);
+          final activeUsers = adminCubit.users
+              .where((user) => user['isActive'] == true)
+              .length;
+          final inactiveUsers = adminCubit.users
+              .where((user) => user['isActive'] == false)
+              .length;
+          return state is GetUsersLoadingState
+              ? const AdminUsersShimmer()
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      header(
+                          title: 'إدارة المستخدمين',
+                          context: context,
+                          isLeading: true,
+                          isNotif: false),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.symmetric(
+                            horizontal: 10.w),
+                        child: Row(
+                          children: [
+                            buildStatCard(
+                                title: 'الحسابات المفعلة',
+                                value: activeUsers.toString(),
+                                icon: 'assets/all.svg',
+                                appCubit: appCubit),
+                            SizedBox(
+                              width: 10.w,
                             ),
-                          ),
-                          SizedBox(
-                            height: 20.h,
-                          ),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 15.h,
-                                    crossAxisSpacing: 10.w,
-                                    childAspectRatio: 0.78),
-                            padding: EdgeInsetsDirectional.only(
-                                start: 10.w, end: 10.w, bottom: 20.h),
-                            itemCount: adminCubit.users.length,
-                            itemBuilder: (context, index) {
-                              final user = adminCubit.users[index];
-                              return InkWell(
-                                onTap: () =>
-                                    move(context, AdminUserInfo(user: user)),
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
+                            buildStatCard(
+                                title: 'الحسابات المعطلة',
+                                value: inactiveUsers.toString(),
+                                icon: 'assets/dis.svg',
+                                appCubit: appCubit),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 15.h,
+                                crossAxisSpacing: 10.w,
+                                childAspectRatio: 0.78),
+                        padding: EdgeInsetsDirectional.only(
+                            start: 10.w, end: 10.w, bottom: 20.h),
+                        itemCount: adminCubit.users.length,
+                        itemBuilder: (context, index) {
+                          final user = adminCubit.users[index];
+                          return InkWell(
+                            onTap: () =>
+                                move(context, AdminUserInfo(user: user)),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            borderRadius: BorderRadius.circular(25.r),
+                            child: Container(
+                              width: 190.w,
+                              decoration: BoxDecoration(
+                                color: appCubit.isDark
+                                    ? lightDarkColor
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(25.r),
-                                child: Container(
-                                  width: 190.w,
-                                  decoration: BoxDecoration(
-                                    color: appCubit.isDark
-                                        ? lightDarkColor
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow: blueShadow,
+                                boxShadow: blueShadow,
+                              ),
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.circular(25.r),
+                                    child: Image.network(
+                                      user['profileImage'] ?? '',
+                                      height: 120.h,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                        height: 120.h,
+                                        width: double.infinity,
+                                        color: appCubit.isDark
+                                            ? darkBgColor
+                                            : Colors.grey.shade200,
+                                        child: Icon(Icons.person,
+                                            color: Colors.grey, size: 35.r),
+                                      ),
+                                    ),
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(25.r),
-                                        child: Image.network(
-                                          user['profileImage'] ?? '',
-                                          height: 120.h,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  Container(
-                                            height: 120.h,
-                                            width: double.infinity,
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.only(
+                                        top: 15.h, start: 10.w, end: 10.w),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          user['name'] ?? '',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13.sp,
                                             color: appCubit.isDark
-                                                ? darkBgColor
-                                                : Colors.grey.shade200,
-                                            child: Icon(Icons.person,
-                                                color: Colors.grey, size: 35.r),
+                                                ? Colors.white
+                                                : Colors.black,
                                           ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.only(
-                                            top: 15.h, start: 10.w, end: 10.w),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              user['name'] ?? '',
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 13.sp,
-                                                color: appCubit.isDark
-                                                    ? Colors.white
-                                                    : Colors.black,
+                                        SizedBox(height: 10.h),
+                                        Container(
+                                          width: double.infinity,
+                                          padding: EdgeInsetsDirectional
+                                              .symmetric(
+                                                  horizontal: 5.w,
+                                                  vertical: 6.h),
+                                          decoration: BoxDecoration(
+                                            color: mainColor.withOpacity(
+                                                appCubit.isDark
+                                                    ? 0.12
+                                                    : 0.05),
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'عرض الملف الشخصي',
+                                                style: TextStyle(
+                                                  fontSize: 9.sp,
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                  color: mainColor,
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(height: 10.h),
-                                            Container(
-                                              width: double.infinity,
-                                              padding: EdgeInsetsDirectional
-                                                  .symmetric(
-                                                      horizontal: 5.w,
-                                                      vertical: 6.h),
-                                              decoration: BoxDecoration(
-                                                color: mainColor.withOpacity(
-                                                    appCubit.isDark
-                                                        ? 0.12
-                                                        : 0.05),
-                                                borderRadius:
-                                                    BorderRadius.circular(12.r),
+                                              SizedBox(width: 5.w),
+                                              Icon(
+                                                Icons
+                                                    .arrow_forward_ios_rounded,
+                                                color: mainColor,
+                                                size: 10.sp,
                                               ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'عرض الملف الشخصي',
-                                                    style: TextStyle(
-                                                      fontSize: 9.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: mainColor,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 5.w),
-                                                  Icon(
-                                                    Icons
-                                                        .arrow_forward_ios_rounded,
-                                                    color: mainColor,
-                                                    size: 10.sp,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-            },
-          ),
-        ));
+                    ],
+                  ),
+                );
+        },
+      ),
+    );
   }
 }

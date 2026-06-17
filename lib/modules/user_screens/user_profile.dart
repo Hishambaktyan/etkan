@@ -15,6 +15,7 @@ import 'package:Etkan/shared/cubits/location_cubit/location_states.dart';
 import 'package:Etkan/shared/cubits/user_cubit/user_states.dart';
 import 'package:Etkan/shared/networks/local/cache_helper.dart';
 import 'package:Etkan/shared/styles/colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../shared/cubits/user_cubit/user_cubit.dart';
 
@@ -138,7 +139,6 @@ class _UserProfileState extends State<UserProfile> {
       ),
       child: Container(
         width: double.infinity,
-        height: 300.h,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -290,36 +290,73 @@ class _UserProfileState extends State<UserProfile> {
                   Center(
                     child: Column(
                       children: [
-                        Container(
-                          width: 98.r,
-                          height: 98.r,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.15),
-                                blurRadius: 15,
-                                offset: const Offset(0, 8),
+                        FutureBuilder(
+                          future: Future.delayed(const Duration(milliseconds: 300)),
+                          builder: (context, snapshot) {
+                            return Container(
+                              width: 98.r,
+                              height: 98.r,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 48.r,
-                            backgroundColor: Colors.white.withOpacity(0.12),
-                            backgroundImage:
-                                image.isNotEmpty ? NetworkImage(image) : null,
-                            child: image.isEmpty
-                                ? Icon(
+                              child: ClipOval(
+                                child: image.isNotEmpty
+                                    ? Image.network(
+                                  image,
+                                  width: 98.r,
+                                  height: 98.r,
+                                  fit: BoxFit.cover,
+                                  frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                                    if (wasSynchronouslyLoaded) return child;
+
+                                    if (frame == null ||
+                                        snapshot.connectionState != ConnectionState.done) {
+                                      return Shimmer.fromColors(
+                                        baseColor: const Color(0xFFE3F2FD),
+                                        highlightColor: const Color(0xFFF8FCFF),
+                                        child: Container(
+                                          width: 98.r,
+                                          height: 98.r,
+                                          color: Colors.white,
+                                        ),
+                                      );
+                                    }
+
+                                    return child;
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.white.withOpacity(0.12),
+                                      child: Icon(
+                                        Icons.person_rounded,
+                                        color: Colors.white,
+                                        size: 48.r,
+                                      ),
+                                    );
+                                  },
+                                )
+                                    : Container(
+                                  color: Colors.white.withOpacity(0.12),
+                                  child: Icon(
                                     Icons.person_rounded,
                                     color: Colors.white,
                                     size: 48.r,
-                                  )
-                                : null,
-                          ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                         SizedBox(height: 10.h),
                         Text(
@@ -608,77 +645,74 @@ class _UserProfileState extends State<UserProfile> {
             return BlocBuilder<LocationCubit, LocationStates>(
               builder: (context, locationState) {
                 LocationCubit locationCubit = LocationCubit.get(context);
-                return Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Scaffold(
-                    body: RefreshIndicator(
-                      onRefresh: () =>
-                          checkConnectionAndGetData(forceRefresh: true),
-                      child: ConditionalBuilder(
-                        condition: isPageLoading ||
-                            state is GetSingleUserDataLoadingState,
-                        builder: (context) =>
-                            UserProfileShimmer(isDark: appCubit.isDark),
-                        fallback: (context) => ConditionalBuilder(
-                          condition: !hasInternet,
-                          builder: (context) => NoInternet(
-                            onRetry: () =>
-                                checkConnectionAndGetData(forceRefresh: true),
-                          ),
-                          fallback: (context) => SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                              children: [
-                                buildHeader(
-                                  appCubit: appCubit,
-                                  user: user,
+                return Scaffold(
+                  body: RefreshIndicator(
+                    onRefresh: () =>
+                        checkConnectionAndGetData(forceRefresh: true),
+                    child: ConditionalBuilder(
+                      condition: isPageLoading ||
+                          state is GetSingleUserDataLoadingState,
+                      builder: (context) =>
+                          UserProfileShimmer(isDark: appCubit.isDark),
+                      fallback: (context) => ConditionalBuilder(
+                        condition: !hasInternet,
+                        builder: (context) => NoInternet(
+                          onRetry: () =>
+                              checkConnectionAndGetData(forceRefresh: true),
+                        ),
+                        fallback: (context) => SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            children: [
+                              buildHeader(
+                                appCubit: appCubit,
+                                user: user,
+                              ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.only(
+                                  start: 10.w,
+                                  end: 10.w,
+                                  top: 20.h,
+                                  bottom: 20.h,
                                 ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                    start: 10.w,
-                                    end: 10.w,
-                                    top: 20.h,
-                                    bottom: 20.h,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      buildQuickStats(
-                                        cubit: appCubit,
-                                        bookingCubit: userCubit,
-                                        locationCubit: locationCubit,
+                                child: Column(
+                                  children: [
+                                    buildQuickStats(
+                                      cubit: appCubit,
+                                      bookingCubit: userCubit,
+                                      locationCubit: locationCubit,
+                                    ),
+                                    SizedBox(height: 25.h),
+                                    buildSectionHeader(
+                                      title: 'معلومات الحساب',
+                                      icon: SvgPicture.asset(
+                                        'assets/acc.svg',
+                                        color: mainColor,
+                                        width: 25.w,
                                       ),
-                                      SizedBox(height: 25.h),
-                                      buildSectionHeader(
-                                        title: 'معلومات الحساب',
-                                        icon: SvgPicture.asset(
-                                          'assets/acc.svg',
-                                          color: mainColor,
-                                          width: 25.w,
-                                        ),
-                                        cubit: appCubit,
+                                      cubit: appCubit,
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    buildAccountInfoCard(
+                                      user: user,
+                                      cubit: appCubit,
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    buildSectionHeader(
+                                      title: 'العناوين',
+                                      icon: SvgPicture.asset(
+                                        'assets/loc.svg',
+                                        color: mainColor,
+                                        width: 25.w,
                                       ),
-                                      SizedBox(height: 10.h),
-                                      buildAccountInfoCard(
-                                        user: user,
-                                        cubit: appCubit,
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      buildSectionHeader(
-                                        title: 'العناوين',
-                                        icon: SvgPicture.asset(
-                                          'assets/loc.svg',
-                                          color: mainColor,
-                                          width: 25.w,
-                                        ),
-                                        cubit: appCubit,
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      buildAddressShortcutCard(cubit: appCubit),
-                                    ],
-                                  ),
+                                      cubit: appCubit,
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    buildAddressShortcutCard(cubit: appCubit),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

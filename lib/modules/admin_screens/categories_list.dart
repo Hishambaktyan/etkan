@@ -34,175 +34,156 @@ class _CategoriesListState extends State<CategoriesList> {
       builder: (context, appState) {
         final AppCubit appCubit = AppCubit.get(context);
 
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-            body: BlocBuilder<AdminCubit, AdminStates>(
-              builder: (context, state) {
-                final AdminCubit adminCubit = AdminCubit.get(context);
+        return Scaffold(
+          body: BlocBuilder<AdminCubit, AdminStates>(
+            builder: (context, state) {
+              final AdminCubit adminCubit = AdminCubit.get(context);
 
-                return state is GetCategoryLoadingState
-                    ? const AdminCategoriesShimmer()
-                    : SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            header(
-                              title: 'قائمة الأقسام',
-                              context: context,
-                              isLeading: true,
-                              isNotif: false,
-                              isAction: true,
-                              actionIcon: 'assets/add_grid.svg',
-                              onActionPresses: () =>
-                                  move(context, const AddCategory()),
+              return state is GetCategoryLoadingState
+                  ? const AdminCategoriesShimmer()
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          header(
+                            title: 'قائمة الأقسام',
+                            context: context,
+                            isLeading: true,
+                            isNotif: false,
+                            isAction: true,
+                            actionIcon: 'assets/add_grid.svg',
+                            onActionPresses: () =>
+                                move(context, const AddCategory()),
+                          ),
+                          GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 10.w,
+                              vertical: 20.h,
                             ),
-                            GridView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 10.w,
-                                vertical: 20.h,
-                              ),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 15.h,
-                                crossAxisSpacing: 10.w,
-                                childAspectRatio: 1.1,
-                              ),
-                              itemCount: adminCubit.categories.length,
-                              itemBuilder: (context, index) {
-                                final category = adminCubit.categories[index];
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 15.h,
+                              crossAxisSpacing: 10.w,
+                              childAspectRatio: 1.1,
+                            ),
+                            itemCount: adminCubit.categories.length,
+                            itemBuilder: (context, index) {
+                              final category = adminCubit.categories[index];
 
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    color: appCubit.isDark
-                                        ? lightDarkColor
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    boxShadow: blueShadow,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Stack(
-                                          children: [
-                                            Container(
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                color: appCubit.isDark
-                                                    ? darkBgColor
-                                                    : mainColor
-                                                        .withOpacity(0.05),
-                                                borderRadius:
-                                                    BorderRadius.vertical(
-                                                  top: Radius.circular(25.r),
-                                                ),
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: appCubit.isDark
+                                      ? lightDarkColor
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(25.r),
+                                  boxShadow: blueShadow,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              color: appCubit.isDark
+                                                  ? darkBgColor
+                                                  : mainColor
+                                                      .withOpacity(0.05),
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                top: Radius.circular(25.r),
                                               ),
-                                              padding:
-                                                  EdgeInsetsDirectional.all(
-                                                15.r,
-                                              ),
-                                              child: SvgPicture.network(
-                                                '${category['image']}',
+                                            ),
+                                            padding:
+                                                EdgeInsetsDirectional.all(
+                                              15.r,
+                                            ),
+                                            child: SvgPicture.network(
+                                              '${category['image']}',
+                                              height: 100.h,
+                                              width: 100.w,
+                                              errorBuilder: (
+                                                context,
+                                                error,
+                                                stackTrace,
+                                              ) =>
+                                                  SizedBox(
                                                 height: 100.h,
-                                                width: 100.w,
-                                                errorBuilder: (
-                                                  context,
-                                                  error,
-                                                  stackTrace,
-                                                ) =>
-                                                    SizedBox(
-                                                  height: 100.h,
-                                                  child: Icon(
-                                                    Icons
-                                                        .image_not_supported_outlined,
-                                                    size: 40.w,
-                                                    color: appCubit.isDark
-                                                        ? darkSubTextColor
-                                                        : Colors.grey.shade400,
-                                                  ),
+                                                child: Icon(
+                                                  Icons
+                                                      .image_not_supported_outlined,
+                                                  size: 40.w,
+                                                  color: appCubit.isDark
+                                                      ? darkSubTextColor
+                                                      : Colors.grey.shade400,
                                                 ),
                                               ),
                                             ),
-                                            PositionedDirectional(
-                                              top: 10.h,
-                                              end: 10.w,
-                                              child: InkWell(
-                                                splashColor: Colors.transparent,
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                onTap: () => move(
-                                                  context,
-                                                  ManageDept(
-                                                    category: category,
-                                                  ),
+                                          ),
+                                          PositionedDirectional(
+                                            top: 10.h,
+                                            end: 10.w,
+                                            child: InkWell(
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              onTap: () => move(
+                                                context,
+                                                ManageDept(
+                                                  category: category,
                                                 ),
-                                                child: Container(
-                                                  padding:
-                                                      EdgeInsetsDirectional.all(
-                                                    5.w,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: appCubit.isDark
-                                                        ? lightDarkColor
-                                                            .withOpacity(0.90)
-                                                        : Colors.white
-                                                            .withOpacity(0.80),
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.more_horiz_rounded,
-                                                    color: mainColor,
-                                                    size: 20.sp,
-                                                  ),
+                                              ),
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsetsDirectional.all(
+                                                  5.w,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: appCubit.isDark
+                                                      ? lightDarkColor
+                                                          .withOpacity(0.90)
+                                                      : Colors.white
+                                                          .withOpacity(0.80),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.more_horiz_rounded,
+                                                  color: mainColor,
+                                                  size: 20.sp,
                                                 ),
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 12.w,
-                                          vertical: 12.h,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            category['title']!.length > 10
-                                                ? SizedBox(
-                                                    height: 22.h,
-                                                    child: Marquee(
-                                                      text: category['title']!,
-                                                      scrollAxis:
-                                                          Axis.horizontal,
-                                                      blankSpace: 20.w,
-                                                      velocity: 30,
-                                                      pauseAfterRound:
-                                                          const Duration(
-                                                        seconds: 1,
-                                                      ),
-                                                      style: TextStyle(
-                                                        fontSize: 14.sp,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyLarge!
-                                                            .color,
-                                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w,
+                                        vertical: 12.h,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          category['title']!.length > 10
+                                              ? SizedBox(
+                                                  height: 22.h,
+                                                  child: Marquee(
+                                                    text: category['title']!,
+                                                    scrollAxis:
+                                                        Axis.horizontal,
+                                                    blankSpace: 20.w,
+                                                    velocity: 30,
+                                                    pauseAfterRound:
+                                                        const Duration(
+                                                      seconds: 1,
                                                     ),
-                                                  )
-                                                : Text(
-                                                    category['title']!,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
                                                     style: TextStyle(
                                                       fontSize: 14.sp,
                                                       fontWeight:
@@ -213,30 +194,45 @@ class _CategoriesListState extends State<CategoriesList> {
                                                           .color,
                                                     ),
                                                   ),
-                                            SizedBox(height: 5.h),
-                                            Container(
-                                              width: 20.w,
-                                              height: 3.h,
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    mainColor.withOpacity(0.4),
-                                                borderRadius:
-                                                    BorderRadius.circular(10.r),
-                                              ),
+                                                )
+                                              : Text(
+                                                  category['title']!,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyLarge!
+                                                        .color,
+                                                  ),
+                                                ),
+                                          SizedBox(height: 5.h),
+                                          Container(
+                                            width: 20.w,
+                                            height: 3.h,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  mainColor.withOpacity(0.4),
+                                              borderRadius:
+                                                  BorderRadius.circular(10.r),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-              },
-            ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+            },
           ),
         );
       },

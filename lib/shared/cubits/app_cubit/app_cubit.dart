@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Etkan/modules/worker_screens/worker_services_list.dart';
-
 import '../../../modules/user_screens/user_requests_list.dart';
 import '../../../modules/user_screens/user_categories.dart';
 import '../../../modules/user_screens/user_home.dart';
@@ -101,15 +100,4 @@ class AppCubit extends Cubit<AppStates> with WidgetsBindingObserver {
     return super.close();
   }
 
-  Map<String, dynamic> allUsers = {};
-
-  Future<void> getAllUsers() async {
-    final snapshot = await FirebaseFirestore.instance.collection('users').get();
-
-    allUsers = {};
-
-    for (var doc in snapshot.docs) {
-      allUsers[doc.id] = doc.data();
-    }
-  }
 }

@@ -8,7 +8,7 @@ import 'package:Etkan/shared/networks/local/cache_helper.dart';
 import 'package:Etkan/shared/styles/colors.dart';
 
 import '../main.dart';
-import 'admin_screens/admin_login_screen.dart';
+import 'admin_screens/admin_login.dart';
 
 class SelectUserType extends StatefulWidget {
   const SelectUserType({super.key});
@@ -24,79 +24,76 @@ class _SelectUserTypeState extends State<SelectUserType> {
   @override
   Widget build(BuildContext context) {
     AppCubit appCubit = AppCubit.get(context);
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        body: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                adminTapCount++;
+    return Scaffold(
+      body: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              adminTapCount++;
 
-                if (adminTapCount >= 5) {
-                  adminTapCount = 0;
-                  move(context, const AdminLoginScreen());
-                }
-              },
-              child: header(
-                title: 'اختر نوع حسابك',
-                context: context,
-                isLeading: false,
-                isNotif: false,
-              ),
+              if (adminTapCount >= 5) {
+                adminTapCount = 0;
+                move(context, const AdminLogin());
+              }
+            },
+            child: header(
+              title: 'اختر نوع حسابك',
+              context: context,
+              isLeading: false,
+              isNotif: false,
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsetsDirectional.all(10.r),
-                  child: Column(
-                    children: [
-                      buildUserTypeCard(
-                        index: 0,
-                        title: 'أنا مستخدم',
-                        description:
-                            'أبحث عن فنيين محترفين لإنجاز خدمات الصيانة والإصلاح بسرعة وكفاءة.',
-                        image: 'assets/client.jpg',
-                        icon: Icons.person_search_rounded,
-                        appCubit: appCubit,
-                      ),
-                      SizedBox(height: 15.h),
-                      buildUserTypeCard(
-                        index: 1,
-                        title: 'أنا فني',
-                        description:
-                            'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
-                        image: 'assets/provider.jfif',
-                        icon: Icons.build_circle_rounded,
-                        appCubit: appCubit,
-                      ),
-                    ],
-                  ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsetsDirectional.all(10.r),
+                child: Column(
+                  children: [
+                    buildUserTypeCard(
+                      index: 0,
+                      title: 'أنا مستخدم',
+                      description:
+                          'أبحث عن فنيين محترفين لإنجاز خدمات الصيانة والإصلاح بسرعة وكفاءة.',
+                      image: 'assets/client.jpg',
+                      icon: Icons.person_search_rounded,
+                      appCubit: appCubit,
+                    ),
+                    SizedBox(height: 15.h),
+                    buildUserTypeCard(
+                      index: 1,
+                      title: 'أنا فني',
+                      description:
+                          'أريد تقديم مهاراتي المتخصصة، إيجاد عملاء جدد، وتنمية عملي المهني.',
+                      image: 'assets/provider.jfif',
+                      icon: Icons.build_circle_rounded,
+                      appCubit: appCubit,
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsetsDirectional.all(20.w),
+        decoration: BoxDecoration(
+          color: appCubit.isDark ? lightDarkColor : Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+          boxShadow: blueShadow,
         ),
-        bottomNavigationBar: Container(
-          padding: EdgeInsetsDirectional.all(20.w),
-          decoration: BoxDecoration(
-            color: appCubit.isDark ? lightDarkColor : Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-            boxShadow: blueShadow,
-          ),
-          child: defaultButton(
-            onPressed: () {
-              if (selectedIndex == 0) {
-                CacheHelper.saveData(key: 'role', value: 'user');
-                move(context, const UserLogin());
-              } else if (selectedIndex == 1) {
-                CacheHelper.saveData(key: 'role', value: 'provider');
-                move(context, const WorkerLogin());
-              }
-            },
-            text: 'متابعة',
-            height: 52.h,
-          ),
+        child: defaultButton(
+          onPressed: () {
+            if (selectedIndex == 0) {
+              CacheHelper.saveData(key: 'role', value: 'user');
+              move(context, const UserLogin());
+            } else if (selectedIndex == 1) {
+              CacheHelper.saveData(key: 'role', value: 'provider');
+              move(context, const WorkerLogin());
+            }
+          },
+          text: 'متابعة',
+          height: 52.h,
         ),
       ),
     );

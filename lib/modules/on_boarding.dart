@@ -51,246 +51,242 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       builder: (context, state) {
         final AppCubit appCubit = AppCubit.get(context);
 
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            backgroundColor: appCubit.isDark ? darkBgColor : bgColor,
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 18.w,
-                      top: 10.h,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 42.h,
-                          width: 42.w,
-                          decoration: BoxDecoration(
-                            color: mainColor.withOpacity(0.10),
-                            borderRadius: BorderRadius.circular(14.r),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/splash.png'),
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsetsDirectional.only(
+                    start: 18.w,
+                    top: 10.h,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 42.h,
+                        width: 42.w,
+                        decoration: BoxDecoration(
+                          color: mainColor.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(14.r),
+                          image: const DecorationImage(
+                            image: AssetImage('assets/splash.png'),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Text(
+                        'إتقان',
+                        style: TextStyle(
+                          color: mainColor,
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      defaultTextButton(
+                        onPressed: () => moveAndReplace(
+                          context,
+                          const SelectUserType(),
+                        ),
+                        text: 'تخطي',
+                        isLined: false,
+                        isBold: true,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                Expanded(
+                  child: PageView.builder(
+                    controller: controller,
+                    itemCount: data.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentIndex = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsetsDirectional.symmetric(
+                          horizontal: 22.w,
+                        ),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  PositionedDirectional(
+                                    top: 25.h,
+                                    start: 10.w,
+                                    child: CircleAvatar(
+                                      radius: 42.r,
+                                      backgroundColor:
+                                          mainColor.withOpacity(0.08),
+                                    ),
+                                  ),
+                                  PositionedDirectional(
+                                    bottom: 45.h,
+                                    end: 5.w,
+                                    child: CircleAvatar(
+                                      radius: 55.r,
+                                      backgroundColor:
+                                          mainColor.withOpacity(0.06),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsetsDirectional.all(16.r),
+                                    decoration: BoxDecoration(
+                                      color: appCubit.isDark
+                                          ? lightDarkColor
+                                          : Colors.white,
+                                      borderRadius:
+                                          BorderRadius.circular(30.r),
+                                      boxShadow: blueShadow,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(24.r),
+                                            child: Image.asset(
+                                              data[index]['image'],
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 15.h),
+                                        Container(
+                                          height: 58.w,
+                                          width: 58.w,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                mainColor.withOpacity(0.10),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Center(
+                                            child: SvgPicture.asset(
+                                              data[index]['icon'],
+                                              width: 28.w,
+                                              height: 28.h,
+                                              color: mainColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 28.h),
+                            Text(
+                              data[index]['title'],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22.sp,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .color,
+                                height: 1.4,
+                              ),
+                            ),
+                            SizedBox(height: 12.h),
+                            Text(
+                              data[index]['body'],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: appCubit.isDark
+                                    ? darkSubTextColor
+                                    : Colors.grey.shade700,
+                                height: 1.7,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 25.h),
+                SmoothPageIndicator(
+                  controller: controller,
+                  count: data.length,
+                  effect: ExpandingDotsEffect(
+                    dotHeight: 8.h,
+                    dotWidth: 8.w,
+                    activeDotColor: mainColor,
+                    dotColor: appCubit.isDark
+                        ? const Color(0xFF3A3A3A)
+                        : Colors.grey.shade300,
+                    expansionFactor: 3.5,
+                    spacing: 6.w,
+                  ),
+                ),
+                SizedBox(height: 25.h),
+                Padding(
+                  padding: EdgeInsetsDirectional.only(
+                    start: 20.w,
+                    end: 20.w,
+                    bottom: 28.h,
+                  ),
+                  child: Row(
+                    children: [
+                      if (currentIndex != 0)
+                        InkWell(
+                          onTap: () {
+                            controller.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(15.r),
+                          child: Container(
+                            height: 55.h,
+                            width: 55.w,
+                            decoration: BoxDecoration(
+                              color: mainColor.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(15.r),
+                            ),
+                            child: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: mainColor,
+                              size: 20.r,
                             ),
                           ),
                         ),
-                        SizedBox(width: 10.w),
-                        Text(
-                          'إتقان',
-                          style: TextStyle(
-                            color: mainColor,
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Spacer(),
-                        defaultTextButton(
-                          onPressed: () => moveAndReplace(
-                            context,
-                            const SelectUserType(),
-                          ),
-                          text: 'تخطي',
-                          isLined: false,
-                          isBold: true,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  Expanded(
-                    child: PageView.builder(
-                      controller: controller,
-                      itemCount: data.length,
-                      onPageChanged: (index) {
-                        setState(() {
-                          currentIndex = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: EdgeInsetsDirectional.symmetric(
-                            horizontal: 22.w,
-                          ),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    PositionedDirectional(
-                                      top: 25.h,
-                                      start: 10.w,
-                                      child: CircleAvatar(
-                                        radius: 42.r,
-                                        backgroundColor:
-                                            mainColor.withOpacity(0.08),
-                                      ),
-                                    ),
-                                    PositionedDirectional(
-                                      bottom: 45.h,
-                                      end: 5.w,
-                                      child: CircleAvatar(
-                                        radius: 55.r,
-                                        backgroundColor:
-                                            mainColor.withOpacity(0.06),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsetsDirectional.all(16.r),
-                                      decoration: BoxDecoration(
-                                        color: appCubit.isDark
-                                            ? lightDarkColor
-                                            : Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(30.r),
-                                        boxShadow: blueShadow,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(24.r),
-                                              child: Image.asset(
-                                                data[index]['image'],
-                                                width: double.infinity,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 15.h),
-                                          Container(
-                                            height: 58.w,
-                                            width: 58.w,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  mainColor.withOpacity(0.10),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Center(
-                                              child: SvgPicture.asset(
-                                                data[index]['icon'],
-                                                width: 28.w,
-                                                height: 28.h,
-                                                color: mainColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 28.h),
-                              Text(
-                                data[index]['title'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22.sp,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color,
-                                  height: 1.4,
-                                ),
-                              ),
-                              SizedBox(height: 12.h),
-                              Text(
-                                data[index]['body'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: appCubit.isDark
-                                      ? darkSubTextColor
-                                      : Colors.grey.shade700,
-                                  height: 1.7,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 25.h),
-                  SmoothPageIndicator(
-                    controller: controller,
-                    count: data.length,
-                    effect: ExpandingDotsEffect(
-                      dotHeight: 8.h,
-                      dotWidth: 8.w,
-                      activeDotColor: mainColor,
-                      dotColor: appCubit.isDark
-                          ? const Color(0xFF3A3A3A)
-                          : Colors.grey.shade300,
-                      expansionFactor: 3.5,
-                      spacing: 6.w,
-                    ),
-                  ),
-                  SizedBox(height: 25.h),
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 20.w,
-                      end: 20.w,
-                      bottom: 28.h,
-                    ),
-                    child: Row(
-                      children: [
-                        if (currentIndex != 0)
-                          InkWell(
-                            onTap: () {
-                              controller.previousPage(
+                      if (currentIndex != 0) SizedBox(width: 12.w),
+                      Expanded(
+                        child: defaultButton(
+                          onPressed: () {
+                            if (currentIndex == data.length - 1) {
+                              moveAndReplace(
+                                context,
+                                const SelectUserType(),
+                              );
+                            } else {
+                              controller.nextPage(
                                 duration: const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
                               );
-                            },
-                            borderRadius: BorderRadius.circular(15.r),
-                            child: Container(
-                              height: 55.h,
-                              width: 55.w,
-                              decoration: BoxDecoration(
-                                color: mainColor.withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(15.r),
-                              ),
-                              child: Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                color: mainColor,
-                                size: 20.r,
-                              ),
-                            ),
-                          ),
-                        if (currentIndex != 0) SizedBox(width: 12.w),
-                        Expanded(
-                          child: defaultButton(
-                            onPressed: () {
-                              if (currentIndex == data.length - 1) {
-                                moveAndReplace(
-                                  context,
-                                  const SelectUserType(),
-                                );
-                              } else {
-                                controller.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            },
-                            text: currentIndex == data.length - 1
-                                ? 'ابدأ الآن'
-                                : 'التالي',
-                            height: 55,
-                          ),
+                            }
+                          },
+                          text: currentIndex == data.length - 1
+                              ? 'ابدأ الآن'
+                              : 'التالي',
+                          height: 55,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );

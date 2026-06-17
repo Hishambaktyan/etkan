@@ -67,27 +67,23 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String userType,
     String purpose = 'signup',
-  }) async {
+  })
+  async {
     try {
       emit(SendPhoneCodeLoadingState());
 
       final String formattedPhone = normalizeYemeniPhone(phone);
 
       if (formattedPhone.isEmpty) {
-        emit(SendPhoneCodeErrorState(
-          error: 'يرجى إدخال رقم الهاتف',
-        ));
+        emit(SendPhoneCodeErrorState(error: 'يرجى إدخال رقم الهاتف',));
         return;
       }
 
       if (!isValidYemeniPhone(formattedPhone)) {
-        emit(SendPhoneCodeErrorState(
-          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
-        ));
+        emit(SendPhoneCodeErrorState(error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',));
         return;
       }
 
-      // في حالة نسيان كلمة المرور، نتأكد أولًا أن الحساب موجود
       if (purpose == 'reset_password') {
         final userQuery = await FirebaseFirestore.instance
             .collection('users')
@@ -139,7 +135,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required String code,
     required String userType,
     String purpose = 'signup',
-  }) async {
+  })
+  async {
     emit(CheckPhoneCodeLoadingState());
 
     try {
@@ -209,7 +206,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required String addressDetails,
     required double lat,
     required double long,
-  }) {
+  })
+  {
     pendingUserAddress = {
       'label': label.trim(),
       'addressDetails': addressDetails.trim(),
@@ -218,7 +216,7 @@ class AuthCubit extends Cubit<AuthStates> {
     };
   }
 
-  Future<void> finalizeUserSignUp({String profileImagePath = ''}) async {
+  Future<void> userSignUp({String profileImagePath = ''}) async {
     try {
       emit(UserSignUpLoadingState());
 
@@ -228,16 +226,12 @@ class AuthCubit extends Cubit<AuthStates> {
       final Map<String, dynamic>? addressData = pendingUserAddress;
 
       if (!isValidQuadName(formattedName)) {
-        emit(UserSignUpErrorState(
-          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
-        ));
+        emit(UserSignUpErrorState(error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',));
         return;
       }
 
       if (!isValidYemeniPhone(formattedPhone)) {
-        emit(UserSignUpErrorState(
-          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
-        ));
+        emit(UserSignUpErrorState(error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',));
         return;
       }
 
@@ -281,7 +275,6 @@ class AuthCubit extends Cubit<AuthStates> {
         'password': hashPassword(password),
         'role': 'user',
         'profileImage': profileImageUrl,
-        'address': addressData['addressDetails'] ?? '',
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -321,64 +314,6 @@ class AuthCubit extends Cubit<AuthStates> {
     return sha256.convert(utf8.encode(password.trim())).toString();
   }
 
-  Future<void> signUpUser(
-      {required String name,
-      required String phone,
-      required String password}) async {
-    try {
-      emit(UserSignUpLoadingState());
-
-      final formattedPhone = normalizeYemeniPhone(phone);
-      final formattedName = normalizeQuadName(name);
-
-      if (!isValidQuadName(formattedName)) {
-        emit(UserSignUpErrorState(
-          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
-        ));
-        return;
-      }
-
-      if (!isValidYemeniPhone(formattedPhone)) {
-        emit(UserSignUpErrorState(
-          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
-        ));
-        return;
-      }
-
-      final uid = FirebaseFirestore.instance.collection('users').doc().id;
-
-      final existingUser = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone', isEqualTo: formattedPhone)
-          .limit(1)
-          .get();
-
-      if (existingUser.docs.isNotEmpty) {
-        emit(UserSignUpErrorState(error: 'رقم الهاتف مستخدم مسبقًا'));
-        return;
-      }
-
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'uid': uid,
-        'name': formattedName,
-        'phone': formattedPhone,
-        'password': hashPassword(password),
-        'role': 'user',
-        'profileImage': '',
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      await saveUserToken(uid);
-
-      await CacheHelper.saveData(key: 'uid', value: uid);
-      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
-      CacheHelper.saveData(key: 'role', value: 'user');
-
-      emit(UserSignUpSuccessState());
-    } catch (e) {
-      emit(UserSignUpErrorState(error: e.toString()));
-    }
-  }
 
   String? selectedCategory;
   var workerNameController = TextEditingController();
@@ -397,7 +332,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required List<String> experiences,
     required List<String> previousWorks,
     required String profileImage,
-  }) {
+  })
+  {
     pendingWorkerProfile = {
       'specialization': specialization.trim(),
       'address': address.trim(),
@@ -413,7 +349,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required File frontImage,
     required File backImage,
     required File personalImage,
-  }) {
+  })
+  {
     pendingWorkerVerification = {
       'documentType': documentType,
       'frontImage': frontImage,
@@ -430,7 +367,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required File transferImage,
     required Map<String, dynamic> plan,
     required Map<String, dynamic> paymentMethod,
-  }) {
+  })
+  {
     pendingWorkerSubscription = {
       'transferImage': transferImage,
       'plan': Map<String, dynamic>.from(plan),
@@ -442,7 +380,7 @@ class AuthCubit extends Cubit<AuthStates> {
     pendingWorkerSubscription = null;
   }
 
-  Future<void> finalizeWorkerSignUp() async {
+  Future<void> workerSignUp() async {
     try {
       emit(WorkerSignUpLoadingState());
 
@@ -452,16 +390,12 @@ class AuthCubit extends Cubit<AuthStates> {
       final Map<String, dynamic>? profileData = pendingWorkerProfile;
 
       if (!isValidQuadName(formattedName)) {
-        emit(WorkerSignUpErrorState(
-          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
-        ));
+        emit(WorkerSignUpErrorState(error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',));
         return;
       }
 
       if (!isValidYemeniPhone(formattedPhone)) {
-        emit(WorkerSignUpErrorState(
-          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
-        ));
+        emit(WorkerSignUpErrorState(error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',));
         return;
       }
 
@@ -488,15 +422,13 @@ class AuthCubit extends Cubit<AuthStates> {
 
       String profileImageUrl = '';
       final List<String> previousWorksImageUrl = [];
-      final String profileImagePath =
-          profileData['profileImage']?.toString() ?? '';
+      final String profileImagePath = profileData['profileImage']?.toString() ?? '';
 
       if (profileImagePath.trim().isNotEmpty) {
         profileImageUrl = await uploadImageToCloudinary(profileImagePath);
       }
 
-      final List<String> previousWorks =
-          List<String>.from(profileData['previousWorks'] ?? []);
+      final List<String> previousWorks = List<String>.from(profileData['previousWorks'] ?? []);
 
       for (String imagePath in previousWorks) {
         if (imagePath.trim().isNotEmpty) {
@@ -552,11 +484,9 @@ class AuthCubit extends Cubit<AuthStates> {
 
       if (verificationData != null) {
         final uploadedImages = await Future.wait([
-          uploadImageToCloudinary(
-              (verificationData['frontImage'] as File).path),
+          uploadImageToCloudinary((verificationData['frontImage'] as File).path),
           uploadImageToCloudinary((verificationData['backImage'] as File).path),
-          uploadImageToCloudinary(
-              (verificationData['personalImage'] as File).path),
+          uploadImageToCloudinary((verificationData['personalImage'] as File).path),
         ]);
 
         final requestRef = FirebaseFirestore.instance
@@ -594,20 +524,15 @@ class AuthCubit extends Cubit<AuthStates> {
       final Map<String, dynamic>? subscriptionData = pendingWorkerSubscription;
 
       if (subscriptionData != null) {
-        final Map<String, dynamic> plan =
-            Map<String, dynamic>.from(subscriptionData['plan'] ?? {});
-        final Map<String, dynamic> paymentMethod =
-            Map<String, dynamic>.from(subscriptionData['paymentMethod'] ?? {});
+        final Map<String, dynamic> plan = Map<String, dynamic>.from(subscriptionData['plan'] ?? {});
+        final Map<String, dynamic> paymentMethod = Map<String, dynamic>.from(subscriptionData['paymentMethod'] ?? {});
         final File transferImage = subscriptionData['transferImage'] as File;
-        final String transferImageUrl =
-            await uploadImageToCloudinary(transferImage.path);
+        final String transferImageUrl = await uploadImageToCloudinary(transferImage.path);
 
-        final requestRef =
-            FirebaseFirestore.instance.collection('subscriptionRequests').doc();
+        final requestRef = FirebaseFirestore.instance.collection('subscriptionRequests').doc();
 
         final int price = int.tryParse(plan['price'].toString()) ?? 0;
-        final int durationMonths =
-            int.tryParse(plan['durationMonths'].toString()) ?? 1;
+        final int durationMonths = int.tryParse(plan['durationMonths'].toString()) ?? 1;
 
         batch.set(requestRef, {
           'requestId': requestRef.id,
@@ -671,103 +596,13 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
-  Future<void> workerSignUpUser({
-    required String name,
-    required String phone,
-    required String password,
-  }) async {
-    try {
-      emit(WorkerSignUpLoadingState());
-
-      final formattedPhone = normalizeYemeniPhone(phone);
-      final formattedName = normalizeQuadName(name);
-
-      if (!isValidQuadName(formattedName)) {
-        emit(WorkerSignUpErrorState(
-          error: 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط',
-        ));
-        return;
-      }
-
-      if (!isValidYemeniPhone(formattedPhone)) {
-        emit(WorkerSignUpErrorState(
-          error: 'يرجى إدخال رقم يمني صحيح مكون من 9 أرقام ويبدأ بالرقم 7',
-        ));
-        return;
-      }
-
-      final uid = FirebaseFirestore.instance.collection('users').doc().id;
-
-      final existingUser = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone', isEqualTo: formattedPhone)
-          .limit(1)
-          .get();
-
-      if (existingUser.docs.isNotEmpty) {
-        emit(WorkerSignUpErrorState(error: 'رقم الهاتف مستخدم مسبقًا'));
-        return;
-      }
-
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'uid': uid,
-        'phone': formattedPhone,
-        'name': formattedName,
-        'password': hashPassword(password),
-        'role': 'provider',
-        'specialization': '',
-        'address': '',
-        'avgRating': 0.0,
-        'ratingSum': 0.0,
-        'ratingsCount': 0,
-        'isActive': true,
-        'isAvailable': true,
-        'isSubscribed': false,
-        'profileImage': '',
-        'about': '',
-        'experiences': [],
-        'previousWorks': [],
-        'subscription': {
-          'isActive': false,
-          'status': 'not_submitted',
-          'requestId': null,
-          'planId': null,
-          'packageName': null,
-          'price': null,
-          'startDate': null,
-          'endDate': null,
-          'rejectionReason': null,
-        },
-        'isVerified': false,
-        'verificationStatus': 'not_submitted',
-        'verification': {
-          'status': 'not_submitted',
-          'requestId': null,
-          'documentType': null,
-          'rejectionReason': null,
-          'approvedAt': null,
-        },
-        'createdAt': FieldValue.serverTimestamp(),
-        'token': '',
-      });
-
-      await saveUserToken(uid);
-
-      await CacheHelper.saveData(key: 'uid', value: uid);
-      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true);
-      await CacheHelper.saveData(key: 'role', value: 'provider');
-
-      emit(WorkerSignUpSuccessState());
-    } catch (e) {
-      emit(WorkerSignUpErrorState(error: e.toString()));
-    }
-  }
 
   Future<void> resetPassword({
     required String phone,
     required String userType,
     required String newPassword,
-  }) async {
+  })
+  async {
     try {
       emit(ResetPasswordLoadingState());
 
@@ -775,9 +610,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final String formattedPassword = newPassword.trim();
 
       if (formattedPassword.length < 6) {
-        emit(ResetPasswordErrorState(
-          error: 'كلمة المرور يجب أن تحتوي على 6 أحرف أو أرقام على الأقل',
-        ));
+        emit(ResetPasswordErrorState(error: 'كلمة المرور يجب أن تحتوي على 6 أحرف أو أرقام على الأقل'));
         return;
       }
 
@@ -809,9 +642,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final requestDoc = validRequest;
 
       if (requestDoc == null) {
-        emit(ResetPasswordErrorState(
-          error: 'يجب التحقق من رقم الهاتف أولًا',
-        ));
+        emit(ResetPasswordErrorState(error: 'يجب التحقق من رقم الهاتف أولًا',));
         return;
       }
 
@@ -823,9 +654,7 @@ class AuthCubit extends Cubit<AuthStates> {
           .get();
 
       if (userQuery.docs.isEmpty) {
-        emit(ResetPasswordErrorState(
-          error: 'لم يتم العثور على الحساب',
-        ));
+        emit(ResetPasswordErrorState(error: 'لم يتم العثور على الحساب',));
         return;
       }
 
@@ -871,54 +700,6 @@ class AuthCubit extends Cubit<AuthStates> {
     return response.data['secure_url'];
   }
 
-  Future<void> completeWorkerProfile({
-    required String specialization,
-    required String address,
-    required String about,
-    required List<String> experiences,
-    required List<String> previousWorks,
-    required String profileImage,
-  }) async {
-    try {
-      emit(CompleteWorkerProfileLoadingState());
-
-      String profileImageUrl = '';
-      List<String> previousWorksImageUrl = [];
-
-      if (profileImage.trim().isNotEmpty) {
-        profileImageUrl = await uploadImageToCloudinary(profileImage);
-      }
-
-      if (previousWorks.isNotEmpty) {
-        for (String imagePath in previousWorks) {
-          final imageUrl = await uploadImageToCloudinary(imagePath);
-          previousWorksImageUrl.add(imageUrl);
-        }
-      }
-
-      final uid = CacheHelper.getData(key: 'uid');
-
-      if (uid == null || uid.toString().isEmpty) {
-        emit(CompleteWorkerProfileErrorState(
-          error: 'تعذر العثور على معرف المستخدم',
-        ));
-        return;
-      }
-
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'specialization': specialization.trim(),
-        'address': address.trim(),
-        'about': about.trim(),
-        'experiences': experiences,
-        'previousWorks': previousWorksImageUrl,
-        'profileImage': profileImageUrl,
-      });
-
-      emit(CompleteWorkerProfileSuccessState());
-    } catch (e) {
-      emit(CompleteWorkerProfileErrorState(error: e.toString()));
-    }
-  }
 
   var workerLoginPhoneController = TextEditingController();
   var workerLoginPasswordController = TextEditingController();
@@ -932,7 +713,8 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String password,
     required String requiredRole,
-  }) async {
+  })
+  async {
     try {
       emit(LoginLoadingState());
 
@@ -945,11 +727,7 @@ class AuthCubit extends Cubit<AuthStates> {
           .get();
 
       if (userDoc.docs.isEmpty) {
-        emit(
-          LoginErrorState(
-            error: 'رقم الهاتف أو كلمة المرور غير صحيحة',
-          ),
-        );
+        emit(LoginErrorState(error: 'رقم الهاتف أو كلمة المرور غير صحيحة',));
         return;
       }
 
@@ -959,11 +737,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final bool isActive = userData['isActive'] ?? true;
 
       if (!isActive) {
-        emit(
-          LoginErrorState(
-            error: 'تم تعطيل هذا الحساب، يرجى التواصل مع الإدارة',
-          ),
-        );
+        emit(LoginErrorState(error: 'تم تعطيل هذا الحساب، يرجى التواصل مع الإدارة',));
         return;
       }
 
@@ -971,35 +745,18 @@ class AuthCubit extends Cubit<AuthStates> {
       final String uid = doc.id;
 
       if (role != requiredRole) {
-        emit(
-          LoginErrorState(
-            error: 'ليس لديك صلاحية الدخول من هذه الصفحة',
-          ),
-        );
+        emit(LoginErrorState(error: 'ليس لديك صلاحية الدخول من هذه الصفحة',));
         return;
       }
 
-      await CacheHelper.saveData(
-        key: 'uid',
-        value: uid,
-      );
-      await CacheHelper.saveData(
-        key: 'role',
-        value: role,
-      );
-      await CacheHelper.setBoolen(
-        key: 'isLoggedIn',
-        value: true,
-      );
+      await CacheHelper.saveData(key: 'uid', value: uid,);
+      await CacheHelper.saveData(key: 'role', value: role,);
+      await CacheHelper.setBoolen(key: 'isLoggedIn', value: true,);
 
       await saveUserToken(uid);
       emit(LoginSuccessState());
     } catch (e) {
-      emit(
-        LoginErrorState(
-          error: e.toString(),
-        ),
-      );
+      emit(LoginErrorState(error: e.toString()));
     }
   }
 

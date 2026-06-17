@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Etkan/main.dart';
-import 'package:Etkan/modules/worker_screens/worker_subscriptions_screen.dart';
+import 'package:Etkan/modules/worker_screens/worker_subscriptions.dart';
 import 'package:Etkan/shared/compenents/components.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
@@ -269,16 +269,13 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
         items: documentTypes.map((item) {
           return DropdownMenuItem<String>(
             value: item,
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  item,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                  ),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                item,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                 ),
               ),
             ),
@@ -626,7 +623,7 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
   void _goToSubscription() {
     moveAndReplace(
       context,
-      const WorkerSubscriptionsScreen(isFromOnboarding: true),
+      const WorkerSubscriptions(isFromOnboarding: true),
     );
   }
 
@@ -675,140 +672,120 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
           },
           builder: (context, state) {
             WorkerCubit workerCubit = WorkerCubit.get(context);
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                appBar: AppBar(
-                  titleSpacing: 10,
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      if (!widget.isFromOnboarding) ...[
-                        Padding(
-                          padding: const EdgeInsets.all(7),
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () => Navigator.pop(context),
-                            child: Icon(
-                              CupertinoIcons.back,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
+            return Scaffold(
+              appBar: AppBar(
+                titleSpacing: 10,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                automaticallyImplyLeading: false,
+                title: Row(
+                  children: [
+                    if (!widget.isFromOnboarding) ...[
+                      Padding(
+                        padding: const EdgeInsets.all(7),
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () => Navigator.pop(context),
+                          child: Icon(
+                            CupertinoIcons.back,
+                            color: Theme.of(context).iconTheme.color,
                           ),
                         ),
-                        SizedBox(width: 10.w),
-                      ],
-                      Text(
-                        'توثيق الحساب',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.sp,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
                       ),
+                      SizedBox(width: 10.w),
                     ],
-                  ),
-                ),
-                body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: widget.isFromOnboarding
-                      ? null
-                      : FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(CacheHelper.getData(key: 'uid'))
-                          .snapshots(),
-                  builder: (context, snapshot) {
-                    Map<String, dynamic> verificationData = {};
-
-                    if (snapshot.hasData && snapshot.data!.exists) {
-                      final userData = snapshot.data!.data() ?? {};
-                      final dynamic rawVerification = userData['verification'];
-
-                      if (rawVerification is Map) {
-                        verificationData =
-                            Map<String, dynamic>.from(rawVerification);
-                      }
-                    }
-
-                    final String currentStatus =
-                        verificationData['status']?.toString() ??
-                            'not_submitted';
-
-                    return SingleChildScrollView(
-                      padding: EdgeInsetsDirectional.only(
-                        start: 10.w,
-                        end: 10.w,
-                        top: 10.h,
-                        bottom: 20.h,
+                    Text(
+                      'توثيق الحساب',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.sp,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildStatusCard(cubit, verificationData),
-                          SizedBox(height: 18.h),
-                          _buildReviewStatus(
-                            context,
-                            cubit,
-                            verificationData,
-                          ),
-                          _buildRejectionReasonCard(
-                            cubit,
-                            verificationData,
-                          ),
-                          if (canSendVerificationRequest(currentStatus))
-                            _buildVerificationForm(cubit),
-                        ],
-                      ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
-                bottomNavigationBar:
-                    StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: widget.isFromOnboarding
-                      ? null
-                      : FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(CacheHelper.getData(key: 'uid'))
-                          .snapshots(),
-                  builder: (context, snapshot) {
-                    Map<String, dynamic> verificationData = {};
+              ),
+              body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: widget.isFromOnboarding
+                    ? null
+                    : FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(CacheHelper.getData(key: 'uid'))
+                        .snapshots(),
+                builder: (context, snapshot) {
+                  Map<String, dynamic> verificationData = {};
 
-                    if (snapshot.hasData && snapshot.data!.exists) {
-                      final userData = snapshot.data!.data() ?? {};
-                      final dynamic rawVerification = userData['verification'];
+                  if (snapshot.hasData && snapshot.data!.exists) {
+                    final userData = snapshot.data!.data() ?? {};
+                    final dynamic rawVerification = userData['verification'];
 
-                      if (rawVerification is Map) {
-                        verificationData =
-                            Map<String, dynamic>.from(rawVerification);
-                      }
+                    if (rawVerification is Map) {
+                      verificationData =
+                          Map<String, dynamic>.from(rawVerification);
                     }
+                  }
 
-                    final String currentStatus =
-                        verificationData['status']?.toString() ??
-                            'not_submitted';
+                  final String currentStatus =
+                      verificationData['status']?.toString() ??
+                          'not_submitted';
 
-                    if (!canSendVerificationRequest(currentStatus)) {
-                      if (!widget.isFromOnboarding) {
-                        return const SizedBox.shrink();
-                      }
+                  return SingleChildScrollView(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 10.w,
+                      end: 10.w,
+                      top: 10.h,
+                      bottom: 20.h,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildStatusCard(cubit, verificationData),
+                        SizedBox(height: 18.h),
+                        _buildReviewStatus(
+                          context,
+                          cubit,
+                          verificationData,
+                        ),
+                        _buildRejectionReasonCard(
+                          cubit,
+                          verificationData,
+                        ),
+                        if (canSendVerificationRequest(currentStatus))
+                          _buildVerificationForm(cubit),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              bottomNavigationBar:
+                  StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: widget.isFromOnboarding
+                    ? null
+                    : FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(CacheHelper.getData(key: 'uid'))
+                        .snapshots(),
+                builder: (context, snapshot) {
+                  Map<String, dynamic> verificationData = {};
 
-                      return Container(
-                        padding: EdgeInsetsDirectional.only(
-                          start: 20.w,
-                          end: 20.w,
-                          top: 10.h,
-                          bottom: 20.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: cubit.isDark ? darkBgColor : Colors.white,
-                          boxShadow: blueShadow,
-                        ),
-                        child: defaultButton(
-                          onPressed: _goToSubscription,
-                          text: 'المتابعة إلى الاشتراك',
-                        ),
-                      );
+                  if (snapshot.hasData && snapshot.data!.exists) {
+                    final userData = snapshot.data!.data() ?? {};
+                    final dynamic rawVerification = userData['verification'];
+
+                    if (rawVerification is Map) {
+                      verificationData =
+                          Map<String, dynamic>.from(rawVerification);
+                    }
+                  }
+
+                  final String currentStatus =
+                      verificationData['status']?.toString() ??
+                          'not_submitted';
+
+                  if (!canSendVerificationRequest(currentStatus)) {
+                    if (!widget.isFromOnboarding) {
+                      return const SizedBox.shrink();
                     }
 
                     return Container(
@@ -822,54 +799,71 @@ class _WorkerAccountVerificationState extends State<WorkerAccountVerification> {
                         color: cubit.isDark ? darkBgColor : Colors.white,
                         boxShadow: blueShadow,
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          defaultButton(
-                            onPressed: () {
-                              if (verificationItems[0]['image'] != null &&
-                                  verificationItems[1]['image'] != null &&
-                                  verificationItems[2]['image'] != null) {
-                                if (widget.isFromOnboarding) {
-                                  AuthCubit.get(context)
-                                      .setPendingWorkerVerification(
-                                    documentType: selectedDocumentType,
-                                    frontImage: verificationItems[0]['image'],
-                                    backImage: verificationItems[1]['image'],
-                                    personalImage: verificationItems[2]
-                                        ['image'],
-                                  );
-                                  _goToSubscription();
-                                } else {
-                                  workerCubit.sendVerificationRequest(
-                                    documentType: selectedDocumentType,
-                                    frontImage: verificationItems[0]['image'],
-                                    backImage: verificationItems[1]['image'],
-                                    personalImage: verificationItems[2]
-                                        ['image'],
-                                  );
-                                }
-                              } else {
-                                showSnackBar(
-                                  Colors.red,
-                                  'يرجى رفع كل الوثائق المطلوبة',
-                                  context,
-                                );
-                              }
-                            },
-                            text: currentStatus == 'rejected'
-                                ? 'إعادة إرسال طلب التوثيق'
-                                : 'إرسال طلب التوثيق',
-                          ),
-                          if (widget.isFromOnboarding) ...[
-                            SizedBox(height: 10.h),
-                            _buildOnboardingSkipButton(cubit),
-                          ],
-                        ],
+                      child: defaultButton(
+                        onPressed: _goToSubscription,
+                        text: 'المتابعة إلى الاشتراك',
                       ),
                     );
-                  },
-                ),
+                  }
+
+                  return Container(
+                    padding: EdgeInsetsDirectional.only(
+                      start: 20.w,
+                      end: 20.w,
+                      top: 10.h,
+                      bottom: 20.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: cubit.isDark ? darkBgColor : Colors.white,
+                      boxShadow: blueShadow,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        defaultButton(
+                          onPressed: () {
+                            if (verificationItems[0]['image'] != null &&
+                                verificationItems[1]['image'] != null &&
+                                verificationItems[2]['image'] != null) {
+                              if (widget.isFromOnboarding) {
+                                AuthCubit.get(context)
+                                    .setPendingWorkerVerification(
+                                  documentType: selectedDocumentType,
+                                  frontImage: verificationItems[0]['image'],
+                                  backImage: verificationItems[1]['image'],
+                                  personalImage: verificationItems[2]
+                                      ['image'],
+                                );
+                                _goToSubscription();
+                              } else {
+                                workerCubit.sendVerificationRequest(
+                                  documentType: selectedDocumentType,
+                                  frontImage: verificationItems[0]['image'],
+                                  backImage: verificationItems[1]['image'],
+                                  personalImage: verificationItems[2]
+                                      ['image'],
+                                );
+                              }
+                            } else {
+                              showSnackBar(
+                                Colors.red,
+                                'يرجى رفع كل الوثائق المطلوبة',
+                                context,
+                              );
+                            }
+                          },
+                          text: currentStatus == 'rejected'
+                              ? 'إعادة إرسال طلب التوثيق'
+                              : 'إرسال طلب التوثيق',
+                        ),
+                        if (widget.isFromOnboarding) ...[
+                          SizedBox(height: 10.h),
+                          _buildOnboardingSkipButton(cubit),
+                        ],
+                      ],
+                    ),
+                  );
+                },
               ),
             );
           },

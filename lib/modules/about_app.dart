@@ -8,8 +8,8 @@ import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
 import 'package:Etkan/shared/styles/colors.dart';
 
-class AboutAppScreen extends StatelessWidget {
-  const AboutAppScreen({super.key});
+class AboutApp extends StatelessWidget {
+  const AboutApp({super.key});
 
   Widget _sectionHeader({
     required BuildContext context,
@@ -206,102 +206,99 @@ class AboutAppScreen extends StatelessWidget {
       builder: (context, state) {
         final cubit = AppCubit.get(context);
 
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(CupertinoIcons.back),
+        return Scaffold(
+          appBar: AppBar(
+            scrolledUnderElevation: 0,
+            automaticallyImplyLeading: false,
+            title: Row(
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(CupertinoIcons.back),
+                ),
+                Text(
+                  'حول التطبيق',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
-                  Text(
-                    'حول التطبيق',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            body: SingleChildScrollView(
-              padding: EdgeInsetsDirectional.all(15.r),
-              child: Column(
-                children: [
-                  _sectionHeader(
-                    context: context,
-                    cubit: cubit,
-                    title: 'نبذة عن التطبيق',
-                    icon: 'assets/bookings.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  _card(
-                    context: context,
-                    cubit: cubit,
-                    title: 'ما هو التطبيق؟',
-                    desc:
-                        'تطبيق إتقان يوفر خدمات الصيانة المنزلية بسهولة وسرعة مع متابعة الطلب والتواصل مع الفني.',
-                    icon: 'assets/mobile.svg',
-                  ),
-                  _card(
-                    context: context,
-                    cubit: cubit,
-                    title: 'هدف التطبيق',
-                    desc:
-                        'تسهيل الوصول إلى الفنيين وتحسين جودة الخدمات عبر نظام تقييم موثوق.',
-                    icon: 'assets/flag.svg',
-                  ),
-                  SizedBox(height: 10.h),
-                  _sectionHeader(
-                    context: context,
-                    cubit: cubit,
-                    title: 'المميزات',
-                    icon: 'assets/star.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12.w,
-                    mainAxisSpacing: 12.h,
-                    childAspectRatio: 1.1,
-                    children: [
-                      _feature(
-                        context: context,
-                        cubit: cubit,
-                        title: 'طلب خدمة',
-                        icon: 'assets/services.svg',
-                      ),
-                      _feature(
-                        context: context,
-                        cubit: cubit,
-                        title: 'متابعة الطلب',
-                        icon: 'assets/timeline.svg',
-                      ),
-                      _feature(
-                        context: context,
-                        cubit: cubit,
-                        title: 'محادثة',
-                        icon: 'assets/chat.svg',
-                      ),
-                      _feature(
-                        context: context,
-                        cubit: cubit,
-                        title: 'تقييم',
-                        icon: 'assets/review.svg',
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20.h),
-                  _version(context, cubit),
-                ],
-              ),
+          ),
+          body: SingleChildScrollView(
+            padding: EdgeInsetsDirectional.all(15.r),
+            child: Column(
+              children: [
+                _sectionHeader(
+                  context: context,
+                  cubit: cubit,
+                  title: 'نبذة عن التطبيق',
+                  icon: 'assets/bookings.svg',
+                ),
+                SizedBox(height: 15.h),
+                _card(
+                  context: context,
+                  cubit: cubit,
+                  title: 'ما هو التطبيق؟',
+                  desc:
+                      'تطبيق إتقان يوفر خدمات الصيانة المنزلية بسهولة وسرعة مع متابعة الطلب والتواصل مع الفني.',
+                  icon: 'assets/mobile.svg',
+                ),
+                _card(
+                  context: context,
+                  cubit: cubit,
+                  title: 'هدف التطبيق',
+                  desc:
+                      'تسهيل الوصول إلى الفنيين وتحسين جودة الخدمات عبر نظام تقييم موثوق.',
+                  icon: 'assets/flag.svg',
+                ),
+                SizedBox(height: 10.h),
+                _sectionHeader(
+                  context: context,
+                  cubit: cubit,
+                  title: 'المميزات',
+                  icon: 'assets/star.svg',
+                ),
+                SizedBox(height: 15.h),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12.w,
+                  mainAxisSpacing: 12.h,
+                  childAspectRatio: 1.1,
+                  children: [
+                    _feature(
+                      context: context,
+                      cubit: cubit,
+                      title: 'طلب خدمة',
+                      icon: 'assets/services.svg',
+                    ),
+                    _feature(
+                      context: context,
+                      cubit: cubit,
+                      title: 'متابعة الطلب',
+                      icon: 'assets/timeline.svg',
+                    ),
+                    _feature(
+                      context: context,
+                      cubit: cubit,
+                      title: 'محادثة',
+                      icon: 'assets/chat.svg',
+                    ),
+                    _feature(
+                      context: context,
+                      cubit: cubit,
+                      title: 'تقييم',
+                      icon: 'assets/review.svg',
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.h),
+                _version(context, cubit),
+              ],
             ),
           ),
         );

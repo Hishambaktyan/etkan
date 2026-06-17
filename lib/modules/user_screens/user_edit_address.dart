@@ -58,241 +58,238 @@ class _UserEditAddressState extends State<UserEditAddress> {
           },
           builder: (context, state) {
             LocationCubit locationCubit = LocationCubit.get(context);
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: Stack(
-                  children: [
-                    GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: locationCubit.selectedLocation,
-                        zoom: 14,
-                      ),
-                      mapType: MapType.normal,
-                      zoomControlsEnabled: false,
-                      myLocationButtonEnabled: false,
-                      onMapCreated: (GoogleMapController controller) {
-                        locationCubit.mapController = controller;
-                      },
-                      markers: {
-                        Marker(
-                          markerId: const MarkerId('selected_location'),
-                          position: locationCubit.selectedLocation,
-                        ),
-                      },
-                      onTap: (LatLng point) {
-                        setState(() {
-                          locationCubit.selectedLocation = point;
-                        });
-                      },
+            return Scaffold(
+              body: Stack(
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: locationCubit.selectedLocation,
+                      zoom: 14,
                     ),
-                    PositionedDirectional(
-                      top: 45.h,
-                      start: 15.w,
-                      end: 15.w,
-                      child: Row(
-                        children: [
-                          InkWell(
-                            onTap: () => Navigator.pop(context),
-                            borderRadius: BorderRadius.circular(15.r),
-                            child: Container(
-                              height: 45.h,
-                              width: 45.w,
-                              decoration: BoxDecoration(
-                                color: appCubit.isDark
-                                    ? lightDarkColor
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(15.r),
-                                boxShadow: shadow,
-                              ),
-                              child: Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                color: mainColor,
-                                size: 20.sp,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                            child: Container(
-                              height: 45.h,
-                              padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 15.w,
-                              ),
-                              decoration: BoxDecoration(
-                                color: appCubit.isDark
-                                    ? lightDarkColor
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(15.r),
-                                boxShadow: shadow,
-                              ),
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/loc.svg',
-                                    color: mainColor,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    'تعديل الموقع',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: appCubit.isDark
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                    mapType: MapType.normal,
+                    zoomControlsEnabled: false,
+                    myLocationButtonEnabled: false,
+                    onMapCreated: (GoogleMapController controller) {
+                      locationCubit.mapController = controller;
+                    },
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('selected_location'),
+                        position: locationCubit.selectedLocation,
                       ),
-                    ),
-                    PositionedDirectional(
-                      start: 15.w,
-                      end: 15.w,
-                      bottom: 10.h,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: locationCubit.isGettingLocation
-                                ? null
-                                : () =>
-                                    locationCubit.getCurrentLocation(context),
-                            borderRadius: BorderRadius.circular(15.r),
-                            child: Container(
-                              height: 50.h,
-                              width: 50.w,
-                              decoration: BoxDecoration(
-                                color: appCubit.isDark
-                                    ? lightDarkColor
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(15.r),
-                                boxShadow: shadow,
-                              ),
-                              child: Center(
-                                child: locationCubit.isGettingLocation
-                                    ? SizedBox(
-                                        height: 22.h,
-                                        width: 22.w,
-                                        child: const CircularProgressIndicator(
-                                          strokeWidth: 2.5,
-                                          color: mainColor,
-                                        ),
-                                      )
-                                    : Icon(
-                                        Icons.my_location_rounded,
-                                        color: mainColor,
-                                        size: 25.sp,
-                                      ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          Container(
-                            padding: EdgeInsetsDirectional.all(15.w),
+                    },
+                    onTap: (LatLng point) {
+                      setState(() {
+                        locationCubit.selectedLocation = point;
+                      });
+                    },
+                  ),
+                  PositionedDirectional(
+                    top: 45.h,
+                    start: 15.w,
+                    end: 15.w,
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () => Navigator.pop(context),
+                          borderRadius: BorderRadius.circular(15.r),
+                          child: Container(
+                            height: 45.h,
+                            width: 45.w,
                             decoration: BoxDecoration(
                               color: appCubit.isDark
                                   ? lightDarkColor
                                   : Colors.white,
-                              borderRadius: BorderRadius.circular(20.r),
+                              borderRadius: BorderRadius.circular(15.r),
                               boxShadow: shadow,
                             ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: mainColor,
+                              size: 20.sp,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: Container(
+                            height: 45.h,
+                            padding: EdgeInsetsDirectional.symmetric(
+                              horizontal: 15.w,
+                            ),
+                            decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(15.r),
+                              boxShadow: shadow,
+                            ),
+                            child: Row(
                               children: [
-                                Container(
-                                  height: 50.h,
-                                  padding: EdgeInsetsDirectional.all(10.w),
-                                  decoration: BoxDecoration(
+                                SvgPicture.asset(
+                                  'assets/loc.svg',
+                                  color: mainColor,
+                                ),
+                                SizedBox(width: 8.w),
+                                Text(
+                                  'تعديل الموقع',
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.bold,
                                     color: appCubit.isDark
-                                        ? Colors.white.withOpacity(0.06)
-                                        : Colors.grey.withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(12.r),
+                                        ? Colors.white
+                                        : Colors.black87,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.my_location_rounded,
-                                        color: Colors.grey,
-                                        size: 20.sp,
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      Expanded(
-                                        child: Text(
-                                          '${locationCubit.selectedLocation.latitude.toStringAsFixed(5)}, ${locationCubit.selectedLocation.longitude.toStringAsFixed(5)}',
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            color: appCubit.isDark
-                                                ? Colors.white
-                                                : Colors.black87,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(height: 15.h),
-                                SizedBox(
-                                  height: 50.h,
-                                  child: defaultTextFormField(
-                                      cubit: appCubit,
-                                      controller: titleController,
-                                      text: 'اسم العنوان',
-                                      prefixIcon: 'assets/saved.svg',
-                                      type: TextInputType.text,
-                                      errorMes: 'يرجى تعبئة الحقل'),
-                                ),
-                                SizedBox(height: 15.h),
-                                SizedBox(
-                                  height: 50.h,
-                                  child: defaultTextFormField(
-                                      cubit: appCubit,
-                                      controller: detailsController,
-                                      text: 'تفاصيل العنوان',
-                                      prefixIcon: 'assets/note.svg',
-                                      type: TextInputType.text,
-                                      errorMes: 'يرجى تعبئة الحقل'),
-                                ),
-                                SizedBox(height: 10.h),
-                                defaultButton(
-                                  onPressed: () async {
-                                    if (titleController.text.isEmpty ||
-                                        detailsController.text.isEmpty) {
-                                      showSnackBar(Colors.red,
-                                          'يرجى تعبئة كل الحقول', context);
-                                    } else {
-                                      await locationCubit.editAddress(
-                                          addressId: widget.address['id'],
-                                          uId: CacheHelper.getData(key: 'uid'),
-                                          label: titleController.text.trim(),
-                                          addressDetails:
-                                              detailsController.text.trim(),
-                                          lat: locationCubit
-                                              .selectedLocation.latitude,
-                                          long: locationCubit
-                                              .selectedLocation.longitude,
-                                          isDefault: false);
-                                    }
-                                  },
-                                  text: 'حفظ الموقع',
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  PositionedDirectional(
+                    start: 15.w,
+                    end: 15.w,
+                    bottom: 10.h,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: locationCubit.isGettingLocation
+                              ? null
+                              : () =>
+                                  locationCubit.getCurrentLocation(context),
+                          borderRadius: BorderRadius.circular(15.r),
+                          child: Container(
+                            height: 50.h,
+                            width: 50.w,
+                            decoration: BoxDecoration(
+                              color: appCubit.isDark
+                                  ? lightDarkColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(15.r),
+                              boxShadow: shadow,
+                            ),
+                            child: Center(
+                              child: locationCubit.isGettingLocation
+                                  ? SizedBox(
+                                      height: 22.h,
+                                      width: 22.w,
+                                      child: const CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: mainColor,
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.my_location_rounded,
+                                      color: mainColor,
+                                      size: 25.sp,
+                                    ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        Container(
+                          padding: EdgeInsetsDirectional.all(15.w),
+                          decoration: BoxDecoration(
+                            color: appCubit.isDark
+                                ? lightDarkColor
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(20.r),
+                            boxShadow: shadow,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 50.h,
+                                padding: EdgeInsetsDirectional.all(10.w),
+                                decoration: BoxDecoration(
+                                  color: appCubit.isDark
+                                      ? Colors.white.withOpacity(0.06)
+                                      : Colors.grey.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.my_location_rounded,
+                                      color: Colors.grey,
+                                      size: 20.sp,
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Expanded(
+                                      child: Text(
+                                        '${locationCubit.selectedLocation.latitude.toStringAsFixed(5)}, ${locationCubit.selectedLocation.longitude.toStringAsFixed(5)}',
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          color: appCubit.isDark
+                                              ? Colors.white
+                                              : Colors.black87,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 15.h),
+                              SizedBox(
+                                height: 50.h,
+                                child: defaultTextFormField(
+                                    cubit: appCubit,
+                                    controller: titleController,
+                                    text: 'اسم العنوان',
+                                    prefixIcon: 'assets/saved.svg',
+                                    type: TextInputType.text,
+                                    errorMes: 'يرجى تعبئة الحقل'),
+                              ),
+                              SizedBox(height: 15.h),
+                              SizedBox(
+                                height: 50.h,
+                                child: defaultTextFormField(
+                                    cubit: appCubit,
+                                    controller: detailsController,
+                                    text: 'تفاصيل العنوان',
+                                    prefixIcon: 'assets/note.svg',
+                                    type: TextInputType.text,
+                                    errorMes: 'يرجى تعبئة الحقل'),
+                              ),
+                              SizedBox(height: 10.h),
+                              defaultButton(
+                                onPressed: () async {
+                                  if (titleController.text.isEmpty ||
+                                      detailsController.text.isEmpty) {
+                                    showSnackBar(Colors.red,
+                                        'يرجى تعبئة كل الحقول', context);
+                                  } else {
+                                    await locationCubit.editAddress(
+                                        addressId: widget.address['id'],
+                                        uId: CacheHelper.getData(key: 'uid'),
+                                        label: titleController.text.trim(),
+                                        addressDetails:
+                                            detailsController.text.trim(),
+                                        lat: locationCubit
+                                            .selectedLocation.latitude,
+                                        long: locationCubit
+                                            .selectedLocation.longitude,
+                                        isDefault: false);
+                                  }
+                                },
+                                text: 'حفظ الموقع',
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           },

@@ -213,148 +213,145 @@ class _AdminProviderInfoState extends State<AdminProviderInfo> {
         final adminCubit = AdminCubit.get(context);
         final AppCubit appCubit = context.watch<AppCubit>();
 
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  buildHeader(),
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(
-                      start: 10.w,
-                      end: 10.w,
-                      top: 20.h,
-                      bottom: 20.h,
-                    ),
-                    child: Column(
-                      children: [
-                        buildQuickStats(),
-                        SizedBox(height: 15.h),
-                        Container(
-                          padding: EdgeInsetsDirectional.symmetric(
-                              horizontal: 12.w, vertical: 5.h),
-                          decoration: BoxDecoration(
-                            color:
-                                appCubit.isDark ? lightDarkColor : Colors.white,
-                            borderRadius: BorderRadius.circular(20.r),
-                            boxShadow: blueShadow,
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                  padding: EdgeInsets.all(8.r),
-                                  decoration: BoxDecoration(
-                                    color: mainColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(10.r),
-                                  ),
-                                  child: SvgPicture.asset(
-                                    'assets/power.svg',
-                                    color: mainColor,
-                                  )),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: Text(
-                                  'حالة الحساب (نشط / معطل)',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: appCubit.isDark
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
+        return Scaffold(
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                buildHeader(),
+                Padding(
+                  padding: EdgeInsetsDirectional.only(
+                    start: 10.w,
+                    end: 10.w,
+                    top: 20.h,
+                    bottom: 20.h,
+                  ),
+                  child: Column(
+                    children: [
+                      buildQuickStats(),
+                      SizedBox(height: 15.h),
+                      Container(
+                        padding: EdgeInsetsDirectional.symmetric(
+                            horizontal: 12.w, vertical: 5.h),
+                        decoration: BoxDecoration(
+                          color:
+                              appCubit.isDark ? lightDarkColor : Colors.white,
+                          borderRadius: BorderRadius.circular(20.r),
+                          boxShadow: blueShadow,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                                padding: EdgeInsets.all(8.r),
+                                decoration: BoxDecoration(
+                                  color: mainColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/power.svg',
+                                  color: mainColor,
+                                )),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: Text(
+                                'حالة الحساب (نشط / معطل)',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: appCubit.isDark
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
                               ),
-                              Switch.adaptive(
-                                value: isActive,
-                                activeColor: mainColor,
-                                activeTrackColor: mainColor.withOpacity(0.3),
-                                onChanged: (value) {
-                                  setState(() {
-                                    isActive = value;
-                                    adminCubit.updateAccountStatus(
-                                        userId: providerId, isActive: isActive);
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
+                            ),
+                            Switch.adaptive(
+                              value: isActive,
+                              activeColor: mainColor,
+                              activeTrackColor: mainColor.withOpacity(0.3),
+                              onChanged: (value) {
+                                setState(() {
+                                  isActive = value;
+                                  adminCubit.updateAccountStatus(
+                                      userId: providerId, isActive: isActive);
+                                });
+                              },
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 25.h),
-                        buildSectionHeader(
-                          title: 'معلومات التواصل',
-                          icon: 'assets/contact.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildContactCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'نبذة عن العامل',
-                          icon: 'assets/info.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildAboutCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'الخبرات',
-                          icon: 'assets/subs.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildExperiencesCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'الأعمال السابقة',
-                          icon: 'assets/image.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildPreviousWorksCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'حالة التوثيق',
-                          icon: 'assets/doc.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildVerificationStatusCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'مراجعة طلب التوثيق',
-                          icon: 'assets/pen.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildVerificationRequestCard(adminCubit),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'حالة الاشتراك',
-                          icon: 'assets/subs.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildSubscriptionStatusCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'مراجعة طلب الاشتراك',
-                          icon: 'assets/pen.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildSubscriptionRequestCard(adminCubit),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'تفاصيل الاشتراك',
-                          icon: 'assets/info.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildSubscriptionDetailsCard(),
-                        SizedBox(height: 20.h),
-                        buildSectionHeader(
-                          title: 'إدارة الاشتراك',
-                          icon: 'assets/pen.svg',
-                        ),
-                        SizedBox(height: 10.h),
-                        buildActionsCard(adminCubit),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 25.h),
+                      buildSectionHeader(
+                        title: 'معلومات التواصل',
+                        icon: 'assets/contact.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildContactCard(),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'نبذة عن العامل',
+                        icon: 'assets/info.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildAboutCard(),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'الخبرات',
+                        icon: 'assets/subs.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildExperiencesCard(),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'الأعمال السابقة',
+                        icon: 'assets/image.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildPreviousWorksCard(),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'حالة التوثيق',
+                        icon: 'assets/doc.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildVerificationStatusCard(),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'مراجعة طلب التوثيق',
+                        icon: 'assets/pen.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildVerificationRequestCard(adminCubit),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'حالة الاشتراك',
+                        icon: 'assets/subs.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildSubscriptionStatusCard(),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'مراجعة طلب الاشتراك',
+                        icon: 'assets/pen.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildSubscriptionRequestCard(adminCubit),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'تفاصيل الاشتراك',
+                        icon: 'assets/info.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildSubscriptionDetailsCard(),
+                      SizedBox(height: 20.h),
+                      buildSectionHeader(
+                        title: 'إدارة الاشتراك',
+                        icon: 'assets/pen.svg',
+                      ),
+                      SizedBox(height: 10.h),
+                      buildActionsCard(adminCubit),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );

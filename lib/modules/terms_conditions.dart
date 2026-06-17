@@ -8,14 +8,14 @@ import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
 import 'package:Etkan/shared/styles/colors.dart';
 
-class TermsConditionsScreen extends StatefulWidget {
-  const TermsConditionsScreen({super.key});
+class TermsConditions extends StatefulWidget {
+  const TermsConditions({super.key});
 
   @override
-  State<TermsConditionsScreen> createState() => _TermsConditionsScreenState();
+  State<TermsConditions> createState() => _TermsConditionsState();
 }
 
-class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
+class _TermsConditionsState extends State<TermsConditions> {
   bool isAccepted = false;
 
   Widget _buildHeaderCard(AppCubit cubit) {
@@ -401,105 +401,102 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit cubit = AppCubit.get(context);
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              titleSpacing: 10,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(7),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(
-                        CupertinoIcons.back,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
+        return Scaffold(
+          appBar: AppBar(
+            titleSpacing: 10,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            automaticallyImplyLeading: false,
+            title: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(7),
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(
+                      CupertinoIcons.back,
+                      color: Theme.of(context).iconTheme.color,
                     ),
                   ),
-                  SizedBox(width: 10.w),
-                  Text(
-                    'الشروط والأحكام',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.sp,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
+                ),
+                SizedBox(width: 10.w),
+                Text(
+                  'الشروط والأحكام',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.sp,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            body: SingleChildScrollView(
-              padding: EdgeInsetsDirectional.only(
-                start: 10.w,
-                end: 10.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderCard(cubit),
-                  SizedBox(height: 20.h),
-                  _buildLastUpdatedCard(context, cubit),
-                  SizedBox(height: 25.h),
-                  _buildWarningCard(context, cubit),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle(
-                    context: context,
-                    cubit: cubit,
-                    title: 'تطبق الشروط على',
-                    icon: 'assets/users.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildUserTypeCard(
-                    context: context,
-                    cubit: cubit,
-                    title: 'المستخدمين',
-                    subtitle:
-                        'كل مستخدم يطلب أو يدير حجوزات الصيانة المنزلية من خلال التطبيق.',
-                    icon: 'assets/acc.svg',
-                  ),
-                  SizedBox(height: 12.h),
-                  _buildUserTypeCard(
-                    context: context,
-                    cubit: cubit,
-                    title: 'الفنيين',
-                    subtitle:
-                        'كل فني يضيف خدماته أو يستقبل حجوزات الصيانة من خلال التطبيق.',
-                    icon: 'assets/providers.svg',
-                  ),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle(
-                    context: context,
-                    cubit: cubit,
-                    title: 'بنود الشروط والأحكام',
-                    icon: 'assets/bookings.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  ListView.builder(
-                    itemCount: terms.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final term = terms[index];
-                      return _buildTermCard(
-                        context: context,
-                        cubit: cubit,
-                        title: term['title'],
-                        body: term['body'],
-                        icon: term['icon'],
-                      );
-                    },
-                  ),
-                ],
-              ),
+          ),
+          body: SingleChildScrollView(
+            padding: EdgeInsetsDirectional.only(
+              start: 10.w,
+              end: 10.w,
+              top: 10.h,
+              bottom: 20.h,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeaderCard(cubit),
+                SizedBox(height: 20.h),
+                _buildLastUpdatedCard(context, cubit),
+                SizedBox(height: 25.h),
+                _buildWarningCard(context, cubit),
+                SizedBox(height: 25.h),
+                _buildSectionTitle(
+                  context: context,
+                  cubit: cubit,
+                  title: 'تطبق الشروط على',
+                  icon: 'assets/users.svg',
+                ),
+                SizedBox(height: 15.h),
+                _buildUserTypeCard(
+                  context: context,
+                  cubit: cubit,
+                  title: 'المستخدمين',
+                  subtitle:
+                      'كل مستخدم يطلب أو يدير حجوزات الصيانة المنزلية من خلال التطبيق.',
+                  icon: 'assets/acc.svg',
+                ),
+                SizedBox(height: 12.h),
+                _buildUserTypeCard(
+                  context: context,
+                  cubit: cubit,
+                  title: 'الفنيين',
+                  subtitle:
+                      'كل فني يضيف خدماته أو يستقبل حجوزات الصيانة من خلال التطبيق.',
+                  icon: 'assets/providers.svg',
+                ),
+                SizedBox(height: 25.h),
+                _buildSectionTitle(
+                  context: context,
+                  cubit: cubit,
+                  title: 'بنود الشروط والأحكام',
+                  icon: 'assets/bookings.svg',
+                ),
+                SizedBox(height: 15.h),
+                ListView.builder(
+                  itemCount: terms.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final term = terms[index];
+                    return _buildTermCard(
+                      context: context,
+                      cubit: cubit,
+                      title: term['title'],
+                      body: term['body'],
+                      icon: term['icon'],
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         );

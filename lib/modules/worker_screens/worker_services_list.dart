@@ -54,361 +54,358 @@ class _WorkerServicesListState extends State<WorkerServicesList> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        body: BlocBuilder<AppCubit, AppStates>(
-          builder: (context, state) {
-            AppCubit appCubit = AppCubit.get(context);
-            return BlocConsumer<WorkerCubit, WorkerStates>(
-              listener: (context, state) {
-                if (state is ChangeServiceActivitySuccessState) {
-                  showSnackBar(Colors.green, 'تم تغيير حالة الخدمة', context);
-                }
-                if (state is ChangeServiceActivityErrorState) {
-                  showSnackBar(Colors.red, state.error, context);
-                }
-              },
-              builder: (context, state) {
-                WorkerCubit workerCubit = WorkerCubit.get(context);
-                return ConditionalBuilder(
-                  condition: checkingInternet ||
-                      state is GetWorkerServicesLoadingState,
-                  builder: (context) =>
-                      WorkerServicesShimmer(isDark: appCubit.isDark),
-                  fallback: (context) => ConditionalBuilder(
-                    condition: !hasInternet,
-                    builder: (context) => NoInternet(
-                      onRetry: () =>
-                          checkConnectionAndGetData(forceRefresh: true),
-                    ),
-                    fallback: (context) => RefreshIndicator(
-                      onRefresh: () =>
-                          checkConnectionAndGetData(forceRefresh: true),
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                          children: [
-                            header(title: 'الخدمات', context: context),
-                            SizedBox(
-                              height: 10.h,
-                            ),
-                            workerCubit.workerServices.isEmpty
-                                ? SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.60,
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: EdgeInsetsDirectional.symmetric(
-                                          horizontal: 10.w),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: 100.w,
-                                            height: 100.w,
-                                            padding: EdgeInsets.all(18.r),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  mainColor.withOpacity(0.08),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.home_repair_service_rounded,
-                                              color: mainColor,
-                                              size: 48.sp,
-                                            ),
-                                          ),
-                                          SizedBox(height: 20.h),
-                                          Text(
-                                            'لا توجد خدمات منشورة',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.sp,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .color,
-                                            ),
-                                          ),
-                                          SizedBox(height: 10.h),
-                                          Text(
-                                            'عند إضافة خدمة جديدة ستظهر هنا ليتمكن العملاء من حجزها.',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 12.sp,
-                                              height: 1.6,
-                                              color: appCubit.isDark
-                                                  ? darkSubTextColor
-                                                  : Colors.grey.shade600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : GridView.builder(
-                                    itemCount:
-                                        workerCubit.workerServices.length,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
+    return Scaffold(
+      body: BlocBuilder<AppCubit, AppStates>(
+        builder: (context, state) {
+          AppCubit appCubit = AppCubit.get(context);
+          return BlocConsumer<WorkerCubit, WorkerStates>(
+            listener: (context, state) {
+              if (state is ChangeServiceActivitySuccessState) {
+                showSnackBar(Colors.green, 'تم تغيير حالة الخدمة', context);
+              }
+              if (state is ChangeServiceActivityErrorState) {
+                showSnackBar(Colors.red, state.error, context);
+              }
+            },
+            builder: (context, state) {
+              WorkerCubit workerCubit = WorkerCubit.get(context);
+              return ConditionalBuilder(
+                condition: checkingInternet ||
+                    state is GetWorkerServicesLoadingState,
+                builder: (context) =>
+                    WorkerServicesShimmer(isDark: appCubit.isDark),
+                fallback: (context) => ConditionalBuilder(
+                  condition: !hasInternet,
+                  builder: (context) => NoInternet(
+                    onRetry: () =>
+                        checkConnectionAndGetData(forceRefresh: true),
+                  ),
+                  fallback: (context) => RefreshIndicator(
+                    onRefresh: () =>
+                        checkConnectionAndGetData(forceRefresh: true),
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          header(title: 'الخدمات', context: context),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          workerCubit.workerServices.isEmpty
+                              ? SizedBox(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.60,
+                                  width: double.infinity,
+                                  child: Padding(
                                     padding: EdgeInsetsDirectional.symmetric(
-                                        horizontal: 10.w, vertical: 10.h),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            mainAxisExtent: 230.h,
-                                            crossAxisCount: 2,
-                                            crossAxisSpacing: 10.w,
-                                            mainAxisSpacing: 15.h),
-                                    itemBuilder: (context, index) {
-                                      final service =
-                                          workerCubit.workerServices[index];
-                                      return InkWell(
-                                        onTap: () => move(
-                                            context,
-                                            WorkerServiceDetails(
-                                              service: service,
-                                            )),
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        child: Container(
+                                        horizontal: 10.w),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 100.w,
+                                          height: 100.w,
+                                          padding: EdgeInsets.all(18.r),
                                           decoration: BoxDecoration(
-                                            color: appCubit.isDark
-                                                ? lightDarkColor
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25.r),
-                                            boxShadow: blueShadow,
+                                            color:
+                                                mainColor.withOpacity(0.08),
+                                            shape: BoxShape.circle,
                                           ),
-                                          child: Column(
-                                            children: [
-                                              SizedBox(
-                                                height: 135.h,
-                                                child: Stack(
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              25.r),
-                                                      child: Image.network(
-                                                        '${service['serviceImage'] ?? ''}',
+                                          child: Icon(
+                                            Icons.home_repair_service_rounded,
+                                            color: mainColor,
+                                            size: 48.sp,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20.h),
+                                        Text(
+                                          'لا توجد خدمات منشورة',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.sp,
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .color,
+                                          ),
+                                        ),
+                                        SizedBox(height: 10.h),
+                                        Text(
+                                          'عند إضافة خدمة جديدة ستظهر هنا ليتمكن العملاء من حجزها.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            height: 1.6,
+                                            color: appCubit.isDark
+                                                ? darkSubTextColor
+                                                : Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : GridView.builder(
+                                  itemCount:
+                                      workerCubit.workerServices.length,
+                                  physics:
+                                      const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  padding: EdgeInsetsDirectional.symmetric(
+                                      horizontal: 10.w, vertical: 10.h),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          mainAxisExtent: 230.h,
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 10.w,
+                                          mainAxisSpacing: 15.h),
+                                  itemBuilder: (context, index) {
+                                    final service =
+                                        workerCubit.workerServices[index];
+                                    return InkWell(
+                                      onTap: () => move(
+                                          context,
+                                          WorkerServiceDetails(
+                                            service: service,
+                                          )),
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: appCubit.isDark
+                                              ? lightDarkColor
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(25.r),
+                                          boxShadow: blueShadow,
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              height: 135.h,
+                                              child: Stack(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            25.r),
+                                                    child: Image.network(
+                                                      '${service['serviceImage'] ?? ''}',
+                                                      height: 120.h,
+                                                      width: double.infinity,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (context,
+                                                              error,
+                                                              stackTrace) =>
+                                                          Container(
                                                         height: 120.h,
-                                                        width: double.infinity,
-                                                        fit: BoxFit.cover,
-                                                        errorBuilder: (context,
-                                                                error,
-                                                                stackTrace) =>
-                                                            Container(
-                                                          height: 120.h,
-                                                          color: Colors
-                                                              .grey.shade100,
-                                                          child: Icon(
-                                                              Icons
-                                                                  .wifi_off_rounded,
-                                                              color: Colors.grey
-                                                                  .shade400,
-                                                              size: 30.sp),
-                                                        ),
+                                                        color: Colors
+                                                            .grey.shade100,
+                                                        child: Icon(
+                                                            Icons
+                                                                .wifi_off_rounded,
+                                                            color: Colors.grey
+                                                                .shade400,
+                                                            size: 30.sp),
                                                       ),
                                                     ),
-                                                    PositionedDirectional(
-                                                      bottom: 5.h,
-                                                      end: 10.w,
-                                                      child: Container(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal:
-                                                                    12.w,
-                                                                vertical: 6.h),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: mainColor,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      15.r),
-                                                          boxShadow: const [
-                                                            BoxShadow(
-                                                                color: Colors
-                                                                    .black26,
-                                                                blurRadius: 8)
-                                                          ],
-                                                          border: Border.all(
-                                                              color:
-                                                                  Colors.white,
-                                                              width: 1.5),
-                                                        ),
-                                                        child: Text(
-                                                          '${service['price'] ?? ''} ﷼',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 11.sp),
-                                                        ),
+                                                  ),
+                                                  PositionedDirectional(
+                                                    bottom: 5.h,
+                                                    end: 10.w,
+                                                    child: Container(
+                                                      padding: EdgeInsets
+                                                          .symmetric(
+                                                              horizontal:
+                                                                  12.w,
+                                                              vertical: 6.h),
+                                                      decoration:
+                                                          BoxDecoration(
+                                                        color: mainColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    15.r),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Colors
+                                                                  .black26,
+                                                              blurRadius: 8)
+                                                        ],
+                                                        border: Border.all(
+                                                            color:
+                                                                Colors.white,
+                                                            width: 1.5),
+                                                      ),
+                                                      child: Text(
+                                                        '${service['price'] ?? ''} ﷼',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold,
+                                                            fontSize: 11.sp),
                                                       ),
                                                     ),
-                                                    PositionedDirectional(
-                                                      top: 10.h,
-                                                      start: 10.w,
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          await workerCubit
-                                                              .changeServiceActivity(
-                                                                  value: !(service[
-                                                                          'isActive'] ??
-                                                                      true),
-                                                                  serviceId:
-                                                                      service[
-                                                                          'id']);
-                                                        },
-                                                        child: ClipRRect(
-                                                          child: BackdropFilter(
-                                                            filter: ImageFilter
-                                                                .blur(
-                                                                    sigmaX: 5,
-                                                                    sigmaY: 5),
-                                                            child: Container(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(8.r),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: service[
-                                                                            'isActive'] ==
-                                                                        true
-                                                                    ? Colors
-                                                                        .green
-                                                                    : Colors
-                                                                        .redAccent,
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                              ),
-                                                              child: SvgPicture
-                                                                  .asset(
-                                                                'assets/power.svg',
-                                                                color: Colors
-                                                                    .white,
-                                                                width: 18.w,
-                                                                height: 18.h,
-                                                              ),
+                                                  ),
+                                                  PositionedDirectional(
+                                                    top: 10.h,
+                                                    start: 10.w,
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        await workerCubit
+                                                            .changeServiceActivity(
+                                                                value: !(service[
+                                                                        'isActive'] ??
+                                                                    true),
+                                                                serviceId:
+                                                                    service[
+                                                                        'id']);
+                                                      },
+                                                      child: ClipRRect(
+                                                        child: BackdropFilter(
+                                                          filter: ImageFilter
+                                                              .blur(
+                                                                  sigmaX: 5,
+                                                                  sigmaY: 5),
+                                                          child: Container(
+                                                            padding:
+                                                                EdgeInsets
+                                                                    .all(8.r),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: service[
+                                                                          'isActive'] ==
+                                                                      true
+                                                                  ? Colors
+                                                                      .green
+                                                                  : Colors
+                                                                      .redAccent,
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
+                                                            child: SvgPicture
+                                                                .asset(
+                                                              'assets/power.svg',
+                                                              color: Colors
+                                                                  .white,
+                                                              width: 18.w,
+                                                              height: 18.h,
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 12.w),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Icon(Icons.star_rounded,
-                                                            color: Colors.amber,
-                                                            size: 16.sp),
-                                                        SizedBox(width: 4.w),
-                                                        Text(
-                                                          '${service['rate'] ?? ''}',
-                                                          style: TextStyle(
-                                                              fontSize: 10.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.grey),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: 6.h),
-                                                    Text(
-                                                      '${service['name'] ?? ''}',
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w900,
-                                                        fontSize: 13.sp,
-                                                        color: appCubit.isDark
-                                                            ? Colors.white
-                                                            : Colors.black,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.w),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Icon(Icons.star_rounded,
+                                                          color: Colors.amber,
+                                                          size: 16.sp),
+                                                      SizedBox(width: 4.w),
+                                                      Text(
+                                                        '${service['rate'] ?? ''}',
+                                                        style: TextStyle(
+                                                            fontSize: 10.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold,
+                                                            color:
+                                                                Colors.grey),
                                                       ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 6.h),
+                                                  Text(
+                                                    '${service['name'] ?? ''}',
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                      fontSize: 13.sp,
+                                                      color: appCubit.isDark
+                                                          ? Colors.white
+                                                          : Colors.black,
                                                     ),
-                                                    SizedBox(height: 4.h),
-                                                    Text(
-                                                      '${service['description'] ?? ''}',
-                                                      maxLines: 2,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontSize: 9.sp,
-                                                        height: 1.3,
-                                                        color: appCubit.isDark
-                                                            ? darkSubTextColor
-                                                            : Colors
-                                                                .grey.shade600,
-                                                      ),
+                                                  ),
+                                                  SizedBox(height: 4.h),
+                                                  Text(
+                                                    '${service['description'] ?? ''}',
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 9.sp,
+                                                      height: 1.3,
+                                                      color: appCubit.isDark
+                                                          ? darkSubTextColor
+                                                          : Colors
+                                                              .grey.shade600,
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                      );
-                                    },
-                                  ),
-                          ],
-                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ],
                       ),
                     ),
                   ),
-                );
-              },
-            );
-          },
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final workerCubit = WorkerCubit.get(context);
+          final message = workerCubit.addServiceRestrictionMessage;
+
+          if (message != null) {
+            showSnackBar(Colors.orangeAccent, message, context);
+            return;
+          }
+
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const WorkerAddService(),
+            ),
+          );
+
+          if (result == true && mounted) {
+            await checkConnectionAndGetData(forceRefresh: true);
+          }
+        },
+        backgroundColor: mainColor,
+        label: const Text(
+          'إضافة خدمة',
+          style: TextStyle(color: Colors.white),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            final workerCubit = WorkerCubit.get(context);
-            final message = workerCubit.addServiceRestrictionMessage;
-
-            if (message != null) {
-              showSnackBar(Colors.orangeAccent, message, context);
-              return;
-            }
-
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const WorkerAddService(),
-              ),
-            );
-
-            if (result == true && mounted) {
-              await checkConnectionAndGetData(forceRefresh: true);
-            }
-          },
-          backgroundColor: mainColor,
-          label: const Text(
-            'إضافة خدمة',
-            style: TextStyle(color: Colors.white),
-          ),
-          icon: const Icon(
-            Icons.add_rounded,
-            color: Colors.white,
-          ),
+        icon: const Icon(
+          Icons.add_rounded,
+          color: Colors.white,
         ),
       ),
     );

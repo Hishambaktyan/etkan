@@ -14,14 +14,14 @@ import 'package:Etkan/shared/styles/colors.dart';
 
 import '../shared/compenents/components.dart';
 
-class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
+class NotificationsList extends StatefulWidget {
+  const NotificationsList({super.key});
 
   @override
-  State<NotificationsScreen> createState() => _NotificationsScreenState();
+  State<NotificationsList> createState() => _NotificationsListState();
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen> {
+class _NotificationsListState extends State<NotificationsList> {
   late List<String> statusFilters;
 
   String selectedStatus = 'الكل';
@@ -502,118 +502,115 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 .where((notification) => notification['isRead'] != true)
                 .length;
 
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                appBar: AppBar(
-                  scrolledUnderElevation: 0,
-                  elevation: 0,
-                  automaticallyImplyLeading: false,
-                  titleSpacing: 10,
-                  title: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(
-                          CupertinoIcons.back,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
+            return Scaffold(
+              appBar: AppBar(
+                scrolledUnderElevation: 0,
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                titleSpacing: 10,
+                title: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(
+                        CupertinoIcons.back,
+                        color: Theme.of(context).iconTheme.color,
                       ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'الإشعارات',
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      'الإشعارات',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          notificationCubit.markAllNotificationsAsRead();
-                        },
-                        child: Container(
-                          padding: EdgeInsetsDirectional.symmetric(
-                            horizontal: 10.w,
-                            vertical: 6.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: mainColor.withOpacity(0.10),
-                            borderRadius: BorderRadius.circular(25.r),
-                          ),
-                          child: Text(
-                            '$unreadVisibleCount جديد',
-                            style: TextStyle(
-                              color: mainColor,
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        notificationCubit.markAllNotificationsAsRead();
+                      },
+                      child: Container(
+                        padding: EdgeInsetsDirectional.symmetric(
+                          horizontal: 10.w,
+                          vertical: 6.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: mainColor.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(25.r),
+                        ),
+                        child: Text(
+                          '$unreadVisibleCount جديد',
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                body: notificationCubit.isNotificationsLoading ||
-                        !notificationCubit.isNotificationsLoaded
-                    ? NotificationsScreenShimmer(isDark: appCubit.isDark)
-                    : RefreshIndicator(
-                        color: mainColor,
-                        onRefresh: () =>
-                            notificationCubit.getUserNotifications(),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 44.h,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                padding: EdgeInsetsDirectional.only(
-                                  start: 10.w,
-                                  end: 10.w,
-                                ),
-                                itemCount: statusFilters.length,
-                                separatorBuilder: (context, index) =>
-                                    SizedBox(width: 10.w),
-                                itemBuilder: (context, index) {
-                                  return buildFilterChip(
-                                    title: statusFilters[index],
-                                    cubit: appCubit,
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 15.h),
-                            filteredNotifications.isEmpty
-                                ? Expanded(
-                                    child: buildEmptyState(appCubit),
-                                  )
-                                : Expanded(
-                                    child: ListView.separated(
-                                      physics:
-                                          const AlwaysScrollableScrollPhysics(),
-                                      padding: EdgeInsetsDirectional.only(
-                                        start: 10.w,
-                                        end: 10.w,
-                                        bottom: 20.h,
-                                      ),
-                                      itemCount: filteredNotifications.length,
-                                      separatorBuilder: (context, index) =>
-                                          SizedBox(height: 15.h),
-                                      itemBuilder: (context, index) {
-                                        return buildNotificationCard(
-                                          notification:
-                                              filteredNotifications[index],
-                                          appCubit: appCubit,
-                                          notificationCubit: notificationCubit,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
               ),
+              body: notificationCubit.isNotificationsLoading ||
+                      !notificationCubit.isNotificationsLoaded
+                  ? NotificationsScreenShimmer(isDark: appCubit.isDark)
+                  : RefreshIndicator(
+                      color: mainColor,
+                      onRefresh: () =>
+                          notificationCubit.getUserNotifications(),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 44.h,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: EdgeInsetsDirectional.only(
+                                start: 10.w,
+                                end: 10.w,
+                              ),
+                              itemCount: statusFilters.length,
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(width: 10.w),
+                              itemBuilder: (context, index) {
+                                return buildFilterChip(
+                                  title: statusFilters[index],
+                                  cubit: appCubit,
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 15.h),
+                          filteredNotifications.isEmpty
+                              ? Expanded(
+                                  child: buildEmptyState(appCubit),
+                                )
+                              : Expanded(
+                                  child: ListView.separated(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    padding: EdgeInsetsDirectional.only(
+                                      start: 10.w,
+                                      end: 10.w,
+                                      bottom: 20.h,
+                                    ),
+                                    itemCount: filteredNotifications.length,
+                                    separatorBuilder: (context, index) =>
+                                        SizedBox(height: 15.h),
+                                    itemBuilder: (context, index) {
+                                      return buildNotificationCard(
+                                        notification:
+                                            filteredNotifications[index],
+                                        appCubit: appCubit,
+                                        notificationCubit: notificationCubit,
+                                      );
+                                    },
+                                  ),
+                                ),
+                        ],
+                      ),
+                    ),
             );
           },
         );

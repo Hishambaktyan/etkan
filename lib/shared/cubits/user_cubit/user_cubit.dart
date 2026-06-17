@@ -464,12 +464,12 @@ class UserCubit extends Cubit<UserStates> {
     required String duration,
     required int price,
     required Timestamp scheduledAt,
-  }) async {
+  })
+  async {
     try {
       emit(CreateRequestLoadingState());
 
-      final providerRef =
-          FirebaseFirestore.instance.collection('users').doc(providerId);
+      final providerRef = FirebaseFirestore.instance.collection('users').doc(providerId);
 
       final providerFuture = providerRef.get();
       final completedRequestsCountFuture = FirebaseFirestore.instance
@@ -488,9 +488,7 @@ class UserCubit extends Cubit<UserStates> {
       final completedRequestsCountSnapshot = await completedRequestsCountFuture;
 
       if (!providerDoc.exists || providerDoc.data() == null) {
-        emit(CreateRequestErrorState(
-          error: 'تعذر العثور على بيانات الفني',
-        ));
+        emit(CreateRequestErrorState(error: 'تعذر العثور على بيانات الفني',));
         return;
       }
 
@@ -508,10 +506,7 @@ class UserCubit extends Cubit<UserStates> {
           });
         }
 
-        emit(CreateRequestErrorState(
-          error:
-              'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',
-        ));
+        emit(CreateRequestErrorState(error: 'انتهى اشتراك هذا الفني، ولا يمكنه استقبال حجوزات جديدة حالياً.',));
         return;
       }
 
@@ -555,7 +550,6 @@ class UserCubit extends Cubit<UserStates> {
         'createdAt': nowTimestamp,
         'updatedAt': nowTimestamp,
 
-        // هذه الحقول نحتاجها لاحقًا للتقييم وتأكيد اكتمال الخدمة من المستخدم
         'isReviewed': false,
         'customerConfirmed': false,
         'customerConfirmedAt': null,

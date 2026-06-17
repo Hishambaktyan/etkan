@@ -8,8 +8,8 @@ import 'package:Etkan/shared/cubits/app_cubit/app_cubit.dart';
 import 'package:Etkan/shared/cubits/app_cubit/app_states.dart';
 import 'package:Etkan/shared/styles/colors.dart';
 
-class PrivacyPolicyScreen extends StatelessWidget {
-  PrivacyPolicyScreen({super.key});
+class PrivacyPolicy extends StatelessWidget {
+  PrivacyPolicy({super.key});
 
   Widget _buildHeaderCard(AppCubit cubit) {
     return Container(
@@ -328,101 +328,98 @@ class PrivacyPolicyScreen extends StatelessWidget {
     return BlocBuilder<AppCubit, AppStates>(
       builder: (context, state) {
         AppCubit cubit = AppCubit.get(context);
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              titleSpacing: 10,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(7),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(
-                        CupertinoIcons.back,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
+        return Scaffold(
+          appBar: AppBar(
+            titleSpacing: 10,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            automaticallyImplyLeading: false,
+            title: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(7),
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(
+                      CupertinoIcons.back,
+                      color: Theme.of(context).iconTheme.color,
                     ),
                   ),
-                  SizedBox(width: 10.w),
-                  Text(
-                    'سياسة الخصوصية',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.sp,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
+                ),
+                SizedBox(width: 10.w),
+                Text(
+                  'سياسة الخصوصية',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.sp,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            body: SingleChildScrollView(
-              padding: EdgeInsetsDirectional.only(
-                start: 10.w,
-                end: 10.w,
-                top: 10.h,
-                bottom: 20.h,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderCard(cubit),
-                  SizedBox(height: 20.h),
-                  _buildLastUpdatedCard(context, cubit),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle(
-                    context: context,
-                    cubit: cubit,
-                    title: 'ملخص الخصوصية',
-                    icon: 'assets/all.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildSmallInfoCard(
-                    context: context,
-                    cubit: cubit,
-                    title: 'استخدام واضح للبيانات',
-                    subtitle:
-                        'نستخدم بياناتك لتشغيل الحجوزات، إدارة العناوين، إرسال الإشعارات، وتحسين تجربة الاستخدام.',
-                    icon: 'assets/eye.svg',
-                  ),
-                  SizedBox(height: 12.h),
-                  _buildSmallInfoCard(
-                    context: context,
-                    cubit: cubit,
-                    title: 'تحكم في حسابك',
-                    subtitle: 'يمكنك تعديل بيانات حسابك وإدارة عناوينك.',
-                    icon: 'assets/setting.svg',
-                  ),
-                  SizedBox(height: 25.h),
-                  _buildSectionTitle(
-                    context: context,
-                    cubit: cubit,
-                    title: 'تفاصيل السياسة',
-                    icon: 'assets/bookings.svg',
-                  ),
-                  SizedBox(height: 15.h),
-                  ListView.builder(
-                    itemCount: policies.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final police = policies[index];
-                      return _buildPolicyCard(
-                          context: context,
-                          cubit: cubit,
-                          title: police['title'],
-                          body: police['body'],
-                          icon: police['icon']);
-                    },
-                  ),
-                ],
-              ),
+          ),
+          body: SingleChildScrollView(
+            padding: EdgeInsetsDirectional.only(
+              start: 10.w,
+              end: 10.w,
+              top: 10.h,
+              bottom: 20.h,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeaderCard(cubit),
+                SizedBox(height: 20.h),
+                _buildLastUpdatedCard(context, cubit),
+                SizedBox(height: 25.h),
+                _buildSectionTitle(
+                  context: context,
+                  cubit: cubit,
+                  title: 'ملخص الخصوصية',
+                  icon: 'assets/all.svg',
+                ),
+                SizedBox(height: 15.h),
+                _buildSmallInfoCard(
+                  context: context,
+                  cubit: cubit,
+                  title: 'استخدام واضح للبيانات',
+                  subtitle:
+                      'نستخدم بياناتك لتشغيل الحجوزات، إدارة العناوين، إرسال الإشعارات، وتحسين تجربة الاستخدام.',
+                  icon: 'assets/eye.svg',
+                ),
+                SizedBox(height: 12.h),
+                _buildSmallInfoCard(
+                  context: context,
+                  cubit: cubit,
+                  title: 'تحكم في حسابك',
+                  subtitle: 'يمكنك تعديل بيانات حسابك وإدارة عناوينك.',
+                  icon: 'assets/setting.svg',
+                ),
+                SizedBox(height: 25.h),
+                _buildSectionTitle(
+                  context: context,
+                  cubit: cubit,
+                  title: 'تفاصيل السياسة',
+                  icon: 'assets/bookings.svg',
+                ),
+                SizedBox(height: 15.h),
+                ListView.builder(
+                  itemCount: policies.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final police = policies[index];
+                    return _buildPolicyCard(
+                        context: context,
+                        cubit: cubit,
+                        title: police['title'],
+                        body: police['body'],
+                        icon: police['icon']);
+                  },
+                ),
+              ],
             ),
           ),
         );
