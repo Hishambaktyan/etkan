@@ -165,7 +165,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                         ),
                         SizedBox(height: 30.h),
                         defaultButton(
-                          onPressed: () async => adminCubit.editUser(
+                          onPressed: () async => adminCubit.updateUserStatus(
                               docId: widget.user['id'], isActive: isActive),
                           text: 'حفظ التعديلات',
                           height: 50.h,

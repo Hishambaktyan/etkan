@@ -257,7 +257,8 @@ class AdminCubit extends Cubit<AdminStates> {
   Future<void> updateAccountStatus({
     required String userId,
     required bool isActive,
-  }) async {
+  })
+  async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'isActive': isActive,
@@ -271,7 +272,8 @@ class AdminCubit extends Cubit<AdminStates> {
   Future<void> updateServiceStatus({
     required String serviceId,
     required bool isActive,
-  }) async {
+  })
+  async {
     try {
       await FirebaseFirestore.instance
           .collection('services')
@@ -387,10 +389,11 @@ class AdminCubit extends Cubit<AdminStates> {
     }
   }
 
-  Future<void> editUser({
+  Future<void> updateUserStatus({
     required String docId,
     required bool isActive,
-  }) async {
+  })
+  async {
     try {
       emit(EditUserLoadingState());
       await FirebaseFirestore.instance.collection('users').doc(docId).update({
@@ -427,7 +430,8 @@ class AdminCubit extends Cubit<AdminStates> {
 
   Map<String, dynamic>? _getLatestRequest(
     QuerySnapshot<Map<String, dynamic>> snapshot,
-  ) {
+  )
+  {
     if (snapshot.docs.isEmpty) return null;
 
     final List<Map<String, dynamic>> allRequests = snapshot.docs.map((doc) {
@@ -441,8 +445,7 @@ class AdminCubit extends Cubit<AdminStates> {
         .where((request) => request['status']?.toString() == 'pending')
         .toList();
 
-    final requestsToSort =
-        pendingRequests.isNotEmpty ? pendingRequests : allRequests;
+    final requestsToSort = pendingRequests.isNotEmpty ? pendingRequests : allRequests;
 
     requestsToSort.sort(
       (a, b) => _getCreatedAtMilliseconds(b).compareTo(
@@ -573,7 +576,8 @@ class AdminCubit extends Cubit<AdminStates> {
 
   Future<void> approveSubscriptionRequest({
     required String requestId,
-  }) async {
+  })
+  async {
     try {
       emit(ApproveSubscriptionRequestLoadingState());
 
@@ -982,7 +986,8 @@ class AdminCubit extends Cubit<AdminStates> {
   Future<void> rejectVerificationRequest({
     required String requestId,
     required String reason,
-  }) async {
+  })
+  async {
     try {
       if (reason.trim().isEmpty) {
         emit(RejectVerificationRequestErrorState(
@@ -1024,8 +1029,7 @@ class AdminCubit extends Cubit<AdminStates> {
         return;
       }
 
-      final providerRef =
-          FirebaseFirestore.instance.collection('users').doc(providerId);
+      final providerRef = FirebaseFirestore.instance.collection('users').doc(providerId);
 
       final providerDoc = await providerRef.get();
 

@@ -53,7 +53,7 @@ class _WorkerSignupState extends State<WorkerSignup> {
     }
 
     if (nameParts.length != 4) {
-      return 'يرجى إدخال الاسم الرباعي المكون من 4 أسماء فقط';
+      return 'أدخل اسمًا رباعيًا فق';
     }
 
     return null;

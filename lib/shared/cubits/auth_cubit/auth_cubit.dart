@@ -22,8 +22,7 @@ class AuthCubit extends Cubit<AuthStates> {
   }
 
   bool isPassword = true;
-  String get suffixIcon =>
-      isPassword ? 'assets/eye.svg' : 'assets/eye-slash.svg';
+  String get suffixIcon => isPassword ? 'assets/eye.svg' : 'assets/eye-slash.svg';
 
   String generateCode() {
     final random = Random();
@@ -216,6 +215,29 @@ class AuthCubit extends Cubit<AuthStates> {
     };
   }
 
+  String hashPassword(String password) {
+    return sha256.convert(utf8.encode(password.trim())).toString();
+  }
+
+  Future<String> uploadImageToCloudinary(String imagePath) async {
+    final dio = Dio();
+
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        imagePath,
+        filename: '${DateTime.now().millisecondsSinceEpoch}.jpg',
+      ),
+      'upload_preset': 'unsiged_upload',
+    });
+
+    final response = await dio.post(
+      'https://api.cloudinary.com/v1_1/dxftdrzdu/image/upload',
+      data: formData,
+    );
+
+    return response.data['secure_url'];
+  }
+
   Future<void> userSignUp({String profileImagePath = ''}) async {
     try {
       emit(UserSignUpLoadingState());
@@ -309,11 +331,6 @@ class AuthCubit extends Cubit<AuthStates> {
       emit(UserSignUpErrorState(error: e.toString()));
     }
   }
-
-  String hashPassword(String password) {
-    return sha256.convert(utf8.encode(password.trim())).toString();
-  }
-
 
   Map<String, dynamic>? selectedCategory;
   var workerNameController = TextEditingController();
@@ -685,25 +702,6 @@ class AuthCubit extends Cubit<AuthStates> {
     } catch (e) {
       emit(ResetPasswordErrorState(error: e.toString()));
     }
-  }
-
-  Future<String> uploadImageToCloudinary(String imagePath) async {
-    final dio = Dio();
-
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(
-        imagePath,
-        filename: '${DateTime.now().millisecondsSinceEpoch}.jpg',
-      ),
-      'upload_preset': 'unsiged_upload',
-    });
-
-    final response = await dio.post(
-      'https://api.cloudinary.com/v1_1/dxftdrzdu/image/upload',
-      data: formData,
-    );
-
-    return response.data['secure_url'];
   }
 
 
